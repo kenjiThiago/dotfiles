@@ -5,3 +5,6 @@ opacity = 0.7
 size = 12.0
 
 normal = { family = "HackNerdFont" }
+
+[mouse]
+hide_when_typing = true
