@@ -5,11 +5,11 @@
 }
 
 window#waybar {
-    background: transparent;
+    background: rgba(200, 200, 200, 0.15);
 }
 
 #window {
-    background: #303643;
+    background: #1b1f26;
 
     padding: 2px 10px 0px 10px;
 
@@ -30,7 +30,7 @@ window#waybar.empty #window {
 }
 
 #workspaces {
-    background: #303643;
+    background: #1b1f26;
     padding: 0px 1px;
     border-radius: 8px;
     border: 0px;
@@ -73,23 +73,23 @@ window#waybar.empty #window {
 #tray,
 #power-profiles-daemon {
     padding: 0 10px;
-    margin: 5px 4px 0 4px;
+    margin: 5px 4px 5px 4px;
     color: #ffffff;
 }
 
 #window,
 #workspaces {
-    margin: 5px 4px 0 4px;
+    margin: 5px 4px 5px 4px;
 }
 
 #clock {
-    background: #303643;
+    background: #1b1f26;
     color: #fab387;
     border-radius: 8px;
 }
 
 #battery {
-    background: #303643;
+    background: #1b1f26;
     color: #a6e3a1;
     border-radius: 8px;
 }
@@ -142,7 +142,7 @@ label:focus {
 
 #cpu {
     color: #61afef;
-    background: #303643;
+    background: #1b1f26;
     border-radius: 8px 0 0 8px;
 
     margin-left: 12px;
@@ -150,7 +150,7 @@ label:focus {
 }
 
 #memory {
-    background: #303643;
+    background: #1b1f26;
     color: #e5c07b;
     border-radius: 0 8px 8px 0;
 
@@ -163,7 +163,7 @@ label:focus {
 }
 
 #backlight {
-    background: #303643;
+    background: #1b1f26;
     border-radius: 8px;
 
     color: #fa5aa4;
@@ -179,7 +179,7 @@ label:focus {
 }
 
 #pulseaudio {
-    background: #303643;
+    background: #1b1f26;
     color: #0fb9b1;
     border-radius: 8px;
 
@@ -201,7 +201,7 @@ label:focus {
 }
 
 #temperature {
-    background: #303643;
+    background: #1b1f26;
     color: #98c379;
 
     border-radius: 0;
@@ -214,7 +214,7 @@ label:focus {
 }
 
 #tray {
-    background: #303643;
+    background: #1b1f26;
     border-radius: 8px;
     margin-right: 12px;
 }
