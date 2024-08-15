@@ -18,7 +18,7 @@ return {
 
             indent = {
                 enable = true,
-                disable = { "css", "java" }
+                disable = { "css", "java", "go" }
             }
         })
     end
