@@ -18,8 +18,11 @@ zinit light zsh-users/zsh-autosuggestions
 
 # Keybindings
 bindkey -e
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
 
 # Aparência do Compition
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 #Alias
@@ -50,3 +53,7 @@ setopt hist_ignore_all_dups
 setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
+
+# PATH
+path+=('/home/thiagoK/go/bin')
+export PATH
