@@ -1,4 +1,4 @@
-vim.opt.guicursor = ""
+--vim.opt.guicursor = ""
 
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
