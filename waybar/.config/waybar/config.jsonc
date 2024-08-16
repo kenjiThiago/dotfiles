@@ -33,8 +33,8 @@
     },
     "clock": {
         // "timezone": "America/New_York",
+        "format": "<span foreground='#f5c2e7'>   </span>{:%a %d %H:%M}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format-alt": "{:%Y-%m-%d}"
     },
     "cpu": {
         "format": "{usage}% ",
