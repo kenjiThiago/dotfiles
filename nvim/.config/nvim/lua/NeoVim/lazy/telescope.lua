@@ -1,6 +1,7 @@
 return {
     'nvim-telescope/telescope.nvim', tag = '0.1.8',
     dependencies = { 'nvim-lua/plenary.nvim' },
+    priority = 999,
 
     config = function()
         require('telescope').setup({
@@ -8,6 +9,9 @@ return {
                 find_files = {
                     theme = "dropdown",
                     previewer = false,
+                },
+                grep_string = {
+                    file_ignore_patterns = { "go.sum" },
                 }
             },
             defaults = {
