@@ -8,3 +8,8 @@ normal = { family = "HackNerdFont" }
 
 [mouse]
 hide_when_typing = true
+
+[cursor]
+style = { shape = "Block", blinking = "Always" }
+blink_timeout = 0
+blink_interval = 650
