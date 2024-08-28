@@ -12,7 +12,7 @@ return {
                     italic = false
                 }
             })
-            vim.cmd.colorscheme("rose-pine-dawn")
+            vim.cmd.colorscheme("rose-pine")
         end
     },
 }
