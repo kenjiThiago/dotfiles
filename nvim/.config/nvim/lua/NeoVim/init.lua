@@ -10,3 +10,5 @@ vim.api.nvim_create_autocmd('TextYankPost', {
         })
     end
 })
+
+vim.g.netrw_banner = 0
