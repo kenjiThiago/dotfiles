@@ -40,26 +40,19 @@ window#waybar.empty #window {
     font-weight: bold;
     font-style: normal;
     font-size: 16px;
-    color: #FFFFFF;
+    color: #ffffff;
 
 }
 
 #workspaces button {
     padding: 0px 5px;
     margin: 4px 3px;
-    border-radius: 8px;
-    border: 0px;
-    background-color: #cdd6f4;
-    transition: all 0.3s ease-in-out;
-    opacity: 0.4;
+    color: #cdd6f4;
 }
 
 #workspaces button.active {
-    background: #8b40d0;
-    border-radius: 8px;
-    min-width: 40px;
-    transition: all 0.3s ease-in-out;
-    opacity:1.0;
+    color: #8b40d0;
+    opacity: 1.0;
 }
 
 #clock,
