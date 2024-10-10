@@ -11,4 +11,12 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     end
 })
 
+vim.api.nvim_create_autocmd('BufLeave', {
+    group = vim.api.nvim_create_augroup('OilRelPathFix', {}),
+    pattern = "oil:///*",
+    callback = function()
+        vim.cmd("cd .")
+    end
+})
+
 vim.g.netrw_banner = 0

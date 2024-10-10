@@ -3,6 +3,7 @@
   "harpoon": { "branch": "harpoon2", "commit": "0378a6c428a0bed6a2781d459d7943843f374bce" },
   "lazy.nvim": { "branch": "main", "commit": "1159bdccd8910a0fd0914b24d6c3d186689023d9" },
   "nvim-treesitter": { "branch": "master", "commit": "7821feb7e7d55a76b7ffeeb6b0bfb7b8f499ce94" },
+  "oil.nvim": { "branch": "master", "commit": "ccab9d5e09e2d0042fbbe5b6bd05e82426247067" },
   "plenary.nvim": { "branch": "master", "commit": "2d9b06177a975543726ce5c73fca176cedbffe9d" },
   "rose-pine": { "branch": "main", "commit": "8b1fd252255a7f2c41b4192a787ab62660b29f72" },
   "telescope.nvim": { "branch": "master", "commit": "a0bbec21143c7bc5f8bb02e0005fa0b982edc026" },

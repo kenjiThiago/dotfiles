@@ -1,5 +1,6 @@
 vim.g.mapleader = " "
-vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+--vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>pv", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
 vim.keymap.set("i", "jk", "<ESC>")
 vim.keymap.set("", "j", "k")
