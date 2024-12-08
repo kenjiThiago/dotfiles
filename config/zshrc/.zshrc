@@ -20,6 +20,7 @@ zinit light zsh-users/zsh-autosuggestions
 bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
+bindkey -s '^[^F' "tmux-sessionizer\n"
 
 # Aparência do Compition
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
@@ -29,20 +30,17 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 alias nv="nvim"
 alias ls="ls --color"
 alias c="clear"
-
-ZSH_HIGHLIGHT_STYLES[suffix-alias]=fg=blue,underline
-ZSH_HIGHLIGHT_STYLES[precommand]=fg=blue,underline
-ZSH_HIGHLIGHT_STYLES[arg0]=fg=blue
+alias l="ls -lA"
 
 # Inicia fzf
-eval "$(fzf --zsh)"
+source <(fzf --zsh)
 # Inicia zoxide
 eval "$(zoxide init --cmd cd zsh)"
 # Inicia starship
 eval "$(starship init zsh)"
 
 # Historico de comandos
-HISTSIZE=1000
+HISTSIZE=2000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
@@ -54,6 +52,27 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 
-# PATH
-path+=('/home/thiagoK/go/bin')
-export PATH
+export TIMEFMT=$'%*E'
+
+lazy_load_nvm() {
+    unset -f npm node nvm
+
+    #Inicia npm
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+}
+
+npm() {
+    lazy_load_nvm
+    npm $@
+}
+
+node() {
+    lazy_load_nvm
+    node $@
+}
+
+nvm() {
+    lazy_load_nvm
+    nvm $@
+}

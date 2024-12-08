@@ -28,7 +28,7 @@ return {
         config = function()
             local cmp = require("cmp")
 
-            local cmp_select = { behavior = cmp.SelectBehavior.Insert }
+            -- local cmp_select = { behavior = cmp.SelectBehavior.Insert }
 
             cmp.setup({
                 snippet = {
@@ -41,8 +41,8 @@ return {
                     documentation = cmp.config.window.bordered(),
                 },
                 mapping = cmp.mapping.preset.insert({
-                    ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-                    ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+                    -- ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+                    -- ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
                     ['<C-y>'] = cmp.mapping.confirm({ select = true }),
                     ['<C-Space>'] = cmp.mapping.complete(),
                 }),

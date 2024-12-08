@@ -2,7 +2,7 @@ return {
     {
         'rose-pine/neovim',
         name = 'rose-pine',
-        lazy = true,
+        lazy = false,
         priority = 1000,
         config = function()
             require('rose-pine').setup({
@@ -12,13 +12,13 @@ return {
                     italic = false
                 }
             })
-            vim.cmd.colorscheme("rose-pine-moon")
+            vim.cmd.colorscheme("rose-pine")
         end
     },
     {
         "catppuccin/nvim",
         name = "catppuccin",
-        lazy = false,
+        lazy = true,
         priority = 1000,
         config = function()
             require("catppuccin").setup({

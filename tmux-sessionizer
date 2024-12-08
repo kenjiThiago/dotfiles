@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+selected=$( (find /home ~/ -mindepth 1 -maxdepth 1 -type d && find ~/projetos -mindepth 1 -maxdepth 2 -type d && find ~/dotfiles/config -type d) | fzf)
+
+if [[ -z "$selected" ]]; then
+    exit 0
+fi
+
+selected_name=$(basename $selected | tr ":,. " "____")
+
+switch_to() {
+    if [[ -z "$TMUX" ]]; then
+        tmux attach-session -t $selected_name
+    else
+        tmux switch-client -t $selected_name
+    fi
+}
+
+if tmux has-session -t=$selected_name 2> /dev/null; then
+    switch_to
+    exit 0
+fi
+
+tmux new-session -ds $selected_name -c $selected
+tmux send-keys -t $selected_name "ready-tmux" ^M
+switch_to
