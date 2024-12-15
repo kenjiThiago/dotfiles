@@ -16,12 +16,12 @@ return {
             },
             defaults = {
                 file_ignore_patterns = { "node_modules", ".git" },
-                mappings = {
-                    n = {
-                        ["j"] = "move_selection_previous",
-                        ["k"] = "move_selection_next",
-                    }
-                }
+                -- mappings = {
+                --     n = {
+                --         ["j"] = "move_selection_previous",
+                --         ["k"] = "move_selection_next",
+                --     }
+                -- }
             }
         })
         local builtin = require("telescope.builtin")
