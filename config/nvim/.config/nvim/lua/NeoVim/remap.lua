@@ -54,5 +54,8 @@ vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
 --Fugitive
 vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
 
+--Highlight
+vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
+
 --Plus
 vim.keymap.set("n", "<leader>gc", ":w<CR> :!gcc % -o %<")
