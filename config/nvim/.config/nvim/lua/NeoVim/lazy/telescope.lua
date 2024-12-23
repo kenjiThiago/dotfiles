@@ -40,5 +40,7 @@ return {
             builtin.grep_string( { search = vim.fn.input('Grep > ') })
         end)
         vim.keymap.set("n", "<leader>pg", builtin.git_files, {})
+
+        require("NeoVim.telescope.multigrep").setup()
     end
 }
