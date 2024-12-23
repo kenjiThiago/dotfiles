@@ -17,7 +17,7 @@ blink_interval = 650
 
 [colors.primary]
 foreground = "#e0def4"
-background = "#191724"
+background = "#010101"
 dim_foreground = "#908caa"
 bright_foreground = "#e0def4"
 
