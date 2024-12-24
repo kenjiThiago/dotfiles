@@ -16,6 +16,12 @@ return {
                 grep_string = {
                     theme = "ivy",
                     file_ignore_patterns = { "go.sum" },
+                },
+                git_files = {
+                    theme = "ivy",
+                },
+                help_tags = {
+                    theme = "ivy",
                 }
             },
             defaults = {
@@ -40,6 +46,25 @@ return {
             builtin.grep_string( { search = vim.fn.input('Grep > ') })
         end)
         vim.keymap.set("n", "<leader>pg", builtin.git_files, {})
+        vim.keymap.set("n", "<leader>ph", builtin.help_tags, {})
+
+        vim.keymap.set("n", "<leader>pe", function()
+            builtin.find_files({
+                cwd = "~/dotfiles/config/nvim/.config/nvim"
+            })
+        end)
+
+        vim.keymap.set("n", "<leader>pp", function()
+            builtin.find_files({
+                cwd = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy")
+            })
+        end)
+
+        vim.keymap.set("n", "<leader>pa", function()
+            builtin.find_files({
+                cwd = "~/projetos"
+            })
+        end)
 
         require("NeoVim.telescope.multigrep").setup()
     end
