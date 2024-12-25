@@ -57,5 +57,8 @@ vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
 --Highlight
 vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
 
+--Formating
+vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
+
 --Plus
 vim.keymap.set("n", "<leader>gc", ":w<CR> :!gcc % -o %<")
