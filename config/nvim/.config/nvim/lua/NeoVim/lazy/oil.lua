@@ -9,7 +9,7 @@ return {
                     ["<C-b>"] = { "actions.select", opts = { horizontal = true }, desc = "Open the entry in a horizontal split" },
                     ["<C-l>"] = false,
                     ["<C-s>"] = "actions.refresh",
-                    ["<C-i>"] = {
+                    ["<leader>i"] = {
                         desc = "Toggle detail view",
                         callback = function()
                             local oil = require("oil")
