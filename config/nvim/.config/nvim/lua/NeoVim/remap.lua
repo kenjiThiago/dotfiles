@@ -58,7 +58,45 @@ vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
 vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
 
 --Formating
-vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
+vim.keymap.set({ "n", "v" }, "<leader>f", vim.lsp.buf.format)
+
+--ShowWhiteSpaces
+local toggle_ws = false
+vim.api.nvim_create_user_command("ShowWhiteSpaces", function()
+    if not toggle_ws then
+        vim.cmd("highlight ws ctermbg=magenta guibg=magenta | match ws /\\s\\+$/")
+        toggle_ws = true
+    else
+        vim.cmd("match none")
+        toggle_ws = false
+    end
+end, {})
 
 --Plus
-vim.keymap.set("n", "<leader>gc", ":w<CR> :!gcc % -o %<")
+vim.api.nvim_create_user_command("Compile", function(opts)
+    local result = vim.split(vim.api.nvim_buf_get_name(0), "/")
+
+    local bufName = result[#result]
+
+    local pieces = vim.split(bufName, ".", { plain = true })
+
+    local command = "make "
+
+    command = command .. pieces[1]
+    if not (pieces[2] == 'c' or pieces[2] == 'cpp') then
+        command = command .. "." .. pieces[2]
+    end
+
+    for _, arg in ipairs(opts.fargs) do
+        if arg == "-l" then
+            command = "l" .. command
+        elseif arg.find(arg, "^-c") then
+            local compiler = vim.split(arg, "-c=")[2]
+            vim.cmd("compiler " .. compiler)
+        else
+            command = command .. " " .. arg
+        end
+    end
+
+    vim.cmd(command)
+end, { nargs = "*" })
