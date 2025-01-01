@@ -54,25 +54,9 @@ setopt hist_find_no_dups
 
 export TIMEFMT=$'%*E'
 
-lazy_load_nvm() {
-    unset -f npm node nvm
-
-    #Inicia npm
+if [[ -z $TMUX ]]; then
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-}
+fi
 
-npm() {
-    lazy_load_nvm
-    npm $@
-}
-
-node() {
-    lazy_load_nvm
-    node $@
-}
-
-nvm() {
-    lazy_load_nvm
-    nvm $@
-}
+export PATH
