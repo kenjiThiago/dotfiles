@@ -11,7 +11,7 @@ vim.api.nvim_create_autocmd('BufLeave', {
     group = vim.api.nvim_create_augroup('OilRelPathFix', {}),
     pattern = "oil:///*",
     callback = function()
-        vim.cmd("cd .")
+        vim.cmd("tcd .")
     end
 })
 
