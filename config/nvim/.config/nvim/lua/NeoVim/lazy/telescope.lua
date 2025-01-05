@@ -10,7 +10,7 @@ return {
         require('telescope').setup({
             pickers = {
                 find_files = {
-                    theme = "ivy",
+                    theme = "dropdown",
                     previewer = false,
                 },
                 grep_string = {
@@ -18,7 +18,8 @@ return {
                     file_ignore_patterns = { "go.sum" },
                 },
                 git_files = {
-                    theme = "ivy",
+                    theme = "dropdown",
+                    previewer = false,
                 },
                 help_tags = {
                     theme = "ivy",

@@ -6,11 +6,29 @@ return {
         priority = 1000,
         config = function()
             require('rose-pine').setup({
-                disable_background = true,
-                disable_float_background = true,
                 styles = {
-                    italic = false
-                }
+                    italic = false,
+                    transparency = true,
+                },
+                highlight_groups = {
+                    TelescopeSelection = { fg = "text", bg = "highlight_med" },
+                    TelescopeSelectionCaret = { fg = "love", bg = "love" },
+
+                    TelescopeTitle = { fg = "base", bg = "rose" },
+                    TelescopeNormal = { bg = "_nc" },
+                    TelescopeBorder = { fg = "_nc", bg = "_nc" },
+
+                    TelescopePromptTitle = { fg = "base", bg = "iris" },
+                    TelescopePromptNormal = { bg = "overlay" },
+                    TelescopePromptBorder = { fg = "overlay", bg = "overlay" },
+
+                    TelescopePreviewTitle = { fg = "base", bg = "gold" },
+                    TelescopePreviewNormal = { bg = "_nc" },
+                    TelescopePreviewBorder = { fg = "_nc", bg = "_nc" },
+
+                    StatusLine = { fg = "text", bg = "surface" },
+                    StatusLineNC = { fg = "muted", bg = "surface" },
+                },
             })
             vim.cmd.colorscheme("rose-pine-moon")
         end
