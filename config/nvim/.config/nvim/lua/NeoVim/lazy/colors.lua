@@ -14,17 +14,9 @@ return {
                     TelescopeSelection = { fg = "text", bg = "highlight_med" },
                     TelescopeSelectionCaret = { fg = "love", bg = "love" },
 
-                    TelescopeTitle = { fg = "base", bg = "rose" },
-                    TelescopeNormal = { bg = "_nc" },
-                    TelescopeBorder = { fg = "_nc", bg = "_nc" },
-
-                    TelescopePromptTitle = { fg = "base", bg = "iris" },
-                    TelescopePromptNormal = { bg = "overlay" },
-                    TelescopePromptBorder = { fg = "overlay", bg = "overlay" },
-
-                    TelescopePreviewTitle = { fg = "base", bg = "gold" },
-                    TelescopePreviewNormal = { bg = "_nc" },
-                    TelescopePreviewBorder = { fg = "_nc", bg = "_nc" },
+                    TelescopeTitle = { fg = "rose" },
+                    TelescopePromptTitle = { fg = "iris", bold = true },
+                    TelescopePreviewTitle = { fg = "gold", bold = true },
 
                     StatusLine = { fg = "text", bg = "surface" },
                     StatusLineNC = { fg = "muted", bg = "surface" },
