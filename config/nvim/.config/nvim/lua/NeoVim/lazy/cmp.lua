@@ -38,7 +38,9 @@ return {
                     end,
                 },
                 window = {
-                    completion = cmp.config.window.bordered(),
+                    completion = {
+                        border = "single"
+                    },
                     documentation = cmp.config.window.bordered(),
                 },
                 mapping = cmp.mapping.preset.insert({
