@@ -14,6 +14,7 @@ return {
                 enable = true,
 
                 additional_vim_regex_highlighting = false,
+                disable = { "csv" }
             },
 
             indent = {
