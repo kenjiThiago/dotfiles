@@ -19,11 +19,6 @@ return {
             { '│', 'FloatBorder' },
         }
 
-        local handlers = {
-            ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = border }),
-            ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = border }),
-        }
-
         require("mason").setup({
             ui = {
                 border = "double",
@@ -36,7 +31,6 @@ return {
                 function(server_name)
                     require("lspconfig")[server_name].setup({
                         capabilities = capabilities,
-                        handlers = handlers,
                     })
                 end,
 
@@ -44,7 +38,6 @@ return {
                     local lspconfig = require("lspconfig")
                     lspconfig.lua_ls.setup({
                         capabilities = capabilities,
-                        handlers = handlers,
                         settings = {
                             Lua = {
                                 diagnostics = {
@@ -56,6 +49,13 @@ return {
                 end,
             },
         })
+
+        local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+        function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+            opts = opts or {}
+            opts.border = opts.border or border
+            return orig_util_open_floating_preview(contents, syntax, opts, ...)
+        end
 
         vim.diagnostic.config({
             virtual_text = true,
