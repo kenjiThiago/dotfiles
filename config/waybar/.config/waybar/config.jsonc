@@ -4,9 +4,10 @@
     "height": 42, // Waybar height (to be removed for auto height)
     "spacing": 0, // Gaps between modules (4px)
     "modules-left": [
-        "cpu",
         "temperature",
+        "cpu",
         "memory",
+        "idle_inhibitor",
         "hyprland/workspaces",
     ],
     "modules-center": [
@@ -46,10 +47,11 @@
         "format": "<span foreground='#f5c2e7'>  </span>{:%a %d %H:%M}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
     },
-    "cpu": {
-        "format": "{usage}% ",
-        "tooltip": false
-    },
+   "cpu": {
+        "interval": 1,
+        "format": "{icon0}{icon1}{icon2}{icon3} {usage:>2}% ",
+        "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+   },
     "memory": {
         "format": "{}% "
     },
@@ -119,5 +121,13 @@
             "default": ["", "", ""]
         },
         "on-click": "pavucontrol"
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        },
+        "timeout": 30.5
     },
 }

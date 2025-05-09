@@ -66,7 +66,8 @@ window#waybar.empty #window {
 #pulseaudio,
 #wireplumber,
 #tray,
-#power-profiles-daemon {
+#power-profiles-daemon,
+#idle_inhibitor {
     padding: 0 10px;
     margin: 5px 4px 5px 4px;
     color: #ffffff;
@@ -81,6 +82,13 @@ window#waybar.empty #window {
     background: #191724;
     color: #fab387;
     border-radius: 8px;
+}
+
+#idle_inhibitor {
+    background: #191724;
+    padding: 0 17px 0 10px;
+    border-radius: 8px;
+    color: #fa5aa4;
 }
 
 #battery {
@@ -136,20 +144,19 @@ label:focus {
 }
 
 #cpu {
-    color: #61afef;
+    color: #d663f7;
     background: #191724;
-    border-radius: 8px 0 0 8px;
+    border-radius: 0;
 
-    margin-left: 12px;
+    margin-left: 0;
     margin-right: 0;
 }
 
 #memory {
     background: #191724;
-    color: #e5c07b;
+    color: #f6c177;
     border-radius: 0 8px 8px 0;
 
-    margin-right: 12px;
     margin-left: 0;
 }
 
@@ -197,10 +204,10 @@ label:focus {
 
 #temperature {
     background: #191724;
-    color: #98c379;
+    color: #31748f;
 
-    border-radius: 0;
-    margin-left: 0;
+    border-radius: 8px 0 0 8px;
+    margin-left: 12px;
     margin-right: 0;
 }
 
