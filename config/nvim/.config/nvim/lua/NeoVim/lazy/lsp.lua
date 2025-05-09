@@ -6,8 +6,6 @@ return {
         "williamboman/mason-lspconfig.nvim",
     },
     config = function()
-        local capabilities = require('cmp_nvim_lsp').default_capabilities()
-
         local border = {
             { '╭', 'FloatBorder' },
             { '─', 'FloatBorder' },
@@ -29,24 +27,18 @@ return {
             ensure_installed = { "lua_ls", },
             handlers = {
                 function(server_name)
-                    require("lspconfig")[server_name].setup({
-                        capabilities = capabilities,
-                    })
+                    vim.lsp.enable(server_name)
                 end,
 
-                ["lua_ls"] = function()
-                    local lspconfig = require("lspconfig")
-                    lspconfig.lua_ls.setup({
-                        capabilities = capabilities,
-                        settings = {
-                            Lua = {
-                                diagnostics = {
-                                    globals = { "vim" },
-                                },
+                vim.lsp.config("lua_ls", {
+                    settings = {
+                        Lua = {
+                            diagnostics = {
+                                globals = { "vim" },
                             },
                         },
-                    })
-                end,
+                    },
+                })
             },
         })
 
