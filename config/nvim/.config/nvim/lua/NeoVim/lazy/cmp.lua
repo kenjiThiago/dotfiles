@@ -3,12 +3,12 @@ return {
         "L3MON4D3/LuaSnip",
         build = "make install_jsregexp",
         event = { "BufReadPost", "BufWritePost", "BufNewFile" },
-        priority = 999,
         dependencies = {
             "saadparwaiz1/cmp_luasnip",
             "rafamadriz/friendly-snippets",
         },
         config = function()
+            require("luasnip.loaders.from_vscode").lazy_load()
             local ls = require("luasnip")
             vim.keymap.set({"i"}, "<C-K>", function() ls.expand() end, {silent = true})
             vim.keymap.set({"i", "s"}, "<C-L>", function() ls.jump( 1) end, {silent = true})
@@ -19,7 +19,6 @@ return {
     {
         "hrsh7th/nvim-cmp",
         event = { "BufReadPost", "BufWritePost", "BufNewFile" },
-        priority = 998,
         dependencies = {
             "hrsh7th/cmp-nvim-lsp",
             "hrsh7th/cmp-buffer",
