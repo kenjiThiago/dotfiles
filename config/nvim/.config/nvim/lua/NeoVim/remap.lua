@@ -57,9 +57,6 @@ vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
 --Highlight
 vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
 
---Formating
-vim.keymap.set({ "n", "v" }, "<leader>f", vim.lsp.buf.format)
-
 --ShowWhiteSpaces
 local toggle_ws = false
 vim.api.nvim_create_user_command("ShowWhiteSpaces", function()
