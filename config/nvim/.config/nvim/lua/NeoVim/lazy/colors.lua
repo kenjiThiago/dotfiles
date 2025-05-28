@@ -36,5 +36,37 @@ return {
             })
             vim.cmd.colorscheme("catppuccin-macchiato")
         end
+    },
+    {
+        "craftzdog/solarized-osaka.nvim",
+        lazy = true,
+        priority = 1000,
+        config = function()
+            require("solarized-osaka").setup({
+                styles = {
+                    floats = "transparent"
+                },
+                on_highlights = function(hl, c)
+                    hl.TelescopeTitle = { fg = c.cyan300 }
+                    hl.TelescopePromptTitle = { fg = c.magenta300 }
+                    hl.TelescopePreviewTitle = { fg = c.orange300 }
+                end,
+            })
+            vim.cmd.colorscheme("solarized-osaka")
+        end
+    },
+    {
+        "folke/tokyonight.nvim",
+        lazy = true,
+        priority = 1000,
+        config = function()
+            require("tokyonight").setup({
+                transparent = true,
+                styles = {
+                    floats = "transparent",
+                },
+            })
+            vim.cmd.colorscheme("tokyonight-night")
+        end
     }
 }
