@@ -1,6 +1,7 @@
 return {
     {
         "MeanderingProgrammer/render-markdown.nvim",
+        enabled = false,
         dependencies = { "echasnovski/mini.icons" },
         opts = {
             code = {
