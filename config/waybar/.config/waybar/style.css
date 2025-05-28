@@ -81,7 +81,8 @@ window#waybar.empty #window {
 #clock {
     background: #191724;
     color: #fab387;
-    border-radius: 8px;
+    margin-left: 0;
+    border-radius: 0 8px 8px 0;
 }
 
 #idle_inhibitor {
@@ -94,7 +95,10 @@ window#waybar.empty #window {
 #battery {
     background: #191724;
     color: #a6e3a1;
-    border-radius: 8px;
+    margin-left: 0;
+    margin-right: 0;
+    padding-right: 14px;
+    /* border-radius: 8px; */
 }
 
 #battery.charging, #battery.plugged {
@@ -166,9 +170,11 @@ label:focus {
 
 #backlight {
     background: #191724;
-    border-radius: 8px;
+    margin-left: 0;
+    margin-right: 0;
+    /* border-radius: 8px; */
 
-    color: #fa5aa4;
+    color: #f38ba8;
 }
 
 #network {
@@ -182,8 +188,10 @@ label:focus {
 
 #pulseaudio {
     background: #191724;
-    color: #0fb9b1;
-    border-radius: 8px;
+    color: #89dceb;
+    border-radius: 8px 0 0 8px;
+    margin-right: 0;
+    padding-right: 12px;
 
     transition: all 0.3s;
 }

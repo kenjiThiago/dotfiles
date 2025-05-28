@@ -65,6 +65,7 @@
     },
     "backlight": {
         // "device": "acpi_video1",
+        "min-brightness": 1,
         "format": "{percent}% {icon}",
         "format-icons": ["", "", "", "", "", "", "", "", ""]
     },
