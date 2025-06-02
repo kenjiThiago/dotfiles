@@ -38,3 +38,8 @@ vim.api.nvim_create_autocmd('BufEnter', {
         vim.cmd("setlocal sw=2")
     end
 })
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+    pattern = "*",
+    command = [[%s/\s\+$//e]],
+})
