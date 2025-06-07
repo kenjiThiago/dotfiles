@@ -1,8 +1,11 @@
 // -*- mode: jsonc -*-
 {
     "layer": "top", // Waybar at top layer
-    "height": 42, // Waybar height (to be removed for auto height)
+    "height": 44, // Waybar height (to be removed for auto height)
     "spacing": 0, // Gaps between modules (4px)
+    "margin-top": 10,
+    "margin-right": 10,
+    "margin-left": 10,
     "modules-left": [
         "temperature",
         "cpu",

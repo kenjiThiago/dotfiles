@@ -7,6 +7,7 @@
 
 window#waybar {
     background: rgba(38, 35, 58, 0.9);
+    border-radius: 8px;
 }
 
 #window {
@@ -215,7 +216,7 @@ label:focus {
     color: #31748f;
 
     border-radius: 8px 0 0 8px;
-    margin-left: 12px;
+    margin-left: 5px;
     margin-right: 0;
 }
 
@@ -226,7 +227,7 @@ label:focus {
 #tray {
     background: #191724;
     border-radius: 8px;
-    margin-right: 12px;
+    margin-right: 5px;
 }
 
 #tray > .passive {
