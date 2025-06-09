@@ -33,7 +33,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 vim.api.nvim_create_autocmd('BufEnter', {
-    pattern = { "*.html", "*.tsx", "*.js", "*.json" },
+    pattern = { "*.html", "*.tsx", "*.js", "*.json", "*.ts" },
     callback = function()
         vim.cmd("setlocal sw=2")
     end
