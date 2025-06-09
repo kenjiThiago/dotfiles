@@ -4,8 +4,8 @@
     "height": 44, // Waybar height (to be removed for auto height)
     "spacing": 0, // Gaps between modules (4px)
     "margin-top": 10,
-    "margin-right": 10,
-    "margin-left": 10,
+    "margin-right": 19,
+    "margin-left": 19,
     "modules-left": [
         "temperature",
         "cpu",
