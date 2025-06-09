@@ -2,7 +2,7 @@ return {
     {
         'rose-pine/neovim',
         name = 'rose-pine',
-        lazy = false,
+        lazy = true,
         priority = 1000,
         config = function()
             require('rose-pine').setup({
@@ -67,6 +67,30 @@ return {
                 },
             })
             vim.cmd.colorscheme("tokyonight-night")
+        end
+    },
+    {
+        "rebelot/kanagawa.nvim",
+        lazy = false,
+        priority = 1000,
+        config = function()
+            require("kanagawa").setup({
+                transparent = true,
+                colors = {
+                    theme = {
+                        all = {
+                            ui = {
+                                bg_gutter = "none",
+                            }
+                        }
+                    }
+                },
+            })
+            vim.cmd.colorscheme("kanagawa")
+            vim.api.nvim_set_hl(0, "TelescopeBorder", { bg = "none", fg = "none" })
+            vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none", fg = "none" })
+            vim.api.nvim_set_hl(0, "FloatBorder", { bg = "none", fg = "none" })
+            vim.api.nvim_set_hl(0, "Pmenu", { bg = "none" })
         end
     }
 }
