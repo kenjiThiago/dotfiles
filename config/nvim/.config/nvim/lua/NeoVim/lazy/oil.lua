@@ -18,8 +18,8 @@ return {
                             if #config.columns == 0 then
                                 oil.set_columns({
                                     { "permissions", highlight = "DiagnosticError" },
-                                    { "size", highlight = "Special" },
-                                    { "mtime", highlight = "WarningMsg" },
+                                    { "size",        highlight = "Special" },
+                                    { "mtime",       highlight = "WarningMsg" },
                                 })
                             else
                                 oil.set_columns({})
@@ -34,7 +34,11 @@ return {
                     -- number = false,
                     -- relativenumber = false,
                 },
-                columns = {},
+                columns = {
+                    { "permissions", highlight = "DiagnosticError" },
+                    { "size",        highlight = "Special" },
+                    { "mtime",       highlight = "WarningMsg" },
+                },
                 skip_confirm_for_simple_edits = true,
             })
         end
