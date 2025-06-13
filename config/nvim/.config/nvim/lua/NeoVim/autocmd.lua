@@ -27,13 +27,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
         vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
         vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
-        vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-        vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
+        vim.keymap.set("n", "<M-n>", function() vim.diagnostic.goto_next() end, opts)
+        vim.keymap.set("n", "<M-p>", function() vim.diagnostic.goto_prev() end, opts)
     end
 })
 
 vim.api.nvim_create_autocmd('BufEnter', {
-    pattern = { "*.html", "*.tsx", "*.js", "*.json", "*.ts" },
+    pattern = { "*.html", "*.tsx", "*.js", "*.json", "*.ts", "*.css" },
     callback = function()
         vim.cmd("setlocal sw=2")
     end
