@@ -68,6 +68,7 @@ window#waybar.empty #window {
 #wireplumber,
 #tray,
 #power-profiles-daemon,
+#custom-lock,
 #idle_inhibitor {
     padding: 0 10px;
     margin: 5px 4px 5px 4px;
@@ -83,14 +84,23 @@ window#waybar.empty #window {
     background: #191724;
     color: #fab387;
     margin-left: 0;
-    border-radius: 0 8px 8px 0;
+    margin-right: 0;
 }
 
 #idle_inhibitor {
     background: #191724;
-    padding: 0 17px 0 10px;
-    border-radius: 8px;
+    padding-right: 17px;
+    margin-left: 0;
+    border-radius: 0 8px 8px 0;
     color: #fa5aa4;
+}
+
+#custom-lock {
+    background: #191724;
+    margin-right: 0;
+    border-radius: 8px 0 0 8px;
+    padding-right: 0;
+    padding-left: 3px;
 }
 
 #battery {
@@ -127,21 +137,23 @@ window#waybar.empty #window {
 
 #power-profiles-daemon {
     padding-right: 15px;
+    margin-left: 0;
+    border-radius: 0 8px 8px 0;
 }
 
 #power-profiles-daemon.performance {
-    background-color: #f53c3c;
-    color: #ffffff;
+    background: #191724;
+    color: #f53c3c;
 }
 
 #power-profiles-daemon.balanced {
-    background-color: #2980b9;
-    color: #ffffff;
+    background: #191724;
+    color: #2980b9;
 }
 
 #power-profiles-daemon.power-saver {
-    background-color: #2ecc71;
-    color: #000000;
+    background: #191724;
+    color: #2ecc71;
 }
 
 label:focus {

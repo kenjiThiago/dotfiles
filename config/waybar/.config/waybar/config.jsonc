@@ -10,6 +10,7 @@
         "temperature",
         "cpu",
         "memory",
+        "custom/lock",
         "idle_inhibitor",
         "hyprland/workspaces",
     ],
@@ -21,6 +22,7 @@
         "backlight",
         "battery",
         "clock",
+        "power-profiles-daemon",
         "tray"
     ],
     // Modules configuration
@@ -41,12 +43,16 @@
             "10": "十"
         }
     },
+    "custom/lock": {
+        "format": "<span color='#888888'>  </span>",
+        "on-click": "hyprlock",
+    },
     "tray": {
         // "icon-size": 21,
         "spacing": 10
     },
     "clock": {
-        "format": "{:%a %d %H:%M}<span foreground='#f5c2e7'>  </span>",
+        "format": "Dia {:%d %H:%M}<span foreground='#f5c2e7'> </span>",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
             "mode"          : "year",
@@ -107,17 +113,17 @@
         // "format-full": "",
         "format-icons": ["", "", "", "", ""]
     },
-    //"power-profiles-daemon": {
-    //  "format": "{icon}",
-    //  "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
-    //  "tooltip": true,
-    //  "format-icons": {
-    //    "default": "",
-    //    "performance": "",
-    //    "balanced": "",
-    //    "power-saver": ""
-    //  }
-    //},
+    "power-profiles-daemon": {
+     "format": "{icon}",
+     "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+     "tooltip": true,
+     "format-icons": {
+       "default": "",
+       "performance": "",
+       "balanced": "",
+       "power-saver": ""
+     }
+    },
     "network": {
         // "interface": "wlp2*", // (Optional) To force the use of this interface
         "format-wifi": "{essid} ({signalStrength}%) ",
