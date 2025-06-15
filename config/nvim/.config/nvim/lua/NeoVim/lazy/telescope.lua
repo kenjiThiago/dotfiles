@@ -12,6 +12,10 @@ return {
                 find_files = {
                     theme = "dropdown",
                     previewer = false,
+                    path_display = function(opts, path)
+                        local tail = require("telescope.utils").path_tail(path)
+                        return string.format("%s   %s", tail, path), { { { 1, #tail }, "Constant" } }
+                    end,
                 },
                 grep_string = {
                     theme = "ivy",
