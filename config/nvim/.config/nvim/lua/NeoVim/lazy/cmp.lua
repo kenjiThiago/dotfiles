@@ -51,11 +51,8 @@ return {
                 sources = cmp.config.sources({
                     { name = 'nvim_lsp' },
                     { name = 'luasnip' },
-                },
-                    {
-                        { name = 'buffer' },
-                    }
-                ),
+                    { name = 'buffer' },
+                }),
                 formatting = {
                     fields = { "menu", "abbr", "kind" },
                     format = function(entry, item)
@@ -73,6 +70,8 @@ return {
                             item.menu = " "
                             item.menu_hl_group = hl
                             item.kind_hl_group = hl
+                        else
+                            item.menu = ""
                         end
 
                         local icons = icons.kinds
