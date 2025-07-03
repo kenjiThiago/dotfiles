@@ -1,23 +1,14 @@
 return {
     {
-        "MeanderingProgrammer/render-markdown.nvim",
-        enabled = false,
-        dependencies = { "echasnovski/mini.icons" },
-        opts = {
-            code = {
-                sign = false,
-                width = "block",
-                right_pad = 1,
-            },
-            heading = {
-                sign = false,
-                icons = {},
-                backgrounds = {},
-            },
-        },
-        ft = { "markdown", "norg", "rmd", "org" },
-        config = function(_, opts)
-            require("render-markdown").setup(opts)
+        "toppair/peek.nvim",
+        event = { "VeryLazy" },
+        build = "deno task --quiet build:fast",
+        config = function()
+            require("peek").setup({
+                app = { "qutebrowser", "--target=window" }
+            })
+            vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+            vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
         end,
-    }
+    },
 }
