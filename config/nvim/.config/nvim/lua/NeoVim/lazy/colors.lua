@@ -2,7 +2,7 @@ return {
     {
         'rose-pine/neovim',
         name = 'rose-pine',
-        lazy = false,
+        lazy = true,
         priority = 1000,
         config = function()
             require('rose-pine').setup({
@@ -91,6 +91,27 @@ return {
             vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none", fg = "none" })
             vim.api.nvim_set_hl(0, "FloatBorder", { bg = "none", fg = "none" })
             vim.api.nvim_set_hl(0, "Pmenu", { bg = "none" })
+        end
+    },
+    {
+        "navarasu/onedark.nvim",
+        priority = 1000,
+        lazy = false,
+        config = function()
+            require('onedark').setup({
+                style = 'cool',
+                transparent = true,
+                highlights = {
+                    Pmenu = { bg = "none" },
+                    NormalFloat = { bg = "none" },
+                    FloatBorder = { bg = "none" },
+                },
+                diagnostics = {
+                    darker = false,
+                    background = false,
+                },
+            })
+            require('onedark').load()
         end
     }
 }
