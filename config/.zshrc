@@ -11,6 +11,8 @@ fi
 
 source "${ZINIT_HOME}/zinit.zsh"
 
+fastfetch
+
 # Plugins
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
@@ -28,9 +30,10 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 #Alias
 alias nv="nvim"
-alias ls="ls --color"
-alias c="clear"
-alias l="ls -lA"
+alias ls="eza --color=always"
+alias c="clear; fastfetch"
+alias l="eza -lA --color=always"
+alias cat='bat --paging=never'
 
 # Inicia fzf
 source <(fzf --zsh)
@@ -53,6 +56,8 @@ setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 export TIMEFMT=$'%*E'
+export MANPAGER="nvim +Man!"
+export LESS='-R --use-color -Dd+r$Du+b$'
 
 if [[ -z $TMUX ]]; then
     export NVM_DIR="$HOME/.nvm"
