@@ -46,7 +46,9 @@ return {
                     ["<C-j>"] = { "snippet_backward", "fallback" },
                 },
                 cmdline = {
-                    keymap = { preset = "inherit" },
+                    keymap = {
+                        ["<C-e>"] = false,
+                    },
                     completion = { menu = { auto_show = true } },
                 },
                 fuzzy = { implementation = "prefer_rust_with_warning" },
