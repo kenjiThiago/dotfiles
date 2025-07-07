@@ -1,0 +1,162 @@
+/* Rosé Pine userContent.css */
+
+@import "themes/rose-pine-moon.css";
+
+@media (prefers-color-scheme: dark) {
+
+  /* Common variables affecting all pages */
+  @-moz-document url-prefix("about:") {
+    :root {
+      --in-content-page-color: var(--text) !important;
+      --color-accent-primary: var(--love) !important;
+      --color-accent-primary-hover: var(--rose) !important;
+      --color-accent-primary-active: var(--love) !important;
+      background-color: var(--surface) !important;
+      --in-content-page-background: var(--surface) !important;
+    }
+
+  }
+
+  /* Variables and styles specific to about:newtab and about:home */
+  @-moz-document url("about:newtab"), url("about:home") {
+
+    :root {
+      --newtab-background-color: var(--surface) !important;
+      --newtab-background-color-secondary: var(--overlay) !important;
+      --newtab-element-hover-color: var(--overlay) !important;
+      --newtab-text-primary-color: var(--text) !important;
+      --newtab-wordmark-color: var(--text) !important;
+      --newtab-primary-action-background: var(--love) !important;
+    }
+
+    .icon {
+      color: var(--love) !important;
+    }
+
+    .search-wrapper .logo-and-wordmark .logo {
+      /* Se você tiver um logotipo específico para o Rosé Pine, substitua o URL aqui. */
+      /* Por enquanto, ele ainda aponta para o logo do tema Mocha. */
+      background: url("zen-logo-mocha.svg"), url("https://raw.githubusercontent.com/IAmJafeth/zen-browser/main/themes/Mocha/Red/zen-logo-mocha.svg") no-repeat center !important;
+      display: inline-block !important;
+      height: 82px !important;
+      width: 82px !important;
+      background-size: 82px !important;
+    }
+
+    @media (max-width: 609px) {
+      .search-wrapper .logo-and-wordmark .logo {
+        background-size: 64px !important;
+        height: 64px !important;
+        width: 64px !important;
+      }
+    }
+
+    .card-outer:is(:hover, :focus, .active):not(.placeholder) .card-title {
+      color: var(--love) !important;
+    }
+
+    .top-site-outer .search-topsite {
+      background-color: var(--foam) !important;
+    }
+
+    .compact-cards .card-outer .card-context .card-context-icon.icon-download {
+      fill: var(--pine) !important;
+    }
+  }
+
+  /* Variables and styles specific to about:preferences */
+  @-moz-document url-prefix("about:preferences") {
+    :root {
+      --zen-colors-tertiary: var(--base) !important;
+      --in-content-text-color: var(--text) !important;
+      --link-color: var(--love) !important;
+      --link-color-hover: var(--rose) !important;
+      --zen-colors-primary: var(--overlay) !important;
+      --in-content-box-background: var(--overlay) !important;
+      --zen-primary-color: var(--love) !important;
+    }
+
+    groupbox , moz-card{
+      background: var(--surface) !important;
+    }
+
+    button,
+    groupbox menulist {
+      background: var(--overlay) !important;
+      color: var(--text) !important;
+    }
+
+    .main-content {
+      background-color: var(--base) !important;
+    }
+
+    .identity-color-blue {
+      --identity-tab-color: var(--foam) !important;
+      --identity-icon-color: var(--foam) !important;
+    }
+
+    .identity-color-turquoise {
+      --identity-tab-color: var(--pine) !important;
+      --identity-icon-color: var(--pine) !important;
+    }
+
+    .identity-color-green {
+      --identity-tab-color: var(--pine) !important;
+      --identity-icon-color: var(--pine) !important;
+    }
+
+    .identity-color-yellow {
+      --identity-tab-color: var(--gold) !important;
+      --identity-icon-color: var(--gold) !important;
+    }
+
+    .identity-color-orange {
+      --identity-tab-color: var(--rose) !important;
+      --identity-icon-color: var(--rose) !important;
+    }
+
+    .identity-color-red {
+      --identity-tab-color: var(--love) !important;
+      --identity-icon-color: var(--love) !important;
+    }
+
+    .identity-color-pink {
+      --identity-tab-color: var(--rose) !important;
+      --identity-icon-color: var(--rose) !important;
+    }
+
+    .identity-color-purple {
+      --identity-tab-color: var(--iris) !important;
+      --identity-icon-color: var(--iris) !important;
+    }
+  }
+
+  /* Variables and styles specific to about:addons */
+  @-moz-document url-prefix("about:addons") {
+    :root {
+      --zen-dark-color-mix-base: var(--base) !important;
+      --background-color-box: var(--surface) !important;
+    }
+  }
+
+  /* Variables and styles specific to about:protections */
+  @-moz-document url-prefix("about:protections") {
+    :root {
+      --zen-primary-color: var(--surface) !important;
+      --social-color: var(--iris) !important;
+      --coockie-color: var(--foam) !important;
+      --fingerprinter-color: var(--gold) !important;
+      --cryptominer-color: var(--iris) !important;
+      --tracker-color: var(--pine) !important;
+      --in-content-primary-button-background-hover: var(--highlightHigh) !important;
+      --in-content-primary-button-text-color-hover: var(--text) !important;
+      --in-content-primary-button-background: var(--highlightMed) !important;
+      --in-content-primary-button-text-color: var(--text) !important;
+    }
+
+
+    .card {
+      background-color: var(--overlay) !important;
+    }
+  }
+}

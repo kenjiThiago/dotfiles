@@ -1,0 +1,153 @@
+/* Rosé Pine userChrome.css (com funcionalidades mescladas) */
+
+@import "themes/rose-pine-moon.css";
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --zen-colors-primary: var(--base) !important;
+    --zen-primary-color: var(--iris) !important;
+    --zen-colors-secondary: var(--surface) !important;
+    --zen-colors-tertiary: var(--overlay) !important;
+    --zen-colors-border: var(--iris) !important;
+    --toolbarbutton-icon-fill: var(--love) !important;
+    --lwt-text-color: var(--text) !important;
+    --toolbar-field-color: var(--text) !important;
+    --tab-selected-textcolor: var(--iris) !important;
+    --toolbar-field-focus-color: var(--text) !important;
+    --toolbar-color: var(--text) !important;
+    --newtab-text-primary-color: var(--text) !important;
+    --arrowpanel-color: var(--text) !important;
+    --arrowpanel-background: var(--overlay) !important;
+    --sidebar-text-color: var(--text) !important;
+    --lwt-sidebar-text-color: var(--text) !important;
+    --lwt-sidebar-background-color: var(--base) !important;
+    --toolbar-bgcolor: var(--base) !important;
+    --newtab-background-color: var(--overlay) !important;
+    --zen-themed-toolbar-bg: var(--base) !important;
+    --zen-main-browser-background: var(--base) !important;
+    /* Adicionado de Catppuccin e traduzido para Rosé Pine */
+    --toolbox-bgcolor-inactive: var(--base) !important;
+  }
+
+  #permissions-granted-icon {
+    color: var(--base) !important;
+  }
+
+  .sidebar-placesTree {
+    background-color: var(--surface) !important;
+  }
+
+  #zen-workspaces-button {
+    background-color: var(--surface) !important;
+  }
+
+  #identity-permission-box {
+    fill: var(--text) !important;
+  }
+
+  #TabsToolbar {
+    background-color: transparent !important;
+  }
+
+  #urlbar-background {
+    background-color: var(--surface) !important;
+  }
+
+  .tab-background[selected=""] {
+    background: var(--overlay) !important;
+  }
+
+  .content-shortcuts {
+    background-color: var(--surface) !important;
+    /* Corrigido para usar a cor de destaque do tema */
+    border-color: var(--iris) !important;
+  }
+
+  body:has([zen-compact-mode="true"]) #titlebar {
+    padding: 8px !important;
+    border-radius: 11px !important;
+    background-color: var(--base) !important;
+    border-color: var(--base) !important;
+  }
+
+  .urlbarView-url {
+    color: var(--iris) !important;
+  }
+
+  #zenEditBookmarkPanelFaviconContainer {
+    background: var(--base) !important;
+  }
+
+  /* Adicionado de Catppuccin e traduzido para Rosé Pine */
+  #zen-media-controls-toolbar {
+    & #zen-media-progress-bar {
+      &::-moz-range-track {
+        background: var(--overlay) !important;
+      }
+    }
+  }
+
+  toolbar .toolbarbutton-1 {
+    &:not([disabled]) {
+      &:is([open], [checked])
+        > :is(
+          .toolbarbutton-icon,
+          .toolbarbutton-text,
+          .toolbarbutton-badge-stack
+        ) {
+        fill: var(--muted);
+      }
+    }
+  }
+
+  /* Bloco de cores de contêiner adicionado de Catppuccin e traduzido para Rosé Pine */
+  .identity-color-blue {
+    --identity-tab-color: var(--foam) !important;
+    --identity-icon-color: var(--foam) !important;
+  }
+
+  .identity-color-turquoise {
+    --identity-tab-color: var(--pine) !important;
+    --identity-icon-color: var(--pine) !important;
+  }
+
+  .identity-color-green {
+    --identity-tab-color: var(--pine) !important;
+    --identity-icon-color: var(--pine) !important;
+  }
+
+  .identity-color-yellow {
+    --identity-tab-color: var(--gold) !important;
+    --identity-icon-color: var(--gold) !important;
+  }
+
+  .identity-color-orange {
+    --identity-tab-color: var(--rose) !important;
+    --identity-icon-color: var(--rose) !important;
+  }
+
+  .identity-color-red {
+    --identity-tab-color: var(--love) !important;
+    --identity-icon-color: var(--love) !important;
+  }
+
+  .identity-color-pink {
+    --identity-tab-color: var(--rose) !important;
+    --identity-icon-color: var(--rose) !important;
+  }
+
+  .identity-color-purple {
+    --identity-tab-color: var(--iris) !important;
+    --identity-icon-color: var(--iris) !important;
+  }
+
+  hbox#titlebar {
+    background-color: var(--base) !important;
+    border-color: var(--base) !important;
+  }
+
+  /* Adicionado de Catppuccin e traduzido para Rosé Pine */
+  #zen-appcontent-navbar-container {
+    background-color: var(--base) !important;
+  }
+}

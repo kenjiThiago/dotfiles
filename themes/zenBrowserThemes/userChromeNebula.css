@@ -1,0 +1,204 @@
+/* Nebula */
+@import "themes/Nebula/Nebula.css";
+
+/* Add additional CSS below */
+@import "themes/rose-pine-moon.css";
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --zen-colors-primary: var(--base) !important;
+    --zen-primary-color: var(--iris) !important;
+    --zen-colors-secondary: var(--surface) !important;
+    --zen-colors-tertiary: var(--overlay) !important;
+    --zen-colors-border: var(--iris) !important;
+    --toolbarbutton-icon-fill: var(--love) !important;
+    --lwt-text-color: var(--text) !important;
+    --toolbar-field-color: var(--text) !important;
+    --tab-selected-textcolor: var(--iris) !important;
+    --toolbar-field-focus-color: var(--text) !important;
+    --toolbar-color: var(--text) !important;
+    --newtab-text-primary-color: var(--text) !important;
+    --arrowpanel-color: var(--text) !important;
+    --arrowpanel-background: var(--overlay) !important;
+    --sidebar-text-color: var(--text) !important;
+    --lwt-sidebar-text-color: var(--text) !important;
+    --lwt-sidebar-background-color: var(--base) !important;
+    --toolbar-bgcolor: var(--base) !important;
+    --newtab-background-color: var(--overlay) !important;
+    --zen-themed-toolbar-bg: var(--base) !important;
+    --zen-toolbar-element-bg: var(--highlightMed) !important;
+    --toolbarbutton-active-background: var(--highlightMed) !important;
+    --zen-main-browser-background: var(--baset) !important;
+    --toolbox-bgcolor-inactive: var(--base) !important;
+  }
+
+  body:has([zen-compact-mode="true"]) #browser::after {
+    background-color: var(--highlightHigh) !important;
+  }
+
+  #permissions-granted-icon {
+    color: var(--base) !important;
+  }
+
+  .sidebar-placesTree {
+    background-color: var(--surface) !important;
+  }
+
+  #zen-workspaces-button {
+    background-color: var(--surface) !important;
+  }
+
+  #identity-permission-box {
+    fill: var(--text) !important;
+  }
+
+  #zen-sidebar-top-buttons-customization-target {
+    background-color: var(--surfacet) !important;
+  }
+
+  #TabsToolbar {
+    background-color: transparent !important;
+  }
+
+  splitter#zen-sidebar-splitter {
+    background: var(--surfacet) !important;
+    opacity: 1 !important;
+  }
+
+  findbar {
+    background-color: var(--baset) !important;
+    position: absolute !important;
+    bottom: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 500px !important;
+    z-index: 20 !important;
+    transition: all ease !important;
+    max-height: var(--zen-toolbar-height) !important;
+    overflow: hidden !important;
+  }
+
+  #statuspanel-label {
+    background-color: var(--base) !important;
+  }
+
+  hbox#titlebar {
+    background-color: var(--surfacet) !important;
+  }
+
+  html[zen-sidebar-expanded="true"]:not([zen-single-toolbar="true"]) body:has([zen-compact-mode="true"]) #titlebar {
+    background-color: var(--surfacet) !important;
+  }
+
+  .zen-essentials-container .tabbrowser-tab {
+    .tab-background {
+      background-color: var(--overlayt) !important;
+    }
+  }
+
+  body:has([zen-compact-mode="true"]) .zen-essentials-container .tabbrowser-tab {
+    .tab-background {
+      background-color: var(--baset) !important;
+    }
+  }
+
+  #urlbar[open] #urlbar-background {
+    background-color: var(--overlayt) !important;
+  }
+
+  #urlbar #urlbar-background {
+    background-color: var(--overlayt) !important;
+  }
+
+  html[zen-sidebar-expanded="true"]:not([zen-single-toolbar="true"]) body:has([zen-compact-mode="true"]) #urlbar-background {
+    background-color: #1f1d2e66 !important;
+  }
+
+  .urlbarView-url {
+    color: var(--iris) !important;
+  }
+
+  .tab-background[selected=""] {
+    background: var(--overlay) !important;
+  }
+
+  .content-shortcuts {
+    background-color: var(--surface) !important;
+    border-color: var(--iris) !important;
+  }
+
+  #navigator-toolbox.browser-toolbox-background {
+    background-color: transparent !important;
+  }
+
+  #zenEditBookmarkPanelFaviconContainer {
+    background: var(--base) !important;
+  }
+
+  /* Adicionado de Catppuccin e traduzido para Rosé Pine */
+  #zen-media-controls-toolbar {
+    & #zen-media-progress-bar {
+      &::-moz-range-track {
+        background: var(--overlay) !important;
+      }
+    }
+  }
+
+  #zen-appcontent-navbar-container {
+    background-color: var(--baset) !important;
+  }
+
+  toolbar .toolbarbutton-1 {
+    &:not([disabled]) {
+      &:is([open], [checked])
+        > :is(
+          .toolbarbutton-icon,
+          .toolbarbutton-text,
+          .toolbarbutton-badge-stack
+        ) {
+        fill: var(--muted);
+      }
+    }
+  }
+
+  /* Bloco de cores de contêiner adicionado de Catppuccin e traduzido para Rosé Pine */
+  .identity-color-blue {
+    --identity-tab-color: var(--foam) !important;
+    --identity-icon-color: var(--foam) !important;
+  }
+
+  .identity-color-turquoise {
+    --identity-tab-color: var(--pine) !important;
+    --identity-icon-color: var(--pine) !important;
+  }
+
+  .identity-color-green {
+    --identity-tab-color: var(--pine) !important;
+    --identity-icon-color: var(--pine) !important;
+  }
+
+  .identity-color-yellow {
+    --identity-tab-color: var(--gold) !important;
+    --identity-icon-color: var(--gold) !important;
+  }
+
+  .identity-color-orange {
+    --identity-tab-color: var(--rose) !important;
+    --identity-icon-color: var(--rose) !important;
+  }
+
+  .identity-color-red {
+    --identity-tab-color: var(--love) !important;
+    --identity-icon-color: var(--love) !important;
+  }
+
+  .identity-color-pink {
+    --identity-tab-color: var(--rose) !important;
+    --identity-icon-color: var(--rose) !important;
+  }
+
+  .identity-color-purple {
+    --identity-tab-color: var(--iris) !important;
+    --identity-icon-color: var(--iris) !important;
+  }
+}
