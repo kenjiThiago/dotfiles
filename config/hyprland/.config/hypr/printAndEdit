@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+image=~/Imagens/$(date +'%Y%m%d_%Hh%Mm%Ss_grim.png')
+
+grim -g "$(slurp)" $image
+
+gimp $image
