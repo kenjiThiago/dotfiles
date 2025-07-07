@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-selected=$( (find /home ~/ ~/plugins -mindepth 1 -maxdepth 1 -type d && find ~/projetos -mindepth 1 -maxdepth 1 -type d &&
-    find ~/dotfiles/config -mindepth 1 -maxdepth 1 -type d && find ~/dotfiles/config -mindepth 3 -maxdepth 3 -type d &&
-    find ~/projetos/[A-Z]* -mindepth 1 -maxdepth 1 -type d) | fzf --height 40% --tmux center --layout reverse)
+selected=$( (find /home ~/ ~/plugins -mindepth 1 -maxdepth 1 -type d && find ~/dotfiles/config -maxdepth 2 -type d &&
+    find ~/projetos -mindepth 1 -maxdepth 1 -type d && find ~/projetos/[A-Z]* -mindepth 1 -maxdepth 1 -type d) |
+    fzf --height 40% --tmux center --layout reverse)
 
 if [[ -z "$selected" ]]; then
     exit 0
