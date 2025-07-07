@@ -31,6 +31,7 @@ execute() {
 }
 
 cd $script_dir
+cd ..
 scripts=$(find ./config -maxdepth 1 -mindepth 1 -type d)
 
 for script in $scripts; do
