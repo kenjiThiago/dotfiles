@@ -1,63 +1,42 @@
 #!/usr/bin/env bash
 
-# --- Rofi Theme Switcher para Zen Browser ---
-
-
 PROFILE_CHROME_DIR=$(find "$HOME/.zen" -maxdepth 2 -type d -name "chrome" | head -n 1)
 
-# Verifica se o diretório 'chrome' foi realmente encontrado.
 if [ -z "$PROFILE_CHROME_DIR" ]; then
-  # Se estamos usando Rofi, faz sentido mostrar o erro com Rofi.
   rofi -e "ERRO: Não foi possível encontrar o diretório 'chrome' dentro de ~/.zen/"
   exit 1
 fi
 
-# O diretório onde os arquivos de tema originais estão guardados.
 THEMES_DIR="$HOME/dotfiles/themes/zenBrowserThemes"
 THEMES_LINK_LOCATION="${PROFILE_CHROME_DIR}/themes"
 
 if [ ! -e "$THEMES_LINK_LOCATION" ]; then
-  # O link não existe, então vamos criá-lo.
   echo "Link simbólico 'themes' não encontrado. Criando agora..."
   ln -sfn "$THEMES_DIR" "$THEMES_LINK_LOCATION"
 fi
 
-# Nomes dos links que o browser procura.
 CHROME_LINK="$PROFILE_CHROME_DIR/userChrome.css"
 CONTENT_LINK="$PROFILE_CHROME_DIR/userContent.css"
 
-# 1. Detecta os temas disponíveis dinamicamente.
-# - Lista os arquivos que começam com "userChrome" no diretório de temas.
-# - Usa 'sed' para remover o prefixo "*/userChrome" e o sufixo ".css".
-# O resultado é uma lista limpa com os nomes dos temas.
 THEME_LIST=$(find "$THEMES_DIR" -name "userChrome*.css" -printf "%f\n" | sed -e 's/userChrome//' -e 's/\.css//')
 
-# Verifica se algum tema foi encontrado.
 if [ -z "$THEME_LIST" ]; then
   rofi -e "Nenhum tema encontrado no diretório '${THEMES_DIR}'!"
   exit 1
 fi
 
-# 2. Exibe o menu do Rofi e captura a escolha do usuário.
-# - 'echo "$THEME_LIST"' envia a lista de temas para o rofi.
-# - 'rofi -dmenu -p "Tema"' mostra o menu com o prompt "Tema".
-# - O nome do tema escolhido é armazenado na variável 'CHOSEN_THEME'.
 CHOSEN_THEME=$(echo "$THEME_LIST" | rofi -dmenu -i -p "Escolha o Tema")
 
-# 3. Verifica se o usuário selecionou algo (ou se cancelou com a tecla Esc).
 if [ -z "$CHOSEN_THEME" ]; then
     echo "Nenhuma seleção. Saindo."
     exit 0
 fi
 
-# 4. Constrói o caminho completo para os arquivos de origem do tema escolhido.
 CHROME_SOURCE="${THEMES_DIR}/userChrome${CHOSEN_THEME}.css"
 CONTENT_SOURCE="${THEMES_DIR}/userContent${CHOSEN_THEME}.css"
 
-# 5. Aplica o tema criando/atualizando os links simbólicos.
 echo "Alterando tema para: ${CHOSEN_THEME}"
 ln -sfn "$CHROME_SOURCE" "$CHROME_LINK"
 ln -sfn "$CONTENT_SOURCE" "$CONTENT_LINK"
 
-# 6. (Opcional, mas recomendado) Envia uma notificação gráfica de confirmação.
 notify-send "Zen Browser" "Tema alterado para <b>${CHOSEN_THEME}</b>" -i emblem-system-symbolic
