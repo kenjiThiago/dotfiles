@@ -11,4 +11,11 @@ return {
             vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
         end,
     },
+    {
+        "lervag/vimtex",
+        lazy = false,
+        init = function()
+            vim.g.vimtex_view_method = "zathura"
+        end
+    },
 }
