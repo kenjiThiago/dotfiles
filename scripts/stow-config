@@ -1,8 +1,39 @@
 #!/usr/bin/env bash
 
 script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+params=""
+dry="0"
+
+while [[ $# > 0 ]]; do
+    if [[ $1 == "--dry" ]]; then
+        dry="1"
+    else
+        if [[ $params == "" ]]; then
+            params+="$1"
+        else
+            params+=" $1"
+        fi
+    fi
+    shift
+done
+
+log() {
+    if [[ $dry == "1" ]]; then
+        echo "[DRY_RUN]: $@"
+    else
+        echo "$@"
+    fi
+}
+
+execute() {
+    log "stow $params -v -t ~/ config"
+    if [[ $dry == "1" ]]; then
+        return
+    fi
+    stow $params -v -t ~/ config
+}
 
 cd $script_dir
 cd ..
 
-stow -v -t ~/ config
+execute
