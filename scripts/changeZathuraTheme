@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 
-THEMES_DIR="$HOME/dotfiles/themes/zathuraThemes"
-THEMES_LINK_LOCATION="$HOME/.config/zathura/themes"
-
-if [ ! -e "$THEMES_LINK_LOCATION" ]; then
-  echo "Link simbólico 'themes' não encontrado. Criando agora..."
-  ln -sfn "$THEMES_DIR" "$THEMES_LINK_LOCATION"
-fi
+THEMES_DIR="$HOME/dotfiles/config/.config/zathura/themes/"
 
 THEME_FILE="$HOME/dotfiles/config/.config/zathura/zathurarc"
 
