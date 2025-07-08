@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+THEMES_DIR="$HOME/dotfiles/themes/zathuraThemes"
+THEMES_LINK_LOCATION="$HOME/.config/zathura/themes"
+
+if [ ! -e "$THEMES_LINK_LOCATION" ]; then
+  echo "Link simbólico 'themes' não encontrado. Criando agora..."
+  ln -sfn "$THEMES_DIR" "$THEMES_LINK_LOCATION"
+fi
+
+THEME_FILE="$HOME/dotfiles/config/.config/zathura/zathurarc"
+
+THEME_LIST=$(find "$THEMES_DIR" -type f -printf "%f\n")
+
+if [ -z "$THEME_LIST" ]; then
+  rofi -e "Nenhum tema encontrado no diretório '${THEMES_DIR}'!"
+  exit 1
+fi
+
+CHOSEN_THEME=$(echo "$THEME_LIST" | rofi -dmenu -i -p "Escolha o Tema")
+
+if [ -z "$CHOSEN_THEME" ]; then
+    echo "Nenhuma seleção. Saindo."
+    exit 0
+fi
+
+echo "Alterando tema para: ${CHOSEN_THEME}"
+
+cat <<EOF > "$THEME_FILE"
+#
+# =================================================================
+# ESTE ARQUIVO É GERADO AUTOMATICAMENTE PELO SCRIPT DE TEMAS
+# NÃO EDITE MANUALMENTE
+# =================================================================
+#
+
+include "themes/${CHOSEN_THEME}"
+
+# Adicione aqui quaisquer outras regras de CSS customizadas que você queira
+# manter entre as trocas de tema.
+
+EOF
+
+notify-send "Zathura" "Tema alterado para <b>${CHOSEN_THEME}</b>" -i emblem-system-symbolic

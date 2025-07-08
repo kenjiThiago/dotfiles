@@ -1,0 +1,8 @@
+configuration {
+    modi: "window,drun,ssh,combi";
+    combi-modi: "window,drun,ssh";
+	show-icons: true;
+	kb-cancel: "Escape,Control+c,Control+bracketleft";
+	kb-secondary-copy: "Control+g";
+}
+@theme "~/.config/rofi/themes/center.rasi"
