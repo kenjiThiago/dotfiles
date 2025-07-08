@@ -1,0 +1,19 @@
+background-opacity = 0.9
+
+font-family = HackNerdFont
+font-size = 12
+bold-is-bright = true
+
+theme = rose-pine-moon
+
+cursor-style = block
+cursor-style-blink = true
+cursor-invert-fg-bg = true
+shell-integration-features = no-cursor
+
+mouse-hide-while-typing = true
+
+confirm-close-surface = false
+
+window-decoration = false
+window-padding-x = 28
