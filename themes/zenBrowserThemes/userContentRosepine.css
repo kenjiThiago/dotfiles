@@ -22,11 +22,7 @@
 
     :root {
       --newtab-background-color: var(--surface) !important;
-      --newtab-background-color-secondary: var(--overlay) !important;
       --newtab-element-hover-color: var(--overlay) !important;
-      --newtab-text-primary-color: var(--text) !important;
-      --newtab-wordmark-color: var(--text) !important;
-      --newtab-primary-action-background: var(--love) !important;
     }
 
     .icon {

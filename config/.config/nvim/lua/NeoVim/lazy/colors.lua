@@ -96,7 +96,7 @@ return {
     {
         "navarasu/onedark.nvim",
         priority = 1000,
-        lazy = false,
+        lazy = true,
         config = function()
             require('onedark').setup({
                 style = 'cool',
@@ -113,5 +113,25 @@ return {
             })
             require('onedark').load()
         end
-    }
+    },
+    {
+        dir = "~/plugins/change_color",
+        priority = 1000,
+        config = function()
+            require("change_color").setup({
+                themes = {
+                    ["tokyonight"] = "tokyonight",
+                    ["tokyonight-night"] = "tokyonight",
+                    ["tokyonight-storm"] = "tokyonight",
+                    ["catppuccin-mocha"] = "catppuccin",
+                    ["kanagawa"] = "kanagawa",
+                    ["onedark"] = "onedark.nvim",
+                    ["solarized-osaka"] = "solarized-osaka",
+                    ["rose-pine"] = "rose-pine",
+                    ["rose-pine-moon"] = "rose-pine",
+                },
+                default_theme = "onedark",
+            })
+        end
+    },
 }

@@ -8,6 +8,7 @@ return {
         },
         config = function()
             require("luasnip.loaders.from_vscode").lazy_load()
+            require("luasnip.loaders.from_lua").load({ paths = "~/.config/nvim/lua/NeoVim/snippets/" })
             local ls = require("luasnip")
             vim.keymap.set({"i"}, "<C-k>", function() ls.expand() end, {silent = true})
             vim.keymap.set({"i", "s"}, "<C-l>", function() ls.jump( 1) end, {silent = true})
@@ -22,20 +23,18 @@ return {
         config = function()
             require("blink.cmp").setup({
                 completion = {
-                    menu = { border = "single" },
                     documentation = {
                         auto_show = true,
-                        window = { border = "single" }
                     }
                 },
-                signature = { window = { border = "single" } },
+                snippets = { preset = 'luasnip' },
                 sources = {
-                    default = { "lsp", "path", "snippets", "buffer" },
+                    default = { "lazydev", "lsp", "path", "snippets", "buffer" },
                     providers = {
-                        buffer = {
-                            opts = {
-                                get_bufnrs = vim.api.nvim_list_bufs,
-                            }
+                        lazydev = {
+                            name = "LazyDev",
+                            module = "lazydev.integrations.blink",
+                            score_offset = 100,
                         },
                         lsp = { fallbacks = {} },
                     }

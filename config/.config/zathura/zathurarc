@@ -10,3 +10,4 @@ include "themes/rose-pine-moon"
 # Adicione aqui quaisquer outras regras de CSS customizadas que você queira
 # manter entre as trocas de tema.
 
+set selection-clipboard clipboard

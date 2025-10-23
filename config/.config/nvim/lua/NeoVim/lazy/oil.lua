@@ -15,14 +15,17 @@ return {
                             local oil = require("oil")
                             local config = require("oil.config")
 
-                            if #config.columns == 0 then
+                            if #config.columns == 1 then
                                 oil.set_columns({
                                     { "permissions", highlight = "DiagnosticError" },
                                     { "size",        highlight = "Special" },
                                     { "mtime",       highlight = "WarningMsg" },
+                                    { "icon" },
                                 })
                             else
-                                oil.set_columns({})
+                                oil.set_columns({
+                                    { "icon" },
+                                })
                             end
                         end
                     }
@@ -38,6 +41,7 @@ return {
                     { "permissions", highlight = "DiagnosticError" },
                     { "size",        highlight = "Special" },
                     { "mtime",       highlight = "WarningMsg" },
+                    { "icon" },
                 },
                 skip_confirm_for_simple_edits = true,
             })

@@ -43,3 +43,10 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     pattern = "*",
     command = [[%s/\s\+$//e]],
 })
+
+vim.api.nvim_create_autocmd('BufEnter', {
+  pattern = '*.csv',
+  callback = function()
+    vim.b.completion = false
+  end,
+})

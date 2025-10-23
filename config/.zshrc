@@ -30,10 +30,10 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 #Alias
 alias nv="nvim"
-alias ls="eza --color=always"
-alias c="clear; fastfetch"
-alias l="eza -lA --color=always"
-alias cat='bat --paging=never'
+alias ls="eza --color=always --icons=auto"
+alias c="clear"
+alias l="eza -lA --color=always --icons=auto"
+alias cat="bat --paging=never"
 
 # Inicia fzf
 source <(fzf --zsh)
@@ -58,6 +58,7 @@ setopt hist_find_no_dups
 export TIMEFMT=$'%*E'
 export MANPAGER="nvim +Man!"
 export LESS='-R --use-color -Dd+r$Du+b$'
+export EDITOR="nvim"
 
 if [[ -z $TMUX ]]; then
     export NVM_DIR="$HOME/.nvm"

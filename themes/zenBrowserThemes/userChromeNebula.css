@@ -9,7 +9,8 @@
     --zen-colors-primary: var(--base) !important;
     --zen-primary-color: var(--iris) !important;
     --zen-colors-secondary: var(--surface) !important;
-    --zen-colors-tertiary: var(--overlay) !important;
+    --zen-colors-tertiary: var(--surface) !important;
+    --zen-main-browser-background-toolbar: var(--baset) !important;
     --zen-colors-border: var(--iris) !important;
     --toolbarbutton-icon-fill: var(--love) !important;
     --lwt-text-color: var(--text) !important;
@@ -33,7 +34,16 @@
   }
 
   body:has([zen-compact-mode="true"]) #browser::after {
-    background-color: var(--highlightHigh) !important;
+    background-color: var(--highlightLow) !important;
+  }
+
+  .ContentSelectDropdown-item-0 {
+    color: var(--text) !important;
+  }
+
+  .ContentSelectDropdown-item-0[_moz-menuactive="true"] {
+    background-color: var(--iris) !important;
+    color: var(--overlay) !important;
   }
 
   #permissions-granted-icon {
@@ -53,7 +63,7 @@
   }
 
   #zen-sidebar-top-buttons-customization-target {
-    background-color: var(--surfacet) !important;
+    background-color: var(--baset) !important;
   }
 
   #TabsToolbar {
@@ -61,7 +71,7 @@
   }
 
   splitter#zen-sidebar-splitter {
-    background: var(--surfacet) !important;
+    background: var(--baset) !important;
     opacity: 1 !important;
   }
 
@@ -82,12 +92,16 @@
     background-color: var(--base) !important;
   }
 
-  hbox#titlebar {
-    background-color: var(--surfacet) !important;
+  box#zen-toolbar-background {
+    background-color: var(--baset) !important;
+  }
+
+  box#zen-toolbar-background::after {
+    mix-blend-mode: unset !important;
   }
 
   html[zen-sidebar-expanded="true"]:not([zen-single-toolbar="true"]) body:has([zen-compact-mode="true"]) #titlebar {
-    background-color: var(--surfacet) !important;
+    background-color: var(--baset) !important;
   }
 
   .zen-essentials-container .tabbrowser-tab {
@@ -98,16 +112,16 @@
 
   body:has([zen-compact-mode="true"]) .zen-essentials-container .tabbrowser-tab {
     .tab-background {
-      background-color: var(--baset) !important;
+      background-color: var(--overlayt) !important;
     }
   }
 
-  #urlbar[open] #urlbar-background {
-    background-color: var(--overlayt) !important;
+  #urlbar[open] .urlbar-background {
+    background-color: var(--surfacet) !important;
   }
 
-  #urlbar #urlbar-background {
-    background-color: var(--overlayt) !important;
+  #urlbar .urlbar-background {
+    background-color: var(--surfacet) !important;
   }
 
   html[zen-sidebar-expanded="true"]:not([zen-single-toolbar="true"]) body:has([zen-compact-mode="true"]) #urlbar-background {

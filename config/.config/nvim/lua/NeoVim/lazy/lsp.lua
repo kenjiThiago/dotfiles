@@ -2,21 +2,19 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPost", "BufWritePost", "BufNewFile" },
     dependencies = {
-        "williamboman/mason.nvim",
-        "williamboman/mason-lspconfig.nvim",
+        "mason-org/mason.nvim",
+        "mason-org/mason-lspconfig.nvim",
+        {
+            "folke/lazydev.nvim",
+            ft = "lua",
+            opts = {
+                library = {
+                    { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+                },
+            },
+        },
     },
     config = function()
-        local border = {
-            { '╭', 'FloatBorder' },
-            { '─', 'FloatBorder' },
-            { '╮', 'FloatBorder' },
-            { '│', 'FloatBorder' },
-            { '╯', 'FloatBorder' },
-            { '─', 'FloatBorder' },
-            { '╰', 'FloatBorder' },
-            { '│', 'FloatBorder' },
-        }
-
         require("mason").setup({
             ui = {
                 border = "double",
@@ -29,28 +27,13 @@ return {
                 function(server_name)
                     vim.lsp.enable(server_name)
                 end,
-
-                vim.lsp.config("lua_ls", {
-                    settings = {
-                        Lua = {
-                            diagnostics = {
-                                globals = { "vim" },
-                            },
-                        },
-                    },
-                })
             },
         })
 
-        local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
-        function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
-            opts = opts or {}
-            opts.border = opts.border or border
-            return orig_util_open_floating_preview(contents, syntax, opts, ...)
-        end
-
         vim.diagnostic.config({
-            virtual_text = true,
+            virtual_text = {
+                current_line = true,
+            },
             underline = true,
             update_in_insert = false,
             severity_sort = true,
@@ -61,9 +44,6 @@ return {
                     [vim.diagnostic.severity.HINT] = "",
                     [vim.diagnostic.severity.INFO] = "",
                 },
-            },
-            float = {
-                border = "rounded"
             },
         })
     end

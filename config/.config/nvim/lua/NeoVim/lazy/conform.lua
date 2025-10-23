@@ -5,6 +5,9 @@ return {
             require("conform").setup({
                 formatters_by_ft = {
                     python = { "black" },
+                    javascript = { "biome-check" },
+                    typescript = { "biome-check" },
+                    typescriptreact = { "biome-check" },
                 },
             })
 

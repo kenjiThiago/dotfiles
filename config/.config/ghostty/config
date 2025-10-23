@@ -4,7 +4,7 @@ font-family = HackNerdFont
 font-size = 12
 bold-is-bright = true
 
-theme = rose-pine-moon
+theme = Rose Pine Moon
 
 cursor-style = block
 cursor-style-blink = true

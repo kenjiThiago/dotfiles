@@ -7,7 +7,8 @@
     --zen-colors-primary: var(--base) !important;
     --zen-primary-color: var(--iris) !important;
     --zen-colors-secondary: var(--surface) !important;
-    --zen-colors-tertiary: var(--overlay) !important;
+    --zen-colors-tertiary: var(--surface) !important;
+    --zen-main-browser-background-toolbar: var(--base) !important;
     --zen-colors-border: var(--iris) !important;
     --toolbarbutton-icon-fill: var(--love) !important;
     --lwt-text-color: var(--text) !important;
@@ -24,13 +25,42 @@
     --toolbar-bgcolor: var(--base) !important;
     --newtab-background-color: var(--overlay) !important;
     --zen-themed-toolbar-bg: var(--base) !important;
+    --zen-input-border-color: var(--highlightHigh) !important;
     --zen-main-browser-background: var(--base) !important;
-    /* Adicionado de Catppuccin e traduzido para Rosé Pine */
     --toolbox-bgcolor-inactive: var(--base) !important;
+    --nebula-sidebar-width: 20em !important;
+  }
+
+  .ContentSelectDropdown-item-0 {
+    color: var(--text) !important;
+  }
+
+  .ContentSelectDropdown-item-0[_moz-menuactive="true"] {
+    background-color: var(--iris) !important;
+    color: var(--overlay) !important;
   }
 
   #permissions-granted-icon {
     color: var(--base) !important;
+  }
+
+  .zen-essentials-container .tabbrowser-tab {
+    .tab-background {
+      background-color: var(--overlay) !important;
+    }
+  }
+
+  findbar {
+    background-color: var(--base) !important;
+    position: absolute !important;
+    bottom: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    min-width: 90% !important;
+    z-index: 20 !important;
+    transition: all ease !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
   }
 
   .sidebar-placesTree {
@@ -49,8 +79,30 @@
     background-color: transparent !important;
   }
 
+  html[zen-single-toolbar="true"] #urlbar:not([open]) {
+    height: 40px !important;
+  }
+
+  #urlbar[open] #urlbar-results > :nth-child(n+6),
+  #urlbar[open] #reader-mode-button {
+    display: none !important;
+  }
+
   #urlbar-background {
     background-color: var(--surface) !important;
+  }
+
+  #urlbar[open] .urlbar-background {
+    background-color: var(--surface) !important;
+  }
+
+  #urlbar[open] #urlbar-results {
+    border-top: 1px solid var(--highlightMed) !important;
+  }
+
+  #urlbar[open] #urlbar-results > * {
+    position: relative;
+    overflow: hidden;
   }
 
   .tab-background[selected=""] {
@@ -59,7 +111,6 @@
 
   .content-shortcuts {
     background-color: var(--surface) !important;
-    /* Corrigido para usar a cor de destaque do tema */
     border-color: var(--iris) !important;
   }
 
@@ -67,7 +118,10 @@
     padding: 8px !important;
     border-radius: 11px !important;
     background-color: var(--base) !important;
-    border-color: var(--base) !important;
+    top: calc(var(--zen-element-separation) / 0.685) !important;
+    left: calc(var(--zen-element-separation) / 0.65) !important;
+    width: calc(var(--nebula-sidebar-width)) !important;
+    height: calc(100% - (var(--zen-element-separation) * 2.9)) !important;
   }
 
   .urlbarView-url {
@@ -78,7 +132,6 @@
     background: var(--base) !important;
   }
 
-  /* Adicionado de Catppuccin e traduzido para Rosé Pine */
   #zen-media-controls-toolbar {
     & #zen-media-progress-bar {
       &::-moz-range-track {
@@ -100,53 +153,11 @@
     }
   }
 
-  /* Bloco de cores de contêiner adicionado de Catppuccin e traduzido para Rosé Pine */
-  .identity-color-blue {
-    --identity-tab-color: var(--foam) !important;
-    --identity-icon-color: var(--foam) !important;
-  }
-
-  .identity-color-turquoise {
-    --identity-tab-color: var(--pine) !important;
-    --identity-icon-color: var(--pine) !important;
-  }
-
-  .identity-color-green {
-    --identity-tab-color: var(--pine) !important;
-    --identity-icon-color: var(--pine) !important;
-  }
-
-  .identity-color-yellow {
-    --identity-tab-color: var(--gold) !important;
-    --identity-icon-color: var(--gold) !important;
-  }
-
-  .identity-color-orange {
-    --identity-tab-color: var(--rose) !important;
-    --identity-icon-color: var(--rose) !important;
-  }
-
-  .identity-color-red {
-    --identity-tab-color: var(--love) !important;
-    --identity-icon-color: var(--love) !important;
-  }
-
-  .identity-color-pink {
-    --identity-tab-color: var(--rose) !important;
-    --identity-icon-color: var(--rose) !important;
-  }
-
-  .identity-color-purple {
-    --identity-tab-color: var(--iris) !important;
-    --identity-icon-color: var(--iris) !important;
-  }
-
   hbox#titlebar {
     background-color: var(--base) !important;
-    border-color: var(--base) !important;
+    border: 1px solid var(--base) !important;
   }
 
-  /* Adicionado de Catppuccin e traduzido para Rosé Pine */
   #zen-appcontent-navbar-container {
     background-color: var(--base) !important;
   }
