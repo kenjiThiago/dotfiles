@@ -153,6 +153,10 @@
     }
   }
 
+  .toolbarbutton-1:not(#tabs-newtab-button) {
+    --toolbarbutton-icon-fill: var(--love) !important;
+  }
+
   hbox#titlebar {
     background-color: var(--base) !important;
     border: 1px solid var(--base) !important;

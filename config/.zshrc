@@ -11,7 +11,7 @@ fi
 
 source "${ZINIT_HOME}/zinit.zsh"
 
-fastfetch
+# fastfetch
 
 # Plugins
 zinit light zsh-users/zsh-syntax-highlighting
@@ -60,9 +60,18 @@ export MANPAGER="nvim +Man!"
 export LESS='-R --use-color -Dd+r$Du+b$'
 export EDITOR="nvim"
 
+if [[ -z "$TMUX" && "$XDG_CURRENT_DESKTOP" == "Hyprland" ]]; then
+    exec tmux new-session -A -s main
+fi
+
 if [[ -z $TMUX ]]; then
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+    path+=("$HOME/go/bin")
+    path+=("$HOME/dotfiles/scripts")
+    path+=("$HOME/.local/share/nvim/mason/bin")
 fi
 
 export PATH

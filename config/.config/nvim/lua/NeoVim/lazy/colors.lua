@@ -1,11 +1,11 @@
 return {
     {
-        'rose-pine/neovim',
-        name = 'rose-pine',
+        "rose-pine/neovim",
+        name = "rose-pine",
         lazy = true,
         priority = 1000,
         config = function()
-            require('rose-pine').setup({
+            require("rose-pine").setup({
                 styles = {
                     italic = false,
                     transparency = true,
@@ -98,8 +98,8 @@ return {
         priority = 1000,
         lazy = true,
         config = function()
-            require('onedark').setup({
-                style = 'cool',
+            require("onedark").setup({
+                style = "cool",
                 transparent = true,
                 highlights = {
                     Pmenu = { bg = "none" },
@@ -111,8 +111,27 @@ return {
                     background = false,
                 },
             })
-            require('onedark').load()
+            require("onedark").load()
         end
+    },
+    {
+        "EdenEast/nightfox.nvim",
+        lazy = true,
+        priority = 1000,
+        config = function()
+            require("nightfox").setup({
+                options = {
+                    transparent = true,
+                },
+                groups = {
+                    all = {
+                        NormalFloat = { bg = "none", fg = "none" },
+                        TelescopeSelectionCaret = { fg = "#d84f76", bg = "#d84f76" },
+                    },
+                }
+            })
+            vim.api.nvim_set_hl(0, "RenderMarkdownBullet", { link = "Boolean" })
+        end,
     },
     {
         dir = "~/plugins/change_color",
@@ -120,15 +139,16 @@ return {
         config = function()
             require("change_color").setup({
                 themes = {
-                    ["tokyonight"] = "tokyonight",
-                    ["tokyonight-night"] = "tokyonight",
-                    ["tokyonight-storm"] = "tokyonight",
+                    ["tokyonight"] = "tokyonight.nvim",
+                    ["tokyonight-night"] = "tokyonight.nvim",
+                    ["tokyonight-storm"] = "tokyonight.nvim",
                     ["catppuccin-mocha"] = "catppuccin",
                     ["kanagawa"] = "kanagawa",
                     ["onedark"] = "onedark.nvim",
                     ["solarized-osaka"] = "solarized-osaka",
                     ["rose-pine"] = "rose-pine",
                     ["rose-pine-moon"] = "rose-pine",
+                    ["duskfox"] = "nightfox.nvim",
                 },
                 default_theme = "onedark",
             })

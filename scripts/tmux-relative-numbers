@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+
+declare -r PANE_WIDTH=4
+declare -r UPDATE_DELAY=0.05
+declare -r COLOR_NORMAL="\e[38;5;244m"
+declare -r COLOR_ACTIVE="\e[38;5;214m"
+
+open_line_number_split() {
+    local self_path=$(realpath "$0")
+    local pane_id=$(tmux display-message -pF "#{pane_id}")
+
+    if pgrep -f "bash.*$self_path $pane_id" > /dev/null; then
+        return
+    fi
+
+    tmux split-window -h -l $PANE_WIDTH -b "$self_path $pane_id"
+    tmux select-pane -l
+}
+
+enter_copy_mode() {
+    local target_pane=$1
+    tmux copy-mode -t "$target_pane"
+}
+
+get_cursor_line() {
+    local target_pane=$1
+    local output=$(tmux display-message -pt "$target_pane" -F '#{copy_cursor_y}')
+    echo "${output:-0}"
+}
+
+is_in_copy_mode() {
+    local target_pane=$1
+    local mode=$(tmux display-message -p -t "$target_pane" -F '#{pane_mode}')
+    [ "$mode" = "copy-mode" ]
+}
+
+redraw_line_numbers() {
+    local cursor_line=$1
+    local lines=$(tput lines)
+
+    clear
+
+    if [ "$cursor_line" -gt 0 ]; then
+        printf "${COLOR_NORMAL}"
+        seq -f "%3g" "$cursor_line" -1 1
+        printf "\e[0m"
+    fi
+
+    printf "${COLOR_ACTIVE}%3d\e[0m" 0
+
+    if [ "$lines" -gt $((cursor_line + 1)) ]; then
+        echo
+        printf "${COLOR_NORMAL}"
+        
+        local bottom_count=$((lines - cursor_line - 2))
+        
+        if [ "$bottom_count" -ge 1 ]; then
+            seq -f "%3g" 1 "$bottom_count"
+        fi
+        
+        printf "%3g" $((lines - cursor_line - 1))
+        printf "\e[0m"
+    fi
+}
+
+update_loop() {
+    local target_pane=$1
+    local cursor_line=""
+    local last_cursor_line="-1"
+
+    while is_in_copy_mode "$target_pane"; do
+        cursor_line=$(get_cursor_line "$target_pane")
+
+        if [ "$cursor_line" -ne "$last_cursor_line" ]; then
+            redraw_line_numbers "$cursor_line"
+            last_cursor_line=$cursor_line
+        fi
+
+        sleep $UPDATE_DELAY
+    done
+}
+
+main() {
+    local target_pane=$1
+
+    if [ -z "$target_pane" ]; then
+        open_line_number_split
+        exit 0
+    fi
+
+    enter_copy_mode "$target_pane"
+    update_loop "$target_pane"
+}
+
+main "$@"

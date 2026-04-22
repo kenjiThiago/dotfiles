@@ -1,5 +1,5 @@
 format = """
-$os\
+ $os\
 $directory\
 $git_branch\
 $git_status\
@@ -11,7 +11,7 @@ $golang\
 $nodejs\
 $java\
 $python\
-$line_break$character"""
+$line_break $character"""
 
 [c]
 symbol = " "

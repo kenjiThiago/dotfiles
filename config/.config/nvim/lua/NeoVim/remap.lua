@@ -59,8 +59,11 @@ vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
 --Highlight
 vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
 
+vim.keymap.set("n", "<leader>gc", ":Comp")
+
 --ShowWhiteSpaces
-local toggle_ws = false
+vim.cmd("highlight link ws Search | match ws /\\s\\+$/")
+local toggle_ws = true
 vim.api.nvim_create_user_command("ShowWhiteSpaces", function()
     if not toggle_ws then
         vim.cmd("highlight ws ctermbg=magenta guibg=magenta | match ws /\\s\\+$/")
@@ -70,6 +73,13 @@ vim.api.nvim_create_user_command("ShowWhiteSpaces", function()
         toggle_ws = false
     end
 end, {})
+
+vim.keymap.set("n", "<leader>ns", ":ShowWhiteSpaces<CR>")
+vim.keymap.set("n", "<leader>nr", function()
+    local save_cursor = vim.fn.getpos(".")
+    vim.cmd([[%s/\s\+$//e]])
+    vim.fn.setpos(".", save_cursor)
+end)
 
 --Plus
 vim.api.nvim_create_user_command("Compile", function(opts)
@@ -82,7 +92,7 @@ vim.api.nvim_create_user_command("Compile", function(opts)
     local command = "make "
 
     command = command .. pieces[1]
-    if not (pieces[2] == 'c' or pieces[2] == 'cpp') then
+    if not (pieces[2] == "c" or pieces[2] == "cpp") then
         command = command .. "." .. pieces[2]
     end
 

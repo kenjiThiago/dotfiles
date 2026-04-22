@@ -1,20 +1,18 @@
 return {
-    'nvim-telescope/telescope.nvim', tag = '0.1.8',
+    "nvim-telescope/telescope.nvim",
+    version = "*",
     dependencies = {
-        'nvim-lua/plenary.nvim',
-        { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
+        "nvim-lua/plenary.nvim",
+        { "nvim-telescope/telescope-fzf-native.nvim", build = "make" }
     },
     priority = 999,
 
     config = function()
-        require('telescope').setup({
+        require("telescope").setup({
             pickers = {
                 find_files = {
                     theme = "dropdown",
-                    path_display = function(opts, path)
-                        local tail = require("telescope.utils").path_tail(path)
-                        return string.format("%s   %s", tail, path), { { { 1, #tail }, "Constant" } }
-                    end,
+                    path_display = { "filename_first" },
                 },
                 grep_string = {
                     theme = "ivy",
@@ -22,10 +20,7 @@ return {
                 },
                 git_files = {
                     theme = "dropdown",
-                    path_display = function(opts, path)
-                        local tail = require("telescope.utils").path_tail(path)
-                        return string.format("%s   %s", tail, path), { { { 1, #tail }, "Constant" } }
-                    end,
+                    path_display = { "filename_first" },
                 },
                 help_tags = {
                     theme = "ivy",
@@ -45,12 +40,12 @@ return {
             }
         })
 
-        require('telescope').load_extension('fzf')
+        require("telescope").load_extension("fzf")
 
         local builtin = require("telescope.builtin")
         vim.keymap.set("n", "<leader>pf", builtin.find_files, {})
         vim.keymap.set("n", "<leader>ps", function()
-            builtin.grep_string( { search = vim.fn.input('Grep > ') })
+            builtin.grep_string({ search = vim.fn.input("Grep > ") })
         end)
         vim.keymap.set("n", "<leader>pg", builtin.git_files, {})
         vim.keymap.set("n", "<leader>ph", builtin.help_tags, {})

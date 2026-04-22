@@ -3,9 +3,10 @@
     "layer": "top", // Waybar at top layer
     "height": 44, // Waybar height (to be removed for auto height)
     "spacing": 0, // Gaps between modules (4px)
+    "output": ["eDP-1", "HDMI-A-1"],
     "margin-top": 10,
-    "margin-right": 19,
-    "margin-left": 19,
+    "margin-right": 11,
+    "margin-left": 11,
     "modules-left": [
         "temperature",
         "cpu",
