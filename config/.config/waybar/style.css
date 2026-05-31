@@ -1,54 +1,56 @@
+@import "./colors.css";
+
+/* =========================================================================
+ * GERAL & BASE
+ * ========================================================================= */
 * {
-    /* `otf-font-awesome` is required to be installed for icons */
-    font-family: "Hack Nerd Font";
+    /* otf-font-awesome is required to be installed for icons */
+    font-family: "Hack Nerd Font", sans-serif;
     font-size: 13px;
     font-weight: bold;
 }
 
 window#waybar {
-    background: rgba(57, 53, 82, 0.65);
+    background: transparent;
     border-radius: 8px;
 }
 
 #window {
-    background: #1f1d2e;
-
+    background-color: @background;
     padding: 2px 10px 0px 10px;
-
+    margin: 5px 4px;
     border-radius: 8px;
-
     color: #929db1;
-    font-size:16px;
-    font-weight:bold;
+    font-size: 16px;
 }
 
 window#waybar.empty #window {
-    background: #1f1d2e;
+    background-color: @background;
     border-radius: 50%;
     min-width: 12px;
 }
 
-/* you can set a style on hover for any module like this */
-#pulseaudio:hover {
-    background-color: #262b35;
-}
-
+/* =========================================================================
+ * WORKSPACES
+ * ========================================================================= */
 #workspaces {
-    background: #1f1d2e;
+    background-color: @background;
     padding: 0px 1px;
+    margin: 5px 4px;
     border-radius: 8px;
-    border: 0px;
-    font-weight: bold;
-    font-style: normal;
     font-size: 16px;
-    color: #ffffff;
-
 }
 
 #workspaces button {
     padding: 0px 5px;
     margin: 4px 3px;
     color: #cdd6f4;
+    transition: all 0.2s ease-in-out;
+}
+
+#workspaces button:hover {
+    background-color: #262b35;
+    border-radius: 6px;
 }
 
 #workspaces button.active {
@@ -56,61 +58,138 @@ window#waybar.empty #window {
     opacity: 1.0;
 }
 
-#clock,
-#battery,
-#cpu,
-#memory,
-#disk,
-#temperature,
-#backlight,
-#network,
-#pulseaudio,
-#wireplumber,
-#tray,
-#power-profiles-daemon,
-#custom-lock,
-#idle_inhibitor {
-    padding: 0 10px;
-    margin: 5px 4px 5px 4px;
+/* =========================================================================
+ * MÓDULOS (Propriedades Compartilhadas)
+ * ========================================================================= */
+#clock, #battery, #cpu, #memory, #disk, #temperature, #backlight, 
+#network, #pulseaudio, #wireplumber, #tray, #power-profiles-daemon, 
+#custom-lock, #idle_inhibitor {
+    background-color: @background;
+    padding: 0 12px;
+    margin: 5px 4px;
     color: #ffffff;
 }
 
-#window,
-#workspaces {
-    margin: 5px 4px 5px 4px;
-}
-
+/* =========================================================================
+ * CORES E LAYOUTS ESPECÍFICOS DOS MÓDULOS
+ * ========================================================================= */
 #clock {
-    background: #1f1d2e;
     color: #fab387;
+    /* margin: 5px 0; */
+    padding-right: 5px;
     margin-left: 0;
     margin-right: 0;
-}
-
-#idle_inhibitor {
-    background: #1f1d2e;
-    padding-right: 17px;
-    margin-left: 0;
-    border-radius: 0 8px 8px 0;
-    color: #fa5aa4;
 }
 
 #custom-lock {
-    background: #1f1d2e;
-    margin-right: 0;
     border-radius: 8px 0 0 8px;
+    margin-right: 0;
+    padding-left: 4px;
     padding-right: 0;
-    padding-left: 3px;
 }
 
+#idle_inhibitor {
+    border-radius: 0 8px 8px 0;
+    margin-left: 0;
+    padding-right: 17px;
+    color: #fa5aa4;
+}
+
+/* --- Sistema & Hardware --- */
+#temperature {
+    color: #4da6cc;
+    border-radius: 8px 0 0 8px;
+    margin-left: 5px;
+    margin-right: 0;
+}
+
+#cpu {
+    color: #d663f7;
+    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#memory {
+    color: #f6c177;
+    border-radius: 0 8px 8px 0;
+    margin-left: 0;
+}
+
+#disk {
+    background-color: #964B00;
+}
+
+/* --- Áudio & Brilho --- */
+#pulseaudio {
+    color: #89dceb;
+    border-radius: 8px 0 0 8px;
+    margin-right: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#pulseaudio:hover {
+    background-color: #262b35;
+}
+
+#backlight {
+    color: #f38ba8;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#wireplumber {
+    background-color: #fff0f5;
+    color: #000000;
+}
+
+/* --- Bateria & Energia --- */
 #battery {
-    background: #1f1d2e;
     color: #a6e3a1;
     margin-left: 0;
     margin-right: 0;
-    padding-right: 14px;
-    /* border-radius: 8px; */
 }
+
+#power-profiles-daemon {
+    margin-left: 0;
+    border-radius: 0 8px 8px 0;
+    padding-right: 14px;
+}
+
+/* --- Rede & Tray --- */
+#network {
+    color: #cba6f7;
+    margin-left: 0;
+    margin-right: 0;
+    font-size: 16px;
+}
+
+#tray {
+    border-radius: 8px;
+    margin-right: 5px;
+}
+
+/* =========================================================================
+ * ESTADOS (Hover, Muted, Critical, etc.)
+ * ========================================================================= */
+label:focus {
+    background-color: #000000;
+}
+
+/* Áudio */
+#pulseaudio.muted {
+    background-color: #90b1b1;
+    color: #2a5c45;
+}
+
+#wireplumber.muted {
+    background-color: #f53c3c;
+}
+
+/* Energia e Bateria */
+#power-profiles-daemon.performance { color: #f53c3c; }
+#power-profiles-daemon.balanced    { color: #2980b9; }
+#power-profiles-daemon.power-saver { color: #2ecc71; }
 
 #battery.charging, #battery.plugged {
     color: #ffffff;
@@ -124,7 +203,6 @@ window#waybar.empty #window {
     }
 }
 
-/* Using steps() instead of linear as a timing function to limit cpu usage */
 #battery.critical:not(.charging) {
     background-color: #f53c3c;
     color: #ffffff;
@@ -135,139 +213,22 @@ window#waybar.empty #window {
     animation-direction: alternate;
 }
 
-#power-profiles-daemon {
-    padding-right: 15px;
-    margin-left: 0;
-    border-radius: 0 8px 8px 0;
-}
+/* Avisos Críticos e Desconexões */
+#temperature.critical { background-color: #eb4d4b; color: #ffffff; }
+#network.disconnected { background-color: #f53c3c; color: #ffffff; }
 
-#power-profiles-daemon.performance {
-    background: #1f1d2e;
-    color: #f53c3c;
-}
-
-#power-profiles-daemon.balanced {
-    background: #1f1d2e;
-    color: #2980b9;
-}
-
-#power-profiles-daemon.power-saver {
-    background: #1f1d2e;
-    color: #2ecc71;
-}
-
-label:focus {
-    background-color: #000000;
-}
-
-#cpu {
-    color: #d663f7;
-    background: #1f1d2e;
-    border-radius: 0;
-
-    margin-left: 0;
-    margin-right: 0;
-}
-
-#memory {
-    background: #1f1d2e;
-    color: #f6c177;
-    border-radius: 0 8px 8px 0;
-
-    margin-left: 0;
-}
-
-#disk {
-    background-color: #964B00;
-}
-
-#backlight {
-    background: #1f1d2e;
-    margin-left: 0;
-    margin-right: 0;
-    /* border-radius: 8px; */
-
-    color: #f38ba8;
-}
-
-#network {
-    background-color: #2980b9;
-    border-radius: 8px;
-}
-
-#network.disconnected {
-    background-color: #f53c3c;
-}
-
-#pulseaudio {
-    background: #1f1d2e;
-    color: #89dceb;
-    border-radius: 8px 0 0 8px;
-    margin-right: 0;
-    padding-right: 16px;
-
-    transition: all 0.3s;
-}
-
-#pulseaudio.muted {
-    background-color: #90b1b1;
-    color: #2a5c45;
-}
-
-#wireplumber {
-    background-color: #fff0f5;
-    color: #000000;
-}
-
-#wireplumber.muted {
-    background-color: #f53c3c;
-}
-
-#temperature {
-    background: #1f1d2e;
-    color: #31748f;
-
-    border-radius: 8px 0 0 8px;
-    margin-left: 5px;
-    margin-right: 0;
-}
-
-#temperature.critical {
-    background-color: #eb4d4b;
-}
-
-#tray {
-    background: #1f1d2e;
-    border-radius: 8px;
-    margin-right: 5px;
-}
-
-#tray > .passive {
-    -gtk-icon-effect: dim;
-}
-
+#tray > .passive { -gtk-icon-effect: dim; }
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
     background-color: #eb4d4b;
 }
 
-#privacy {
-    padding: 0;
-}
-
+/* Privacidade */
+#privacy { padding: 0; }
 #privacy-item {
     padding: 0 5px;
     color: white;
 }
-
-#privacy-item.screenshare {
-    background-color: #cf5700;
-}
-
-#privacy-item.audio-in {
-    background-color: #1ca000;
-}
-
-#privacy-item.audio-out {
-    background-color: #0069d4;
-}
+#privacy-item.screenshare { background-color: #cf5700; }
+#privacy-item.audio-in    { background-color: #1ca000; }
+#privacy-item.audio-out   { background-color: #0069d4; }

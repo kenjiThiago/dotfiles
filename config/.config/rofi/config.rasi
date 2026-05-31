@@ -4,5 +4,8 @@ configuration {
 	show-icons: true;
 	kb-cancel: "Escape,Control+c,Control+bracketleft";
 	kb-secondary-copy: "Control+g";
+
+    run-command: "uwsm app -- {cmd}";
+    run-shell-command: "uwsm app -- {terminal} -e {cmd}";
 }
 @theme "~/.config/rofi/themes/center.rasi"

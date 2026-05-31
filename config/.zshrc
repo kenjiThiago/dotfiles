@@ -33,7 +33,7 @@ alias nv="nvim"
 alias ls="eza --color=always --icons=auto"
 alias c="clear"
 alias l="eza -lA --color=always --icons=auto"
-alias cat="bat --paging=never"
+# alias cat="bat --paging=never"
 
 # Inicia fzf
 source <(fzf --zsh)
@@ -41,6 +41,43 @@ source <(fzf --zsh)
 eval "$(zoxide init --cmd cd zsh)"
 # Inicia starship
 eval "$(starship init zsh)"
+
+STARSHIP_ORIG_PROMPT=$PROMPT
+STARSHIP_ORIG_RPROMPT=$RPROMPT
+
+function set_transient_prompt() {
+    PROMPT="${STARSHIP_ORIG_PROMPT// prompt / prompt --profile transient }"
+    RPROMPT=""
+    zle reset-prompt
+}
+
+zle -N set_transient_prompt
+autoload -Uz add-zle-hook-widget
+add-zle-hook-widget zle-line-finish set_transient_prompt
+
+function restore_starship_prompt() {
+    PROMPT=$STARSHIP_ORIG_PROMPT
+    RPROMPT=$STARSHIP_ORIG_RPROMPT
+}
+
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd restore_starship_prompt
+
+TRAPINT() {
+    zle && set_transient_prompt
+    return $(( 128 + $1 ))
+}
+
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey "^x^e" edit-command-line
+
+clear_keep_buffer() {
+    zle clear-screen
+}
+
+zle -N clear_keep_buffer
+bindkey "^xl" clear_keep_buffer
 
 # Historico de comandos
 HISTSIZE=2000
@@ -59,10 +96,17 @@ export TIMEFMT=$'%*E'
 export MANPAGER="nvim +Man!"
 export LESS='-R --use-color -Dd+r$Du+b$'
 export EDITOR="nvim"
+export MANGOHUD=0
+export PS2="$(starship prompt --continuation)"
 
-if [[ -z "$TMUX" && "$XDG_CURRENT_DESKTOP" == "Hyprland" ]]; then
-    exec tmux new-session -A -s main
-fi
+function y() {
+    export YAZI_START_DIR="$PWD"
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	command yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd"
+	command rm -f -- "$tmp"
+}
 
 if [[ -z $TMUX ]]; then
     export NVM_DIR="$HOME/.nvm"
@@ -75,3 +119,7 @@ if [[ -z $TMUX ]]; then
 fi
 
 export PATH
+
+if [[ -z "$TMUX" && "$XDG_CURRENT_DESKTOP" == "Hyprland" ]]; then
+    exec tmux new-session -A -s main
+fi

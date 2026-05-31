@@ -53,6 +53,16 @@ hl.window_rule({
 })
 
 hl.window_rule({
+    name = "wiremix_window",
+    match = { class = "(com.example.wiremix)" },
+
+    float = true,
+    size = { 800, 500 },
+    stay_focused = true,
+    center = true,
+})
+
+hl.window_rule({
     name = "gimp_window",
     match = { class = "(gimp)" },
 

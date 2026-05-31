@@ -19,7 +19,7 @@ hl.config({
 
         -- https://wiki.hyprland.org/Configuring/Variables/#variable-types for info about colors
         col = {
-            active_border = { colors = { M.iris, M.love }, angle = 225 },
+            active_border = { colors = { M.love, M.iris }, angle = 115 },
             inactive_border = M.muted,
         },
 
@@ -61,7 +61,7 @@ hl.config({
 
     group = {
         col = {
-            border_active = { colors = { M.pine, M.gold }, angle = 225 },
+            border_active = { colors = { M.pine, M.gold }, angle = 115 },
             border_inactive = M.muted
         },
 

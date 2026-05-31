@@ -4,9 +4,9 @@
     "height": 44, // Waybar height (to be removed for auto height)
     "spacing": 0, // Gaps between modules (4px)
     "output": ["eDP-1", "HDMI-A-1"],
-    "margin-top": 10,
-    "margin-right": 11,
-    "margin-left": 11,
+    "margin-top": 8,
+    "margin-right": 8,
+    "margin-left": 8,
     "modules-left": [
         "temperature",
         "cpu",
@@ -23,6 +23,7 @@
         "backlight",
         "battery",
         "clock",
+        // "network",
         "power-profiles-daemon",
         "tray"
     ],
@@ -53,7 +54,7 @@
         "spacing": 10
     },
     "clock": {
-        "format": "Dia {:%d %H:%M}<span foreground='#f5c2e7'> </span>",
+        "format": "Dia {:%d %H:%M}",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
             "mode"          : "year",
@@ -126,22 +127,20 @@
      }
     },
     "network": {
-        // "interface": "wlp2*", // (Optional) To force the use of this interface
-        "format-wifi": "{essid} ({signalStrength}%) ",
-        "format-ethernet": "{ifname} ",
-        "tooltip-format": "{ifname} via {gwaddr} ",
-        "format-linked": "{ifname} (No IP) ",
-        "format-disconnected": "Disconnected ⚠",
-        // "format-alt": "{ifname}: {ipaddr}/{cidr}"
+        "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+        "format": "{icon}",
+        "format-wifi": "{icon}",
+        "format-ethernet": "󰀂",
+        "format-disconnected": "󰤮",
+        "tooltip-format-wifi": "{essid} ({frequency} GHz)",
+        "tooltip-format-ethernet": "Connected",
+        "tooltip-format-disconnected": "Disconnected",
+        "interval": 3,
+        // "on-click": ""
     },
     "pulseaudio": {
-        // "scroll-step": 1, // %, can be a float
-        "format": "{volume}% {icon} {format_source}",
-        "format-bluetooth": "{volume}% {icon} {format_source}",
-        "format-bluetooth-muted": " {icon} {format_source}",
-        "format-muted": " {format_source}",
-        "format-source": "{volume}% ",
-        "format-source-muted": "",
+        "format": "{volume}% {icon}",
+        "format-muted": "",
         "format-icons": {
             "headphone": "",
             "hands-free": "",
@@ -151,7 +150,7 @@
             "car": "",
             "default": ["", "", ""]
         },
-        "on-click": "pavucontrol"
+        "on-click": "uwsm app -- ghostty --class=com.example.wiremix --command=wiremix"
     },
     "idle_inhibitor": {
         "format": "{icon}",
