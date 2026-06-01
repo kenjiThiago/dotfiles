@@ -1,10 +1,6 @@
 @import "./colors.css";
 
-/* =========================================================================
- * GERAL & BASE
- * ========================================================================= */
 * {
-    /* otf-font-awesome is required to be installed for icons */
     font-family: "Hack Nerd Font", sans-serif;
     font-size: 13px;
     font-weight: bold;
@@ -15,115 +11,95 @@ window#waybar {
     border-radius: 8px;
 }
 
-#window {
-    background-color: @background;
-    padding: 2px 10px 0px 10px;
-    margin: 5px 4px;
-    border-radius: 8px;
-    color: #929db1;
-    font-size: 16px;
-}
-
 window#waybar.empty #window {
     background-color: @background;
     border-radius: 50%;
-    min-width: 12px;
+    min-width: 8px;
 }
 
-/* =========================================================================
- * WORKSPACES
- * ========================================================================= */
 #workspaces {
     background-color: @background;
-    padding: 0px 1px;
+    padding: 2px 4px;
     margin: 5px 4px;
     border-radius: 8px;
-    font-size: 16px;
 }
 
 #workspaces button {
-    padding: 0px 5px;
-    margin: 4px 3px;
-    color: #cdd6f4;
+    padding: 0px;
+    margin: 3px 3px;
+    color: #6e6a86;
+    background-color: #2a273f;
+    border-radius: 20px;
+    min-width: 26px;
     transition: all 0.2s ease-in-out;
 }
 
 #workspaces button:hover {
-    background-color: #262b35;
-    border-radius: 6px;
+    background-color: #393552;
+    color: #e0def4;
 }
 
 #workspaces button.active {
-    color: #8b40d0;
-    opacity: 1.0;
+    padding: 0px 4px;
+    background-color: #e97295;
+    color: #1f1d2e;
+    min-width: 38px;
+    border-radius: 20px;
 }
 
-/* =========================================================================
- * MÓDULOS (Propriedades Compartilhadas)
- * ========================================================================= */
-#clock, #battery, #cpu, #memory, #disk, #temperature, #backlight, 
-#network, #pulseaudio, #wireplumber, #tray, #power-profiles-daemon, 
-#custom-lock, #idle_inhibitor {
+#custom-system, #window, #clock, #backlight, #pulseaudio, #battery, #power-profiles-daemon, #custom-tray-icon, #tray {
     background-color: @background;
     padding: 0 12px;
     margin: 5px 4px;
-    color: #ffffff;
 }
 
-/* =========================================================================
- * CORES E LAYOUTS ESPECÍFICOS DOS MÓDULOS
- * ========================================================================= */
+#custom-system, #cpu, #memory, #temperature {
+    background-color: @background;
+    padding: 0 12px;
+    margin: 5px 4px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+#custom-system {
+    color: #c4a7e7;
+    font-size: 15px;
+    padding: 0 16px 0 10px;
+}
+
+#custom-system:hover {
+    color: #eb6f92;
+}
+
+#cpu { color: #ebbcba; }
+#memory { color: #f6c177; }
+#temperature { color: #9ccfd8; }
+
+#cpu:hover, #memory:hover, #temperature:hover {
+    background-color: #262b35;
+}
+
+#window {
+    color: #929db1;
+    border-radius: 8px;
+    padding: 0 15px;
+}
+
 #clock {
     color: #fab387;
-    /* margin: 5px 0; */
-    padding-right: 5px;
-    margin-left: 0;
-    margin-right: 0;
+    border-radius: 8px;
 }
 
-#custom-lock {
+#backlight {
+    color: #f38ba8;
     border-radius: 8px 0 0 8px;
     margin-right: 0;
-    padding-left: 4px;
-    padding-right: 0;
 }
 
-#idle_inhibitor {
-    border-radius: 0 8px 8px 0;
-    margin-left: 0;
-    padding-right: 17px;
-    color: #fa5aa4;
-}
-
-/* --- Sistema & Hardware --- */
-#temperature {
-    color: #4da6cc;
-    border-radius: 8px 0 0 8px;
-    margin-left: 5px;
-    margin-right: 0;
-}
-
-#cpu {
-    color: #d663f7;
-    border-radius: 0;
-    margin-left: 0;
-    margin-right: 0;
-}
-
-#memory {
-    color: #f6c177;
-    border-radius: 0 8px 8px 0;
-    margin-left: 0;
-}
-
-#disk {
-    background-color: #964B00;
-}
-
-/* --- Áudio & Brilho --- */
 #pulseaudio {
     color: #89dceb;
-    border-radius: 8px 0 0 8px;
+    border-radius: 0;
+    margin-left: 0;
     margin-right: 0;
     transition: background-color 0.3s, color 0.3s;
 }
@@ -132,20 +108,9 @@ window#waybar.empty #window {
     background-color: #262b35;
 }
 
-#backlight {
-    color: #f38ba8;
-    margin-left: 0;
-    margin-right: 0;
-}
-
-#wireplumber {
-    background-color: #fff0f5;
-    color: #000000;
-}
-
-/* --- Bateria & Energia --- */
 #battery {
     color: #a6e3a1;
+    border-radius: 0;
     margin-left: 0;
     margin-right: 0;
 }
@@ -156,37 +121,26 @@ window#waybar.empty #window {
     padding-right: 14px;
 }
 
-/* --- Rede & Tray --- */
-#network {
-    color: #cba6f7;
-    margin-left: 0;
-    margin-right: 0;
-    font-size: 16px;
+#custom-tray-icon {
+    color: #f6c177;
+    border-radius: 8px;
+    padding: 0 10px;
 }
 
 #tray {
     border-radius: 8px;
-    margin-right: 5px;
+    margin-right: 0px;
 }
 
-/* =========================================================================
- * ESTADOS (Hover, Muted, Critical, etc.)
- * ========================================================================= */
 label:focus {
     background-color: #000000;
 }
 
-/* Áudio */
 #pulseaudio.muted {
     background-color: #90b1b1;
     color: #2a5c45;
 }
 
-#wireplumber.muted {
-    background-color: #f53c3c;
-}
-
-/* Energia e Bateria */
 #power-profiles-daemon.performance { color: #f53c3c; }
 #power-profiles-daemon.balanced    { color: #2980b9; }
 #power-profiles-daemon.power-saver { color: #2ecc71; }
@@ -197,10 +151,7 @@ label:focus {
 }
 
 @keyframes blink {
-    to {
-        background-color: #ffffff;
-        color: #000000;
-    }
+    to { background-color: #ffffff; color: #000000; }
 }
 
 #battery.critical:not(.charging) {
@@ -213,22 +164,8 @@ label:focus {
     animation-direction: alternate;
 }
 
-/* Avisos Críticos e Desconexões */
-#temperature.critical { background-color: #eb4d4b; color: #ffffff; }
-#network.disconnected { background-color: #f53c3c; color: #ffffff; }
-
 #tray > .passive { -gtk-icon-effect: dim; }
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
     background-color: #eb4d4b;
 }
-
-/* Privacidade */
-#privacy { padding: 0; }
-#privacy-item {
-    padding: 0 5px;
-    color: white;
-}
-#privacy-item.screenshare { background-color: #cf5700; }
-#privacy-item.audio-in    { background-color: #1ca000; }
-#privacy-item.audio-out   { background-color: #0069d4; }

@@ -1,73 +1,89 @@
-// -*- mode: jsonc -*-
 {
-    "layer": "top", // Waybar at top layer
-    "height": 44, // Waybar height (to be removed for auto height)
-    "spacing": 0, // Gaps between modules (4px)
+    "layer": "top",
+    "height": 44,
+    "spacing": 0,
     "output": ["eDP-1", "HDMI-A-1"],
     "margin-top": 8,
     "margin-right": 8,
     "margin-left": 8,
     "modules-left": [
-        "temperature",
-        "cpu",
-        "memory",
-        "custom/lock",
-        "idle_inhibitor",
-        "hyprland/workspaces",
-    ],
-    "modules-center": [
+        "group/hardware-drawer",
         "hyprland/window"
     ],
-    "modules-right": [
-        "pulseaudio",
-        "backlight",
-        "battery",
+    "modules-center": [
         "clock",
-        // "network",
-        "power-profiles-daemon",
-        "tray"
+        "hyprland/workspaces"
     ],
-    // Modules configuration
+    "modules-right": [
+        "group/tray-drawer",
+        "backlight",
+        "pulseaudio",
+        "battery",
+        "power-profiles-daemon"
+    ],
+    "group/hardware-drawer": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 300,
+            "children-class": "hidden-hardware",
+            "transition-left-to-right": true
+        },
+        "modules": [
+            "custom/system",
+            "cpu",
+            "memory",
+            "temperature"
+        ]
+    },
+    "custom/system": {
+        "format": "",
+        "tooltip": false,
+        "on-click": "uwsm app -- ghostty --class=com.example.btop --command=btop"
+    },
+    "cpu": {
+        "interval": 2,
+        "format": "{usage}% ",
+        "on-click": "uwsm app -- ghostty --class=com.example.btop --command=btop"
+    },
+    "memory": {
+        "interval": 2,
+        "format": "{}% ",
+        "on-click": "uwsm app -- ghostty --class=com.example.btop --command=btop"
+    },
+    "temperature": {
+        "critical-threshold": 80,
+        "format": "{temperatureC}°C ",
+        "on-click": "uwsm app -- ghostty --class=com.example.btop --command=btop"
+    },
     "hyprland/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
         "format": "{icon}",
         "format-icons": {
-            "1": "一",
-            "2": "二",
-            "3": "三",
-            "4": "四",
-            "5": "五",
-            "6": "六",
-            "7": "七",
-            "8": "八",
-            "9": "九",
-            "10": "十"
+            "1": "一", "2": "二", "3": "三", "4": "四", "5": "五",
+            "6": "六", "7": "七", "8": "八", "9": "九", "10": "十"
         }
     },
-    "custom/lock": {
-        "format": "<span color='#888888'>  </span>",
-        "on-click": "hyprlock",
-    },
-    "tray": {
-        // "icon-size": 21,
-        "spacing": 10
+    "hyprland/window": {
+        "format": "{title}",
+        "max-length": 80,
+        "separate-outputs": true
     },
     "clock": {
         "format": "Dia {:%d %H:%M}",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
-            "mode"          : "year",
-            "mode-mon-col"  : 3,
-            "weeks-pos"     : "right",
-            "on-scroll"     : 1,
+            "mode": "year",
+            "mode-mon-col": 3,
+            "weeks-pos": "right",
+            "on-scroll": 1,
             "on-click-right": "mode",
             "format": {
-                "months":     "<span color='#ffead3'><b>{}</b></span>",
-                "days":       "<span color='#ecc6d9'><b>{}</b></span>",
-                "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
-                "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
-                "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
+                "months": "<span color='#c4a7e7'><b>{}</b></span>",
+                "days": "<span color='#e0def4'><b>{}</b></span>",
+                "weeks": "<span color='#6e6a86'><b>W{}</b></span>",
+                "weekdays": "<span color='#f6c177'><b>{}</b></span>",
+                "today": "<span color='#e87397'><b><u>{}</u></b></span>"
             }
         },
         "actions": {
@@ -78,65 +94,10 @@
             "on-scroll-down": "shift_down"
         }
     },
-   "cpu": {
-        "interval": 1,
-        "format": "{icon0}{icon1}{icon2}{icon3} {usage:>2}% ",
-        "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
-   },
-    "memory": {
-        "format": "{}% "
-    },
-    "temperature": {
-        // "thermal-zone": 2,
-        // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
-        "critical-threshold": 80,
-        // "format-critical": "{temperatureC}°C {icon}",
-        "format": "{temperatureC}°C {icon}",
-        "format-icons": ["", "", ""]
-    },
     "backlight": {
-        // "device": "acpi_video1",
         "min-brightness": 1,
         "format": "{percent}% {icon}",
         "format-icons": ["", "", "", "", "", "", "", "", ""]
-    },
-    "battery": {
-        "states": {
-            // "good": 95,
-            "warning": 30,
-            "critical": 15
-        },
-        "format": "{capacity}% {icon}",
-        "format-full": "{capacity}% {icon}",
-        "format-charging": "{capacity}% ",
-        "format-plugged": "{capacity}% ",
-        "format-alt": "{time} {icon}",
-        // "format-good": "", // An empty format will hide the module
-        // "format-full": "",
-        "format-icons": ["", "", "", "", ""]
-    },
-    "power-profiles-daemon": {
-     "format": "{icon}",
-     "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
-     "tooltip": true,
-     "format-icons": {
-       "default": "",
-       "performance": "",
-       "balanced": "",
-       "power-saver": ""
-     }
-    },
-    "network": {
-        "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
-        "format": "{icon}",
-        "format-wifi": "{icon}",
-        "format-ethernet": "󰀂",
-        "format-disconnected": "󰤮",
-        "tooltip-format-wifi": "{essid} ({frequency} GHz)",
-        "tooltip-format-ethernet": "Connected",
-        "tooltip-format-disconnected": "Disconnected",
-        "interval": 3,
-        // "on-click": ""
     },
     "pulseaudio": {
         "format": "{volume}% {icon}",
@@ -152,12 +113,47 @@
         },
         "on-click": "uwsm app -- ghostty --class=com.example.wiremix --command=wiremix"
     },
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
+    "battery": {
+        "states": {
+            "good": 95,
+            "warning": 30,
+            "critical": 15
         },
-        "timeout": 30.5
+        "format": "{capacity}% {icon}",
+        "format-full": "{capacity}% {icon}",
+        "format-charging": "{capacity}% ",
+        "format-plugged": "{capacity}% ",
+        "format-alt": "{time} {icon}",
+        "format-icons": ["", "", "", "", ""]
     },
+    "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+        "tooltip": true,
+        "format-icons": {
+            "default": "",
+            "performance": "",
+            "balanced": "",
+            "power-saver": ""
+        }
+    },
+    "group/tray-drawer": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 300,
+            "children-class": "hidden-tray",
+            "transition-left-to-right": false
+        },
+        "modules": [
+            "custom/tray-icon",
+            "tray"
+        ]
+    },
+    "custom/tray-icon": {
+        "format": "",
+        "tooltip": false
+    },
+    "tray": {
+        "spacing": 10
+    }
 }

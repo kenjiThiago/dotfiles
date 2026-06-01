@@ -63,6 +63,16 @@ hl.window_rule({
 })
 
 hl.window_rule({
+    name = "btop_window",
+    match = { class = "(com.example.btop)" },
+
+    float = true,
+    size = { 1200, 750 },
+    stay_focused = true,
+    center = true,
+})
+
+hl.window_rule({
     name = "gimp_window",
     match = { class = "(gimp)" },
 
