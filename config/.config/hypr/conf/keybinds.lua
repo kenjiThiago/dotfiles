@@ -29,10 +29,55 @@ hl.bind(mainMod .. "+ W", hl.dsp.group.next())
 
 hl.bind(mainMod .. "+ O", hl.dsp.window.move({ into_or_create_group = "l" }))
 
+local minimized = false
+hl.bind(mainMod .. "+ X", function()
+    if minimized then
+        hl.dispatch(hl.dsp.workspace.toggle_special("minimize"))
+        hl.dispatch(hl.dsp.window.move({ workspace = "+0" }))
+        minimized = false
+    else
+        hl.dispatch(hl.dsp.window.move({ workspace = "special:minimize" }))
+        hl.dispatch(hl.dsp.workspace.toggle_special("minimize"))
+        minimized = true
+    end
+end)
+
+local MAX_ZOOM = 3
+local MIN_ZOOM = 1
+local ZOOM_TOGGLE_FACTOR = 1.5
+
+---@param offset number
+---@return nil
+local function zoom(offset)
+    local current = hl.get_config("cursor.zoom_factor")
+    if offset ~= nil then
+        current = current + offset
+    elseif current ~= MIN_ZOOM then
+        current = MIN_ZOOM
+    else
+        current = ZOOM_TOGGLE_FACTOR
+    end
+    current = math.max(MIN_ZOOM, math.min(MAX_ZOOM, current))
+    hl.config({ cursor = { zoom_factor = current } })
+end
+
+hl.bind(mainMod .. "+ Z", zoom)
+hl.bind(mainMod .. "+ SHIFT + EQUAL", function()
+    zoom(0.5)
+end)
+hl.bind(mainMod .. "+ MINUS", function()
+    zoom(-0.5)
+end)
+
 hl.bind(mainMod .. "+ H", hl.dsp.focus({ direction = "l" }))
 hl.bind(mainMod .. "+ L", hl.dsp.focus({ direction = "r" }))
 hl.bind(mainMod .. "+ K", hl.dsp.focus({ direction = "u" }))
 hl.bind(mainMod .. "+ J", hl.dsp.focus({ direction = "d" }))
+
+hl.bind(mainMod .. "+ SHIFT + H", hl.dsp.window.move({ direction = "l" }))
+hl.bind(mainMod .. "+ SHIFT + L", hl.dsp.window.move({ direction = "r" }))
+hl.bind(mainMod .. "+ SHIFT + K", hl.dsp.window.move({ direction = "u" }))
+hl.bind(mainMod .. "+ SHIFT + J", hl.dsp.window.move({ direction = "d" }))
 
 for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
@@ -55,10 +100,15 @@ hl.bind("ALT + R", hl.dsp.submap("resize"))
 -- Start a submap called "resize".
 hl.define_submap("resize", function()
     -- Set repeating binds for resizing the active window.
-    hl.bind("h", hl.dsp.window.resize({ x = -10, y = 0, relative = true }), { repeating = true })
-    hl.bind("l", hl.dsp.window.resize({ x = 10, y = 0, relative = true }), { repeating = true })
-    hl.bind("k", hl.dsp.window.resize({ x = 0, y = 10, relative = true }), { repeating = true })
-    hl.bind("j", hl.dsp.window.resize({ x = 10, y = -10, relative = true }), { repeating = true })
+    hl.bind("H", hl.dsp.window.resize({ x = -10, y = 0, relative = true }), { repeating = true })
+    hl.bind("L", hl.dsp.window.resize({ x = 10, y = 0, relative = true }), { repeating = true })
+    hl.bind("K", hl.dsp.window.resize({ x = 0, y = -10, relative = true }), { repeating = true })
+    hl.bind("J", hl.dsp.window.resize({ x = 0, y = 10, relative = true }), { repeating = true })
+
+    hl.bind("SHIFT + H", hl.dsp.window.resize({ x = -30, y = 0, relative = true }), { repeating = true })
+    hl.bind("SHIFT + L", hl.dsp.window.resize({ x = 30, y = 0, relative = true }), { repeating = true })
+    hl.bind("SHIFT + K", hl.dsp.window.resize({ x = 0, y = -30, relative = true }), { repeating = true })
+    hl.bind("SHIFT + J", hl.dsp.window.resize({ x = 0, y = 30, relative = true }), { repeating = true })
 
     -- Use `reset` to go back to the global submap
     hl.bind("escape", hl.dsp.submap("reset"))
