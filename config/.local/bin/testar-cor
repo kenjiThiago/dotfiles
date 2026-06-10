@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+clear
+
+while true; do
+    echo -ne "\033[1;36mpastel color > \033[0m"
+    read cor
+    if [[ -z "$cor" ]]; then
+        break
+    fi
+    pastel color "$cor"
+    echo ""
+done

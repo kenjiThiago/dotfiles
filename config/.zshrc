@@ -114,7 +114,7 @@ if [[ -z $TMUX ]]; then
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
     path+=("$HOME/go/bin")
-    path+=("$HOME/dotfiles/scripts")
+    path+=("$HOME/.local/bin")
     path+=("$HOME/.local/share/nvim/mason/bin")
 fi
 

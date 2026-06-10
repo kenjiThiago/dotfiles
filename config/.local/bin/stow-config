@@ -26,14 +26,13 @@ log() {
 }
 
 execute() {
-    log "stow $params -v -t ~/ config"
+    log "stow $params -v -t ~/ -d ~/dotfiles config"
     if [[ $dry == "1" ]]; then
         return
     fi
-    stow $params -v -t ~/ config
+    stow $params -v -t ~/ -d ~/dotfiles config
 }
 
 cd $script_dir
-cd ..
 
 execute

@@ -48,14 +48,38 @@ vim.api.nvim_create_autocmd("BufEnter", {
     end,
 })
 
--- vim.api.nvim_create_autocmd("BufWritePre", {
---     pattern = "*",
---     command = [[%s/\s\+$//e]],
--- })
-
 vim.api.nvim_create_autocmd("BufEnter", {
     pattern = "*.csv",
     callback = function()
         vim.b.completion = false
+    end,
+})
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+    pattern = "*",
+    callback = function()
+        local diagnostic_groups = {
+            "DiagnosticUnderlineError",
+            "DiagnosticUnderlineWarn",
+            "DiagnosticUnderlineInfo",
+            "DiagnosticUnderlineHint"
+        }
+
+        for _, group in ipairs(diagnostic_groups) do
+            local current_hl = vim.api.nvim_get_hl(0, { name = group })
+
+            current_hl.undercurl = nil
+            current_hl.underline = true
+
+            vim.api.nvim_set_hl(0, group, current_hl)
+        end
+    end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "undotree",
+    callback = function()
+        vim.opt_local.cursorline = true
+        vim.opt_local.cursorlineopt = "line"
     end,
 })

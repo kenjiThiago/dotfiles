@@ -50,11 +50,8 @@ vim.keymap.set("n", "<leader>tn", ":tabn<CR>")
 vim.keymap.set("n", "<leader>tp", ":tabp<CR>")
 vim.keymap.set("n", "<leader>tt", ":tabnew | term<CR>")
 
---Undotree
-vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
-
 --Fugitive
-vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
+-- vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
 
 --Highlight
 vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
@@ -62,7 +59,7 @@ vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
 vim.keymap.set("n", "<leader>gc", ":Comp")
 
 --ShowWhiteSpaces
-vim.cmd("highlight link ws Search | match ws /\\s\\+$/")
+vim.cmd("highlight ws ctermbg=magenta guibg=magenta | match ws /\\s\\+$/")
 local toggle_ws = true
 vim.api.nvim_create_user_command("ShowWhiteSpaces", function()
     if not toggle_ws then

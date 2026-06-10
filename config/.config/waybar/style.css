@@ -8,7 +8,7 @@
 
 window#waybar {
     background: transparent;
-    border-radius: 8px;
+    border-radius: 20px;
 }
 
 window#waybar.empty #window {
@@ -21,14 +21,14 @@ window#waybar.empty #window {
     background-color: @background;
     padding: 2px 4px;
     margin: 5px 4px;
-    border-radius: 8px;
+    border-radius: 20px;
 }
 
 #workspaces button {
     padding: 0px;
     margin: 3px 3px;
     color: #6e6a86;
-    background-color: #2a273f;
+    background-color: #393552;
     border-radius: 20px;
     min-width: 26px;
     transition: all 0.2s ease-in-out;
@@ -57,7 +57,7 @@ window#waybar.empty #window {
     background-color: @background;
     padding: 0 12px;
     margin: 5px 4px;
-    border-radius: 8px;
+    border-radius: 20px;
     transition: all 0.2s ease-in-out;
 }
 
@@ -71,7 +71,10 @@ window#waybar.empty #window {
     color: #eb6f92;
 }
 
-#cpu { color: #ebbcba; }
+#cpu {
+    color: #ebbcba;
+    padding: 0 14px 0px 10px;
+}
 #memory { color: #f6c177; }
 #temperature { color: #9ccfd8; }
 
@@ -81,18 +84,18 @@ window#waybar.empty #window {
 
 #window {
     color: #929db1;
-    border-radius: 8px;
+    border-radius: 20px;
     padding: 0 15px;
 }
 
 #clock {
     color: #fab387;
-    border-radius: 8px;
+    border-radius: 20px;
 }
 
 #backlight {
     color: #f38ba8;
-    border-radius: 8px 0 0 8px;
+    border-radius: 20px 0 0 20px;
     margin-right: 0;
 }
 
@@ -117,18 +120,18 @@ window#waybar.empty #window {
 
 #power-profiles-daemon {
     margin-left: 0;
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 20px 20px 0;
     padding-right: 14px;
 }
 
 #custom-tray-icon {
     color: #f6c177;
-    border-radius: 8px;
+    border-radius: 20px;
     padding: 0 10px;
 }
 
 #tray {
-    border-radius: 8px;
+    border-radius: 20px;
     margin-right: 0px;
 }
 

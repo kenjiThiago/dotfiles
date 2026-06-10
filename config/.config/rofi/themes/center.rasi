@@ -12,6 +12,7 @@ configuration {
     surface:                     #2a273f;
     foreground:                  #e0def4;
     selected:                    #eb6f92;
+    love:                        #e87497;
     iris:                        #c4a7e7;
     gold:                        #f6c177;
     foam:                        #9ccfd8;
@@ -29,9 +30,9 @@ window {
     enabled:                     true;
     margin:                      0px;
     padding:                     0px;
-    border:                      1px solid;
+    border:                      2px solid;
     border-radius:               12px;
-    border-color:                @surface;
+    border-color:                @love;
     background-color:            @background;
     cursor:                      "default";
 }
