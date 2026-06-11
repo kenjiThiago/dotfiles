@@ -1,41 +1,27 @@
 #!/usr/bin/env bash
 
-# ==============================================================================
-# 1. INTERFACES TUI (TERMINAL USER INTERFACE) - FZF + PARU
-# ==============================================================================
-
-# O Ghostty vai chamar este próprio script passando essas flags para rodar no terminal
+# ── TUI: FZF + PARU ───────────────────────────────────────────────────────────
 
 if [[ "$1" == "--paru-install" ]]; then
-    fzf_args=(
-        --multi
-        --preview 'paru -Si {1}'
-        --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select'
-        --preview-label-pos='bottom'
-        --preview-window 'down:65%:wrap'
-        --bind 'alt-p:toggle-preview'
-        --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
-        --bind 'alt-k:preview-up,alt-j:preview-down'
-        --color 'pointer:green,marker:green'
-    )
-
-    pkg_names=$(pacman -Slq | fzf "${fzf_args[@]}")
+    pkg_names=$(pacman -Slq | fzf \
+        --multi \
+        --preview 'paru -Si {1}' \
+        --preview-label='alt-p: toggle | alt-j/k: scroll | tab: multi-select' \
+        --preview-label-pos='bottom' \
+        --preview-window 'down:65%:wrap' \
+        --bind 'alt-p:toggle-preview' \
+        --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up' \
+        --bind 'alt-k:preview-up,alt-j:preview-down' \
+        --color 'pointer:green,marker:green')
 
     if [[ -n $pkg_names ]]; then
-        # Converte o retorno do FZF em um Array para não quebrar o terminal interativo
         readarray -t pkgs <<< "$pkg_names"
-
         clear
-        echo -e "\033[1;34m➤ Preparando para instalar:\033[0m ${pkgs[*]}\n"
-
-        # Chama o Paru sem --noconfirm para que ele mostre dependências e peça confirmação
+        echo -e "\033[1;34m➤ Instalando:\033[0m ${pkgs[*]}\n"
         paru -S "${pkgs[@]}"
-
-        echo -e "\n\033[1;32m✔ Operação finalizada!\033[0m"
+        echo -e "\n\033[1;32m✔ Concluído!\033[0m"
     fi
-
-    echo -e "\nPressione ENTER para sair..."
-    read
+    read -p $'\nENTER para sair...'
     exit 0
 fi
 
@@ -44,106 +30,76 @@ if [[ "$1" == "--paru-remove" ]]; then
 
     if [[ -n $pkg_names ]]; then
         readarray -t pkgs <<< "$pkg_names"
-
         clear
-        echo -e "\033[1;31m➤ Preparando para remover:\033[0m ${pkgs[*]}\n"
-
-        # Chama o Paru sem --noconfirm para confirmação
+        echo -e "\033[1;31m➤ Removendo:\033[0m ${pkgs[*]}\n"
         paru -Rns "${pkgs[@]}"
-
-        echo -e "\n\033[1;32m✔ Operação finalizada!\033[0m"
+        echo -e "\n\033[1;32m✔ Concluído!\033[0m"
     fi
-
-    echo -e "\nPressione ENTER para sair..."
-    read
+    read -p $'\nENTER para sair...'
     exit 0
 fi
 
 if [[ "$1" == "--paru-update" ]]; then
-    # O Paru interativo padrão já pede confirmação S/n
     paru -Syu
-    echo -e "\n\033[1;32m✔ Operação finalizada!\033[0m"
-    echo "Pressione ENTER para sair..."
-    read
+    echo -e "\n\033[1;32m✔ Concluído!\033[0m"
+    read -p $'\nENTER para sair...'
     exit 0
 fi
 
-# ==============================================================================
-# 2. CONFIGURAÇÕES BASE & VARIÁVEIS
-# ==============================================================================
+# ── Variáveis ─────────────────────────────────────────────────────────────────
 
 BACK_TO_EXIT=false
 SCRIPT_PATH="$(realpath "$0")"
 
-# Configuração de diretório para as screenshots
 [[ -f ~/.config/user-dirs.dirs ]] && source ~/.config/user-dirs.dirs
 SCREENSHOT_DIR="${XDG_PICTURES_DIR:-$HOME/Imagens}/screenshots"
 WALLPAPER_DIR="$HOME/dotfiles/config/.config/hypr/wallpapers"
 
-[[ ! -d $SCREENSHOT_DIR ]] && mkdir -p "$SCREENSHOT_DIR"
-[[ ! -d $WALLPAPER_DIR ]] && mkdir -p "$WALLPAPER_DIR"
+mkdir -p "$SCREENSHOT_DIR" "$WALLPAPER_DIR"
 
-# ==============================================================================
-# 3. FUNÇÕES UTILITÁRIAS & ROFI
-# ==============================================================================
+# ── Utilitários ───────────────────────────────────────────────────────────────
 
 toggle_existing_menu() {
-    if pgrep -x "rofi" >/dev/null; then
-        killall rofi >/dev/null 2>&1
-        exit 0
-    fi
+    pgrep -x "rofi" && { killall rofi; exit 0; }
 }
 
 back_to() {
-    local parent_menu="$1"
     if [[ $BACK_TO_EXIT == "true" ]]; then
         exit 0
-    elif [[ -n $parent_menu ]]; then
-        "$parent_menu"
+    elif [[ -n $1 ]]; then
+        "$1"
     else
         show_main_menu
     fi
 }
 
 menu() {
-    local prompt="$1"
-    local options="$2"
-    local preselect="$3"
+    local prompt="$1" options="$2" preselect="$3"
     local args=()
 
     if [[ -n $preselect ]]; then
         local index
         index=$(echo -e "$options" | grep -nxF "$preselect" | cut -d: -f1)
-        if [[ -n $index ]]; then
-            args+=("-selected-row" "$((index - 1))")
-        fi
+        [[ -n $index ]] && args+=("-selected-row" "$((index - 1))")
     fi
 
     echo -e "$options" | rofi -dmenu -i -p "$prompt" "${args[@]}" 2>/dev/null
 }
 
-terminal() {
-    uwsm app -- ghostty -e "$@"
-}
-
+terminal()       { uwsm app -- ghostty -e "$@"; }
 open_in_editor() {
-    notify-send -u low "Editando configuração" "$1"
+    notify-send -u low "Editando" "$1"
     uwsm app -- ghostty -e nvim "$1"
 }
 
-# ==============================================================================
-# 4. LÓGICA DE CAPTURA DE TELA (SCREENSHOT)
-# ==============================================================================
+# ── Screenshot ────────────────────────────────────────────────────────────────
 
 take_screenshot() {
     local mode="$1"
-    local filename="screenshot-$(date +'%Y-%m-%d_%H-%M-%S').png"
-    local filepath="$SCREENSHOT_DIR/$filename"
+    local filepath="$SCREENSHOT_DIR/screenshot-$(date +'%Y-%m-%d_%H-%M-%S').png"
     local selection=""
 
-    # Dá tempo para o Rofi fechar e a animação do Hyprland terminar
     sleep 0.25
-
     pkill slurp
 
     case "$mode" in
@@ -151,12 +107,11 @@ take_screenshot() {
             hyprpicker -r -z >/dev/null 2>&1 &
             local pid=$!
             sleep 0.1
-            # Slurp com sombra de fundo e borda padrão para a seleção
             selection=$(slurp -b 00000044 -s 00000000 2>/dev/null)
             kill $pid 2>/dev/null
             ;;
         fullscreen)
-            selection=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | "\(.x),\(.y) \(.width)x\(.height)"')
+            selection=$(hyprctl monitors -j | jq -r '.[] | select(.focused==true) | "\(.x),\(.y) \(.width)x\(.height)"')
             ;;
     esac
 
@@ -165,122 +120,110 @@ take_screenshot() {
     grim -g "$selection" "$filepath" || exit 1
     wl-copy < "$filepath"
 
-    local action=$(notify-send "Captura Salva" "Copiado para a área de transferência.\nClique para editar." \
-        -i "$filepath" \
-        -a "Screenshot" \
-        -A "default=Editar com Satty" \
-        -t 4000)
+    local action
+    action=$(notify-send "Captura Salva" "Copiado para a área de transferência.\nClique para editar." \
+        -i "$filepath" -a "Screenshot" -A "default=Editar com Satty" -t 4000)
 
-    if [[ "$action" == "default" ]]; then
-        uwsm app -- satty --filename "$filepath" \
-            --output-filename "$filepath" \
-            --save-after-copy \
-            --copy-command 'wl-copy'
-    fi
+    [[ "$action" == "default" ]] && uwsm app -- satty \
+        --filename "$filepath" \
+        --output-filename "$filepath" \
+        --save-after-copy \
+        --copy-command 'wl-copy'
 }
 
 change_wallpaper() {
-    local SELECAO=$(ls -1 "$WALLPAPER_DIR" | grep -iE '\.(jpg|jpeg|png|webp|jxl)$' | rofi -dmenu -i -p "  Wallpaper:")
+    local SELECAO
+    SELECAO=$(ls -1 "$WALLPAPER_DIR" | grep -iE '\.(jpg|jpeg|png|webp|jxl)$' | rofi -dmenu -i -p "  Wallpaper:")
 
     if [[ -z "$SELECAO" ]]; then
         back_to show_setup_menu
         return
     fi
 
-    local CAMINHO_COMPLETO="$WALLPAPER_DIR/$SELECAO"
+    local CAMINHO="$WALLPAPER_DIR/$SELECAO"
+    hyprctl hyprpaper wallpaper ",$CAMINHO,cover"
 
-    hyprctl hyprpaper wallpaper ",$CAMINHO_COMPLETO,cover"
-
-    local ARQUIVO_CONFIG="$HOME/.config/hypr/hyprpaper.conf"
-
-    cat <<EOF > "$ARQUIVO_CONFIG"
+    cat > "$HOME/.config/hypr/hyprpaper.conf" <<EOF
 splash = false
 ipc = true
 
 wallpaper {
     monitor =
-    path = $CAMINHO_COMPLETO
+    path = $CAMINHO
     fit_mode = cover
 }
 EOF
 
-notify-send -a "Hyprpaper" -i "$CAMINHO_COMPLETO" "Wallpaper Atualizado" "A imagem foi salva para o próximo boot!"
+    notify-send -a "Hyprpaper" -i "$CAMINHO" "Wallpaper Atualizado" "Salvo para o próximo boot!"
 }
 
-if [[ "$1" == "--screenshot" ]]; then
-    take_screenshot "$2"
-    exit 0
-fi
+[[ "$1" == "--screenshot" ]] && { take_screenshot "$2"; exit 0; }
 
-# ==============================================================================
-# 5. SUBMENUS
-# ==============================================================================
+# ── Submenus ──────────────────────────────────────────────────────────────────
 
 show_trigger_menu() {
     case $(menu "Trigger" "  Screenshot (Região)\n  Screenshot (Tela Cheia)\n󰃉  Color Picker\n󰍜  Toggle Waybar\n  Toggle Gaps (Hyprland)") in
-        *Região*) take_screenshot "region" ;;
+        *Região*)       take_screenshot "region" ;;
         *"Tela Cheia"*) take_screenshot "fullscreen" ;;
-        *Color*) hyprpicker -a && notify-send -t 2000 "Color Picker" "Cor copiada para a área de transferência" ;;
-        *Waybar*) killall -SIGUSR1 waybar ;;
-        *Gaps*) hyprctl dispatch workspaceopt allfloat ;;
-        *) back_to show_main_menu ;;
+        *Color*)        hyprpicker -a && notify-send -t 2000 "Color Picker" "Cor copiada" ;;
+        *Waybar*)       killall -SIGUSR1 waybar ;;
+        *Gaps*)         hyprctl dispatch workspaceopt allfloat ;;
+        *)              back_to show_main_menu ;;
     esac
 }
 
 show_setup_menu() {
-    case $(menu "Setup" "  Wallpaper (Hyprpaper)\n  Wi-Fi (NM Editor)\n  Áudio (Pavucontrol)\n  Hyprland Config\n󰍜  Waybar Config\n  Neovim Config\n  Ghostty Config") in
+    case $(menu "Setup" "  Wallpaper\n  Wi-Fi\n  Áudio\n  Hyprland Config\n󰍜  Waybar Config\n  Neovim Config\n  Ghostty Config") in
         *Wallpaper*) change_wallpaper ;;
-        *Wi-Fi*) uwsm app -- nm-connection-editor ;;
-        *Áudio*) uwsm app -- pavucontrol ;;
-        *Hyprland*) open_in_editor ~/.config/hypr/hyprland.conf ;;
-        *Waybar*) open_in_editor ~/.config/waybar/config.jsonc ;;
-        *Neovim*) open_in_editor ~/.config/nvim/init.lua ;;
-        *Ghostty*) open_in_editor ~/.config/ghostty/config ;;
-        *) back_to show_main_menu ;;
+        *Wi-Fi*)     uwsm app -- nm-connection-editor ;;
+        *Áudio*)     uwsm app -- pavucontrol ;;
+        *Hyprland*)  open_in_editor ~/.config/hypr/hyprland.conf ;;
+        *Waybar*)    open_in_editor ~/.config/waybar/config.jsonc ;;
+        *Neovim*)    open_in_editor ~/.config/nvim/init.lua ;;
+        *Ghostty*)   open_in_editor ~/.config/ghostty/config ;;
+        *)           back_to show_main_menu ;;
     esac
 }
 
 show_install_remove_menu() {
-    case $(menu "Pacotes" "󰉉  Instalar Pacote (Paru/FZF)\n󰭌  Remover Pacote (Paru/FZF)\n  Atualizar Sistema (Paru)") in
-        *Instalar*) terminal "$SCRIPT_PATH" --paru-install ;;
-        *Remover*)  terminal "$SCRIPT_PATH" --paru-remove ;;
+    case $(menu "Pacotes" "󰉉  Instalar (Paru/FZF)\n󰭌  Remover (Paru/FZF)\n  Atualizar Sistema") in
+        *Instalar*)  terminal "$SCRIPT_PATH" --paru-install ;;
+        *Remover*)   terminal "$SCRIPT_PATH" --paru-remove ;;
         *Atualizar*) terminal "$SCRIPT_PATH" --paru-update ;;
-        *) back_to show_main_menu ;;
+        *)           back_to show_main_menu ;;
     esac
 }
 
 show_system_menu() {
     case $(menu "System" "  Lock\n󰍃  Logout\n󰒲  Suspend\n󰜉  Restart\n󰐥  Shutdown") in
-        *Lock*) hyprlock ;;
-        *Logout*) uwsm stop ;;
-        *Suspend*) systemctl suspend ;;
-        *Restart*) systemctl reboot ;;
+        *Lock*)     hyprlock ;;
+        *Logout*)   uwsm stop ;;
+        *Suspend*)  systemctl suspend ;;
+        *Restart*)  systemctl reboot ;;
         *Shutdown*) systemctl poweroff ;;
-        *) back_to show_main_menu ;;
+        *)          back_to show_main_menu ;;
     esac
 }
 
-# ==============================================================================
-# 6. MENU PRINCIPAL & ROTEAMENTO
-# ==============================================================================
+# ── Menu principal ────────────────────────────────────────────────────────────
 
 go_to_menu() {
     case "${1,,}" in
-        *apps*) rofi -show drun -p "Launch" ;;
-        *trigger*) show_trigger_menu ;;
-        *setup*) show_setup_menu ;;
-        *pacotes*) show_install_remove_menu ;;
-        *system*) show_system_menu ;;
+        *apps*)      rofi -show drun -p "Launch" ;;
+        *trigger*)   show_trigger_menu ;;
+        *setup*)     show_setup_menu ;;
+        *pacotes*)   show_install_remove_menu ;;
+        *system*)    show_system_menu ;;
         *wallpaper*) change_wallpaper ;;
     esac
 }
 
 show_main_menu() {
-    local options="󰀻  Apps\n󱓞  Trigger\n  Setup\n󰏔  Pacotes (Instalar/Remover)\n  System"
-    go_to_menu "$(menu "Menu Principal" "$options")"
+    go_to_menu "$(menu "Menu" "󰀻  Apps\n󱓞  Trigger\n  Setup\n󰏔  Pacotes\n  System")"
 }
 
-# Inicia o fluxo principal
+# ── Entrada ───────────────────────────────────────────────────────────────────
+
 toggle_existing_menu
 
 if [[ -n $1 ]]; then
