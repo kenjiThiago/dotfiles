@@ -6,16 +6,14 @@ import QtQuick
 Singleton {
     id: root
 
-    readonly property string timeString: {
-        Qt.formatDateTime(clock.date, "hh:mm");
-    }
+    readonly property date now: clock.date
 
-    readonly property string dateString: {
-        Qt.formatDateTime(clock.date, "d MMMM dddd");
-    }
+    readonly property string timeString: Qt.formatDateTime(clock.date, "hh:mm")
+
+    readonly property string dateString: clock.date.toLocaleDateString(Qt.locale("pt_BR"), "d MMMM dddd")
 
     SystemClock {
         id: clock
-        precision: SystemClock.Seconds
+        precision: SystemClock.Minutes
     }
 }

@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import "."
 
 Rectangle {
     id: calRoot
@@ -13,7 +14,7 @@ Rectangle {
     border.width: 1
 
     // ── Lógica de Datas ───────────────────────────────────────────────────────
-    property var today: new Date()
+    readonly property var today: Time.now
     property int currentMonth: today.getMonth()
     property int currentYear: today.getFullYear()
 

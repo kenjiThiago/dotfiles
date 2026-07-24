@@ -93,6 +93,11 @@ Item {
             sink.audio.volume = Math.max(0.0, Math.min(1.0, pct / 100.0));
     }
 
+    function toggleMute() {
+        if (sink && sink.audio)
+            sink.audio.muted = !sink.audio.muted;
+    }
+
     Process {
         id: wiremixCmd
         command: ["uwsm", "app", "--", "ghostty", "--class=com.example.wiremix", "--command=wiremix"]
@@ -161,7 +166,8 @@ Item {
     }
     function setBrightness(percent) {
         let safePct = Math.max(0, Math.min(100, Math.round(percent)));
-        writeBrightnessCmd.command = ["sh", "-c", "brightnessctl set " + safePct + "%"];
+        currentBrightness = safePct;
+        writeBrightnessCmd.command = ["brightnessctl", "set", safePct + "%"];
         writeBrightnessCmd.running = true;
     }
     Timer {

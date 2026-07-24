@@ -15,14 +15,15 @@ Scope {
     IpcHandler {
         target: "bar"
 
-        function toggle_cc(): void {
-            if (root.islandState === 2) {
-                root.islandState = 0;
-                root.grabAlive = true;
-            } else {
+        function cycle(): void {
+            if (root.islandState === 0)
+                root.islandState = 1;
+            else if (root.islandState === 1)
                 root.islandState = 2;
-                root.calendarExpanded = false;
-            }
+            else
+                root.islandState = 0;
+            root.calendarExpanded = false;
+            root.grabAlive = true;
         }
     }
 
@@ -198,9 +199,8 @@ Scope {
 
                     onRequestState: function (newState) {
                         root.islandState = newState;
-                        if (newState === 2) {
+                        if (newState !== 1)
                             root.calendarExpanded = false;
-                        }
                     }
 
                     onCalendarRequested: {

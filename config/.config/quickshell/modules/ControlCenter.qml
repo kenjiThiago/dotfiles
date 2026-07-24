@@ -228,10 +228,15 @@ Item {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
                         onClicked: function (m) {
                             m.accepted = true;
-                            SystemMonitor.openWiremix();
-                            ccRoot.requestClose();
+                            if (m.button === Qt.RightButton) {
+                                SystemMonitor.openWiremix();
+                                ccRoot.requestClose();
+                            } else {
+                                SystemMonitor.toggleMute();
+                            }
                         }
                     }
                 }
@@ -240,6 +245,11 @@ Item {
                     height: 8
                     radius: 4
                     color: Theme.overlay
+                    WheelHandler {
+                        onWheel: function (e) {
+                            SystemMonitor.setVolume(SystemMonitor.volumePct + (e.angleDelta.y > 0 ? 5 : -5));
+                        }
+                    }
                     Rectangle {
                         width: parent.width * (SystemMonitor.volumePct / 100)
                         height: parent.height
@@ -300,6 +310,11 @@ Item {
                     height: 8
                     radius: 4
                     color: Theme.overlay
+                    WheelHandler {
+                        onWheel: function (e) {
+                            SystemMonitor.setBrightness(SystemMonitor.currentBrightness + (e.angleDelta.y > 0 ? 5 : -5));
+                        }
+                    }
                     Rectangle {
                         width: parent.width * (SystemMonitor.currentBrightness / 100)
                         height: parent.height
@@ -330,6 +345,45 @@ Item {
                 }
                 Text {
                     text: Math.round(SystemMonitor.currentBrightness) + "%"
+                    color: Theme.text
+                    font.family: "Hack Nerd Font"
+                    font.pixelSize: 12
+                    font.weight: Font.Bold
+                    Layout.preferredWidth: 35
+                    horizontalAlignment: Text.AlignRight
+                }
+            }
+
+            RowLayout {
+                width: parent.width
+                spacing: 12
+                Rectangle {
+                    width: 32
+                    height: 32
+                    radius: 16
+                    color: Theme.surface
+                    Text {
+                        anchors.centerIn: parent
+                        text: SystemMonitor.battIcon
+                        color: SystemMonitor.isCharging ? Theme.pine : Theme.text
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 16
+                    }
+                }
+                Rectangle {
+                    Layout.fillWidth: true
+                    height: 8
+                    radius: 4
+                    color: Theme.overlay
+                    Rectangle {
+                        width: parent.width * (SystemMonitor.pct / 100)
+                        height: parent.height
+                        radius: 4
+                        color: SystemMonitor.isCharging ? Theme.pine : (SystemMonitor.pct <= 20 ? Theme.love : Theme.iris)
+                    }
+                }
+                Text {
+                    text: SystemMonitor.pct + "%"
                     color: Theme.text
                     font.family: "Hack Nerd Font"
                     font.pixelSize: 12

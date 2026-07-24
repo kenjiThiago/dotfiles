@@ -97,7 +97,7 @@ Rectangle {
             return 36;
         if (island.islandState === 1)
             return 64;
-        return 300;
+        return 352;
     }
 
     radius: {
