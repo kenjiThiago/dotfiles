@@ -82,8 +82,21 @@ Scope {
                     root.grabAlive = true;
                 }
 
+                mask: Region {
+                    Region {
+                        item: barrierLeft
+                    }
+                    Region {
+                        item: barrierRight
+                    }
+                    Region {
+                        item: barrierBottom
+                    }
+                }
+
                 // Barreira Esquerda
                 MouseArea {
+                    id: barrierLeft
                     anchors {
                         left: parent.left
                         top: parent.top
@@ -98,6 +111,7 @@ Scope {
 
                 // Barreira Direita
                 MouseArea {
+                    id: barrierRight
                     anchors {
                         right: parent.right
                         top: parent.top
@@ -112,6 +126,7 @@ Scope {
 
                 // Barreira de Baixo (Começa exatamente onde a Ilha termina)
                 MouseArea {
+                    id: barrierBottom
                     anchors {
                         left: parent.left
                         right: parent.right
@@ -148,11 +163,13 @@ Scope {
                     anchors.fill: parent
                     hoverEnabled: true
                     acceptedButtons: Qt.NoButton // <- Essa linha impede o roubo de cliques direitos!
-                    onEntered: {
+                    function rearm() {
                         if (root.islandState > 0 && !root.grabAlive) {
                             root.grabAlive = true;
                         }
                     }
+                    onEntered: rearm()
+                    onPositionChanged: rearm()
                 }
 
                 mask: Region {
