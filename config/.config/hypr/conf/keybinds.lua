@@ -8,13 +8,18 @@ hl.bind(mainMod .. "+ C", hl.dsp.window.close())
 hl.bind(mainMod .. "+ M", hl.dsp.exec_cmd("uwsm stop"))
 hl.bind(mainMod .. "+ V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. "+ R", hl.dsp.exec_cmd("uwsm app -- rofi-script"))
+hl.bind(mainMod .. "+ SHIFT + E", hl.dsp.exec_cmd("qs ipc call bar toggle_cc"))
 hl.bind(mainMod .. "+ PERIOD", hl.dsp.exec_cmd("uwsm app -- rofimoji --action copy"))
 hl.bind(mainMod .. "+ P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. "+ T", hl.dsp.layout("togglesplit"))
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
-hl.bind(mainMod .. "+ SHIFT + UP", hl.dsp.exec_cmd("swayosd-client --brightness raise"),
+-- hl.bind(mainMod .. "+ SHIFT + UP", hl.dsp.exec_cmd("swayosd-client --brightness raise"),
+--     { locked = true, repeating = true })
+-- hl.bind(mainMod .. "+ SHIFT + DOWN", hl.dsp.exec_cmd("swayosd-client --brightness lower"),
+--     { locked = true, repeating = true })
+hl.bind(mainMod .. "+ SHIFT + UP", hl.dsp.exec_cmd("brightnessctl set 5%+"),
     { locked = true, repeating = true })
-hl.bind(mainMod .. "+ SHIFT + DOWN", hl.dsp.exec_cmd("swayosd-client --brightness lower"),
+hl.bind(mainMod .. "+ SHIFT + DOWN", hl.dsp.exec_cmd("brightnessctl set 5%-"),
     { locked = true, repeating = true })
 hl.bind(mainMod .. "+ F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "+ SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))

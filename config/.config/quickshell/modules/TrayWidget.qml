@@ -86,6 +86,9 @@ Rectangle {
                             } else if (mouse.button === Qt.MiddleButton) {
                                 trayItem.modelData.secondaryActivate();
                             } else if (mouse.button === Qt.RightButton) {
+                                if (trayRoot.hostWindow && trayRoot.hostWindow.expectMenu) {
+                                    trayRoot.hostWindow.expectMenu();
+                                }
                                 let pos = trayItem.mapToItem(null, mouse.x, mouse.y);
                                 trayItem.modelData.display(trayRoot.hostWindow, pos.x, pos.y);
                             }

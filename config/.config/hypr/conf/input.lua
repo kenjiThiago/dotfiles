@@ -4,7 +4,7 @@ hl.config({
         kb_variant = "",
         kb_model = "",
         kb_options = "grp:win_space_toggle",
-        -- kb_options = grp:win_space_toggle
+        -- kb_options = "ctrl:nocaps",
         kb_rules = "",
 
         follow_mouse = 1,
@@ -18,6 +18,7 @@ hl.config({
         touchpad = {
             natural_scroll = true,
             scroll_factor = 0.4,
+            disable_while_typing = true,
         }
     }
 })

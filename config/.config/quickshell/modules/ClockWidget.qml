@@ -2,179 +2,115 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Io
 import Quickshell.Hyprland
-import Quickshell.Services.UPower
 import "."
 
 Rectangle {
     id: island
+
+    property int islandState: 0
+    property var hostWindow: null
+
+    signal requestState(int newState)
+    signal calendarRequested
+
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.top: parent.top
-    anchors.topMargin: 12
+    anchors.topMargin: 6
     clip: true
 
-    // ── A MÁGICA CONTRA O BUG DE INICIALIZAÇÃO ────────────────────────────────
     property bool isLoaded: false
-    Component.onCompleted: Qt.callLater(() => isLoaded = true)
-
-    // ── Estado ────────────────────────────────────────────────────────────────
-    property bool expanded: false
-    property string activeMode: "clock"
-    property real currentBrightness: -1
-
-    signal toggleRequested
-    signal calendarRequested
+    Component.onCompleted: Qt.callLater(function () {
+        island.isLoaded = true;
+    })
 
     readonly property var kanjiIcons: ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
 
-    // ── Bateria ───────────────────────────────────────────────────────────────
-    property var device: UPower.displayDevice
-    property bool isValid: device !== null
-
-    property int pct: isValid ? Math.round(device.percentage) * 100 : 0
-    property int battery_state: isValid ? device.state : UPowerDeviceState.Unknown
-
-    property bool isCharging: battery_state === UPowerDeviceState.Charging || battery_state === UPowerDeviceState.FullyCharged
-    property bool isCritical: pct <= 20
-    property bool isLow: pct <= 30
-
-    property string battIcon: {
-        if (isCharging)
-            return "󰂄";
-        if (pct <= 10)
-            return "󰁺";
-        if (pct <= 30)
-            return "󰁼";
-        if (pct <= 50)
-            return "󰁾";
-        if (pct <= 80)
-            return "󰂀";
-        return "󰁹";
-    }
-
-    property color battColor: {
-        if (isCharging)
-            return Theme.pine;
-        if (isCritical)
-            return Theme.love;
-        if (isLow)
-            return Theme.gold;
-        return Theme.pine;
-    }
-
-    // ── Perfil de energia ─────────────────────────────────────────────────────
-    readonly property string ppIcon: {
-        switch (PowerProfiles.profile) {
-        case PowerProfile.Performance:
-            return "󱐋";
-        case PowerProfile.PowerSaver:
-            return "󰌪";
-        default:
-            return "󰈐";
-        }
-    }
-
-    readonly property color ppColor: {
-        switch (PowerProfiles.profile) {
-        case PowerProfile.Performance:
-            return Theme.love;
-        case PowerProfile.PowerSaver:
-            return Theme.pine;
-        default:
-            return Theme.foam;
-        }
-    }
-
-    readonly property string ppLabel: {
-        switch (PowerProfiles.profile) {
-        case PowerProfile.Performance:
-            return "Performance";
-        case PowerProfile.PowerSaver:
-            return "Power Saver";
-        default:
-            return "Balanced";
-        }
-    }
-
-    function cycleProfile() {
-        switch (PowerProfiles.profile) {
-        case PowerProfile.Balanced:
-            PowerProfiles.profile = PowerProfile.PowerSaver;
-            break;
-        case PowerProfile.PowerSaver:
-            PowerProfiles.profile = PowerProfile.Performance;
-            break;
-        default:
-            PowerProfiles.profile = PowerProfile.Balanced;
-            break;
-        }
-    }
-
-    // ── Brilho ────────────────────────────────────────────────────────────────
+    // ── CONTROLE DO OSD ───────────────────────────────────────────────────────
+    property string activeMode: "clock"
     Timer {
         id: resetTimer
-        interval: 1500
+        interval: 1000
         onTriggered: island.activeMode = "clock"
     }
 
-    function showBrightness(val) {
-        currentBrightness = val;
-        activeMode = "brightness";
-        resetTimer.restart();
-    }
-
-    Process {
-        id: brightnessCmd
-        command: ["sh", "-c", "brightnessctl -m | cut -d, -f4 | tr -d %"]
-        running: false
-        stdout: SplitParser {
-            onRead: function (line) {
-                const newVal = parseInt(line.trim());
-                if (isNaN(newVal))
-                    return;
-
-                if (island.currentBrightness === -1) {
-                    island.currentBrightness = newVal;
-                } else if (newVal !== island.currentBrightness) {
-                    if (island.expanded && island.activeMode === "clock") {
-                        island.currentBrightness = newVal;
-                    } else {
-                        island.showBrightness(newVal);
-                    }
-                }
+    Connections {
+        target: SystemMonitor
+        function onOsdRequested(newVal) {
+            if (island.islandState !== 2) {
+                island.activeMode = "brightness";
+                resetTimer.restart();
             }
         }
     }
 
-    Process {
-        id: writeBrightnessCmd
-        running: false
+    // ── MATEMÁTICA DA UI E ESTADOS ────────────────────────────────────────────
+    Text {
+        id: measureS0
+        text: Time.timeString
+        font.family: "Hack Nerd Font"
+        font.pixelSize: 14
+        font.weight: Font.Bold
+        visible: false
+    }
+    Text {
+        id: measureS1Clock
+        text: Time.timeString
+        font.family: "Hack Nerd Font"
+        font.pixelSize: 24
+        font.weight: Font.Bold
+        visible: false
+    }
+    Text {
+        id: measureS1Date
+        text: Time.dateString
+        font.family: "Hack Nerd Font"
+        font.pixelSize: 11
+        visible: false
     }
 
-    function setHardwareBrightness(percent) {
-        let safePct = Math.max(0, Math.min(100, Math.round(percent)));
-        writeBrightnessCmd.command = ["sh", "-c", "brightnessctl set " + safePct + "%"];
-        writeBrightnessCmd.running = true;
-    }
+    property real wsBaseW: wsRow.implicitWidth
+    property real wsW: wsBaseW + 28
 
-    Timer {
-        interval: 100
-        running: true
-        repeat: true
-        onTriggered: brightnessCmd.running = true
-    }
+    property real statusW: statusItems.implicitWidth + 34
+    property real clockS0W: measureS0.implicitWidth + 28
+    property real clockS1W: Math.max(measureS1Clock.implicitWidth, measureS1Date.implicitWidth) + 42
 
-    // ── Dimensões e animações da Raiz (Dynamic Island Clássico) ───────────────
+    property real alertW: state0Alerts.width
+    property real state0Width: island.clockS0W + 34 + island.wsW + island.alertW
+    property real state1Width: 64 + island.wsW + island.clockS1W + island.statusW
+
     implicitWidth: {
-        if (activeMode === "brightness")
+        if (island.activeMode === "brightness")
             return 260;
-        let currentContent = expanded ? expandedView.implicitWidth : collapsedView.implicitWidth;
-        return wsRow.implicitWidth + currentContent + 70;
+        if (island.islandState === 0)
+            return island.state0Width;
+        if (island.islandState === 1)
+            return island.state1Width;
+        return 450;
     }
-    implicitHeight: expanded ? 72 : 36
-    radius: expanded ? 20 : Math.min(height / 2, 26)
+
+    implicitHeight: {
+        if (island.activeMode === "brightness")
+            return 36;
+        if (island.islandState === 0)
+            return 36;
+        if (island.islandState === 1)
+            return 64;
+        return 300;
+    }
+
+    radius: {
+        if (island.islandState === 0)
+            return 19;
+        if (island.islandState === 1)
+            return 32;
+        return 24;
+    }
+
     color: Theme.base
+    border.color: Theme.overlay
+    border.width: 1
 
     Behavior on implicitWidth {
         enabled: island.isLoaded
@@ -198,185 +134,291 @@ Rectangle {
         }
     }
 
-    HoverHandler {
-        cursorShape: Qt.PointingHandCursor
-    }
-
     MouseArea {
-        id: islandMouseArea
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            if (island.activeMode !== "brightness")
-                island.toggleRequested();
+        onClicked: function (mouse) {
+            if (island.activeMode !== "brightness") {
+                if (island.islandState === 0)
+                    island.requestState(1);
+                else
+                    island.requestState(0);
+            }
         }
     }
 
-    // ── Dashboard Principal ───────────────────────────────────────────────────
-    Row {
-        anchors.centerIn: parent
-        spacing: 16
-        opacity: island.activeMode !== "brightness" ? 1 : 0
+    // ==========================================================================
+    // ── CAMADA 1: A PÍLULA (ESTADOS 0 E 1) ────────────────────────────────────
+    // ==========================================================================
+    Item {
+        anchors.fill: parent
+        opacity: (island.islandState < 2 && island.activeMode === "clock") ? 1 : 0
         visible: opacity > 0
+        // Behavior on opacity {
+        //     NumberAnimation {
+        //         duration: 250
+        //     }
+        // }
 
-        // ── Workspaces ────────────────────────────────────────────────────────────
         Row {
-            id: wsRow
-            spacing: 6
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.centerIn: parent
+            height: parent.height
+            spacing: island.islandState === 1 ? 16 : 0
 
-            Repeater {
-                model: Hyprland.workspaces
-                delegate: Item {
-                    id: wsDelegate
-                    required property HyprlandWorkspace modelData
-                    readonly property bool isActive: wsDelegate.modelData.focused
-                    readonly property string kanjiIcon: {
-                        const idx = wsDelegate.modelData.id - 1;
-                        return (idx >= 0 && idx < island.kanjiIcons.length) ? island.kanjiIcons[idx] : wsDelegate.modelData.name;
-                    }
-
-                    width: isActive ? 50 : 27
-                    height: 26
-                    Behavior on width {
-                        NumberAnimation {
-                            duration: 400
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: 13
-                        color: wsDelegate.isActive ? Theme.rose : Theme.surface
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: wsDelegate.kanjiIcon
-                            color: wsDelegate.isActive ? Theme.base : Theme.muted
-                            font.family: "Hack Nerd Font"
-                            font.pixelSize: 12
-                            font.weight: Font.Bold
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: 150
-                                }
-                            }
-                        }
-                    }
-
-                    TapHandler {
-                        onTapped: function (eventPoint) {
-                            eventPoint.accepted = true;
-                            wsDelegate.modelData.activate();
-                        }
-                    }
-                }
-            }
-        }
-
-        // ── Divisor Estético ──────────────────────────────────────────────────────
-        Rectangle {
-            width: 1
-            height: island.expanded ? 40 : 18
-            color: Theme.overlay
-            anchors.verticalCenter: parent.verticalCenter
-            Behavior on height {
+            Behavior on spacing {
                 NumberAnimation {
                     duration: 400
                     easing.type: Easing.OutCubic
                 }
             }
-        }
 
-        // ── Área do Relógio / Painel Expandido ────────────────────────────────────
-        Item {
-            anchors.verticalCenter: parent.verticalCenter
-            width: island.expanded ? expandedView.implicitWidth : collapsedView.implicitWidth
-            height: island.expanded ? expandedView.implicitHeight : collapsedView.implicitHeight
-
-            // 1. Visão Colapsada (Apenas Relógio)
-            Text {
-                id: collapsedView
-                anchors.centerIn: parent
-                opacity: !island.expanded ? 1 : 0
-                visible: opacity > 0
-                text: Time.timeString
-                color: Theme.rose
-                font.family: "Hack Nerd Font"
-                font.pixelSize: 13
-                font.weight: Font.Bold
-            }
-
-            // 2. Visão Expandida
-            Row {
-                id: expandedView
-                anchors.centerIn: parent
-                spacing: 16
-                opacity: island.expanded ? 1 : 0
-                visible: opacity > 0
-
-                // Relógio e Data Expandidos
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 0
-                    Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: Time.timeString
-                        color: Theme.rose
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 26
-                        font.weight: Font.Bold
+            // ESQUERDA: WORKSPACES
+            Item {
+                width: island.wsW
+                height: parent.height
+                clip: true
+                opacity: 1
+                Behavior on width {
+                    NumberAnimation {
+                        duration: 400
+                        easing.type: Easing.OutCubic
                     }
-                    Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: Time.dateString
-                        color: Theme.text
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 11
-                    }
-                    TapHandler {
-                        onTapped: function (e) {
-                            e.accepted = true;
-                            island.calendarRequested();
+                }
+
+                Row {
+                    id: wsRow
+                    anchors.centerIn: parent
+                    spacing: 6
+                    Repeater {
+                        model: Hyprland.workspaces
+                        delegate: Rectangle {
+                            id: wsDelegate
+                            required property var modelData
+                            readonly property bool isActive: modelData.focused
+                            width: isActive ? 36 : 24
+                            height: 24
+                            radius: 12
+                            color: isActive ? Theme.rose : "transparent"
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: 300
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 200
+                                }
+                            }
+                            Text {
+                                anchors.centerIn: parent
+                                color: wsDelegate.isActive ? Theme.base : Theme.muted
+                                font.family: "Hack Nerd Font"
+                                font.pixelSize: 13
+                                font.weight: Font.Bold
+                                text: {
+                                    if (wsDelegate.modelData.name.startsWith("special") || wsDelegate.modelData.id < 0) {
+                                        return "";
+                                    }
+                                    const idx = wsDelegate.modelData.id - 1;
+                                    return (idx >= 0 && idx < island.kanjiIcons.length) ? island.kanjiIcons[idx] : wsDelegate.modelData.name;
+                                }
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: function (m) {
+                                    m.accepted = true;
+                                    wsDelegate.modelData.activate();
+                                }
+                            }
                         }
                     }
                 }
+            }
 
-                // Divisor Interno da Visão Expandida
-                Rectangle {
-                    width: 1
-                    height: 40
-                    color: Theme.overlay
-                    anchors.verticalCenter: parent.verticalCenter
+            // CENTRO: RELÓGIO (BOTÃO)
+            Rectangle {
+                id: clockBtn
+                width: island.islandState === 1 ? island.clockS1W : island.clockS0W
+                height: island.islandState === 1 ? 46 : 32
+                anchors.verticalCenter: parent.verticalCenter
+                radius: height / 2
+                color: clockMouse.pressed ? Theme.overlay : (clockMouse.containsMouse && island.islandState === 1 ? Theme.surface : "transparent")
+
+                Behavior on width {
+                    NumberAnimation {
+                        duration: 400
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on height {
+                    NumberAnimation {
+                        duration: 400
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 150
+                    }
                 }
 
-                // Controles Rápidos (Bateria, Perfil, Brilho)
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
+                Item {
+                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.height
+                    Text {
+                        anchors.centerIn: parent
+                        text: Time.timeString
+                        color: Theme.rose
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 14
+                        font.weight: Font.Bold
+                        opacity: island.islandState === 0 ? 1 : 0
+                        visible: opacity > 0
+                        // Behavior on opacity {
+                        //     NumberAnimation {
+                        //         duration: 200
+                        //     }
+                        // }
+                    }
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 1
+                        opacity: island.islandState === 1 ? 1 : 0
+                        visible: opacity > 0
+                        // Behavior on opacity {
+                        //     NumberAnimation {
+                        //         duration: 200
+                        //     }
+                        // }
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: Time.timeString
+                            color: Theme.rose
+                            font.family: "Hack Nerd Font"
+                            font.pixelSize: 24
+                            font.weight: Font.Bold
+                        }
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: Time.dateString
+                            color: Theme.text
+                            font.family: "Hack Nerd Font"
+                            font.pixelSize: 11
+                        }
+                    }
+                }
+                MouseArea {
+                    id: clockMouse
+                    anchors.fill: parent
+                    hoverEnabled: island.islandState === 1
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: function (m) {
+                        m.accepted = true;
+                        if (island.islandState === 0)
+                            island.requestState(1);
+                        else
+                            island.calendarRequested();
+                    }
+                }
+            }
+
+            Item {
+                id: state0Alerts
+
+                width: island.islandState === 0 && alertRow.implicitWidth > 0 ? alertRow.implicitWidth + 28 : 0
+                height: parent.height
+                clip: true
+                opacity: island.islandState === 0 ? 1 : 0
+                visible: opacity > 0
+
+                Behavior on width {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                Row {
+                    id: alertRow
+                    anchors.centerIn: parent
                     spacing: 8
 
+                    Text {
+                        text: "󰈸"
+                        color: Theme.love
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 15
+
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        anchors.verticalCenterOffset: -1
+
+                        visible: SystemMonitor.tempC >= 80
+                    }
+
+                    Text {
+                        text: "󰂃"
+                        color: Theme.love
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 15
+
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.verticalCenterOffset: -1
+
+                        visible: SystemMonitor.pct <= 20 && !SystemMonitor.isCharging
+                    }
+                }
+            }
+
+            // DIREITA: STATUS E ALERTAS
+            Item {
+                width: island.islandState === 1 ? island.statusW : 0
+                height: parent.height
+                clip: true
+                opacity: island.islandState === 1 ? 1 : 0
+                visible: opacity > 0
+                Behavior on width {
+                    NumberAnimation {
+                        duration: 400
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                Rectangle {
+                    id: statusBtn
+                    anchors.centerIn: parent
+                    width: island.statusW
+                    height: 38
+                    radius: 19
+                    color: statusMouse.pressed ? Theme.overlay : (statusMouse.containsMouse ? Theme.surface : "transparent")
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+                    }
+
                     Row {
+                        id: statusItems
+                        anchors.centerIn: parent
                         spacing: 12
 
-                        // Status da Bateria
                         Row {
-                            spacing: 5
+                            spacing: 6
+                            anchors.verticalCenter: parent.verticalCenter
                             Text {
-                                text: island.battIcon
-                                color: island.battColor
+                                text: SystemMonitor.isMuted ? "󰝟" : "󰕾"
+                                color: Theme.foam
                                 font.family: "Hack Nerd Font"
-                                font.pixelSize: 14
-                                anchors.verticalCenter: parent.verticalCenter
+                                font.pixelSize: 16
                             }
                             Text {
-                                text: island.pct + "%"
-                                color: island.battColor
+                                text: SystemMonitor.volumePct + "%"
+                                color: Theme.text
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 12
                                 font.weight: Font.Bold
@@ -384,91 +426,34 @@ Rectangle {
                             }
                         }
 
-                        // Divisor Menor
-                        Rectangle {
-                            width: 1
-                            height: 12
-                            color: Theme.overlay
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        // Perfil de Energia
                         Row {
-                            spacing: 5
+                            spacing: 6
+                            anchors.verticalCenter: parent.verticalCenter
                             Text {
-                                text: island.ppIcon
-                                color: island.ppColor
+                                text: SystemMonitor.battIcon
+                                color: SystemMonitor.isCharging ? Theme.pine : Theme.text
                                 font.family: "Hack Nerd Font"
-                                font.pixelSize: 14
+                                font.pixelSize: 15
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                             Text {
-                                text: island.ppLabel
-                                color: island.ppColor
+                                text: SystemMonitor.pct + "%"
+                                color: Theme.text
                                 font.family: "Hack Nerd Font"
-                                font.pixelSize: 11
+                                font.pixelSize: 12
                                 font.weight: Font.Bold
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-                            TapHandler {
-                                onTapped: function (e) {
-                                    e.accepted = true;
-                                    island.cycleProfile();
-                                }
-                            }
                         }
                     }
-
-                    // Slider de Brilho Interno
-                    Row {
-                        spacing: 6
-                        Text {
-                            text: "󰃠"
-                            color: Theme.text
-                            font.family: "Hack Nerd Font"
-                            font.pixelSize: 13
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-                        Rectangle {
-                            width: 140
-                            height: 4
-                            radius: 2
-                            color: Theme.surface
-                            anchors.verticalCenter: parent.verticalCenter
-                            Rectangle {
-                                anchors.left: parent.left
-                                anchors.top: parent.top
-                                anchors.bottom: parent.bottom
-                                radius: 2
-                                color: Theme.gold
-                                width: parent.width * (island.currentBrightness / 100)
-                                Behavior on width {
-                                    NumberAnimation {
-                                        duration: 150
-                                        easing.type: Easing.OutQuad
-                                    }
-                                }
-                                Rectangle {
-                                    width: 10
-                                    height: 10
-                                    radius: 5
-                                    color: Theme.gold
-                                    anchors.horizontalCenter: parent.right
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-                            }
-                            MouseArea {
-                                anchors.fill: parent
-                                anchors.margins: -8
-                                cursorShape: Qt.PointingHandCursor
-                                onPressed: function (mouse) {
-                                    island.setHardwareBrightness((mouse.x / parent.width) * 100);
-                                }
-                                onPositionChanged: function (mouse) {
-                                    if (pressed)
-                                        island.setHardwareBrightness((mouse.x / parent.width) * 100);
-                                }
-                            }
+                    MouseArea {
+                        id: statusMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: function (m) {
+                            m.accepted = true;
+                            island.requestState(2);
                         }
                     }
                 }
@@ -476,12 +461,19 @@ Rectangle {
         }
     }
 
-    // ── OSD de brilho ─────────────────────────────────────────────────────────
+    // ==========================================================================
+    // ── CAMADA OSD: BRILHO ────────────────────────────────────────────────────
+    // ==========================================================================
     RowLayout {
         anchors.centerIn: parent
         spacing: 12
         opacity: island.activeMode === "brightness" ? 1 : 0
         visible: opacity > 0
+        // Behavior on opacity {
+        //     NumberAnimation {
+        //         duration: 200
+        //     }
+        // }
 
         Text {
             text: "󰃠"
@@ -489,7 +481,6 @@ Rectangle {
             font.family: "Hack Nerd Font"
             font.pixelSize: 16
         }
-
         Rectangle {
             Layout.preferredWidth: 160
             Layout.preferredHeight: 6
@@ -501,7 +492,7 @@ Rectangle {
                 anchors.bottom: parent.bottom
                 radius: 3
                 color: Theme.gold
-                width: parent.width * (island.currentBrightness / 100)
+                width: parent.width * (SystemMonitor.currentBrightness / 100)
                 Behavior on width {
                     NumberAnimation {
                         duration: 150
@@ -521,14 +512,35 @@ Rectangle {
                 anchors.fill: parent
                 anchors.margins: -8
                 cursorShape: Qt.PointingHandCursor
-                onPressed: function (mouse) {
-                    island.setHardwareBrightness((mouse.x / parent.width) * 100);
+                onPressed: function (m) {
+                    SystemMonitor.setBrightness((m.x / parent.width) * 100);
                 }
-                onPositionChanged: function (mouse) {
+                onPositionChanged: function (m) {
                     if (pressed)
-                        island.setHardwareBrightness((mouse.x / parent.width) * 100);
+                        SystemMonitor.setBrightness((m.x / parent.width) * 100);
                 }
             }
         }
+    }
+
+    // ==========================================================================
+    // ── CAMADA 2: INJETA O CONTROLE CENTRAL MODULAR ───────────────────────────
+    // ==========================================================================
+    ControlCenter {
+        width: parent.width
+        y: 0
+
+        hostWindow: island.hostWindow
+        opacity: island.islandState === 2 ? 1 : 0
+        visible: opacity > 0
+        // Behavior on opacity {
+        //     NumberAnimation {
+        //         duration: 300
+        //         easing.type: Easing.OutCubic
+        //     }
+        // }
+
+        onRequestClose: island.requestState(0)
+        onRequestCalendar: island.calendarRequested()
     }
 }

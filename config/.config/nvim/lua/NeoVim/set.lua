@@ -37,7 +37,7 @@ vim.opt.updatetime = 50
 vim.opt.showmode = false
 
 vim.opt.pumheight = 10
-vim.opt.winborder = "rounded"
+vim.opt.winborder = "double"
 -- vim.opt.cmdheight = 0
 
 vim.opt.colorcolumn = "80"

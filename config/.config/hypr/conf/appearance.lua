@@ -13,7 +13,7 @@ hl.config({
 
     general = {
         gaps_in = 5,
-        gaps_out = 12,
+        gaps_out = 8,
 
         border_size = 2,
 
@@ -33,7 +33,7 @@ hl.config({
     },
 
     decoration = {
-        rounding = 8,
+        rounding = 4,
 
         -- Change transparency of focused and unfocused windows
         active_opacity = 1.0,
@@ -96,6 +96,7 @@ hl.animation({ leaf = "windowsMove", enabled = true, speed = 4, bezier = "bounce
 
 -- Fading
 hl.animation({ leaf = "fade", enabled = true, speed = 2.5, bezier = "fluent_decel" })
+hl.animation({ leaf = "fadeSwitch", enabled = false })
 
 -- Elementos Desabilitados (0 -> enabled = false)
 hl.animation({ leaf = "fadeLayersIn", enabled = false })
@@ -106,7 +107,7 @@ hl.animation({ leaf = "layersOut", enabled = true, speed = 1, bezier = "default"
 hl.animation({ leaf = "layersIn", enabled = true, speed = 2, bezier = "easeinoutsine", style = "popin" })
 
 -- Workspaces
-hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "fluent_decel", style = "slidefade 30%" })
--- hl.animation({ leaf = "workspaces",    enabled = true,  speed = 3,   bezier = "fluent_decel",  style = "slidefadevert 30%" })
+-- hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "fluent_decel", style = "slidefade 30%" })
+hl.animation({ leaf = "workspaces",    enabled = true,  speed = 3,   bezier = "fluent_decel",  style = "slidefadevert -30%" })
 
 hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 2, bezier = "fluent_decel", style = "slidefade 10%" })

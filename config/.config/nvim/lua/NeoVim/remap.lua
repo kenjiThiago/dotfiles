@@ -59,11 +59,11 @@ vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
 vim.keymap.set("n", "<leader>gc", ":Comp")
 
 --ShowWhiteSpaces
-vim.cmd("highlight ws ctermbg=magenta guibg=magenta | match ws /\\s\\+$/")
+vim.cmd("match TrailingWhitespace /\\s\\+$/")
 local toggle_ws = true
 vim.api.nvim_create_user_command("ShowWhiteSpaces", function()
     if not toggle_ws then
-        vim.cmd("highlight ws ctermbg=magenta guibg=magenta | match ws /\\s\\+$/")
+        vim.cmd("match TrailingWhitespace /\\s\\+$/")
         toggle_ws = true
     else
         vim.cmd("match none")

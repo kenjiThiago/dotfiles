@@ -2,11 +2,10 @@ module Modules
 
 singleton Theme 1.0 Theme.qml
 singleton Time 1.0 Time.qml
+singleton SystemMonitor 1.0 SystemMonitor.qml
 
-AudioWidget 1.0 AudioWidget.qml
 Bar 1.0 Bar.qml
-BatteryContextWidget 1.0 BatteryContextWidget.qml
 CalendarWidget 1.0 CalendarWidget.qml
 ClockWidget 1.0 ClockWidget.qml
+ControlCenter 1.0 ControlCenter.qml
 TrayWidget 1.0 TrayWidget.qml
-WindowWidget 1.0 WindowWidget.qml

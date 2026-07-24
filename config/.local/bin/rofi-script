@@ -106,7 +106,7 @@ take_screenshot() {
         region)
             hyprpicker -r -z >/dev/null 2>&1 &
             local pid=$!
-            sleep 0.1
+            sleep 0.5
             selection=$(slurp -b 00000044 -s 00000000 2>/dev/null)
             kill $pid 2>/dev/null
             ;;
