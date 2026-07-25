@@ -60,7 +60,7 @@ mkdir -p "$SCREENSHOT_DIR" "$WALLPAPER_DIR"
 # ── Utilitários ───────────────────────────────────────────────────────────────
 
 toggle_existing_menu() {
-    pgrep -x "rofi" && { killall rofi; exit 0; }
+    pgrep -x "rofi" >/dev/null && { killall rofi; exit 0; }
 }
 
 back_to() {
@@ -98,6 +98,10 @@ take_screenshot() {
     local mode="$1"
     local filepath="$SCREENSHOT_DIR/screenshot-$(date +'%Y-%m-%d_%H-%M-%S').png"
     local selection=""
+    local picker_pid=""
+
+    # Descongela em qualquer saída, para a tela nunca ficar presa.
+    trap '[[ -n "$picker_pid" ]] && kill "$picker_pid" 2>/dev/null' EXIT
 
     sleep 0.25
     pkill slurp
@@ -105,10 +109,9 @@ take_screenshot() {
     case "$mode" in
         region)
             hyprpicker -r -z >/dev/null 2>&1 &
-            local pid=$!
+            picker_pid=$!
             sleep 0.5
             selection=$(slurp -b 00000044 -s 00000000 2>/dev/null)
-            kill $pid 2>/dev/null
             ;;
         fullscreen)
             selection=$(hyprctl monitors -j | jq -r '.[] | select(.focused==true) | "\(.x),\(.y) \(.width)x\(.height)"')
@@ -117,7 +120,12 @@ take_screenshot() {
 
     [[ -z "$selection" ]] && exit 0
 
+    # Captura com a tela AINDA congelada; só então descongela. Senão o grim
+    # pegaria o frame ao vivo, diferente do que você viu (incoerência c/ movimento).
     grim -g "$selection" "$filepath" || exit 1
+    [[ -n "$picker_pid" ]] && kill "$picker_pid" 2>/dev/null
+    picker_pid=""
+
     wl-copy < "$filepath"
 
     local action
