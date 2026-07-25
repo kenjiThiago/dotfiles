@@ -8,6 +8,7 @@
 git
 stow
 base-devel
+xdg-user-dirs                # cria ~/Imagens etc., usado pelo rofi-script
 
 # ── Hyprland e companhia ──────────────────────────────────────────────────────
 hyprland

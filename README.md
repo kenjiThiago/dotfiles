@@ -21,6 +21,19 @@ cd ~/dotfiles
 ./install.sh              # ou ./install.sh --dry para só ver o que faria
 ```
 
+O que ele faz, em ordem: instala os pacotes de `packages.txt` com o paru
+(compilando o paru antes, se preciso), limpa symlinks de um layout antigo,
+linka os pacotes em `~`, aplica o tema, habilita `NetworkManager` e
+`power-profiles-daemon`, roda o `xdg-user-dirs-update`, troca seu shell para
+zsh e baixa os plugins do tmux e do neovim.
+
+Cada etapa é pulável — `--skip-packages`, `--skip-services`, `--skip-plugins`
+— e tudo é idempotente: rodar de novo não quebra nada.
+
+Sobra só o que não dá para automatizar: reiniciar a sessão do Hyprland e abrir
+o Zen Browser uma vez (o perfil só existe depois disso) e rodar `theme set` de
+novo para criar os symlinks de CSS dentro dele.
+
 ## Stow
 
 Cada diretório dentro de `packages/` é um pacote independente, com a estrutura
