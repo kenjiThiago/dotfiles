@@ -4,7 +4,6 @@
 
 @media (prefers-color-scheme: dark) {
 
-  /* Accent único e consistente. Para trocar o tom, mude só estas duas. */
   :root {
     --accent: var(--love);
     --accent-hover: var(--iris);
