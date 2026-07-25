@@ -9,7 +9,7 @@
 # Etapas, nesta ordem:
 #   1. checa dependências mínimas (git, stow, paru)
 #   2. instala os pacotes de packages.txt
-#   3. linka os pacotes do stow em ~ (dots link)
+#   3. limpa links do layout antigo e linka os pacotes em ~ (dots)
 #   4. aplica o tema (theme set)
 #   5. avisos finais (shell padrão, tpm, etc.)
 #
@@ -92,11 +92,17 @@ else
 fi
 
 # ── 3. Symlinks ───────────────────────────────────────────────────────────────
-msg "Linkando as configurações em ~"
-
 dots_args=()
 if [[ $DRY == 1 ]]; then dots_args+=(--dry); fi
-"$DOTFILES/packages/bin/.local/bin/dots" link "${dots_args[@]}"
+DOTS="$DOTFILES/packages/bin/.local/bin/dots"
+
+# Numa máquina que já teve o layout antigo, sobram symlinks apontando para
+# <repo>/config/. O stow se recusa a sobrescrever, então limpa antes.
+msg "Procurando symlinks do layout antigo"
+"$DOTS" migrate "${dots_args[@]}"
+
+msg "Linkando as configurações em ~"
+"$DOTS" link "${dots_args[@]}"
 
 # ── 4. Tema ───────────────────────────────────────────────────────────────────
 msg "Aplicando o tema '$THEME_NAME'"

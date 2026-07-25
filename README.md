@@ -41,8 +41,15 @@ dots link                # linka tudo
 dots link nvim waybar    # linka só alguns
 dots unlink waybar
 dots relink nvim         # depois de renomear/mover arquivos
+dots migrate             # limpa symlinks quebrados que apontam para o repo
 dots link --dry          # simula
 ```
+
+`dots migrate` existe para quando o stow recusa com *"existing target is not
+owned by stow"*: são links de um layout anterior, apontando para caminhos que
+não existem mais. Ele só remove symlinks que apontam para dentro deste
+repositório **e** já não resolvem — arquivo de verdade, diretório e link para
+outro lugar ficam intactos. O `install.sh` roda isso antes de linkar.
 
 `dots` sempre usa `--no-folding`. Isso é importante: sem ele o stow criaria
 `~/.config/waybar` como um symlink para o repositório, e aí qualquer arquivo
