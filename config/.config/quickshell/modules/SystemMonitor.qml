@@ -112,20 +112,68 @@ Item {
     property int cpuPct: 0
     property int ramPct: 0
     property int tempC: 0
-    Process {
-        id: hwMonitor
-        command: ["bash", "-c", "while true; do read -r _ u1 n1 s1 i1 io1 ir1 si1 st1 _ < /proc/stat; sleep 2; read -r _ u2 n2 s2 i2 io2 ir2 si2 st2 _ < /proc/stat; t1=$((u1+n1+s1+i1+io1+ir1+si1+st1)); t2=$((u2+n2+s2+i2+io2+ir2+si2+st2)); id1=$((i1+io1)); id2=$((i2+io2)); diff_t=$((t2-t1)); diff_id=$((id2-id1)); if [ $diff_t -eq 0 ]; then cpu=0; else cpu=$(( 100 * (diff_t - diff_id) / diff_t )); fi; ram=$(free -m | awk 'NR==2{printf \"%d\", $3*100/$2}'); temp=$(cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null | head -n 1 | awk '{print int($1/1000)}'); echo \"$cpu,$ram,${temp:-0}\"; done"]
-        running: true
-        stdout: SplitParser {
-            onRead: function (data) {
-                let parts = data.split(",");
-                if (parts.length >= 3) {
-                    sys.cpuPct = parseInt(parts[0]);
-                    sys.ramPct = parseInt(parts[1]);
-                    sys.tempC = parseInt(parts[2]);
-                }
-            }
+
+    property real prevCpuTotal: -1
+    property real prevCpuIdle: 0
+
+    FileView {
+        id: statFile
+        path: "/proc/stat"
+        blockLoading: true
+    }
+    FileView {
+        id: memFile
+        path: "/proc/meminfo"
+        blockLoading: true
+    }
+    FileView {
+        id: tempFile
+        path: "/sys/class/thermal/thermal_zone0/temp"
+        blockLoading: true
+    }
+
+    function meminfoKb(text, key) {
+        const m = text.match(new RegExp("^" + key + ":\\s+(\\d+)", "m"));
+        return m ? parseInt(m[1]) : 0;
+    }
+
+    function refreshHardware() {
+        statFile.reload();
+        memFile.reload();
+        tempFile.reload();
+
+        const cpu = statFile.text().split("\n")[0].trim().split(/\s+/);
+        if (cpu.length >= 9) {
+            let total = 0;
+            for (let i = 1; i <= 8; i++)
+                total += parseInt(cpu[i]);
+            const idle = parseInt(cpu[4]) + parseInt(cpu[5]);
+            const dTotal = total - sys.prevCpuTotal;
+            const dIdle = idle - sys.prevCpuIdle;
+            if (sys.prevCpuTotal >= 0 && dTotal > 0)
+                sys.cpuPct = Math.floor(100 * (dTotal - dIdle) / dTotal);
+            sys.prevCpuTotal = total;
+            sys.prevCpuIdle = idle;
         }
+
+        const mem = memFile.text();
+        const memTotal = sys.meminfoKb(mem, "MemTotal");
+        if (memTotal > 0) {
+            const used = memTotal - sys.meminfoKb(mem, "MemAvailable");
+            sys.ramPct = Math.floor(100 * used / memTotal);
+        }
+
+        const t = parseInt(tempFile.text());
+        if (!isNaN(t))
+            sys.tempC = Math.floor(t / 1000);
+    }
+
+    Timer {
+        interval: 2000
+        running: true
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: sys.refreshHardware()
     }
 
     Process {
@@ -140,7 +188,44 @@ Item {
 
     // ── BRILHO E OSD ──────────────────────────────────────────────────────────
     property real currentBrightness: -1
+    property string brightnessPath: ""
+    property int brightnessMax: 0
     signal osdRequested(real newVal)
+
+    function applyBrightness(newVal) {
+        if (isNaN(newVal))
+            return;
+        if (sys.currentBrightness === -1) {
+            sys.currentBrightness = newVal;
+        } else if (newVal !== sys.currentBrightness) {
+            sys.currentBrightness = newVal;
+            sys.osdRequested(newVal);
+        }
+    }
+
+    Process {
+        id: detectBacklight
+        command: ["brightnessctl", "-m"]
+        running: true
+        stdout: SplitParser {
+            onRead: function (line) {
+                const f = line.trim().split(",");
+                if (f.length < 5)
+                    return;
+                const max = parseInt(f[4]);
+                if (isNaN(max) || max <= 0)
+                    return;
+                sys.brightnessMax = max;
+                sys.brightnessPath = (f[1] === "backlight" ? "/sys/class/backlight/" : "/sys/class/leds/") + f[0] + "/brightness";
+            }
+        }
+    }
+
+    FileView {
+        id: brightnessFile
+        path: sys.brightnessPath
+        blockLoading: true
+    }
 
     Process {
         id: brightnessCmd
@@ -148,15 +233,7 @@ Item {
         running: false
         stdout: SplitParser {
             onRead: function (line) {
-                const newVal = parseInt(line.trim());
-                if (isNaN(newVal))
-                    return;
-                if (sys.currentBrightness === -1) {
-                    sys.currentBrightness = newVal;
-                } else if (newVal !== sys.currentBrightness) {
-                    sys.currentBrightness = newVal;
-                    sys.osdRequested(newVal);
-                }
+                sys.applyBrightness(parseInt(line.trim()));
             }
         }
     }
@@ -174,6 +251,13 @@ Item {
         interval: 100
         running: true
         repeat: true
-        onTriggered: brightnessCmd.running = true
+        onTriggered: {
+            if (sys.brightnessPath === "") {
+                brightnessCmd.running = true;
+                return;
+            }
+            brightnessFile.reload();
+            sys.applyBrightness(Math.round(100 * parseInt(brightnessFile.text()) / sys.brightnessMax));
+        }
     }
 }

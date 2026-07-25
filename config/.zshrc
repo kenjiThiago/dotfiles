@@ -32,7 +32,8 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 alias nv="nvim"
 alias ls="eza --color=always --icons=auto"
 alias c="clear"
-alias ll="eza -lA --color=always --icons=auto"
+alias ll="eza -lAF --color=always --icons=auto"
+alias l="eza -AF --color=always --icons=auto"
 # alias cat="bat --paging=never"
 
 # Inicia fzf
