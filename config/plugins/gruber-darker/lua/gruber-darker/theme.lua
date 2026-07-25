@@ -116,6 +116,18 @@ function M.setup()
         yamlDocumentStart = { fg = palette.burgundy, bold = true },
         yamlDocumentEnd = { fg = palette.burgundy, bold = true },
 
+        -- Sintaxe Nativa Específica: OWL / XML (Web Ontology Language / RDF)
+        xmlTag = { fg = palette.plum },
+        xmlEndTag = { fg = palette.plum },
+        xmlTagName = { fg = palette.crimson },
+        xmlAttrib = { fg = palette.terracotta },
+        xmlString = { link = "String" },
+        xmlEqual = { fg = palette.fg },
+        owlOntology = { fg = palette.burgundy, bold = true },
+        owlClass = { fg = palette.plum },
+        owlProperty = { fg = palette.terracotta },
+        owlRestriction = { fg = palette.crimson },
+
         -- Sintaxe Nativa Específica: CSV / Rainbow
         csvCol0 = { fg = palette.fg },
         csvCol1 = { fg = palette.crimson },
@@ -190,6 +202,12 @@ function M.setup()
         ["@comment.documentation"] = { link = "Comment" },
         ["@comment.todo"] = { link = "Todo" },
         ["@property.yaml"] = { link = "@property" },
+
+        -- Tree-Sitter: Tags (Usado por XML, HTML, e formatos OWL baseados em RDF)
+        ["@tag"] = { fg = palette.crimson },
+        ["@tag.builtin"] = { fg = palette.crimson },
+        ["@tag.attribute"] = { fg = palette.terracotta },
+        ["@tag.delimiter"] = { fg = palette.plum },
 
         ["@markup.heading.1"] = { fg = palette.crimson, bold = true },
         ["@markup.heading.2"] = { fg = palette.terracotta, bold = true },
