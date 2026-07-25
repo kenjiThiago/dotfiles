@@ -4,13 +4,19 @@
 
 @media (prefers-color-scheme: dark) {
 
+  /* Accent único e consistente. Para trocar o tom, mude só estas duas. */
+  :root {
+    --accent: var(--love);
+    --accent-hover: var(--iris);
+  }
+
   /* Common variables affecting all pages */
   @-moz-document url-prefix("about:") {
     :root {
       --in-content-page-color: var(--text) !important;
-      --color-accent-primary: var(--love) !important;
-      --color-accent-primary-hover: var(--rose) !important;
-      --color-accent-primary-active: var(--love) !important;
+      --color-accent-primary: var(--accent) !important;
+      --color-accent-primary-hover: var(--accent-hover) !important;
+      --color-accent-primary-active: var(--accent) !important;
       background-color: var(--surface) !important;
       --in-content-page-background: var(--surface) !important;
     }
@@ -26,13 +32,11 @@
     }
 
     .icon {
-      color: var(--love) !important;
+      color: var(--accent) !important;
     }
 
     .search-wrapper .logo-and-wordmark .logo {
-      /* Se você tiver um logotipo específico para o Rosé Pine, substitua o URL aqui. */
-      /* Por enquanto, ele ainda aponta para o logo do tema Mocha. */
-      background: url("zen-logo-mocha.svg"), url("https://raw.githubusercontent.com/IAmJafeth/zen-browser/main/themes/Mocha/Red/zen-logo-mocha.svg") no-repeat center !important;
+      background: url("themes/zen-logo-rosepine.svg") no-repeat center !important;
       display: inline-block !important;
       height: 82px !important;
       width: 82px !important;
@@ -48,7 +52,7 @@
     }
 
     .card-outer:is(:hover, :focus, .active):not(.placeholder) .card-title {
-      color: var(--love) !important;
+      color: var(--accent) !important;
     }
 
     .top-site-outer .search-topsite {
@@ -65,11 +69,11 @@
     :root {
       --zen-colors-tertiary: var(--base) !important;
       --in-content-text-color: var(--text) !important;
-      --link-color: var(--love) !important;
-      --link-color-hover: var(--rose) !important;
+      --link-color: var(--accent) !important;
+      --link-color-hover: var(--accent-hover) !important;
       --zen-colors-primary: var(--overlay) !important;
       --in-content-box-background: var(--overlay) !important;
-      --zen-primary-color: var(--love) !important;
+      --zen-primary-color: var(--accent) !important;
     }
 
     groupbox , moz-card{

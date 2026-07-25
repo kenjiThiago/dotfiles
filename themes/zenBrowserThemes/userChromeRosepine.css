@@ -4,16 +4,21 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /* Accent único e consistente. Para trocar o tom, mude só estas duas. */
+    --accent: var(--love);
+    --accent-hover: var(--iris);
+    --accent-gradient: linear-gradient(115deg, var(--love), var(--iris));
+
     --zen-colors-primary: var(--base) !important;
-    --zen-primary-color: var(--iris) !important;
+    --zen-primary-color: var(--accent) !important;
     --zen-colors-secondary: var(--surface) !important;
     --zen-colors-tertiary: var(--surface) !important;
     --zen-main-browser-background-toolbar: var(--base) !important;
-    --zen-colors-border: var(--iris) !important;
-    --toolbarbutton-icon-fill: var(--love) !important;
+    --zen-colors-border: var(--accent) !important;
+    --toolbarbutton-icon-fill: var(--accent) !important;
     --lwt-text-color: var(--text) !important;
     --toolbar-field-color: var(--text) !important;
-    --tab-selected-textcolor: var(--iris) !important;
+    --tab-selected-textcolor: var(--accent) !important;
     --toolbar-field-focus-color: var(--text) !important;
     --toolbar-color: var(--text) !important;
     --newtab-text-primary-color: var(--text) !important;
@@ -36,8 +41,8 @@
   }
 
   .ContentSelectDropdown-item-0[_moz-menuactive="true"] {
-    background-color: var(--iris) !important;
-    color: var(--overlay) !important;
+    background-color: var(--accent) !important;
+    color: var(--base) !important;
   }
 
   #permissions-granted-icon {
@@ -89,7 +94,9 @@
   }
 
   #urlbar-background {
-    background-color: var(--surface) !important;
+    border: 2px solid transparent !important;
+    background: linear-gradient(var(--surface), var(--surface)) padding-box,
+      var(--accent-gradient) border-box !important;
   }
 
   #urlbar[open] .urlbar-background {
@@ -106,12 +113,14 @@
   }
 
   .tab-background[selected=""] {
-    background: var(--overlay) !important;
+    border: 1.5px solid transparent !important;
+    background: linear-gradient(var(--overlay), var(--overlay)) padding-box,
+      var(--accent-gradient) border-box !important;
   }
 
   .content-shortcuts {
     background-color: var(--surface) !important;
-    border-color: var(--iris) !important;
+    border-color: var(--accent) !important;
   }
 
   body:has([zen-compact-mode="true"]) #titlebar {
@@ -125,7 +134,7 @@
   }
 
   .urlbarView-url {
-    color: var(--iris) !important;
+    color: var(--accent) !important;
   }
 
   #zenEditBookmarkPanelFaviconContainer {
@@ -154,7 +163,7 @@
   }
 
   .toolbarbutton-1:not(#tabs-newtab-button) {
-    --toolbarbutton-icon-fill: var(--love) !important;
+    --toolbarbutton-icon-fill: var(--accent) !important;
   }
 
   hbox#titlebar {
