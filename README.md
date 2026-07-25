@@ -87,7 +87,7 @@ tema. Os nomes são genéricos de propósito — o "yellow" do Rosé Pine é o g
 
 | grupo | chaves |
 | --- | --- |
-| fundo | `base` `surface` `overlay` `term_bg` |
+| fundo | `base` `surface` `overlay` `term_bg` (só o alacritty; os outros usam `base`) |
 | realces | `highlight_low` `highlight_med` `highlight_high` |
 | texto | `text` `subtle` `muted` |
 | ANSI | `black` `red` `green` `yellow` `blue` `magenta` `cyan` `white` (+ `bright_*`, que caem no normal se não forem definidos) |

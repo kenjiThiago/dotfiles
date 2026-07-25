@@ -1,6 +1,8 @@
 # ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
 
-background = {{term_bg}}
+# O ghostty usa o fundo normal do tema. Quem quiser um fundo diferente do
+# resto do desktop (o alacritty usa preto puro com transparência) usa term_bg.
+background = {{base}}
 foreground = {{text}}
 
 cursor-color = {{text}}

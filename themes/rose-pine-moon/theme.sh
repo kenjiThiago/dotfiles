@@ -18,7 +18,7 @@ cursor_theme="Adwaita"
 base="#232136"    # base
 surface="#2a273f" # surface
 overlay="#393552" # overlay
-term_bg="#010101" # fundo do terminal (preto puro, usado com transparência)
+term_bg="#010101" # só o alacritty: preto puro, para usar com opacity 0.8
 
 # ── Realces / bordas ──────────────────────────────────────────────────────────
 highlight_low="#2a283e"
