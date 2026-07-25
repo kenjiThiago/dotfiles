@@ -1,5 +1,4 @@
--- conf.colors é gerado por `theme set` a partir de themes/<tema>/theme.sh.
--- Se ainda não foi gerado (repo recém-clonado), usa um cinza neutro para o
+-- conf.colors é gerado por `theme set`; sem ele, cinza neutro para o
 -- Hyprland subir mesmo assim.
 local loaded, M = pcall(require, "conf.colors")
 if not loaded then

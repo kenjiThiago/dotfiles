@@ -4,8 +4,7 @@ font-family = HackNerdFont
 font-size = 12
 bold-is-bright = true
 
-# As cores vêm de ./colors, gerado por `theme set`.
-# Ver themes/templates/ghostty-colors.in
+# ./colors é gerado por `theme set`.
 config-file = colors
 
 cursor-style = block

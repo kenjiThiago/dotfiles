@@ -1,5 +1,4 @@
-# As cores vêm de colors.toml, gerado por `theme set`.
-# Ver themes/templates/alacritty-colors.toml.in
+# colors.toml é gerado por `theme set`.
 [general]
 import = ["~/.config/alacritty/colors.toml"]
 

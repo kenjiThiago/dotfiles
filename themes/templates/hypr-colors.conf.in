@@ -3,25 +3,25 @@
 
 $wallpaper = {{wallpaper_path}}
 
-$base    = rgb({{base:hex}})
-$surface = rgb({{surface:hex}})
-$overlay = rgb({{overlay:hex}})
+$base    = {{base:rgb}}
+$surface = {{surface:rgb}}
+$overlay = {{overlay:rgb}}
 
-$muted  = rgb({{muted:hex}})
-$subtle = rgb({{subtle:hex}})
-$text   = rgb({{text:hex}})
+$muted  = {{muted:rgb}}
+$subtle = {{subtle:rgb}}
+$text   = {{text:rgb}}
 
-$red     = rgb({{red:hex}})
-$green   = rgb({{green:hex}})
-$yellow  = rgb({{yellow:hex}})
-$blue    = rgb({{blue:hex}})
-$magenta = rgb({{magenta:hex}})
-$cyan    = rgb({{cyan:hex}})
+$red     = {{red:rgb}}
+$green   = {{green:rgb}}
+$yellow  = {{yellow:rgb}}
+$blue    = {{blue:rgb}}
+$magenta = {{magenta:rgb}}
+$cyan    = {{cyan:rgb}}
 
-$accent    = rgb({{accent:hex}})
-$accentAlt = rgb({{accent_alt:hex}})
+$accent    = {{accent:rgb}}
+$accentAlt = {{accent_alt:rgb}}
 
-# Versões sem prefixo, para interpolar dentro de markup pango.
+# Sem o rgb(), para interpolar dentro de markup pango.
 $baseAlpha      = {{base:hex}}
 $surfaceAlpha   = {{surface:hex}}
 $textAlpha      = {{text:hex}}

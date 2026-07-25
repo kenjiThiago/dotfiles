@@ -1,8 +1,6 @@
 # ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
-# Edite themes/templates/starship.toml.in e rode `theme reload`.
-#
-# O starship não suporta include, então o arquivo inteiro é gerado. Só as
-# cores vêm do tema; o resto (formato do prompt) mora no template.
+# O starship não suporta include, então o arquivo inteiro é gerado: edite
+# themes/templates/starship.toml.in e rode `theme reload`.
 
 add_newline = true
 command_timeout = 200

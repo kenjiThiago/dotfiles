@@ -1,5 +1,4 @@
 -- ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
--- Fonte: themes/{{theme}}/theme.sh + themes/templates/hypr-colors.lua.in
 local M = {}
 
 M.theme   = "{{theme}}"

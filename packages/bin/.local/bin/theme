@@ -68,12 +68,12 @@ current_theme() {
     [[ -r $STATE_FILE ]] && cat "$STATE_FILE" || echo ""
 }
 
-# Carrega themes/<nome>/theme.sh nas variáveis globais e aplica os padrões.
 load_theme() {
     local name=$1
     local file="$THEMES_DIR/$name/theme.sh"
     [[ -r $file ]] || die "tema '$name' não encontrado em $THEMES_DIR"
 
+    # -v é obrigatório: sem ele, `unset info` apagaria a função de mesmo nome.
     local key
     for key in "${COLOR_KEYS[@]}" "${META_KEYS[@]}"; do unset -v "$key"; done
 
@@ -82,7 +82,7 @@ load_theme() {
 
     THEME=$name
 
-    # Padrões: nem todo tema precisa declarar tudo.
+    # Nem todo tema precisa declarar tudo.
     : "${variant:=dark}"
     : "${nvim_colorscheme:=default}"
     : "${zen_theme:=}"
@@ -115,8 +115,8 @@ load_theme() {
 }
 
 # ── Renderização ──────────────────────────────────────────────────────────────
-# Substitui {{chave}} e as variantes {{chave:hex}}, {{chave:rgb}} e
-# {{chave:argb}} pelo valor da paleta.
+# {{chave}} -> #rrggbb, {{chave:hex}} -> rrggbb, {{chave:rgb}} -> rgb(rrggbb),
+# {{chave:argb}} -> 0xffrrggbb.
 render() {
     local content=$1
     local key value bare
@@ -172,8 +172,7 @@ generate() {
 }
 
 # ── Zen Browser ───────────────────────────────────────────────────────────────
-# O Zen não lê nada gerado: cada tema tem seu próprio userChrome/userContent,
-# então aqui é só uma troca de symlinks dentro do perfil.
+# O Zen não lê nada gerado: cada tema tem seu CSS próprio, então é só symlink.
 apply_zen() {
     [[ -n $zen_theme ]] || return 0
 
@@ -210,8 +209,7 @@ reload_apps() {
     # SIGUSR2 recarrega o CSS do waybar (SIGUSR1 é o toggle de visibilidade).
     pkill -USR2 -x waybar >/dev/null 2>&1 || true
 
-    # O ghostty relê a config com SIGUSR2; o quickshell já observa os arquivos
-    # e recarrega o Theme.qml sozinho.
+    # O ghostty relê a config com SIGUSR2; o quickshell observa os arquivos sozinho.
     pkill -USR2 -x ghostty >/dev/null 2>&1 || true
 
     if [[ -n $gtk_theme ]] && command -v gsettings >/dev/null; then

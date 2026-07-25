@@ -25,6 +25,3 @@
 @define-color warning    {{warning}};
 @define-color error      {{error}};
 @define-color info       {{info}};
-
-/* Compatibilidade: o style.css antigo usava @background. */
-@define-color background {{base}};

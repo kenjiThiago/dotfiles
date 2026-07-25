@@ -1,7 +1,6 @@
 local gh = function(x) return "https://github.com/" .. x end
 
--- lua/theme.lua é gerado por `theme set` (themes/templates/nvim-theme.lua.in).
--- Se ainda não existir (repositório recém-clonado), cai num padrão razoável.
+-- lua/theme.lua é gerado por `theme set`; sem ele, cai num padrão razoável.
 local loaded, theme = pcall(require, "theme")
 if not loaded then
     theme = { name = "none", variant = "dark", colorscheme = "habamax", colors = {} }

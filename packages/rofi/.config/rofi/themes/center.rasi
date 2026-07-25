@@ -6,7 +6,7 @@ configuration {
     font:                       "Hack Nerd Font 10";
 }
 
-/* colors.rasi é gerado por `theme set` — ver themes/templates/rofi-colors.rasi.in */
+/* colors.rasi é gerado por `theme set`. */
 @import "colors.rasi"
 
 window {

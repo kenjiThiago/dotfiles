@@ -52,7 +52,6 @@ check_packages() {
 cmd_status() {
     local pkg first target
     for pkg in $(all_packages); do
-        # Pega o primeiro arquivo do pacote e vê se ele existe linkado em ~.
         first=$(find "$PKG_DIR/$pkg" -type f -printf '%P\n' | head -n 1)
         target="$HOME/$first"
         if [[ -L $target && $(realpath "$target" 2>/dev/null) == "$PKG_DIR/$pkg/$first" ]]; then
