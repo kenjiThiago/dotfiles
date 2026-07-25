@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# dots — wrapper de GNU Stow para este repositório.
+#
+#   dots list                   lista os pacotes disponíveis
+#   dots status                 mostra quais estão linkados
+#   dots link [pacote...]       linka (padrão: todos)
+#   dots unlink [pacote...]     desfaz os links
+#   dots relink [pacote...]     unlink + link (útil depois de renomear coisas)
+#
+#   --dry                       só mostra o que faria
+#
+# Todos os comandos usam --no-folding de propósito: assim ~/.config/waybar é
+# um diretório de verdade com symlinks dentro, e não um symlink para o repo.
+# Isso é o que permite ao `theme` escrever colors.css ao lado do style.css sem
+# sujar o repositório.
+
+set -euo pipefail
+
+self=$(realpath "${BASH_SOURCE[0]}")
+DOTFILES=${DOTFILES:-$(cd "$(dirname "$self")/../../../.." && pwd)}
+PKG_DIR="$DOTFILES/packages"
+
+DRY=0
+
+info() { printf '\033[1;34m::\033[0m %s\n' "$*"; }
+ok()   { printf '\033[1;32m ✔\033[0m %s\n' "$*"; }
+die()  { printf '\033[1;31m ✗\033[0m %s\n' "$*" >&2; exit 1; }
+
+all_packages() {
+    find "$PKG_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort
+}
+
+stow_cmd() {
+    local action=$1; shift
+    local flags=(--no-folding -d "$PKG_DIR" -t "$HOME" -v)
+    if [[ $DRY == 1 ]]; then flags+=(--simulate); fi
+
+    case $action in
+        link)   stow "${flags[@]}" -S "$@" ;;
+        unlink) stow "${flags[@]}" -D "$@" ;;
+        relink) stow "${flags[@]}" -R "$@" ;;
+    esac
+}
+
+check_packages() {
+    local pkg
+    for pkg in "$@"; do
+        [[ -d $PKG_DIR/$pkg ]] || die "pacote '$pkg' não existe (veja: dots list)"
+    done
+}
+
+cmd_status() {
+    local pkg first target
+    for pkg in $(all_packages); do
+        # Pega o primeiro arquivo do pacote e vê se ele existe linkado em ~.
+        first=$(find "$PKG_DIR/$pkg" -type f -printf '%P\n' | head -n 1)
+        target="$HOME/$first"
+        if [[ -L $target && $(realpath "$target" 2>/dev/null) == "$PKG_DIR/$pkg/$first" ]]; then
+            printf '  \033[1;32m●\033[0m %s\n' "$pkg"
+        else
+            printf '  \033[2;37m○\033[0m %s\n' "$pkg"
+        fi
+    done
+}
+
+command -v stow >/dev/null || die "GNU Stow não está instalado (paru -S stow)"
+[[ -d $PKG_DIR ]] || die "não encontrei $PKG_DIR — defina \$DOTFILES"
+
+args=()
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --dry|--dry-run) DRY=1 ;;
+        -h|--help)       sed -n '2,16p' "$self" | sed 's/^# \?//'; exit 0 ;;
+        *)               args+=("$1") ;;
+    esac
+    shift
+done
+set -- "${args[@]+"${args[@]}"}"
+
+action=${1:-link}
+shift || true
+
+case $action in
+    list)   all_packages ;;
+    status) cmd_status ;;
+    link|unlink|relink)
+        if [[ $# -gt 0 ]]; then
+            check_packages "$@"
+            packages=("$@")
+        else
+            mapfile -t packages < <(all_packages)
+        fi
+        info "${action} de: ${packages[*]}"
+        stow_cmd "$action" "${packages[@]}"
+        if [[ $DRY == 0 ]]; then ok "pronto"; fi
+        ;;
+    *) die "comando desconhecido '$action' (veja: dots --help)" ;;
+esac

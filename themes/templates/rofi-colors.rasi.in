@@ -1,0 +1,29 @@
+/* ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE. */
+
+* {
+    base:           {{base}};
+    surface:        {{surface}};
+    overlay:        {{overlay}};
+
+    highlight-low:  {{highlight_low}};
+    highlight-med:  {{highlight_med}};
+    highlight-high: {{highlight_high}};
+
+    muted:          {{muted}};
+    subtle:         {{subtle}};
+    text:           {{text}};
+
+    red:            {{red}};
+    green:          {{green}};
+    yellow:         {{yellow}};
+    blue:           {{blue}};
+    magenta:        {{magenta}};
+    cyan:           {{cyan}};
+
+    accent:         {{accent}};
+    accent-alt:     {{accent_alt}};
+    success:        {{success}};
+    warning:        {{warning}};
+    error:          {{error}};
+    info:           {{info}};
+}

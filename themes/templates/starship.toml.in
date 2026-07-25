@@ -1,0 +1,76 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+# Edite themes/templates/starship.toml.in e rode `theme reload`.
+#
+# O starship não suporta include, então o arquivo inteiro é gerado. Só as
+# cores vêm do tema; o resto (formato do prompt) mora no template.
+
+add_newline = true
+command_timeout = 200
+continuation_prompt = '[❯❯](yellow) '
+format = " [$python$directory$git_branch$git_status]($style)$line_break $character"
+
+palette = "{{theme}}"
+
+[palettes.{{theme}}]
+base    = "{{base}}"
+surface = "{{surface}}"
+overlay = "{{overlay}}"
+muted   = "{{muted}}"
+subtle  = "{{subtle}}"
+text    = "{{text}}"
+red     = "{{red}}"
+green   = "{{green}}"
+yellow  = "{{yellow}}"
+blue    = "{{blue}}"
+magenta = "{{magenta}}"
+cyan    = "{{cyan}}"
+accent  = "{{accent}}"
+success = "{{success}}"
+warning = "{{warning}}"
+error   = "{{error}}"
+info    = "{{info}}"
+
+[character]
+error_symbol = "[✗](bold error)"
+success_symbol = "[❯](bold yellow)"
+
+[python]
+format = "[$symbol$virtualenv]($style) "
+style = "italic muted"
+symbol = ""
+
+detect_extensions = []
+detect_files = []
+detect_folders = []
+
+[directory]
+use_logical_path = false
+truncation_length = 2
+truncation_symbol = "…/"
+style = "bold blue"
+repo_root_style = "bold green"
+read_only_style = "muted"
+repo_root_format = "[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
+format = "[$path]($style)[$read_only]($read_only_style) "
+
+[git_branch]
+format = "[$branch]($style) "
+style = "magenta"
+
+[git_status]
+format     = "([$all_status]($style) )"
+style      = "cyan"
+ahead      = "⇡${count} "
+diverged   = "⇕⇡${ahead_count}⇣${behind_count} "
+behind     = "⇣${count} "
+conflicted = " "
+up_to_date = "[](muted) "
+untracked  = "? "
+modified   = " "
+stashed    = ""
+staged     = ""
+renamed    = ""
+deleted    = ""
+
+[profiles]
+transient = "$character"

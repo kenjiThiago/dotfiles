@@ -1,0 +1,19 @@
+# Mapa de templates -> arquivos gerados.
+#
+#   <template em themes/templates/>   <destino>
+#
+# Tudo que aparece na coluna da direita é REGERADO a cada `theme set` e nunca
+# entra no repositório: são arquivos reais, criados ao lado dos symlinks do
+# stow (por isso o stow roda sempre com --no-folding).
+
+hypr-colors.lua.in        ~/.config/hypr/conf/colors.lua
+hypr-colors.conf.in       ~/.config/hypr/conf/colors.conf
+hyprpaper.conf.in         ~/.config/hypr/hyprpaper.conf
+waybar-colors.css.in      ~/.config/waybar/colors.css
+rofi-colors.rasi.in       ~/.config/rofi/themes/colors.rasi
+quickshell-Theme.qml.in   ~/.config/quickshell/modules/Theme.qml
+alacritty-colors.toml.in  ~/.config/alacritty/colors.toml
+ghostty-colors.in         ~/.config/ghostty/colors
+zathura-colors.in         ~/.config/zathura/colors
+starship.toml.in          ~/.config/starship.toml
+nvim-theme.lua.in         ~/.config/nvim/lua/theme.lua

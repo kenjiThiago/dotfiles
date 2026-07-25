@@ -1,0 +1,35 @@
+-- ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+-- Consumido por lua/NeoVim/plugins/colors.lua.
+return {
+    name        = "{{theme}}",
+    variant     = "{{variant}}",
+    colorscheme = "{{nvim_colorscheme}}",
+
+    colors = {
+        base    = "{{base}}",
+        surface = "{{surface}}",
+        overlay = "{{overlay}}",
+
+        highlight_low  = "{{highlight_low}}",
+        highlight_med  = "{{highlight_med}}",
+        highlight_high = "{{highlight_high}}",
+
+        muted  = "{{muted}}",
+        subtle = "{{subtle}}",
+        text   = "{{text}}",
+
+        red     = "{{red}}",
+        green   = "{{green}}",
+        yellow  = "{{yellow}}",
+        blue    = "{{blue}}",
+        magenta = "{{magenta}}",
+        cyan    = "{{cyan}}",
+
+        accent     = "{{accent}}",
+        accent_alt = "{{accent_alt}}",
+        success    = "{{success}}",
+        warning    = "{{warning}}",
+        error      = "{{error}}",
+        info       = "{{info}}",
+    },
+}

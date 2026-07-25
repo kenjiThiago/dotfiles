@@ -1,0 +1,43 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+
+set default-bg              "{{base}}"
+set default-fg              "{{text}}"
+
+set statusbar-bg            "{{surface}}"
+set statusbar-fg            "{{text}}"
+
+set inputbar-bg             "{{surface}}"
+set inputbar-fg             "{{text}}"
+
+set notification-bg         "{{surface}}"
+set notification-fg         "{{text}}"
+
+set notification-error-bg   "{{surface}}"
+set notification-error-fg   "{{error}}"
+
+set notification-warning-bg "{{surface}}"
+set notification-warning-fg "{{warning}}"
+
+set highlight-color         "{{cyan}}80"
+set highlight-active-color  "{{accent}}80"
+
+set completion-bg           "{{surface}}"
+set completion-fg           "{{subtle}}"
+
+set completion-highlight-bg "{{highlight_med}}"
+set completion-highlight-fg "{{text}}"
+
+set index-bg                "{{base}}"
+set index-fg                "{{text}}"
+set index-active-bg         "{{highlight_med}}"
+set index-active-fg         "{{text}}"
+
+set render-loading          true
+set render-loading-bg       "{{base}}"
+set render-loading-fg       "{{text}}"
+
+set recolor-lightcolor      "{{base}}"
+set recolor-darkcolor       "{{text}}"
+
+set recolor                 "false"
+set recolor-keephue         "false"

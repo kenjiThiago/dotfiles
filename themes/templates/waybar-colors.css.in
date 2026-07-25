@@ -1,0 +1,30 @@
+/* ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE. */
+
+@define-color base    {{base}};
+@define-color surface {{surface}};
+@define-color overlay {{overlay}};
+
+@define-color highlight_low  {{highlight_low}};
+@define-color highlight_med  {{highlight_med}};
+@define-color highlight_high {{highlight_high}};
+
+@define-color muted  {{muted}};
+@define-color subtle {{subtle}};
+@define-color text   {{text}};
+
+@define-color red     {{red}};
+@define-color green   {{green}};
+@define-color yellow  {{yellow}};
+@define-color blue    {{blue}};
+@define-color magenta {{magenta}};
+@define-color cyan    {{cyan}};
+
+@define-color accent     {{accent}};
+@define-color accent_alt {{accent_alt}};
+@define-color success    {{success}};
+@define-color warning    {{warning}};
+@define-color error      {{error}};
+@define-color info       {{info}};
+
+/* Compatibilidade: o style.css antigo usava @background. */
+@define-color background {{base}};

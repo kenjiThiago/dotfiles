@@ -1,0 +1,21 @@
+# As cores vêm de colors.toml, gerado por `theme set`.
+# Ver themes/templates/alacritty-colors.toml.in
+[general]
+import = ["~/.config/alacritty/colors.toml"]
+
+[window]
+opacity = 0.8
+padding = { x = 35, y = 5 }
+
+[font]
+size = 12.0
+
+normal = { family = "HackNerdFont" }
+
+[mouse]
+hide_when_typing = true
+
+[cursor]
+style = { shape = "Block", blinking = "Always" }
+blink_timeout = 0
+blink_interval = 650

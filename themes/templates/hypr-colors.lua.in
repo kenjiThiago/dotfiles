@@ -1,0 +1,34 @@
+-- ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+-- Fonte: themes/{{theme}}/theme.sh + themes/templates/hypr-colors.lua.in
+local M = {}
+
+M.theme   = "{{theme}}"
+M.variant = "{{variant}}"
+
+M.base    = "{{base:argb}}"
+M.surface = "{{surface:argb}}"
+M.overlay = "{{overlay:argb}}"
+
+M.highlightLow  = "{{highlight_low:argb}}"
+M.highlightMed  = "{{highlight_med:argb}}"
+M.highlightHigh = "{{highlight_high:argb}}"
+
+M.muted  = "{{muted:argb}}"
+M.subtle = "{{subtle:argb}}"
+M.text   = "{{text:argb}}"
+
+M.red     = "{{red:argb}}"
+M.green   = "{{green:argb}}"
+M.yellow  = "{{yellow:argb}}"
+M.blue    = "{{blue:argb}}"
+M.magenta = "{{magenta:argb}}"
+M.cyan    = "{{cyan:argb}}"
+
+M.accent    = "{{accent:argb}}"
+M.accentAlt = "{{accent_alt:argb}}"
+M.success   = "{{success:argb}}"
+M.warning   = "{{warning:argb}}"
+M.error     = "{{error:argb}}"
+M.info      = "{{info:argb}}"
+
+return M

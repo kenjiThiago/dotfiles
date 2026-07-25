@@ -1,0 +1,154 @@
+# dotfiles
+
+Configuração de Hyprland + Quickshell + Neovim, organizada em pacotes do
+GNU Stow e com um sistema de temas que troca o desktop inteiro de uma vez.
+
+```
+dotfiles/
+├── install.sh          instalação numa máquina nova
+├── packages.txt        lista de pacotes do sistema
+├── packages/           os pacotes do stow (é o -d do stow)
+├── themes/             paletas + templates dos temas
+├── zen-themes/         temas do Zen Browser (CSS, não gerado)
+└── wallpapers/
+```
+
+## Instalação
+
+```sh
+git clone <repo> ~/dotfiles
+cd ~/dotfiles
+./install.sh              # ou ./install.sh --dry para só ver o que faria
+```
+
+## Stow
+
+Cada diretório dentro de `packages/` é um pacote independente, com a estrutura
+que ele terá dentro de `~`:
+
+```
+packages/waybar/.config/waybar/style.css   ->   ~/.config/waybar/style.css
+packages/zsh/.zshrc                        ->   ~/.zshrc
+packages/bin/.local/bin/theme              ->   ~/.local/bin/theme
+```
+
+O wrapper `dots` cuida do stow:
+
+```sh
+dots list                # pacotes disponíveis
+dots status              # o que está linkado
+dots link                # linka tudo
+dots link nvim waybar    # linka só alguns
+dots unlink waybar
+dots relink nvim         # depois de renomear/mover arquivos
+dots link --dry          # simula
+```
+
+`dots` sempre usa `--no-folding`. Isso é importante: sem ele o stow criaria
+`~/.config/waybar` como um symlink para o repositório, e aí qualquer arquivo
+gerado ali dentro sujaria o git. Com `--no-folding`, `~/.config/waybar` é um
+diretório de verdade, com symlinks dos arquivos versionados **e** os arquivos
+de cor gerados convivendo lado a lado.
+
+## Temas
+
+```sh
+theme                    # seletor (rofi no Hyprland, fzf no terminal)
+theme list
+theme current
+theme set rose-pine-moon
+theme show               # imprime a paleta ativa com as cores no terminal
+theme reload             # reaplica o tema atual (depois de editar templates)
+```
+
+Também está no menu do `rofi-script` em **Setup → Tema**.
+
+Temas disponíveis: `rose-pine-moon` (padrão), `rose-pine`, `catppuccin-mocha`,
+`tokyonight-moon`.
+
+### Como funciona
+
+```
+themes/<tema>/theme.sh        a paleta, em nomes genéricos
+        +
+themes/templates/*.in         um template por programa
+        =
+~/.config/<programa>/colors   arquivos gerados, fora do git
+```
+
+O `theme set` lê a paleta, roda cada template do `themes/templates/manifest` e
+escreve o resultado direto em `~`. Nada gerado entra no repositório.
+
+### A paleta
+
+Todo tema define as mesmas chaves, para que um template sirva para qualquer
+tema. Os nomes são genéricos de propósito — o "yellow" do Rosé Pine é o gold, o
+"cyan" é o rose:
+
+| grupo | chaves |
+| --- | --- |
+| fundo | `base` `surface` `overlay` `term_bg` |
+| realces | `highlight_low` `highlight_med` `highlight_high` |
+| texto | `text` `subtle` `muted` |
+| ANSI | `black` `red` `green` `yellow` `blue` `magenta` `cyan` `white` (+ `bright_*`, que caem no normal se não forem definidos) |
+| papéis | `accent` `accent_alt` `success` `warning` `error` `info` |
+
+Mais os metadados: `variant` (dark/light), `nvim_colorscheme`, `zen_theme`,
+`wallpaper`, `gtk_theme`, `cursor_theme`.
+
+Nos templates, cada chave tem quatro formas:
+
+| placeholder | resultado |
+| --- | --- |
+| `{{base}}` | `#232136` |
+| `{{base:hex}}` | `232136` |
+| `{{base:rgb}}` | `rgb(232136)` |
+| `{{base:argb}}` | `0xff232136` |
+
+### O que cada programa recebe
+
+| programa | arquivo gerado | como consome |
+| --- | --- | --- |
+| hyprland | `~/.config/hypr/conf/colors.lua` | `require("conf.colors")` em `appearance.lua` |
+| hyprlock | `~/.config/hypr/conf/colors.conf` | `source =` no topo do `hyprlock.conf` |
+| hyprpaper | `~/.config/hypr/hyprpaper.conf` | arquivo inteiro (vem do `wallpaper=` do tema) |
+| waybar | `~/.config/waybar/colors.css` | `@import` no `style.css` |
+| rofi | `~/.config/rofi/themes/colors.rasi` | `@import` no `center.rasi` |
+| quickshell | `~/.config/quickshell/modules/Theme.qml` | singleton `Theme` |
+| alacritty | `~/.config/alacritty/colors.toml` | `general.import` |
+| ghostty | `~/.config/ghostty/colors` | `config-file = colors` |
+| zathura | `~/.config/zathura/colors` | `include "colors"` |
+| starship | `~/.config/starship.toml` | arquivo inteiro (starship não tem include) |
+| neovim | `~/.config/nvim/lua/theme.lua` | `require("theme")` em `plugins/colors.lua` |
+| zen browser | — | symlinks para `zen-themes/<zen_theme>/` |
+
+### Criando um tema novo
+
+```sh
+cp -r themes/rose-pine-moon themes/meu-tema
+$EDITOR themes/meu-tema/theme.sh
+theme set meu-tema
+```
+
+O `theme` valida na hora: reclama se faltar alguma cor ou se algum valor não
+for um `#rrggbb`.
+
+### Mexendo em um programa que ainda não é temático
+
+1. Escreva `themes/templates/<programa>.in` usando os placeholders.
+2. Adicione a linha correspondente no `themes/templates/manifest`.
+3. Faça a config do programa incluir o arquivo gerado.
+4. `theme reload`.
+
+## Detalhes
+
+- **Zen Browser**: os temas são CSS escrito à mão, não gerado. `theme set`
+  aponta `~/.zen/<perfil>/chrome/{themes,userChrome.css,userContent.css}` para
+  `zen-themes/<zen_theme>/`. Precisa reiniciar o navegador.
+- **Neovim**: o tema escolhe o *colorscheme* (`nvim_colorscheme`), não as cores
+  uma a uma. Se o plugin do colorscheme não estiver instalado, o nvim avisa e
+  cai no `habamax`.
+- **`~/plugins`**: o pacote `nvim-plugins` linka os plugins locais
+  (`gruber-darker`, `present`) em `~/plugins`, que é onde o `colors.lua` os
+  procura no `runtimepath`.
+- **Tema atual**: fica em `~/.local/state/dotfiles/current-theme`.

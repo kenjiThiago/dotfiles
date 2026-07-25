@@ -1,0 +1,7 @@
+# Sobras do `theme` (a escrita é atômica, mas se algo morrer no meio…)
+*.tmp.*
+
+# Lixo de editor / SO
+*.swp
+*~
+.DS_Store

@@ -1,0 +1,40 @@
+// ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+// Fonte: themes/{{theme}}/theme.sh + themes/templates/quickshell-Theme.qml.in
+pragma Singleton
+import QtQuick
+
+QtObject {
+    readonly property string name: "{{theme}}"
+    readonly property string variant: "{{variant}}"
+
+    // ── Camadas de fundo ──────────────────────────────────────────────────────
+    property color base: "{{base}}"
+    property color surface: "{{surface}}"
+    property color overlay: "{{overlay}}"
+
+    // ── Realces ───────────────────────────────────────────────────────────────
+    property color highlightLow: "{{highlight_low}}"
+    property color highlightMed: "{{highlight_med}}"
+    property color highlightHigh: "{{highlight_high}}"
+
+    // ── Texto ─────────────────────────────────────────────────────────────────
+    property color muted: "{{muted}}"
+    property color subtle: "{{subtle}}"
+    property color text: "{{text}}"
+
+    // ── Cores ─────────────────────────────────────────────────────────────────
+    property color red: "{{red}}"
+    property color green: "{{green}}"
+    property color yellow: "{{yellow}}"
+    property color blue: "{{blue}}"
+    property color magenta: "{{magenta}}"
+    property color cyan: "{{cyan}}"
+
+    // ── Papéis ────────────────────────────────────────────────────────────────
+    property color accent: "{{accent}}"
+    property color accentAlt: "{{accent_alt}}"
+    property color success: "{{success}}"
+    property color warning: "{{warning}}"
+    property color error: "{{error}}"
+    property color info: "{{info}}"
+}

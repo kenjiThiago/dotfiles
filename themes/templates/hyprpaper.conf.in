@@ -1,0 +1,12 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+# O wallpaper vem de `wallpaper=` em themes/{{theme}}/theme.sh.
+# Para trocar só o wallpaper sem trocar de tema, use `rofi-script wallpaper`.
+
+splash = false
+ipc = true
+
+wallpaper {
+    monitor =
+    path = {{wallpaper_path}}
+    fit_mode = cover
+}

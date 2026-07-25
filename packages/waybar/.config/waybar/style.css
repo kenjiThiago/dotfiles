@@ -1,0 +1,175 @@
+/* colors.css é gerado por `theme set` — ver themes/templates/waybar-colors.css.in */
+@import "./colors.css";
+
+* {
+    font-family: "Hack Nerd Font", sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+window#waybar {
+    background: transparent;
+    border-radius: 20px;
+}
+
+window#waybar.empty #window {
+    background-color: @base;
+    border-radius: 50%;
+    min-width: 8px;
+}
+
+#workspaces {
+    background-color: @base;
+    padding: 2px 4px;
+    margin: 5px 4px;
+    border-radius: 20px;
+}
+
+#workspaces button {
+    padding: 0px;
+    margin: 3px 3px;
+    color: @muted;
+    background-color: @overlay;
+    border-radius: 20px;
+    min-width: 26px;
+    transition: all 0.2s ease-in-out;
+}
+
+#workspaces button:hover {
+    background-color: @overlay;
+    color: @text;
+}
+
+#workspaces button.active {
+    padding: 0px 4px;
+    background-color: @accent;
+    color: @base;
+    min-width: 38px;
+    border-radius: 20px;
+}
+
+#custom-system, #window, #clock, #backlight, #pulseaudio, #battery, #power-profiles-daemon, #custom-tray-icon, #tray {
+    background-color: @base;
+    padding: 0 12px;
+    margin: 5px 4px;
+}
+
+#custom-system, #cpu, #memory, #temperature {
+    background-color: @base;
+    padding: 0 12px;
+    margin: 5px 4px;
+    border-radius: 20px;
+    transition: all 0.2s ease-in-out;
+}
+
+#custom-system {
+    color: @magenta;
+    font-size: 15px;
+    padding: 0 16px 0 10px;
+}
+
+#custom-system:hover {
+    color: @accent;
+}
+
+#cpu {
+    color: @cyan;
+    padding: 0 14px 0px 10px;
+}
+#memory { color: @yellow; }
+#temperature { color: @blue; }
+
+#cpu:hover, #memory:hover, #temperature:hover {
+    background-color: @overlay;
+}
+
+#window {
+    color: @subtle;
+    border-radius: 20px;
+    padding: 0 15px;
+}
+
+#clock {
+    color: @yellow;
+    border-radius: 20px;
+}
+
+#backlight {
+    color: @red;
+    border-radius: 20px 0 0 20px;
+    margin-right: 0;
+}
+
+#pulseaudio {
+    color: @blue;
+    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#pulseaudio:hover {
+    background-color: @overlay;
+}
+
+#battery {
+    color: @green;
+    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#power-profiles-daemon {
+    margin-left: 0;
+    border-radius: 0 20px 20px 0;
+    padding-right: 14px;
+}
+
+#custom-tray-icon {
+    color: @yellow;
+    border-radius: 20px;
+    padding: 0 10px;
+}
+
+#tray {
+    border-radius: 20px;
+    margin-right: 0px;
+}
+
+label:focus {
+    background-color: @base;
+}
+
+#pulseaudio.muted {
+    background-color: @muted;
+    color: @base;
+}
+
+#power-profiles-daemon.performance { color: @error; }
+#power-profiles-daemon.balanced    { color: @blue; }
+#power-profiles-daemon.power-saver { color: @green; }
+
+#battery.charging, #battery.plugged {
+    color: @text;
+    background-color: @success;
+}
+
+@keyframes blink {
+    to { background-color: @text; color: @base; }
+}
+
+#battery.critical:not(.charging) {
+    background-color: @error;
+    color: @text;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+#tray > .passive { -gtk-icon-effect: dim; }
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: @error;
+}

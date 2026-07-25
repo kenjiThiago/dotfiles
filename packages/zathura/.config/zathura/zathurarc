@@ -1,0 +1,6 @@
+# As cores vêm de ./colors, gerado por `theme set`.
+# Ver themes/templates/zathura-colors.in
+include "colors"
+
+# Configurações próprias (sobrevivem à troca de tema).
+set selection-clipboard clipboard

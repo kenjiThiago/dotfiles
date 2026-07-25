@@ -1,0 +1,85 @@
+# Pacotes necessários para esta configuração (Arch Linux, instalados com paru).
+#
+# Uma linha por pacote. Comentários com '#'. Linhas em branco são ignoradas.
+# Esta lista foi montada a partir do que as configs realmente chamam — revise
+# antes da primeira instalação em máquina nova.
+
+# ── Base ──────────────────────────────────────────────────────────────────────
+git
+stow
+base-devel
+
+# ── Hyprland e companhia ──────────────────────────────────────────────────────
+hyprland
+hyprpaper
+hypridle
+hyprlock
+hyprsunset
+hyprpicker
+uwsm
+xdg-desktop-portal-hyprland
+polkit-gnome
+
+# ── Barra / shell gráfico ─────────────────────────────────────────────────────
+quickshell                   # AUR
+waybar
+swayosd                      # AUR
+libnotify
+
+# ── Menu ──────────────────────────────────────────────────────────────────────
+rofi-wayland
+rofimoji
+
+# ── Terminais ─────────────────────────────────────────────────────────────────
+ghostty
+alacritty
+
+# ── Shell ─────────────────────────────────────────────────────────────────────
+zsh
+starship
+zoxide
+fzf
+eza
+bat
+tmux
+
+# ── Editor ────────────────────────────────────────────────────────────────────
+neovim
+ripgrep
+fd
+nodejs
+npm
+unzip
+tree-sitter-cli
+lua-language-server
+ruff
+biome                        # AUR
+yazi
+
+# ── Screenshot / clipboard ────────────────────────────────────────────────────
+grim
+slurp
+satty                        # AUR
+wl-clipboard
+jq
+
+# ── Sistema ───────────────────────────────────────────────────────────────────
+brightnessctl
+pavucontrol
+networkmanager
+nm-connection-editor
+power-profiles-daemon
+wireplumber
+
+# ── Aplicativos ───────────────────────────────────────────────────────────────
+zen-browser-bin              # AUR
+zathura
+zathura-pdf-mupdf
+fastfetch
+pastel
+gimp
+
+# ── Fontes ────────────────────────────────────────────────────────────────────
+ttf-hack-nerd
+noto-fonts
+noto-fonts-emoji

@@ -1,0 +1,22 @@
+background-opacity = 1
+
+font-family = HackNerdFont
+font-size = 12
+bold-is-bright = true
+
+# As cores vêm de ./colors, gerado por `theme set`.
+# Ver themes/templates/ghostty-colors.in
+config-file = colors
+
+cursor-style = block
+cursor-style-blink = true
+cursor-invert-fg-bg = true
+shell-integration-features = no-cursor
+
+mouse-hide-while-typing = true
+
+confirm-close-surface = false
+
+window-decoration = false
+
+custom-shader = ./galaxy.glsl
