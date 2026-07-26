@@ -181,7 +181,8 @@ for um `#rrggbb`.
 - **Clipboard** (`SUPER+Y`, ou Setup → Clipboard): `Enter` copia, `alt+p` fixa
   ou solta, `alt+d` apaga a entrada, `alt+w` limpa o histórico. Os fixados vão
   para `~/.local/share/clipboard-pins`, um arquivo por entrada, e sobrevivem ao
-  `alt+w` — o cliphist não tem pin, isso é do `rofi-script`.
+  `alt+w` — o cliphist não tem pin, isso é do `rofi-script`. Fixar e apagar
+  reabrem o menu, para você encadear várias ações; só copiar ou cancelar fecham.
 - **Git**: o pacote `git` versiona `~/.config/git/config`. Sua identidade fica
   fora do repositório, em `~/.config/git/config.local` (o include é ignorado se
   o arquivo não existir). Atenção: o git lê `~/.gitconfig` **depois** do arquivo
