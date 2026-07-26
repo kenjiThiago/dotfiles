@@ -172,3 +172,8 @@ for um `#rrggbb`.
   (`gruber-darker`, `present`) em `~/plugins`, que é onde o `colors.lua` os
   procura no `runtimepath`.
 - **Tema atual**: fica em `~/.local/state/dotfiles/current-theme`.
+- **Git**: o pacote `git` versiona `~/.config/git/config`. Sua identidade fica
+  fora do repositório, em `~/.config/git/config.local` (o include é ignorado se
+  o arquivo não existir). Atenção: o git lê `~/.gitconfig` **depois** do arquivo
+  XDG, então um `~/.gitconfig` antigo sobrescreve o que está aqui — mova o que
+  quiser manter para o `config.local` e apague o resto.

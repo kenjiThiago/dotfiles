@@ -25,6 +25,11 @@ vim.opt.undofile = true
 vim.opt.hlsearch = true
 vim.opt.incsearch = true
 
+vim.opt.grepprg = "rg --vimgrep --smart-case"
+vim.opt.grepformat = "%f:%l:%c:%m"
+
+-- vim.opt.exrc = true
+
 vim.opt.termguicolors = true
 
 vim.opt.scrolloff = 8

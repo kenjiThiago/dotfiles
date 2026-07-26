@@ -5,6 +5,7 @@ vim.pack.add({ gh("folke/trouble.nvim") })
 require("trouble").setup({})
 
 vim.keymap.set("n", "<leader>ee", "<cmd>Trouble diagnostics toggle<cr>")
+vim.keymap.set("n", "<leader>es", "<cmd>Trouble symbols toggle focus=false<cr>")
 vim.keymap.set("n", "<M-k>", function()
     if require("trouble").is_open() then
         require("trouble").prev({ skip_groups = true, jump = true })
