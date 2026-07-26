@@ -34,6 +34,7 @@ local disabled_languages = {
     "javascript",
     "typescript",
     "tsx",
+    "tmux",
 }
 
 vim.api.nvim_create_autocmd("FileType", {

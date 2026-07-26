@@ -21,6 +21,7 @@ require("telescope").setup({
             theme = "dropdown",
             path_display = { "filename_first" },
             hidden = true,
+            follow = true,
         },
         grep_string = {
             theme = "ivy",
