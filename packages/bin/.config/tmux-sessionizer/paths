@@ -1,5 +1,9 @@
 # Raízes que o tmux-sessionizer varre, além do que o zoxide já conhece.
 # Uma por linha. `caminho:profundidade` (padrão 1). Globs funcionam.
+#
+# Linha começando com `-` é padrão de exclusão. Os diretórios de ~/.config que
+# vêm de um pacote do stow já são excluídos automaticamente; use isto aqui só
+# para o que não é do repositório, tipo `-~/.config/discord`.
 
 ~/projetos
 ~/projetos/[A-Z]*
@@ -7,4 +11,4 @@
 ~/Documentos
 ~/vaults
 ~/remote
-~/dotfiles/packages:2
+~/dotfiles/packages

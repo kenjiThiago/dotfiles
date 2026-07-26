@@ -4,20 +4,39 @@
 # A lista vem de duas fontes: o zoxide, que já conhece tudo que você visitou,
 # e as raízes de ~/.config/tmux-sessionizer/paths, para projetos que você
 # ainda não abriu. Clonar fora das raízes deixa de ser problema: basta um cd.
+#
+# Nesse arquivo, linha com `-` na frente é padrão de exclusão. Os diretórios
+# de ~/.config que vêm de um pacote do stow já são excluídos sozinhos.
 
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
 PATHS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/tmux-sessionizer/paths"
+ROOTS=()
+EXCLUDES=()
 
-list_roots() {
+# Roda no shell principal: os arrays precisam sobreviver ao $( ) de baixo.
+load_config() {
     [[ -r $PATHS_FILE ]] || return 0
 
-    local line path depth p
+    local line
     while IFS= read -r line; do
         line=${line%%#*}
         line=${line//[[:space:]]/}
         [[ -z $line ]] && continue
 
-        path=${line%%:*}
-        depth=${line#*:}
+        if [[ $line == -* ]]; then
+            line=${line#-}
+            EXCLUDES+=("${line/#\~/$HOME}")
+        else
+            ROOTS+=("$line")
+        fi
+    done < "$PATHS_FILE"
+}
+
+list_roots() {
+    local entry path depth p
+    for entry in ${ROOTS[@]+"${ROOTS[@]}"}; do
+        path=${entry%%:*}
+        depth=${entry#*:}
         [[ $depth == "$path" ]] && depth=1
         path=${path/#\~/$HOME}
 
@@ -25,7 +44,18 @@ list_roots() {
             [[ -d $p ]] || continue
             find "$p" -mindepth 1 -maxdepth "$depth" -type d 2>/dev/null
         done
-    done < "$PATHS_FILE"
+    done
+}
+
+# ~/.config/nvim e afins são só symlinks para o repositório, e uma sessão ali
+# não fica dentro de um git repo — o alvo certo é o pacote. Derivar do disco
+# em vez de manter lista no arquivo: pacote novo já entra, removido já sai.
+exclude_stowed_config() {
+    local name
+    while IFS= read -r name; do
+        EXCLUDES+=("$HOME/.config/$name")
+    done < <(find "$DOTFILES"/packages/*/.config -mindepth 1 -maxdepth 1 \
+        -printf '%f\n' 2>/dev/null | sort -u)
 }
 
 list_zoxide() {
@@ -33,11 +63,25 @@ list_zoxide() {
     zoxide query -l 2>/dev/null
 }
 
-# O zoxide vem primeiro para que a ordem por frecência sobreviva ao dedup.
+keep() {
+    local dir=$1 pat
+    [[ -d $dir ]] || return 1
+    for pat in ${EXCLUDES[@]+"${EXCLUDES[@]}"}; do
+        [[ $dir == $pat ]] && return 1
+    done
+    return 0
+}
+
+load_config
+exclude_stowed_config
+
+# --tiebreak=index: entre matches de score igual, quem vem antes ganha. Como o
+# zoxide vem primeiro, o desempate passa a ser por frecência em vez de pelo
+# caminho mais curto, que é o padrão do fzf.
 selected=$( { list_zoxide; list_roots; } | awk '!seen[$0]++' |
     while IFS= read -r dir; do
-        [[ -d $dir ]] && printf '%s\n' "$dir"
-    done | fzf --height 40% --tmux center --layout reverse)
+        keep "$dir" && printf '%s\n' "$dir"
+    done | fzf --height 40% --tmux center --layout reverse --tiebreak=index)
 
 if [[ -z "$selected" ]]; then
     exit 0

@@ -189,7 +189,11 @@ for um `#rrggbb`.
 - **Tema atual**: fica em `~/.local/state/dotfiles/current-theme`.
 - **tmux-sessionizer**: a lista vem do zoxide (tudo que você já visitou, por
   frecência) mais as raízes de `~/.config/tmux-sessionizer/paths`. Projeto
-  clonado fora das raízes aparece depois do primeiro `cd`.
+  clonado fora das raízes aparece depois do primeiro `cd`. Os diretórios de
+  `~/.config` que vêm de um pacote são excluídos automaticamente — lá são só
+  symlinks, e uma sessão ali não fica dentro do repositório; o alvo certo é
+  `~/dotfiles/packages/<pkg>`. O que não é do repositório continua aparecendo.
+  Linha começando com `-` no arquivo de paths exclui à mão.
 - **btop**: ele reescreve o `btop.conf` ao sair quando você muda alguma opção,
   e como o arquivo é um symlink, isso suja o repositório. Rode `git status`
   depois de mexer nas configurações dele.
