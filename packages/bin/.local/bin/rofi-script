@@ -140,11 +140,65 @@ take_screenshot() {
         --copy-command 'wl-copy'
 }
 
+# O cliphist não tem pin, então os fixados moram num diretório à parte, um
+# arquivo por entrada, e aparecem no topo da mesma lista.
+CLIP_PINS="${XDG_DATA_HOME:-$HOME/.local/share}/clipboard-pins"
+PIN_MARK="  "
+
+pin_preview() { tr '\n' ' ' < "$1" | cut -c1-120 | sed 's/[[:space:]]*$//'; }
+
+pin_file_for() {
+    local wanted="$1" f
+    for f in "$CLIP_PINS"/*; do
+        [[ -f $f ]] || continue
+        [[ "$(pin_preview "$f")" == "$wanted" ]] && { printf '%s\n' "$f"; return 0; }
+    done
+    return 1
+}
+
 show_clipboard() {
-    local entry
-    entry=$(cliphist list | rofi -dmenu -i -p "  Clipboard")
+    mkdir -p "$CLIP_PINS"
+
+    local list="" f entry code pinned=""
+    for f in "$CLIP_PINS"/*; do
+        [[ -f $f ]] || continue
+        list+="$PIN_MARK$(pin_preview "$f")"$'\n'
+    done
+    list+=$(cliphist list)
+
+    entry=$(rofi -dmenu -i -p "  Clipboard" \
+        -kb-custom-1 "alt+p" -kb-custom-2 "alt+d" -kb-custom-3 "alt+w" <<< "$list")
+    code=$?
     [[ -z $entry ]] && return
-    cliphist decode <<< "$entry" | wl-copy
+
+    if [[ $entry == "$PIN_MARK"* ]]; then
+        pinned=$(pin_file_for "${entry#"$PIN_MARK"}") || return
+    fi
+
+    case $code in
+        0)
+            if [[ -n $pinned ]]; then wl-copy < "$pinned"
+            else cliphist decode <<< "$entry" | wl-copy; fi
+            ;;
+        10)
+            if [[ -n $pinned ]]; then
+                rm -f "$pinned"
+                notify-send -t 2000 "Clipboard" "Solto"
+            else
+                cliphist decode <<< "$entry" > "$CLIP_PINS/$(date +%s%N)"
+                notify-send -t 2000 "Clipboard" "Fixado"
+            fi
+            ;;
+        11)
+            if [[ -n $pinned ]]; then rm -f "$pinned"
+            else cliphist delete <<< "$entry"; fi
+            ;;
+        12)
+            # wipe só mexe no histórico; os fixados ficam.
+            [[ $(printf 'não\nsim' | rofi -dmenu -i -p "Limpar o histórico?") == "sim" ]] &&
+                cliphist wipe
+            ;;
+    esac
 }
 
 change_wallpaper() {
