@@ -1,6 +1,9 @@
 # Sobras do `theme` (a escrita é atômica, mas se algo morrer no meio…)
 *.tmp.*
 
+# Logs que os programas escrevem no próprio diretório de config
+*.log
+
 # Lixo de editor / SO
 *.swp
 *~

@@ -1,0 +1,10 @@
+# Raízes que o tmux-sessionizer varre, além do que o zoxide já conhece.
+# Uma por linha. `caminho:profundidade` (padrão 1). Globs funcionam.
+
+~/projetos
+~/projetos/[A-Z]*
+~/plugins
+~/Documentos
+~/vaults
+~/remote
+~/dotfiles/packages:2

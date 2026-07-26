@@ -55,6 +55,7 @@ dots link nvim waybar    # linka só alguns
 dots unlink waybar
 dots relink nvim         # depois de renomear/mover arquivos
 dots migrate             # limpa symlinks quebrados que apontam para o repo
+dots adopt btop          # importa para o repo o que já existe em ~
 dots link --dry          # simula
 ```
 
@@ -63,6 +64,13 @@ owned by stow"*: são links de um layout anterior, apontando para caminhos que
 não existem mais. Ele só remove symlinks que apontam para dentro deste
 repositório **e** já não resolvem — arquivo de verdade, diretório e link para
 outro lugar ficam intactos. O `install.sh` roda isso antes de linkar.
+
+`dots adopt` é o caminho inverso do `link`: em vez de instalar a versão do
+repositório, ele traz para o repositório a que já está em `~`. Use quando a
+config boa é a que está na máquina. Ele exige o repositório limpo e mostra o
+diff no fim, porque o `--adopt` do stow **sobrescreve** os arquivos versionados
+sem avisar. Se a versão boa é a do repositório, o caminho é o outro: apague o
+arquivo de `~` e rode `dots link`.
 
 `dots` sempre usa `--no-folding`. Isso é importante: sem ele o stow criaria
 `~/.config/waybar` como um symlink para o repositório, e aí qualquer arquivo
@@ -146,6 +154,7 @@ Nos templates, cada chave tem quatro formas:
 | zathura | `~/.config/zathura/colors` | `include "colors"` |
 | starship | `~/.config/starship.toml` | arquivo inteiro (starship não tem include) |
 | neovim | `~/.config/nvim/lua/theme.lua` | `require("theme")` em `plugins/colors.lua` |
+| btop | `~/.config/btop/themes/dotfiles.theme` | `color_theme = "dotfiles"` no `btop.conf` |
 | zen browser | — | symlinks para `zen-themes/<zen_theme>/` |
 
 ### Criando um tema novo
@@ -178,6 +187,12 @@ for um `#rrggbb`.
   (`gruber-darker`, `present`) em `~/plugins`, que é onde o `colors.lua` os
   procura no `runtimepath`.
 - **Tema atual**: fica em `~/.local/state/dotfiles/current-theme`.
+- **tmux-sessionizer**: a lista vem do zoxide (tudo que você já visitou, por
+  frecência) mais as raízes de `~/.config/tmux-sessionizer/paths`. Projeto
+  clonado fora das raízes aparece depois do primeiro `cd`.
+- **btop**: ele reescreve o `btop.conf` ao sair quando você muda alguma opção,
+  e como o arquivo é um symlink, isso suja o repositório. Rode `git status`
+  depois de mexer nas configurações dele.
 - **Clipboard** (`SUPER+Y`, ou Setup → Clipboard): `Enter` copia, `alt+p` fixa
   ou solta, `alt+d` apaga a entrada, `alt+w` limpa o histórico. Os fixados vão
   para `~/.local/share/clipboard-pins`, um arquivo por entrada, e sobrevivem ao

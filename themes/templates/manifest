@@ -17,3 +17,4 @@ ghostty-colors.in         ~/.config/ghostty/colors
 zathura-colors.in         ~/.config/zathura/colors
 starship.toml.in          ~/.config/starship.toml
 nvim-theme.lua.in         ~/.config/nvim/lua/theme.lua
+btop.theme.in             ~/.config/btop/themes/dotfiles.theme

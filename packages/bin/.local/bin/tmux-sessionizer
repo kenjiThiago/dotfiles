@@ -1,13 +1,49 @@
 #!/usr/bin/env bash
+# tmux-sessionizer — abre, ou volta para, uma sessão do tmux por diretório.
+#
+# A lista vem de duas fontes: o zoxide, que já conhece tudo que você visitou,
+# e as raízes de ~/.config/tmux-sessionizer/paths, para projetos que você
+# ainda não abriu. Clonar fora das raízes deixa de ser problema: basta um cd.
 
-selected=$( (find /home ~/ ~/plugins ~/projetos ~/projetos/[A-Z]* ~/Documentos ~/vaults ~/remote -mindepth 1 -maxdepth 1 -type d &&
-    find ~/dotfiles/packages -maxdepth 2 -type d) | fzf --height 40% --tmux center --layout reverse)
+PATHS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/tmux-sessionizer/paths"
+
+list_roots() {
+    [[ -r $PATHS_FILE ]] || return 0
+
+    local line path depth p
+    while IFS= read -r line; do
+        line=${line%%#*}
+        line=${line//[[:space:]]/}
+        [[ -z $line ]] && continue
+
+        path=${line%%:*}
+        depth=${line#*:}
+        [[ $depth == "$path" ]] && depth=1
+        path=${path/#\~/$HOME}
+
+        for p in $path; do  # sem aspas: expande glob, como ~/projetos/[A-Z]*
+            [[ -d $p ]] || continue
+            find "$p" -mindepth 1 -maxdepth "$depth" -type d 2>/dev/null
+        done
+    done < "$PATHS_FILE"
+}
+
+list_zoxide() {
+    command -v zoxide >/dev/null || return 0
+    zoxide query -l 2>/dev/null
+}
+
+# O zoxide vem primeiro para que a ordem por frecência sobreviva ao dedup.
+selected=$( { list_zoxide; list_roots; } | awk '!seen[$0]++' |
+    while IFS= read -r dir; do
+        [[ -d $dir ]] && printf '%s\n' "$dir"
+    done | fzf --height 40% --tmux center --layout reverse)
 
 if [[ -z "$selected" ]]; then
     exit 0
 fi
 
-selected_name=$(basename $selected | tr ":,. " "____")
+selected_name=$(basename "$selected" | tr ":,. " "____")
 
 if [[ $selected_name == "nvim" ]]; then
     selected_name="Nvim"
@@ -15,17 +51,17 @@ fi
 
 switch_to() {
     if [[ -z "$TMUX" ]]; then
-        tmux attach-session -t $selected_name
+        tmux attach-session -t "$selected_name"
     else
-        tmux switch-client -t $selected_name
+        tmux switch-client -t "$selected_name"
     fi
 }
 
-if tmux has-session -t=$selected_name 2> /dev/null; then
+if tmux has-session -t="$selected_name" 2> /dev/null; then
     switch_to
     exit 0
 fi
 
-tmux new-session -ds $selected_name -c $selected
-tmux send-keys -t $selected_name "ready-tmux" ^M
+tmux new-session -ds "$selected_name" -c "$selected"
+tmux send-keys -t "$selected_name" "ready-tmux" ^M
 switch_to
