@@ -1,10 +1,5 @@
-# Identidade fica fora do repositório, em ~/.config/git/config.local:
-#
-#   [user]
-#       name = Seu Nome
-#       email = voce@exemplo.com
-#
-# O git ignora o include se o arquivo não existir.
+# Identidade e configuração por máquina ficam em config.local, fora do
+# repositório. O git ignora o include se o arquivo não existir.
 [include]
     path = config.local
 

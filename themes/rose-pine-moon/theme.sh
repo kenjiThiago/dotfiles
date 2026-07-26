@@ -11,8 +11,9 @@ variant="dark"
 nvim_colorscheme="gruber-darker" # gruber-darker local, já tingido com o Moon
 zen_theme="rose-pine"
 wallpaper="space.jpg"
-gtk_theme="Adwaita-dark"
-cursor_theme="Adwaita"
+# Vazio = o `theme` não escreve no gsettings (ver README).
+gtk_theme=""
+cursor_theme=""
 
 # ── Camadas de fundo ──────────────────────────────────────────────────────────
 base="#232136"    # base

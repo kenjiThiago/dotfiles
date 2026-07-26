@@ -62,6 +62,7 @@ grim
 slurp
 satty                        # AUR
 wl-clipboard
+cliphist
 jq
 
 # ── Sistema ───────────────────────────────────────────────────────────────────

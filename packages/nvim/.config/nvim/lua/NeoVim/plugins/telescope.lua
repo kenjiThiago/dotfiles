@@ -76,4 +76,8 @@ vim.keymap.set("n", "<leader>pa", function()
     })
 end)
 
+vim.keymap.set("n", "<leader>pb", builtin.buffers, {})
+vim.keymap.set("n", "<leader>po", builtin.oldfiles, {})
+vim.keymap.set("n", "<leader>pr", builtin.resume, {})
+
 require("NeoVim.telescope.multigrep").setup()

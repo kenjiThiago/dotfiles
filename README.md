@@ -116,6 +116,12 @@ tema. Os nomes são genéricos de propósito — o "yellow" do Rosé Pine é o g
 Mais os metadados: `variant` (dark/light), `nvim_colorscheme`, `zen_theme`,
 `wallpaper`, `gtk_theme`, `cursor_theme`.
 
+`gtk_theme` e `cursor_theme` vêm vazios: assim o `theme` não escreve no
+gsettings e não sobrepõe o que você escolheu à mão. Preencha se quiser que a
+troca de tema leve o GTK e o cursor junto — os nomes válidos são os diretórios
+em `/usr/share/icons`, `~/.local/share/icons` e `~/.themes`. O Hyprland lê o
+cursor do gsettings por causa do `sync_gsettings_theme = true`.
+
 Nos templates, cada chave tem quatro formas:
 
 | placeholder | resultado |

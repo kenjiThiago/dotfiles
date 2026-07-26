@@ -9,8 +9,9 @@ variant="dark"
 nvim_colorscheme="tokyonight-moon"
 zen_theme="nebula"
 wallpaper="nice-blue-background.png"
-gtk_theme="Adwaita-dark"
-cursor_theme="Adwaita"
+# Vazio = o `theme` não escreve no gsettings (ver README).
+gtk_theme=""
+cursor_theme=""
 
 # ── Camadas de fundo ──────────────────────────────────────────────────────────
 base="#222436"    # bg

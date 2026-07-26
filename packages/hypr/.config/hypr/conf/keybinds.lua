@@ -24,7 +24,7 @@ hl.bind(mainMod .. "+ SHIFT + DOWN", hl.dsp.exec_cmd("brightnessctl set 5%-"),
 hl.bind(mainMod .. "+ F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "+ SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
 
--- # bind = $mainMod, Y, exec, ghostty --class=com.example.clipse --command=clipse
+hl.bind(mainMod .. "+ Y", hl.dsp.exec_cmd("uwsm app -- rofi-script clipboard"))
 
 hl.bind(mainMod .. "+ E", hl.dsp.exec_cmd("uwsm app -- rofi-script --screenshot region"))
 hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("uwsm app -- rofi-script --screenshot fullscreen"))

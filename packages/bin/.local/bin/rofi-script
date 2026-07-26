@@ -140,6 +140,13 @@ take_screenshot() {
         --copy-command 'wl-copy'
 }
 
+show_clipboard() {
+    local entry
+    entry=$(cliphist list | rofi -dmenu -i -p "  Clipboard")
+    [[ -z $entry ]] && return
+    cliphist decode <<< "$entry" | wl-copy
+}
+
 change_wallpaper() {
     local SELECAO
     SELECAO=$(ls -1 "$WALLPAPER_DIR" | grep -iE '\.(jpg|jpeg|png|webp|jxl)$' | rofi -dmenu -i -p "  Wallpaper:")
@@ -181,7 +188,8 @@ show_trigger_menu() {
 }
 
 show_setup_menu() {
-    case $(menu "Setup" "  Tema\n  Wallpaper\n  Wi-Fi\n  Áudio\n  Hyprland Config\n󰍜  Waybar Config\n  Neovim Config\n  Ghostty Config") in
+    case $(menu "Setup" "  Clipboard\n  Tema\n  Wallpaper\n  Wi-Fi\n  Áudio\n  Hyprland Config\n󰍜  Waybar Config\n  Neovim Config\n  Ghostty Config") in
+        *Clipboard*) show_clipboard ;;
         *Tema*)      theme pick ;;
         *Wallpaper*) change_wallpaper ;;
         *Wi-Fi*)     uwsm app -- nm-connection-editor ;;
@@ -225,6 +233,7 @@ go_to_menu() {
         *system*)    show_system_menu ;;
         *wallpaper*) change_wallpaper ;;
         *tema*)      theme pick ;;
+        *clipboard*) show_clipboard ;;
     esac
 }
 
