@@ -25,6 +25,7 @@ vim.api.nvim_create_autocmd("FileType", {
                 sign = false,
                 icons = {},
             },
+            html = { comment = { conceal = false } },
         })
     end
 })

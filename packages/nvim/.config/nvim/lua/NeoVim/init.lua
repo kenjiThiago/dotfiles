@@ -1,7 +1,8 @@
 require("NeoVim.remap")
 require("NeoVim.set")
 require("NeoVim.autocmd")
-require("NeoVim.status_line")
+require("NeoVim.custom.statusline")
+require("NeoVim.custom.notas")
 
 require("vim._core.ui2").enable({})
 

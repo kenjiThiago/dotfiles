@@ -85,6 +85,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "BufNewFile" }, {
                             return true
                         end
                     end,
+                    "fallback",
                 },
                 ["<C-l>"] = { "snippet_forward", "fallback" },
                 ["<C-j>"] = { "snippet_backward", "fallback" },

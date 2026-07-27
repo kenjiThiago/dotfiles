@@ -10,5 +10,7 @@
 ~/plugins
 ~/Documentos
 ~/vaults
+~/notas
 ~/remote
-~/dotfiles/packages
+~/dotfiles/packages:3
+-~/plugins/*
