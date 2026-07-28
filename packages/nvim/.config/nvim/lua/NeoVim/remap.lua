@@ -56,6 +56,7 @@ vim.keymap.set("n", "<leader>tt", ":tabnew | term<CR>")
 
 --Fugitive
 -- vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
+vim.keymap.set("n", "<leader>gs", "<cmd>silent !tmux-lazygit<CR>")
 
 --Highlight
 vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
