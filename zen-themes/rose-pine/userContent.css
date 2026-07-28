@@ -5,8 +5,8 @@
 @media (prefers-color-scheme: dark) {
 
   :root {
-    --accent: var(--love);
-    --accent-hover: var(--iris);
+    --accent: var(--iris);
+    --accent-hover: var(--love);
   }
 
   /* Common variables affecting all pages */

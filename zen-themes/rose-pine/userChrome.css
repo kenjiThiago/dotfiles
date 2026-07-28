@@ -4,8 +4,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --accent: var(--love);
-    --accent-hover: var(--iris);
+    --accent: var(--iris);
+    --accent-hover: var(--love);
     --accent-gradient: linear-gradient(115deg, var(--love), var(--iris));
 
     --zen-colors-primary: var(--base) !important;
