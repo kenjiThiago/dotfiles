@@ -34,6 +34,8 @@ hl.bind(mainMod .. "+ W", hl.dsp.group.next())
 
 hl.bind(mainMod .. "+ O", hl.dsp.window.move({ into_or_create_group = "l" }))
 
+hl.bind(mainMod .. " + SHIFT + I", hl.dsp.exec_cmd("window-info"))
+
 local minimized = false
 hl.bind(mainMod .. "+ X", function()
     if minimized then

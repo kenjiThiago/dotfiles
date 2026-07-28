@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+APP_TITLE=$(hyprctl activewindow -j | jq -r '.title')
+
+if [ "$APP_TITLE" != "null" ] && [ -n "$APP_TITLE" ]; then
+    notify-send "Título: $APP_TITLE"
+    echo -n "$APP_TITLE" | wl-copy
+else
+    notify-send "Nenhuma janela em foco."
+fi
