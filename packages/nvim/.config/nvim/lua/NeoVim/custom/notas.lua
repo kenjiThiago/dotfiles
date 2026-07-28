@@ -1,7 +1,12 @@
-local ROOT     = vim.fn.expand("~/notas")
-local TEMPLATE = ROOT .. "/_templates/template-aula.md"
+local ROOT      = vim.fn.expand("~/notas")
+local TEMPLATES = ROOT .. "/_templates"
 
-local ACENTOS  = {
+local TIPOS     = {
+    conceito = "conceitos",
+    projeto  = "projetos",
+}
+
+local ACENTOS   = {
     ["á"] = "a",
     ["à"] = "a",
     ["ã"] = "a",
@@ -22,39 +27,34 @@ local function slugify(s)
     return (s:gsub("[^%w]+", "-"):gsub("^%-+", ""):gsub("%-+$", ""))
 end
 
-local function nova_aula(disciplina, numero, titulo)
-    if vim.fn.filereadable(TEMPLATE) == 0 then
-        return vim.notify("template não encontrado: " .. TEMPLATE, vim.log.levels.ERROR)
+local function hoje() return os.date("%Y-%m-%d") end
+
+local function render(tipo, path, vars)
+    local tpl = TEMPLATES .. "/" .. tipo .. ".md"
+    if vim.fn.filereadable(tpl) == 0 then
+        vim.notify("template não encontrado: " .. tpl, vim.log.levels.ERROR)
+        return false
     end
 
-    local dir = ROOT .. "/" .. disciplina
-    vim.fn.mkdir(dir, "p")
-    local path = string.format("%s/aula-%02d-%s.md", dir, numero, slugify(titulo))
-
-    if vim.fn.filereadable(path) == 1 then
-        return vim.cmd.edit(vim.fn.fnameescape(path))
-    end
-
-    local subs = {
-        ["^disciplina:$"] = "disciplina: " .. disciplina,
-        ["^aula:$"]       = string.format("aula: %02d", numero),
-        ["^titulo:$"]     = "titulo: " .. titulo,
-        ["^data:$"]       = "data: " .. os.date("%Y-%m-%d"),
-        ["{{aula}}"]      = string.format("%02d", numero),
-        ["{{titulo}}"]    = titulo,
-    }
-
-    local linhas = vim.fn.readfile(TEMPLATE)
+    local linhas = vim.fn.readfile(tpl)
     for i, l in ipairs(linhas) do
-        for pat, rep in pairs(subs) do
-            l = l:gsub(pat, function() return rep end)
+        l = l:gsub("{{(%w+)}}", function(k) return vars[k] or "" end)
+        for k, v in pairs(vars) do
+            l = l:gsub("^" .. k .. ":$", function() return k .. ": " .. v end)
         end
         linhas[i] = l
     end
 
+    vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
     vim.fn.writefile(linhas, path)
-    vim.cmd.edit(vim.fn.fnameescape(path))
+    return true
 end
+
+local function abrir(path) vim.cmd.edit(vim.fn.fnameescape(path)) end
+
+--------------------------------------------------------------------------
+-- Aula
+--------------------------------------------------------------------------
 
 vim.api.nvim_create_user_command("NovaAula", function(opts)
     local args       = vim.split(opts.args, "%s+", { trimempty = true })
@@ -63,8 +63,112 @@ vim.api.nvim_create_user_command("NovaAula", function(opts)
     if not disciplina or not numero or #args == 0 then
         return vim.notify("uso: :NovaAula <disciplina> <numero> <titulo>", vim.log.levels.ERROR)
     end
-    nova_aula(disciplina, numero, table.concat(args, " "))
+
+    local titulo = table.concat(args, " ")
+    local path = string.format("%s/%s/aula-%02d-%s.md", ROOT, disciplina, numero, slugify(titulo))
+
+    if vim.fn.filereadable(path) == 1 then return abrir(path) end
+    if render("aula", path, {
+            disciplina = disciplina,
+            aula       = string.format("%02d", numero),
+            titulo     = titulo,
+            data       = hoje(),
+        }) then
+        abrir(path)
+    end
 end, { nargs = "+" })
+
+--------------------------------------------------------------------------
+-- Conceito e projeto
+--------------------------------------------------------------------------
+
+vim.api.nvim_create_user_command("Nota", function(opts)
+    local args = vim.split(opts.args, "%s+", { trimempty = true })
+    local tipo = table.remove(args, 1)
+    local dir  = TIPOS[tipo]
+    if not dir or #args == 0 then
+        return vim.notify("uso: :Nota <conceito|projeto> <titulo>", vim.log.levels.ERROR)
+    end
+
+    local titulo = table.concat(args, " ")
+    local slug   = slugify(titulo)
+    local path   = string.format("%s/%s/%s.md", ROOT, dir, slug)
+
+    if vim.fn.filereadable(path) == 1 then return abrir(path) end
+    if render(tipo, path, { titulo = titulo, slug = slug, data = hoje() }) then
+        abrir(path)
+    end
+end, {
+    nargs = "+",
+    complete = function(lead, line)
+        if #vim.split(line, "%s+", { trimempty = true }) > 2 then return {} end
+        return vim.tbl_filter(function(t) return t:find(lead, 1, true) == 1 end,
+            vim.tbl_keys(TIPOS))
+    end,
+})
+
+--------------------------------------------------------------------------
+-- Diário e captura
+--------------------------------------------------------------------------
+
+local function diario()
+    local path = string.format("%s/diario/%s.md", ROOT, hoje())
+    if vim.fn.filereadable(path) == 0 then
+        if not render("diario", path, { data = hoje() }) then return nil end
+    end
+    abrir(path)
+    return path
+end
+
+vim.api.nvim_create_user_command("Diario", function()
+    if diario() then vim.cmd("normal! G") end
+end, {})
+
+vim.api.nvim_create_user_command("Captura", function(opts)
+    if not diario() then return end
+
+    local head = "## " .. os.date("%H:%M")
+    if opts.args ~= "" then head = head .. " — " .. opts.args end
+
+    vim.api.nvim_buf_set_lines(0, -1, -1, false, { "", head, "" })
+    vim.cmd("normal! G")
+    vim.cmd("startinsert")
+end, { nargs = "*" })
+
+--------------------------------------------------------------------------
+-- Promoção: seleção do diário vira nota de conceito ou projeto
+--------------------------------------------------------------------------
+
+vim.api.nvim_create_user_command("Promover", function(opts)
+    local args = vim.split(opts.args, "%s+", { trimempty = true })
+    local tipo = table.remove(args, 1)
+    local dir  = TIPOS[tipo]
+    if not dir or #args == 0 then
+        return vim.notify("uso: :'<,'>Promover <conceito|projeto> <titulo>", vim.log.levels.ERROR)
+    end
+
+    local bruto  = vim.api.nvim_buf_get_lines(0, opts.line1 - 1, opts.line2, false)
+    local origem = vim.fn.expand("%:t:r")
+    local titulo = table.concat(args, " ")
+    local slug   = slugify(titulo)
+    local path   = string.format("%s/%s/%s.md", ROOT, dir, slug)
+
+    if vim.fn.filereadable(path) == 1 then
+        return vim.notify("já existe: " .. path, vim.log.levels.ERROR)
+    end
+    if not render(tipo, path, { titulo = titulo, slug = slug, data = hoje() }) then return end
+
+    local linhas = vim.fn.readfile(path)
+    vim.list_extend(linhas, { "", "## Bruto", "", "Origem: [[" .. origem .. "]]", "" })
+    vim.list_extend(linhas, bruto)
+    vim.fn.writefile(linhas, path)
+
+    abrir(path)
+end, { nargs = "+", range = true })
+
+--------------------------------------------------------------------------
+-- Marcadores
+--------------------------------------------------------------------------
 
 vim.api.nvim_create_user_command("Marcadores", function(opts)
     local ok = pcall(vim.cmd, "vimgrep /" .. vim.fn.escape(opts.args, "/\\") .. "/j %")
@@ -76,14 +180,23 @@ end, {
     nargs = 1,
     complete = function() return { "!!", "??", "vs" } end,
 })
+
+--------------------------------------------------------------------------
+-- Dígrafos
+--------------------------------------------------------------------------
+
 vim.cmd([[
-  digraphs sq 8849   " ⊑ subsunção
-  digraphs sn 8851   " ⊓ conjunção (DL)
-  digraphs sj 8852   " ⊔ disjunção (DL)
-  digraphs tp 8868   " ⊤ topo
-  digraphs bt 8869   " ⊥ fundo
-  digraphs md 8872   " ⊨ consequência semântica
+  digraphs sq 8849
+  digraphs sn 8851
+  digraphs sj 8852
+  digraphs tp 8868
+  digraphs bt 8869
+  digraphs md 8872
 ]])
+
+--------------------------------------------------------------------------
+-- Buffer
+--------------------------------------------------------------------------
 
 vim.api.nvim_create_autocmd("FileType", {
     pattern  = "markdown",
@@ -110,5 +223,13 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
-vim.keymap.set("n", "<leader>nn", ":NovaAula ", { desc = "nova aula" })
+--------------------------------------------------------------------------
+-- Atalhos
+--------------------------------------------------------------------------
+
+vim.keymap.set("n", "<leader>nd", "<cmd>Diario<cr>", { desc = "diário de hoje" })
+vim.keymap.set("n", "<leader>nc", ":Captura ", { desc = "captura rápida" })
+vim.keymap.set("n", "<leader>nn", ":Nota ", { desc = "nova nota" })
+vim.keymap.set("n", "<leader>na", ":NovaAula ", { desc = "nova aula" })
 vim.keymap.set("n", "<leader>nm", ":Marcadores ", { desc = "colher marcadores" })
+vim.keymap.set("v", "<leader>np", ":Promover ", { desc = "promover seleção" })
