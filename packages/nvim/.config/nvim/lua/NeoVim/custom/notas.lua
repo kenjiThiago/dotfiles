@@ -207,10 +207,10 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.opt_local.wrap      = true
         vim.opt_local.linebreak = true
         vim.opt_local.spell     = true
-        vim.opt_local.spelllang = "pt_br"
+        vim.opt_local.spelllang = "en,pt_br"
 
         vim.opt_local.textwidth = 80
-        vim.opt_local.formatoptions:remove("t")
+        vim.opt_local.formatoptions:remove({ "t", "c" })
 
         if pcall(vim.treesitter.get_parser, ev.buf, "markdown") then
             vim.opt_local.foldmethod = "expr"
