@@ -87,6 +87,10 @@ if [[ -z "$selected" ]]; then
     exit 0
 fi
 
+if command -v zoxide >/dev/null 2>&1; then
+    zoxide add "$selected"
+fi
+
 selected_name=$(basename "$selected" | tr ":,. " "____")
 
 if [[ $selected_name == "nvim" ]]; then
