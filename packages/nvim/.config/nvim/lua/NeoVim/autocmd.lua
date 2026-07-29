@@ -76,3 +76,38 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.opt_local.cursorlineopt = "line"
     end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "gitcommit",
+    callback = function()
+        vim.opt_local.spell     = true
+        vim.opt_local.spelllang = "en,pt_br"
+    end,
+})
+
+local downloads_dir = vim.fn.expand("~/Downloads")
+
+vim.api.nvim_create_autocmd("BufEnter", {
+    group = vim.api.nvim_create_augroup("oil_custom_sort", { clear = true }),
+    callback = function(ev)
+        if vim.bo[ev.buf].filetype ~= "oil" then return end
+
+        local oil = require("oil")
+        local current_dir = oil.get_current_dir(ev.buf)
+
+        if not current_dir then return end
+
+        current_dir = current_dir:gsub("[/\\]$", "")
+
+        if current_dir == downloads_dir then
+            oil.set_sort({
+                { "birthtime", "desc" },
+            })
+        else
+            oil.set_sort({
+                { "type", "asc" },
+                { "name", "asc" }
+            })
+        end
+    end,
+})
