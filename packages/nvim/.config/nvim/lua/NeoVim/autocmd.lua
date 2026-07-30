@@ -86,6 +86,11 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 local downloads_dir = vim.fn.expand("~/Downloads")
+local imagens_dir = vim.fn.expand("~/Imagens")
+
+local function is_in_dir(path, target)
+    return path == target or vim.startswith(path, target .. "/")
+end
 
 vim.api.nvim_create_autocmd("BufEnter", {
     group = vim.api.nvim_create_augroup("oil_custom_sort", { clear = true }),
@@ -99,7 +104,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
 
         current_dir = current_dir:gsub("[/\\]$", "")
 
-        if current_dir == downloads_dir then
+        if is_in_dir(current_dir, downloads_dir) or is_in_dir(current_dir, imagens_dir) then
             oil.set_sort({
                 { "birthtime", "desc" },
             })
