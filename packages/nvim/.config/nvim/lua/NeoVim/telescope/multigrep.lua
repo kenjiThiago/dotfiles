@@ -29,10 +29,10 @@ local live_multigrep = function()
                 table.insert(args, pieces[2])
             end
 
-            return vim.tbl_flatten {
+            return vim.iter({
                 args,
                 { "--color=never", "--no-heading", "--with-filename", "--line-number", "--column", "--smart-case" }
-            }
+            }):flatten():totable()
         end,
         entry_maker = make_entry.gen_from_vimgrep(opts),
         cwd = opts.cwd,

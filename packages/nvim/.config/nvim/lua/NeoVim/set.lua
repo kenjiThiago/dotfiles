@@ -49,3 +49,9 @@ vim.opt.colorcolumn = "80"
 -- vim.opt.statuscolumn = "%s%=%{v:virtnum < 1 ? (v:relnum ? v:relnum : v:lnum) : ''} %#LineNr#│ "
 
 vim.api.nvim_command("autocmd TermOpen * setlocal nonumber norelativenumber")
+
+vim.filetype.add({
+    pattern = {
+        [".*/%.config/git/config%.local"] = "gitconfig",
+    },
+})
