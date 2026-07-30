@@ -97,6 +97,8 @@ vim.api.nvim_create_autocmd("BufEnter", {
     callback = function(ev)
         if vim.bo[ev.buf].filetype ~= "oil" then return end
 
+        if vim.bo[ev.buf].modified then return end
+
         local oil = require("oil")
         local current_dir = oil.get_current_dir(ev.buf)
 
@@ -104,12 +106,16 @@ vim.api.nvim_create_autocmd("BufEnter", {
 
         current_dir = current_dir:gsub("[/\\]$", "")
 
+        local function safe_sort(sort_opts)
+            pcall(oil.set_sort, sort_opts)
+        end
+
         if is_in_dir(current_dir, downloads_dir) or is_in_dir(current_dir, imagens_dir) then
-            oil.set_sort({
+            safe_sort({
                 { "birthtime", "desc" },
             })
         else
-            oil.set_sort({
+            safe_sort({
                 { "type", "asc" },
                 { "name", "asc" }
             })
