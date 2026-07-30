@@ -6,7 +6,8 @@ GNU Stow e com um sistema de temas que troca o desktop inteiro de uma vez.
 ```
 dotfiles/
 ├── install.sh          instalação numa máquina nova
-├── packages.txt        lista de pacotes do sistema
+├── packages.txt        pacotes que a configuração precisa
+├── packages-extra.txt  apps, toolchains e hardware (só com --extra)
 ├── packages/           os pacotes do stow (é o -d do stow)
 ├── themes/             paletas + templates dos temas
 ├── zen-themes/         temas do Zen Browser (CSS, não gerado)
@@ -30,6 +31,27 @@ zsh e baixa os plugins do tmux e do neovim.
 Cada etapa é pulável — `--skip-packages`, `--skip-services`, `--skip-plugins`
 — e tudo é idempotente: rodar de novo não quebra nada.
 
+### As duas listas de pacotes
+
+`packages.txt` tem só o que algum arquivo do repositório chama de fato — config,
+script de `packages/bin`, keybind do Hyprland, módulo do waybar ou tema. É o
+suficiente para a configuração funcionar, e é o que o `install.sh` instala por
+padrão.
+
+`packages-extra.txt` é o resto do que está instalado na máquina de referência:
+apps pessoais, toolchains, bancos e pacotes presos ao hardware (`intel-ucode`,
+`nvidia-open-dkms`, `sbctl`). Só entra com `./install.sh --extra`, e vale
+revisar antes de rodar em outro computador.
+
+Dependências transitivas não aparecem em nenhuma das duas — o paru resolve. As
+duas juntas também não são o `paru -Qeq` literal: o que caiu em desuso foi
+tirado de propósito. Para comparar com o que está instalado hoje:
+
+```sh
+paru -Qeq    # pacotes explícitos
+paru -Qmq    # os que vieram do AUR
+```
+
 Sobra só o que não dá para automatizar: reiniciar a sessão do Hyprland e abrir
 o Zen Browser uma vez (o perfil só existe depois disso) e rodar `theme set` de
 novo para criar os symlinks de CSS dentro dele.
@@ -50,13 +72,27 @@ O wrapper `dots` cuida do stow:
 ```sh
 dots list                # pacotes disponíveis
 dots status              # o que está linkado
-dots link                # linka tudo
-dots link nvim waybar    # linka só alguns
+dots link                     # linka tudo
+dots link nvim waybar         # linka só alguns
+dots link --except nvim       # linka tudo menos alguns
 dots unlink waybar
-dots relink nvim         # depois de renomear/mover arquivos
-dots migrate             # limpa symlinks quebrados que apontam para o repo
-dots adopt btop          # importa para o repo o que já existe em ~
-dots link --dry          # simula
+dots relink nvim              # depois de renomear/mover arquivos
+dots migrate                  # limpa symlinks quebrados que apontam para o repo
+dots adopt btop               # importa para o repo o que já existe em ~
+dots link --dry               # simula
+```
+
+`--except` aceita lista separada por vírgula (`--except nvim,waybar`) e pode ser
+repetido. Vale para `link`, `unlink` e `relink`, e não combina com uma lista de
+pacotes — ou você diz quais quer, ou quais não quer. Os nomes são conferidos
+contra o `dots list`, então errar a grafia dá erro em vez de linkar tudo
+caladamente, e a comparação é de nome inteiro: excluir `nvim` não leva o
+`nvim-plugins` junto.
+
+O `install.sh` repassa a mesma flag, para pular configs já na instalação nova:
+
+```sh
+./install.sh --except nvim,waybar
 ```
 
 `dots migrate` existe para quando o stow recusa com *"existing target is not

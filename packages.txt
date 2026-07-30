@@ -1,87 +1,114 @@
-# Pacotes necessários para esta configuração (Arch Linux, instalados com paru).
+# Pacotes que esta configuração precisa (Arch Linux, instalados com paru).
 #
 # Uma linha por pacote. Comentários com '#'. Linhas em branco são ignoradas.
-# Esta lista foi montada a partir do que as configs realmente chamam — revise
-# antes da primeira instalação em máquina nova.
+# Aqui está só o que algum arquivo do repositório realmente chama: config,
+# script de packages/bin, keybind do Hyprland, módulo do waybar ou tema.
+# O resto do que está instalado na máquina de referência vive em
+# packages-extra.txt (apps, toolchains, hardware) — veja o --extra
+# do install.sh.
+#
+# Os marcados com "AUR" não estão nos repositórios oficiais.
+#
+# Pacotes que entram sozinhos como dependência (wireplumber, polkit, glib2,
+# python, nodejs…) não são listados de propósito: o paru resolve.
 
 # ── Base ──────────────────────────────────────────────────────────────────────
-git
-stow
-base-devel
-xdg-user-dirs                # cria ~/Imagens etc., usado pelo rofi-script
+git                          # install.sh, tmux-sessionizer
+stow                         # dots link/migrate
+base-devel                   # makepkg, para compilar do AUR
+paru                         # AUR (o install.sh compila sozinho se faltar)
 
-# ── Hyprland e companhia ──────────────────────────────────────────────────────
+# ── Hyprland e sessão ─────────────────────────────────────────────────────────
 hyprland
-hyprpaper
+hyprpaper                    # exec-once + troca de wallpaper no rofi-script
 hypridle
 hyprlock
 hyprsunset
 hyprpicker
-uwsm
+hyprpolkitagent
+uwsm                         # todo keybind lança via 'uwsm app --'
 xdg-desktop-portal-hyprland
-polkit-gnome
+xorg-xwayland                # apps X sob o Hyprland
 
 # ── Barra / shell gráfico ─────────────────────────────────────────────────────
-quickshell                   # AUR
+quickshell                   # AUR — 'qs ipc call bar cycle'
 waybar
-swayosd                      # AUR
-libnotify
+mako
+libnotify                    # notify-send no window-info e rofi-script
 
 # ── Menu ──────────────────────────────────────────────────────────────────────
-rofi-wayland
+rofi
 rofimoji
 
-# ── Terminais ─────────────────────────────────────────────────────────────────
-ghostty
-alacritty
+# ── Screenshot / clipboard / input ────────────────────────────────────────────
+grim                         # rofi-script --screenshot, printAndEdit
+slurp
+satty
+wl-clipboard                 # wl-copy/wl-paste (cliphist, window-info)
+cliphist
+wev
+keyd
+brightnessctl
 
-# ── Shell ─────────────────────────────────────────────────────────────────────
+# ── Aparência ─────────────────────────────────────────────────────────────────
+gnome-themes-extra           # temas GTK que o 'theme' aplica via gsettings
+nwg-look
+qt5-quickcontrols2
+qt6ct
+rose-pine-cursor             # AUR
+
+# ── Fontes ────────────────────────────────────────────────────────────────────
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+ttf-dejavu
+otf-font-awesome             # ícones do waybar e do quickshell
+woff2-font-awesome
+
+# ── Terminal ──────────────────────────────────────────────────────────────────
+ghostty                      # terminal dos on-click do waybar
+
+# ── Shell e utilitários de linha de comando ───────────────────────────────────
 zsh
 starship
 zoxide
 fzf
 eza
 bat
+fd
+ripgrep
+jq                           # window-info, rofi-script
+# yazi
 tmux
+viu                          # preview de wallpaper no rofi-script
+pastel                       # testar-cor
+fastfetch
+btop                         # on-click do waybar
+unzip
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+lazygit                      # tmux-lazygit
 
 # ── Editor ────────────────────────────────────────────────────────────────────
 neovim
-ripgrep
-fd
-nodejs
-npm
-unzip
 tree-sitter-cli
-lua-language-server
-ruff
-biome                        # AUR
-yazi
+lua51                        # dependência do luarocks
+luarocks
 
-# ── Screenshot / clipboard ────────────────────────────────────────────────────
-grim
-slurp
-satty                        # AUR
-wl-clipboard
-cliphist
-jq
+# ── Áudio ─────────────────────────────────────────────────────────────────────
+pipewire
+pipewire-pulse               # módulo 'pulseaudio' do waybar
+wiremix                      # on-click do waybar
 
-# ── Sistema ───────────────────────────────────────────────────────────────────
-brightnessctl
-pavucontrol
-networkmanager
-nm-connection-editor
-power-profiles-daemon
-wireplumber
+# ── Rede ──────────────────────────────────────────────────────────────────────
+networkmanager               # habilitado pelo install.sh
+network-manager-applet       # ícone na tray do waybar
+nm-connection-editor         # aberto pelo rofi-script
 
-# ── Aplicativos ───────────────────────────────────────────────────────────────
-zen-browser-bin              # AUR
-zathura
-zathura-pdf-mupdf
-fastfetch
-pastel
-gimp
+# ── Energia ───────────────────────────────────────────────────────────────────
+power-profiles-daemon        # módulo do waybar, habilitado pelo install.sh
 
-# ── Fontes ────────────────────────────────────────────────────────────────────
-ttf-hack-nerd
-noto-fonts
-noto-fonts-emoji
+# ── Aplicativos usados pelas configs ──────────────────────────────────────────
+zen-browser-bin              # AUR — keybind e exec-once
+zathura-pdf-poppler          # puxa o zathura, que tem config em packages/
+gimp                         # printAndEdit

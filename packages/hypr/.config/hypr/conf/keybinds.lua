@@ -13,10 +13,6 @@ hl.bind(mainMod .. "+ PERIOD", hl.dsp.exec_cmd("uwsm app -- rofimoji --action co
 hl.bind(mainMod .. "+ P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. "+ T", hl.dsp.layout("togglesplit"))
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
--- hl.bind(mainMod .. "+ SHIFT + UP", hl.dsp.exec_cmd("swayosd-client --brightness raise"),
---     { locked = true, repeating = true })
--- hl.bind(mainMod .. "+ SHIFT + DOWN", hl.dsp.exec_cmd("swayosd-client --brightness lower"),
---     { locked = true, repeating = true })
 hl.bind(mainMod .. "+ SHIFT + UP", hl.dsp.exec_cmd("brightnessctl set 5%+"),
     { locked = true, repeating = true })
 hl.bind(mainMod .. "+ SHIFT + DOWN", hl.dsp.exec_cmd("brightnessctl set 5%-"),

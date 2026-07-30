@@ -3,10 +3,16 @@
 #
 #   ./install.sh                 instalação completa
 #   ./install.sh --dry           mostra o que faria, sem alterar nada
+#   ./install.sh --extra         instala também o packages-extra.txt
+#   ./install.sh --except a,b    linka tudo menos esses pacotes do stow
 #   ./install.sh --skip-packages pula a instalação de pacotes
 #   ./install.sh --skip-services pula habilitar serviços do systemd
 #   ./install.sh --skip-plugins  pula baixar plugins de nvim/tmux
 #   ./install.sh --theme <nome>  usa outro tema (padrão: rose-pine-moon)
+#
+# São duas listas: packages.txt tem o que a configuração precisa e é sempre
+# instalada; packages-extra.txt tem apps pessoais, toolchains e pacotes presos
+# ao hardware da máquina de referência, e só entra com --extra.
 #
 # Etapas, nesta ordem:
 #   1. checa dependências mínimas (git, stow, paru)
@@ -25,6 +31,8 @@ export DOTFILES
 
 THEME_NAME="rose-pine-moon"
 DRY=0
+EXTRA=0
+EXCEPT=""
 SKIP_PACKAGES=0
 SKIP_SERVICES=0
 SKIP_PLUGINS=0
@@ -49,15 +57,28 @@ run() {
 while [[ $# -gt 0 ]]; do
     case $1 in
         --dry|--dry-run) DRY=1 ;;
+        --extra)         EXTRA=1 ;;
+        --except)        shift; EXCEPT=${1:?--except precisa de uma lista de pacotes} ;;
+        --except=*)      EXCEPT=${1#*=} ;;
         --skip-packages) SKIP_PACKAGES=1 ;;
         --skip-services) SKIP_SERVICES=1 ;;
         --skip-plugins)  SKIP_PLUGINS=1 ;;
         --theme)         shift; THEME_NAME=${1:?--theme precisa de um nome} ;;
-        -h|--help)       sed -n '2,19p' "$0" | sed 's/^# \?//'; exit 0 ;;
+        -h|--help)       sed -n '2,25p' "$0" | sed 's/^# \?//'; exit 0 ;;
         *)               die "opção desconhecida: $1" ;;
     esac
     shift
 done
+
+# O dots valida os nomes do --except, mas só na etapa 3 — depois de já ter
+# instalado a lista inteira de pacotes. Checa aqui para errar de graça.
+if [[ -n $EXCEPT ]]; then
+    IFS=',' read -ra except_names <<< "$EXCEPT"
+    for name in "${except_names[@]}"; do
+        [[ -d $DOTFILES/packages/$name ]] \
+            || die "--except: pacote '$name' não existe (veja: dots list)"
+    done
+fi
 
 # ── 1. Dependências mínimas ───────────────────────────────────────────────────
 msg "Verificando dependências"
@@ -93,9 +114,26 @@ if [[ $SKIP_PACKAGES == 0 ]]; then
             fi
         fi
 
-        mapfile -t pkgs < <(sed -e 's/#.*//' -e '/^[[:space:]]*$/d' \
-            -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' "$DOTFILES/packages.txt")
-        printf '   %d pacotes na lista\n' "${#pkgs[@]}"
+        # Uma linha por pacote, sem comentários nem espaço em volta.
+        read_list() {
+            sed -e 's/#.*//' -e '/^[[:space:]]*$/d' \
+                -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' "$1"
+        }
+
+        lists=("$DOTFILES/packages.txt")
+        if [[ $EXTRA == 1 ]]; then
+            lists+=("$DOTFILES/packages-extra.txt")
+        else
+            printf '   (packages-extra.txt não entra; use --extra para incluir)\n'
+        fi
+
+        pkgs=()
+        for list in "${lists[@]}"; do
+            [[ -f $list ]] || die "não achei $list"
+            mapfile -t -O "${#pkgs[@]}" pkgs < <(read_list "$list")
+            printf '   %s\n' "${list##*/}"
+        done
+        printf '   %d pacotes no total\n' "${#pkgs[@]}"
         run paru -S --needed "${pkgs[@]}"
     fi
 else
@@ -112,8 +150,11 @@ DOTS="$DOTFILES/packages/bin/.local/bin/dots"
 msg "Procurando symlinks do layout antigo"
 "$DOTS" migrate "${dots_args[@]}"
 
+# O migrate não aceita --except: ele varre symlinks quebrados, não pacotes.
 msg "Linkando as configurações em ~"
-"$DOTS" link "${dots_args[@]}"
+link_args=("${dots_args[@]}")
+if [[ -n $EXCEPT ]]; then link_args+=(--except "$EXCEPT"); fi
+"$DOTS" link "${link_args[@]}"
 
 # ── 4. Tema ───────────────────────────────────────────────────────────────────
 msg "Aplicando o tema '$THEME_NAME'"

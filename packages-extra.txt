@@ -1,0 +1,131 @@
+# Pacotes extras da máquina de referência — NÃO são necessários para a
+# configuração deste repositório rodar.
+#
+# É o que sobrou do 'paru -Qeq' depois do packages.txt: sistema base, hardware,
+# toolchains, bancos e apps pessoais.
+#
+# As duas listas juntas não são mais o 'paru -Qeq' literal: pacotes que caíram
+# em desuso foram tirados de propósito (o grupo xorg — só o xorg-xwayland
+# importa, e ele está no packages.txt —, os pacotes '-debug', navegadores
+# extras e versões duplicadas de Python e JDK).
+#
+# Instalar com:  ./install.sh --extra
+#         ou:    paru -S --needed $(sed -e 's/#.*//' -e '/^\s*$/d' packages-extra.txt)
+#
+# Os marcados com "AUR" não estão nos repositórios oficiais.
+
+# ── Sistema base e boot ───────────────────────────────────────────────────────
+# Já vêm do pacstrap numa instalação normal do Arch; ficam listados só para o
+# registro. Instalar de novo não faz nada (--needed).
+base
+linux
+linux-headers
+linux-firmware
+grub
+efibootmgr
+os-prober
+dosfstools
+mtools
+sudo
+nano
+man-pages
+ntp
+
+# ── Hardware desta máquina ────────────────────────────────────────────────────
+# ATENÇÃO: revise antes de rodar em outro computador. Em CPU AMD o intel-ucode
+# instala microcode errado, e o nvidia-open-dkms não compila sem GPU NVIDIA.
+intel-ucode
+nvidia-open-dkms
+nvidia-settings
+nvtop
+vulkan-tools
+sbctl                        # assinatura para Secure Boot
+sof-firmware
+xf86-video-vesa
+
+# ── Pacman / AUR ──────────────────────────────────────────────────────────────
+pacman-contrib               # paccache, checkupdates, rankmirrors
+reflector
+downgrade                    # AUR
+
+# ── Bluetooth ─────────────────────────────────────────────────────────────────
+bluez
+bluez-utils
+bluetui
+
+# ── Áudio ─────────────────────────────────────────────────────────────────────
+alsa-utils
+noise-suppression-for-voice
+
+# ── Rede e segurança ──────────────────────────────────────────────────────────
+nmap
+ufw
+rsync
+sshfs
+
+# ── Linha de comando ──────────────────────────────────────────────────────────
+bc
+entr
+inotify-tools
+lsof
+ncdu
+tldr
+glow
+zip
+unrar
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+github-cli
+
+# ── Aparência ─────────────────────────────────────────────────────────────────
+gnome-tweaks
+
+# ── Editores ──────────────────────────────────────────────────────────────────
+helix
+ctags
+
+# ── Toolchains e linguagens ───────────────────────────────────────────────────
+gcc
+gcc-fortran
+gdb
+make
+go
+deno
+rustup
+uv
+jdk21-openjdk
+mono
+r
+openblas
+unixodbc
+
+# ── Bancos de dados e containers ──────────────────────────────────────────────
+postgresql
+postgresql-old-upgrade
+docker
+docker-compose
+
+# ── Documentos ────────────────────────────────────────────────────────────────
+pandoc-bin                   # AUR
+typst
+tectonic
+ghostscript
+libreoffice-fresh
+obsidian
+
+# ── Mídia ─────────────────────────────────────────────────────────────────────
+mpv
+imv
+imagemagick
+obs-studio
+
+# ── Jogos e Wine ──────────────────────────────────────────────────────────────
+steam
+goverlay
+wine-mono
+winetricks
+curseforge                   # AUR
+
+# ── Trabalho ──────────────────────────────────────────────────────────────────
+omnissa-horizon-client       # AUR
+
