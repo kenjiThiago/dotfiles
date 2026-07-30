@@ -170,6 +170,13 @@ show_clipboard() {
         done
         list+=$(cliphist list)
 
+        list=$(grep -v '^[[:space:]]*$' <<< "$list")
+
+        if [[ -z $list ]]; then
+            notify-send -u low -a "Clipboard" "Histórico vazio"
+            return
+        fi
+
         entry=$(rofi -dmenu -i -p "  Clipboard" \
             -kb-custom-1 "alt+p" -kb-custom-2 "alt+d" -kb-custom-3 "alt+w" <<< "$list")
         code=$?

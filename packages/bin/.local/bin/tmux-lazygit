@@ -2,4 +2,4 @@
 
 CURRENT_DIR=$(pwd)
 
-tmux display-popup -d "$CURRENT_DIR" -w 75% -h 90% -E "tmux new-session -d -s scratch-lg lazygit 2>/dev/null; tmux set-option -t scratch-lg detach-on-destroy on; tmux attach-session -t scratch-lg"
+tmux display-popup -d "$CURRENT_DIR" -w 75% -h 90% -E "tmux new-session -d -s scratch lazygit 2>/dev/null; tmux set-option -t scratch status off; tmux set-option -t scratch detach-on-destroy on; tmux attach-session -t scratch"
