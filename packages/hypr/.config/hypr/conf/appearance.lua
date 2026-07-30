@@ -14,6 +14,7 @@ local selectionRule = hl.layer_rule({
 hl.config({
     cursor = {
         sync_gsettings_theme = true,
+        no_hardware_cursors = false,
     },
 
     general = {
@@ -113,6 +114,6 @@ hl.animation({ leaf = "layersIn", enabled = true, speed = 2, bezier = "easeinout
 
 -- Workspaces
 -- hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "fluent_decel", style = "slidefade 30%" })
-hl.animation({ leaf = "workspaces",    enabled = true,  speed = 3,   bezier = "fluent_decel",  style = "slidefadevert -30%" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "fluent_decel", style = "slidefadevert -30%" })
 
 hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 2, bezier = "fluent_decel", style = "slidefade 10%" })
