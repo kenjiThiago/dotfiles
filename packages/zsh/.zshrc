@@ -100,6 +100,13 @@ export EDITOR="nvim"
 export MANGOHUD=0
 export PS2="$(starship prompt --continuation)"
 
+# O lazygit não tem include: o config.yml versionado traz o comportamento e o
+# colors.yml vem do `theme set`. O tmux-lazygit repete isto por conta própria,
+# porque a sessão do popup não herda o ambiente deste shell.
+if [[ -f ~/.config/lazygit/colors.yml ]]; then
+    export LG_CONFIG_FILE=~/.config/lazygit/config.yml,~/.config/lazygit/colors.yml
+fi
+
 function y() {
     export YAZI_START_DIR="$PWD"
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
@@ -114,6 +121,8 @@ if [[ -z $TMUX ]]; then
     path+=("$HOME/.local/bin")
     path+=("$HOME/.local/share/nvim/mason/bin")
 fi
+
+source /usr/share/nvm/init-nvm.sh
 
 export PATH
 

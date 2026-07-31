@@ -191,6 +191,7 @@ Nos templates, cada chave tem quatro formas:
 | starship | `~/.config/starship.toml` | arquivo inteiro (starship não tem include) |
 | neovim | `~/.config/nvim/lua/theme.lua` | `require("theme")` em `plugins/colors.lua` |
 | btop | `~/.config/btop/themes/dotfiles.theme` | `color_theme = "dotfiles"` no `btop.conf` |
+| lazygit | `~/.config/lazygit/colors.yml` | `LG_CONFIG_FILE` junta com o `config.yml` (não tem include) |
 | zen browser | — | symlinks para `zen-themes/<zen_theme>/` |
 
 ### Criando um tema novo
@@ -230,6 +231,22 @@ for um `#rrggbb`.
   symlinks, e uma sessão ali não fica dentro do repositório; o alvo certo é
   `~/dotfiles/packages/<pkg>`. O que não é do repositório continua aparecendo.
   Linha começando com `-` no arquivo de paths exclui à mão.
+- **lazygit — cores**: o `config.yml` versionado tem só comportamento; o tema
+  sai do `theme set` em `~/.config/lazygit/colors.yml`. Como o lazygit não tem
+  include, quem junta os dois é o `LG_CONFIG_FILE`, definido em dois lugares: no
+  `.zshrc`, para quando você roda `lazygit` na mão, e no `tmux-lazygit`, porque
+  a sessão do popup não herda o ambiente do seu shell. Sem a variável o lazygit
+  ainda sobe — só sem tema. Antes do primeiro `theme set` o `colors.yml` não
+  existe, e os dois lugares checam isso antes de montar a lista (arquivo
+  faltando na lista impede o lazygit de iniciar).
+- **lazygit — editar** (`prefix+g`): abre num popup, sobre a sessão `scratch`. Ao editar
+  um arquivo (`e`), o `os.edit` do `config.yml` chama o `tmux-lazygit-edit` em
+  vez do `$EDITOR` — sem isso o nvim viraria filho do lazygit e ficaria preso
+  nos 75%×90% do popup. O helper manda o comando para o pane de onde você veio,
+  fecha o popup e deixa a sessão `scratch` viva, então o próximo `prefix+g`
+  reencontra o lazygit no mesmo estado. Se o pane de origem não estiver no
+  prompt (tem um build ou outro nvim rodando ali), ele abre numa janela nova em
+  vez de injetar texto por cima.
 - **btop**: ele reescreve o `btop.conf` ao sair quando você muda alguma opção,
   e como o arquivo é um symlink, isso suja o repositório. Rode `git status`
   depois de mexer nas configurações dele.

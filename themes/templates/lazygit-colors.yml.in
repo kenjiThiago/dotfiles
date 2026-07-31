@@ -1,0 +1,33 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+#
+# O lazygit não tem diretiva de include, então este arquivo não é lido sozinho:
+# o LG_CONFIG_FILE junta ele com o config.yml versionado (ver tmux-lazygit e
+# packages/zsh/.zshrc). O que está aqui é só cor; comportamento fica lá.
+gui:
+  theme:
+    activeBorderColor:
+      - "{{cyan}}"
+      - bold
+    inactiveBorderColor:
+      - "{{muted}}"
+    searchingActiveBorderColor:
+      - "{{yellow}}"
+      - bold
+    optionsTextColor:
+      - "{{blue}}"
+    selectedLineBgColor:
+      - "{{overlay}}"
+    inactiveViewSelectedLineBgColor:
+      - "{{surface}}"
+    cherryPickedCommitFgColor:
+      - "{{text}}"
+    cherryPickedCommitBgColor:
+      - "{{magenta}}"
+    markedBaseCommitFgColor:
+      - "{{text}}"
+    markedBaseCommitBgColor:
+      - "{{yellow}}"
+    unstagedChangesColor:
+      - "{{red}}"
+    defaultFgColor:
+      - "{{text}}"

@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# tmux-lazygit-edit — abre um arquivo do lazygit fora do popup.
+#
+#   tmux-lazygit-edit <arquivo> [linha]
+#
+# O lazygit chama isto no lugar do $EDITOR (ver os.edit no config.yml). Sem
+# ele o nvim viraria filho do lazygit e ficaria preso nos 75%x90% do popup.
+#
+# O popup do tmux-lazygit é um cliente tmux à parte, anexado à sessão
+# 'scratch', falando com o mesmo servidor. Então dá para mandar o comando para
+# o pane de onde você veio e fechar o popup: o nvim abre em tela cheia e a
+# sessão 'scratch' continua viva, com o lazygit no mesmo estado do próximo
+# prefix+g.
+
+set -euo pipefail
+
+file=${1:?uso: tmux-lazygit-edit <arquivo> [linha]}
+line=${2:-}
+
+# O lazygit passa o caminho relativo à raiz do repositório, que é o cwd dele.
+# O pane de destino pode estar em outro diretório, então resolve agora.
+file=$(realpath -m -- "$file")
+
+nvim_cmd=(nvim)
+if [[ -n $line ]]; then nvim_cmd+=("+$line"); fi
+nvim_cmd+=(-- "$file")
+
+# Fora do tmux não há popup nenhum para escapar.
+if [[ -z ${TMUX:-} ]]; then
+    exec "${nvim_cmd[@]}"
+fi
+
+if [[ -n ${TMUX_PANE:-} ]]; then
+    self_session=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}')
+else
+    self_session=$(tmux display-message -p '#{session_name}')
+fi
+
+# Com o popup aberto existem dois clientes: o de fora e o do popup. O de
+# origem é o que não está na sessão do popup.
+origin=$(tmux list-clients -F '#{client_session}' \
+    | grep -vxF "$self_session" | head -n 1 || true)
+
+# Rodou fora do popup (lazygit chamado direto): abre aqui mesmo.
+if [[ -z $origin ]]; then
+    exec "${nvim_cmd[@]}"
+fi
+
+pane=$(tmux display-message -p -t "$origin" '#{pane_id}')
+running=$(tmux display-message -p -t "$pane" '#{pane_current_command}')
+
+quoted=$(printf '%q ' "${nvim_cmd[@]}")
+
+case $running in
+    zsh|bash|sh|fish|dash)
+        # Shell no prompt: digita o comando nele, para o nvim tomar o pane.
+        tmux send-keys -t "$pane" "$quoted" Enter
+        ;;
+    *)
+        # Tem algo rodando ali (outro nvim, um build, o que for). Injetar
+        # texto estragaria essa sessão, então abre numa janela nova.
+        tmux new-window -t "$origin:" -c "$(dirname -- "$file")" "${nvim_cmd[@]}"
+        ;;
+esac
+
+# Fecha só o cliente do popup; a sessão do lazygit sobrevive.
+tmux detach-client -s "$self_session"

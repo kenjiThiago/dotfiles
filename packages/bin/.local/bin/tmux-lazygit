@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
+# tmux-lazygit — abre o lazygit num popup, sobre a sessão 'scratch'.
+#
+# O tema do lazygit é gerado pelo `theme set` num arquivo à parte, porque o
+# lazygit não tem include: o LG_CONFIG_FILE é quem junta o config.yml
+# versionado com o colors.yml gerado. A ordem importa — o último vence.
 
 CURRENT_DIR=$(pwd)
 
-tmux display-popup -d "$CURRENT_DIR" -w 75% -h 90% -E "tmux new-session -d -s scratch lazygit 2>/dev/null; tmux set-option -t scratch status off; tmux set-option -t scratch detach-on-destroy on; tmux attach-session -t scratch"
+LG_DIR="$HOME/.config/lazygit"
+LG_CONFIG_FILE="$LG_DIR/config.yml"
+# Antes do primeiro `theme set` o colors.yml não existe, e o lazygit se recusa
+# a subir se um arquivo da lista faltar.
+if [[ -f $LG_DIR/colors.yml ]]; then
+    LG_CONFIG_FILE="$LG_CONFIG_FILE,$LG_DIR/colors.yml"
+fi
+
+tmux display-popup -d "$CURRENT_DIR" -w 75% -h 90% -E "tmux new-session -d -s scratch -e LG_CONFIG_FILE=$LG_CONFIG_FILE lazygit 2>/dev/null; tmux set-option -t scratch status off; tmux set-option -t scratch detach-on-destroy on; tmux attach-session -t scratch"

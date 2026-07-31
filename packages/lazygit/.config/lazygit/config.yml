@@ -1,0 +1,18 @@
+# Só comportamento. As cores vivem em ~/.config/lazygit/colors.yml, gerado
+# pelo `theme set` a partir de themes/templates/lazygit-colors.yml.in.
+#
+# O lazygit não tem diretiva de include, então quem junta os dois é o
+# LG_CONFIG_FILE (ver packages/bin/.local/bin/tmux-lazygit e packages/zsh/.zshrc).
+# Rodar `lazygit` sem essa variável usa só este arquivo — funciona, mas sem tema.
+gui:
+  language: "en"
+  border: "rounded"
+  # showBottomLine: false
+
+# Sem isto o nvim abriria como filho do lazygit, preso no popup do
+# tmux-lazygit. O helper manda o comando para o pane de origem e fecha o
+# popup. Ver packages/bin/.local/bin/tmux-lazygit-edit.
+os:
+  edit: 'tmux-lazygit-edit {{filename}}'
+  editAtLine: 'tmux-lazygit-edit {{filename}} {{line}}'
+  editAtLineAndWait: 'tmux-lazygit-edit {{filename}} {{line}}'
