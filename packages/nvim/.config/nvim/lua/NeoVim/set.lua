@@ -42,7 +42,7 @@ vim.opt.updatetime = 50
 vim.opt.showmode = false
 
 vim.opt.pumheight = 10
-vim.opt.winborder = "double"
+vim.opt.winborder = "rounded"
 -- vim.opt.cmdheight = 0
 
 vim.opt.colorcolumn = "80"
@@ -55,3 +55,15 @@ vim.filetype.add({
         [".*/%.config/git/config%.local"] = "gitconfig",
     },
 })
+
+vim.opt.list = true
+
+vim.opt.listchars = {
+    tab = "» ",
+    space = "·",
+    trail = "•",
+    extends = "›",
+    precedes = "‹",
+    nbsp = "␣",
+    eol = "↲",
+}

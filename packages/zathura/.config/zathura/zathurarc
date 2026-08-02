@@ -3,3 +3,4 @@ include "colors"
 
 # Configurações próprias (sobrevivem à troca de tema).
 set selection-clipboard clipboard
+set incremental-search true
