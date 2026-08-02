@@ -7,9 +7,9 @@
 # ele o nvim viraria filho do lazygit e ficaria preso nos 75%x90% do popup.
 #
 # O popup do tmux-lazygit é um cliente tmux à parte, anexado à sessão
-# 'scratch', falando com o mesmo servidor. Então dá para mandar o comando para
+# 'scratch-lg', falando com o mesmo servidor. Então dá para mandar o comando para
 # o pane de onde você veio e fechar o popup: o nvim abre em tela cheia e a
-# sessão 'scratch' continua viva, com o lazygit no mesmo estado do próximo
+# sessão 'scratch-lg' continua viva, com o lazygit no mesmo estado do próximo
 # prefix+g.
 
 set -euo pipefail

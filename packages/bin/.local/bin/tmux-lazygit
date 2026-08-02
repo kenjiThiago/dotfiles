@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tmux-lazygit — abre o lazygit num popup, sobre a sessão 'scratch'.
+# tmux-lazygit — abre o lazygit num popup, sobre a sessão 'scratch-lg'.
 #
 # O tema do lazygit é gerado pelo `theme set` num arquivo à parte, porque o
 # lazygit não tem include: o LG_CONFIG_FILE é quem junta o config.yml
@@ -15,4 +15,4 @@ if [[ -f $LG_DIR/colors.yml ]]; then
     LG_CONFIG_FILE="$LG_CONFIG_FILE,$LG_DIR/colors.yml"
 fi
 
-tmux display-popup -d "$CURRENT_DIR" -w 75% -h 90% -E "tmux new-session -d -s scratch -e LG_CONFIG_FILE=$LG_CONFIG_FILE lazygit 2>/dev/null; tmux set-option -t scratch status off; tmux set-option -t scratch detach-on-destroy on; tmux attach-session -t scratch"
+tmux display-popup -d "$CURRENT_DIR" -w 75% -h 90% -E "tmux new-session -d -s scratch-lg -e LG_CONFIG_FILE=$LG_CONFIG_FILE lazygit 2>/dev/null; tmux set-option -t scratch-lg status off; tmux set-option -t scratch-lg detach-on-destroy on; tmux attach-session -t scratch-lg"
