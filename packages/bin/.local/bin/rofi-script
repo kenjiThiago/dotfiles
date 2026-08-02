@@ -244,7 +244,7 @@ show_trigger_menu() {
     case $(menu "Trigger" "  Screenshot (Região)\n  Screenshot (Tela Cheia)\n󰃉  Color Picker\n󰍜  Toggle Waybar\n  Toggle Gaps (Hyprland)") in
         *Região*)       take_screenshot "region" ;;
         *"Tela Cheia"*) take_screenshot "fullscreen" ;;
-        *Color*)        hyprpicker -a && notify-send -t 2000 "Color Picker" "Cor copiada" ;;
+        *Color*)        sleep 0.25 && hyprpicker -a && notify-send -t 2000 "Color Picker" "Cor copiada" ;;
         *Waybar*)       killall -SIGUSR1 waybar ;;
         *Gaps*)         hyprctl dispatch workspaceopt allfloat ;;
         *)              back_to show_main_menu ;;
