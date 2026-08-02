@@ -52,6 +52,7 @@ function M.setup()
         TabLineSel = { fg = palette.crimson, bg = palette.bg, bold = true },
         FloatBorder = { fg = palette["bg+3"], bg = palette["bg+1"] },
         FloatTitle = { fg = palette.crimson, bg = palette["bg+1"], bold = true },
+        YankHighlight = { fg = palette.bg, bg = palette.crimson },
 
         -- Spell Checking Nativo
         SpellBad = { sp = palette.red_error, undercurl = true },

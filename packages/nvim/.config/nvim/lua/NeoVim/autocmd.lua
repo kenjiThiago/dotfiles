@@ -1,7 +1,8 @@
 vim.api.nvim_create_autocmd("TextYankPost", {
     group = vim.api.nvim_create_augroup("HighlightYank", {}),
     callback = function()
-        vim.highlight.on_yank({
+        vim.hl.on_yank({
+            higroup = "YankHighlight",
             timeout = 50
         })
     end
@@ -107,7 +108,17 @@ vim.api.nvim_create_autocmd("BufEnter", {
         current_dir = current_dir:gsub("[/\\]$", "")
 
         local function safe_sort(sort_opts)
+            local original_notify = vim.notify
+            vim.notify = function(msg, level, opts)
+                if type(msg) == "string" and msg:match("Cannot change sorting") then
+                    return
+                end
+                original_notify(msg, level, opts)
+            end
+
             pcall(oil.set_sort, sort_opts)
+
+            vim.notify = original_notify
         end
 
         if is_in_dir(current_dir, downloads_dir) or is_in_dir(current_dir, imagens_dir) then
