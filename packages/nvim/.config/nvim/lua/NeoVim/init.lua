@@ -2,7 +2,6 @@ require("NeoVim.remap")
 require("NeoVim.set")
 require("NeoVim.autocmd")
 require("NeoVim.custom.statusline")
-require("NeoVim.custom.notas")
 
 require("vim._core.ui2").enable({})
 
@@ -50,8 +49,17 @@ _G.icons = {
     },
 }
 
+-- Daqui para baixo é o que depende de plugin, e por isso é só do desktop.
+-- No servidor quem assume é o NeoVim.server (ver NeoVim.profile).
+if require("NeoVim.profile").server then
+    require("NeoVim.server")
+    return
+end
+
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
+
+require("NeoVim.custom.notas")
 
 -- Plugins require
 

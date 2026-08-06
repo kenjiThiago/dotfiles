@@ -3,7 +3,7 @@
 #
 #   dots list                   lista os pacotes disponíveis
 #   dots status                 mostra quais estão linkados
-#   dots link [pacote...]       linka (padrão: todos)
+#   dots link [pacote...]       linka (padrão: os do perfil ativo)
 #   dots unlink [pacote...]     desfaz os links
 #   dots relink [pacote...]     unlink + link (útil depois de renomear coisas)
 #   dots migrate                remove symlinks quebrados que apontam para o repo
@@ -12,10 +12,15 @@
 #   --dry                       só mostra o que faria
 #   --yes                       não pergunta antes de remover (só no migrate)
 #   --except a,b                linka todos menos esses (link/unlink/relink)
+#   --profile <nome>            usa outro perfil em vez do ativo
 #
-# O --except é o avesso de passar nomes: 'dots link' pega tudo, 'dots link nvim'
-# pega só o nvim, e 'dots link --except nvim' pega tudo menos ele. Os nomes são
-# validados, então errar a grafia dá erro em vez de linkar tudo caladamente.
+# O --except é o avesso de passar nomes: 'dots link' pega o perfil, 'dots link
+# nvim' pega só o nvim, e 'dots link --except nvim' pega o perfil menos ele. Os
+# nomes são validados, então errar a grafia dá erro em vez de linkar caladamente.
+#
+# O perfil sai de ~/.local/state/dotfiles/profile, escrito pelo install.sh, e
+# lista em profiles/<nome> quais pacotes aquela máquina quer. Sem o arquivo, o
+# padrão é desktop; sem o profiles/<nome>, é tudo que existe em packages/.
 #
 # Todos os comandos usam --no-folding de propósito: assim ~/.config/waybar é
 # um diretório de verdade com symlinks dentro, e não um symlink para o repo.
@@ -27,10 +32,13 @@ set -euo pipefail
 self=$(realpath "${BASH_SOURCE[0]}")
 DOTFILES=${DOTFILES:-$(cd "$(dirname "$self")/../../../.." && pwd)}
 PKG_DIR="$DOTFILES/packages"
+PROFILES_DIR="$DOTFILES/profiles"
+PROFILE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/profile"
 
 DRY=0
 ASSUME_YES=0
 EXCEPT=()
+PROFILE=""
 
 info() { printf '\033[1;34m::\033[0m %s\n' "$*"; }
 ok()   { printf '\033[1;32m ✔\033[0m %s\n' "$*"; }
@@ -41,8 +49,32 @@ all_packages() {
     find "$PKG_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort
 }
 
-# Todos os pacotes menos os nomes passados. A comparação é de nome inteiro de
-# propósito: excluir 'nvim' não pode levar o 'nvim-plugins' junto.
+current_profile() {
+    if [[ -n $PROFILE ]]; then printf '%s\n' "$PROFILE"; return; fi
+    if [[ -n ${DOTFILES_PROFILE:-} ]]; then printf '%s\n' "$DOTFILES_PROFILE"; return; fi
+    if [[ -r $PROFILE_FILE ]]; then
+        local name
+        read -r name < "$PROFILE_FILE" || true
+        if [[ -n ${name// /} ]]; then printf '%s\n' "$name"; return; fi
+    fi
+    printf 'desktop\n'
+}
+
+# Os pacotes de um perfil. Sem arquivo de perfil, é tudo — que é como o dots
+# se comportava antes de existir perfil nenhum.
+profile_packages() {
+    local name=$1 file="$PROFILES_DIR/$1"
+
+    if [[ ! -r $file ]]; then
+        all_packages
+        return
+    fi
+
+    sed -e 's/#.*//' -e 's/[[:space:]]//g' -e '/^$/d' "$file"
+}
+
+# Os pacotes do perfil menos os nomes passados. A comparação é de nome inteiro
+# de propósito: excluir 'nvim' não pode levar o 'nvim-plugins' junto.
 except_packages() {
     local pkg name skip
     while IFS= read -r pkg; do
@@ -51,7 +83,7 @@ except_packages() {
             if [[ $pkg == "$name" ]]; then skip=1; break; fi
         done
         if [[ $skip == 0 ]]; then printf '%s\n' "$pkg"; fi
-    done < <(all_packages)
+    done < <(profile_packages "$(current_profile)")
 }
 
 stow_cmd() {
@@ -179,7 +211,9 @@ while [[ $# -gt 0 ]]; do
                          fi
                          IFS=',' read -ra names <<< "$1"; EXCEPT+=("${names[@]}") ;;
         --except=*)      IFS=',' read -ra names <<< "${1#*=}"; EXCEPT+=("${names[@]}") ;;
-        -h|--help)       sed -n '2,23p' "$self" | sed 's/^# \?//'; exit 0 ;;
+        --profile)       shift; PROFILE=${1:?--profile precisa de um nome} ;;
+        --profile=*)     PROFILE=${1#*=} ;;
+        -h|--help)       sed -n '2,28p' "$self" | sed 's/^# \?//'; exit 0 ;;
         *)               args+=("$1") ;;
     esac
     shift
@@ -194,6 +228,15 @@ if [[ ${#EXCEPT[@]} -gt 0 ]]; then
         link|unlink|relink) ;;
         *) die "--except só vale para link, unlink e relink" ;;
     esac
+fi
+
+if [[ -n $PROFILE ]]; then
+    case $action in
+        link|unlink|relink) ;;
+        *) die "--profile só vale para link, unlink e relink" ;;
+    esac
+    [[ -r $PROFILES_DIR/$PROFILE ]] \
+        || die "perfil '$PROFILE' não existe (veja: ls $PROFILES_DIR)"
 fi
 
 case $action in
@@ -212,9 +255,12 @@ case $action in
             check_packages "${EXCEPT[@]}"
             mapfile -t packages < <(except_packages "${EXCEPT[@]}")
             [[ ${#packages[@]} -gt 0 ]] || die "--except não deixou nenhum pacote de fora"
-            info "pulando: ${EXCEPT[*]}"
+            info "perfil: $(current_profile), pulando: ${EXCEPT[*]}"
         else
-            mapfile -t packages < <(all_packages)
+            mapfile -t packages < <(profile_packages "$(current_profile)")
+            [[ ${#packages[@]} -gt 0 ]] || die "o perfil '$(current_profile)' não lista nenhum pacote"
+            check_packages "${packages[@]}"
+            info "perfil: $(current_profile)"
         fi
         info "${action} de: ${packages[*]}"
         stow_cmd "$action" "${packages[@]}"

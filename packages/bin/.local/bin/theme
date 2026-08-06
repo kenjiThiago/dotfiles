@@ -31,6 +31,7 @@ ZEN_THEMES_DIR="$DOTFILES/zen-themes"
 WALLPAPER_DIR="$DOTFILES/wallpapers"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
 STATE_FILE="$STATE_DIR/current-theme"
+PROFILE_FILE="$STATE_DIR/profile"
 
 DRY=0
 RELOAD=1
@@ -185,10 +186,34 @@ write_file() {
     printf '   %s\n' "${dest/#$HOME/\~}"
 }
 
+# Perfil da máquina, escrito pelo install.sh. Sem ele, desktop.
+current_profile() {
+    if [[ -n ${DOTFILES_PROFILE:-} ]]; then printf '%s\n' "$DOTFILES_PROFILE"; return; fi
+    if [[ -r $PROFILE_FILE ]]; then
+        local name
+        read -r name < "$PROFILE_FILE" || true
+        if [[ -n ${name// /} ]]; then printf '%s\n' "$name"; return; fi
+    fi
+    printf 'desktop\n'
+}
+
 generate() {
-    local tpl dest content missing
-    while read -r tpl dest; do
+    local tpl dest profiles content missing wanted name skip profile
+    profile=$(current_profile)
+
+    while read -r tpl dest profiles; do
         [[ -z $tpl || $tpl == \#* ]] && continue
+
+        # Terceira coluna vazia vale para todo perfil.
+        if [[ -n $profiles ]]; then
+            skip=1
+            IFS=',' read -ra wanted <<< "$profiles"
+            for name in "${wanted[@]}"; do
+                [[ $name == "$profile" ]] && { skip=0; break; }
+            done
+            [[ $skip == 1 ]] && continue
+        fi
+
         [[ -r $TEMPLATES_DIR/$tpl ]] || { warn "template '$tpl' não existe, pulando"; continue; }
 
         content=$(render "$(cat "$TEMPLATES_DIR/$tpl")")
@@ -204,6 +229,7 @@ generate() {
 # O Zen não lê nada gerado: cada tema tem seu CSS próprio, então é só symlink.
 apply_zen() {
     [[ -n $zen_theme ]] || return 0
+    [[ $(current_profile) == desktop ]] || return 0
 
     local src="$ZEN_THEMES_DIR/$zen_theme"
     [[ -d $src ]] || { warn "zen-theme '$zen_theme' não existe, pulando"; return 0; }
@@ -271,7 +297,9 @@ cmd_set() {
     ok "tema '$name' aplicado"
     if [[ $DRY == 0 ]]; then notify "Tema" "Agora usando <b>$name</b>" -i preferences-desktop-theme; fi
     printf '\n   nvim, zathura e shells já abertos só pegam o tema novo ao reiniciar.\n'
-    if [[ -n $zen_theme ]]; then printf '   O Zen Browser precisa ser reaberto.\n'; fi
+    if [[ -n $zen_theme && $(current_profile) == desktop ]]; then
+        printf '   O Zen Browser precisa ser reaberto.\n'
+    fi
     return 0
 }
 

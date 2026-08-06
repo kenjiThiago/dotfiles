@@ -1,0 +1,15 @@
+# Perfil servidor: máquina sem desktop, shell bash, nvim sem plugin.
+#
+# Fora daqui ficam os pacotes que só fazem sentido com Wayland (hypr,
+# waybar, quickshell, rofi), os emuladores de terminal (alacritty, ghostty),
+# o zathura, o fastfetch e o zsh.
+
+bash
+bin
+btop
+git
+lazygit
+nvim
+nvim-plugins
+tmux
+yazi

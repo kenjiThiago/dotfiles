@@ -9,6 +9,7 @@ dotfiles/
 ├── packages.txt        pacotes que a configuração precisa
 ├── packages-extra.txt  apps, toolchains e hardware (só com --extra)
 ├── packages/           os pacotes do stow (é o -d do stow)
+├── profiles/           quais pacotes cada tipo de máquina linka
 ├── themes/             paletas + templates dos temas
 ├── zen-themes/         temas do Zen Browser (CSS, não gerado)
 └── wallpapers/
@@ -79,6 +80,7 @@ dots unlink waybar
 dots relink nvim              # depois de renomear/mover arquivos
 dots migrate                  # limpa symlinks quebrados que apontam para o repo
 dots adopt btop               # importa para o repo o que já existe em ~
+dots link --profile server    # linka a lista de outro perfil
 dots link --dry               # simula
 ```
 
@@ -113,6 +115,54 @@ arquivo de `~` e rode `dots link`.
 gerado ali dentro sujaria o git. Com `--no-folding`, `~/.config/waybar` é um
 diretório de verdade, com symlinks dos arquivos versionados **e** os arquivos
 de cor gerados convivendo lado a lado.
+
+## Perfis
+
+O mesmo repositório serve duas máquinas bem diferentes. `desktop` é a de
+referência: Arch, Hyprland, zsh, neovim com plugins. `server` é máquina sem
+desktop nenhum: bash, tmux, neovim pelado.
+
+```sh
+./install.sh --profile server
+```
+
+Cada perfil é um arquivo em `profiles/` listando os pacotes do stow que aquela
+máquina quer, um por linha. O `server` deixa de fora o Hyprland, o waybar, o
+quickshell, o rofi, os emuladores de terminal, o zathura e o zsh.
+
+O perfil escolhido fica em `~/.local/state/dotfiles/profile`, ao lado do
+`current-theme`. É de lá que o `dots`, o `theme` e o neovim leem depois, cada
+um por conta própria — a variável `DOTFILES_PROFILE` sobrepõe, o que é útil
+para testar. Sem o arquivo, todos assumem `desktop`, então uma máquina que
+nunca rodou o `install.sh` novo continua se comportando como antes.
+
+O que muda de fato em cada perfil:
+
+| | desktop | server |
+|---|---|---|
+| pacotes linkados | todos | `profiles/server` |
+| pacotes do sistema | `packages.txt` via paru | na mão, com o gerenciador da distro |
+| serviços do systemd | habilitados | pulados |
+| shell padrão | trocado para zsh | fica como está |
+| tpm e plugins do nvim | baixados | nada a baixar |
+| templates de tema | os 15 | só os que não precisam de desktop |
+
+**No neovim** o `lua/NeoVim/profile.lua` é a chave: no perfil servidor o
+`init.lua` sai cedo, sem tocar em `vim.pack`, e quem assume é o
+`lua/NeoVim/server/`. Lá está o que no desktop vem de plugin — LSP nativo de
+pyright e ruff, netrw no lugar do oil, `nvim.undotree`, o wildmenu da cmdline
+e os keymaps de marca, que fazem as vezes do harpoon. O núcleo (`set.lua`,
+`remap.lua`, `autocmd.lua`, `custom/statusline.lua`) é o mesmo arquivo nos dois.
+
+O wildmenu nativo é só do servidor de propósito: no desktop quem completa a
+cmdline é o `blink.cmp`, e os dois brigariam pelas mesmas teclas.
+
+**No bash e no tmux** não há chave de perfil: cada ferramenta extra vem atrás
+de um teste. O `.bashrc` usa o starship se ele existir e cai num `PS1` próprio
+se não; o `.tmux.conf` só define `wl-copy` como `copy-command`, só chama o tpm
+e só cria o popup de cores se o que eles precisam estiver instalado. Para o
+que for de uma máquina só, os dois leem um arquivo não versionado no fim:
+`~/.bashrc.local` e `~/.tmux.conf.local`.
 
 ## Temas
 
@@ -207,6 +257,11 @@ Nos templates, cada chave tem quatro formas:
 | yazi (preview) | `~/.config/yazi/theme.tmTheme` | `[mgr] syntect_theme` no `theme.toml`, com caminho absoluto |
 | zen browser | — | symlinks para `zen-themes/<zen_theme>/` |
 
+Do hyprland ao zathura, tudo até o starship é marcado como `desktop` na
+terceira coluna do `manifest` e não é gerado no perfil servidor. O neovim
+consome o `theme.lua` por dois caminhos: `plugins/colors.lua` no desktop e
+`lua/NeoVim/server/init.lua` no servidor, que aplica o colorscheme sem plugin.
+
 ### Criando um tema novo
 
 ```sh
@@ -221,7 +276,9 @@ for um `#rrggbb`.
 ### Mexendo em um programa que ainda não é temático
 
 1. Escreva `themes/templates/<programa>.in` usando os placeholders.
-2. Adicione a linha correspondente no `themes/templates/manifest`.
+2. Adicione a linha correspondente no `themes/templates/manifest`. A terceira
+   coluna é opcional: liste os perfis em que ela vale (`desktop`), ou deixe
+   vazia para valer em todos.
 3. Faça a config do programa incluir o arquivo gerado.
 4. `theme reload`.
 
@@ -236,7 +293,8 @@ for um `#rrggbb`.
 - **`~/plugins`**: o pacote `nvim-plugins` linka os plugins locais
   (`gruber-darker`, `present`) em `~/plugins`, que é onde o `colors.lua` os
   procura no `runtimepath`.
-- **Tema atual**: fica em `~/.local/state/dotfiles/current-theme`.
+- **Tema atual**: fica em `~/.local/state/dotfiles/current-theme`, e o perfil
+  da máquina em `~/.local/state/dotfiles/profile`, ao lado.
 - **tmux-sessionizer**: a lista vem do zoxide (tudo que você já visitou, por
   frecência) mais as raízes de `~/.config/tmux-sessionizer/paths`. Projeto
   clonado fora das raízes aparece depois do primeiro `cd`. Os diretórios de

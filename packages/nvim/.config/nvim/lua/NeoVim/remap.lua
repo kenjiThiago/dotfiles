@@ -3,11 +3,15 @@
 -- vim.keymap.set("", "k", "j")
 
 vim.g.mapleader = " "
---vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
-vim.keymap.set("n", "<leader>pv", "<CMD>Oil<CR>", { desc = "Open parent directory" })
-vim.keymap.set("n", "<leader>-", function()
-    require("NeoVim.custom.yazi").open()
-end, { desc = "Abrir o yazi no diretório do arquivo" })
+
+-- O oil e o yazi são do desktop; no servidor o NeoVim.server põe o netrw em
+-- cima do <leader>pv.
+if require("NeoVim.profile").desktop then
+    vim.keymap.set("n", "<leader>pv", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+    vim.keymap.set("n", "<leader>-", function()
+        require("NeoVim.custom.yazi").open()
+    end, { desc = "Abrir o yazi no diretório do arquivo" })
+end
 
 vim.keymap.set("i", "jk", "<ESC>")
 

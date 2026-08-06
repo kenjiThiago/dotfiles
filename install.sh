@@ -1,18 +1,26 @@
 #!/usr/bin/env bash
 # install.sh — instala esta configuração numa máquina nova (Arch Linux).
 #
-#   ./install.sh                 instalação completa
-#   ./install.sh --dry           mostra o que faria, sem alterar nada
-#   ./install.sh --extra         instala também o packages-extra.txt
-#   ./install.sh --except a,b    linka tudo menos esses pacotes do stow
-#   ./install.sh --skip-packages pula a instalação de pacotes
-#   ./install.sh --skip-services pula habilitar serviços do systemd
-#   ./install.sh --skip-plugins  pula baixar plugins de nvim/tmux
-#   ./install.sh --theme <nome>  usa outro tema (padrão: rose-pine-moon)
+#   ./install.sh                  instalação completa
+#   ./install.sh --dry            mostra o que faria, sem alterar nada
+#   ./install.sh --extra          instala também o packages-extra.txt
+#   ./install.sh --except a,b     linka tudo menos esses pacotes do stow
+#   ./install.sh --profile <nome> desktop (padrão) ou server
+#   ./install.sh --skip-packages  pula a instalação de pacotes
+#   ./install.sh --skip-services  pula habilitar serviços do systemd
+#   ./install.sh --skip-plugins   pula baixar plugins de nvim/tmux
+#   ./install.sh --theme <nome>   usa outro tema (padrão: rose-pine-moon)
 #
 # São duas listas: packages.txt tem o que a configuração precisa e é sempre
 # instalada; packages-extra.txt tem apps pessoais, toolchains e pacotes presos
 # ao hardware da máquina de referência, e só entra com --extra.
+#
+# São dois perfis: 'desktop' é a máquina de referência, Arch com Hyprland;
+# 'server' é máquina sem desktop, com bash e nvim sem plugin. O perfil escolhe
+# quais pacotes do stow entram (ver profiles/) e quais templates de tema são
+# gerados, e fica gravado em ~/.local/state/dotfiles/profile para o dots, o
+# theme e o nvim lerem depois. O perfil server implica --skip-packages (o
+# servidor não é Arch) e --skip-services.
 #
 # Etapas, nesta ordem:
 #   1. checa dependências mínimas (git, stow, paru)
@@ -30,12 +38,15 @@ DOTFILES=$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")" && pwd)
 export DOTFILES
 
 THEME_NAME="rose-pine-moon"
+PROFILE="desktop"
 DRY=0
 EXTRA=0
 EXCEPT=""
 SKIP_PACKAGES=0
 SKIP_SERVICES=0
 SKIP_PLUGINS=0
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
 
 # Serviços que as configs assumem ligados: o waybar tem um módulo de
 # power-profiles-daemon e o rofi-script abre o nm-connection-editor.
@@ -64,11 +75,23 @@ while [[ $# -gt 0 ]]; do
         --skip-services) SKIP_SERVICES=1 ;;
         --skip-plugins)  SKIP_PLUGINS=1 ;;
         --theme)         shift; THEME_NAME=${1:?--theme precisa de um nome} ;;
-        -h|--help)       sed -n '2,25p' "$0" | sed 's/^# \?//'; exit 0 ;;
+        --profile)       shift; PROFILE=${1:?--profile precisa de um nome} ;;
+        --profile=*)     PROFILE=${1#*=} ;;
+        -h|--help)       sed -n '2,33p' "$0" | sed 's/^# \?//'; exit 0 ;;
         *)               die "opção desconhecida: $1" ;;
     esac
     shift
 done
+
+[[ -r $DOTFILES/profiles/$PROFILE ]] \
+    || die "--profile: '$PROFILE' não existe (veja: ls $DOTFILES/profiles)"
+
+# Não é Arch e não tem systemd que interesse: o servidor instala os pacotes na
+# mão, com o gerenciador da distro dele.
+if [[ $PROFILE == server ]]; then
+    SKIP_PACKAGES=1
+    SKIP_SERVICES=1
+fi
 
 # O dots valida os nomes do --except, mas só na etapa 3 — depois de já ter
 # instalado a lista inteira de pacotes. Checa aqui para errar de graça.
@@ -141,6 +164,17 @@ else
 fi
 
 # ── 3. Symlinks ───────────────────────────────────────────────────────────────
+# O marcador vem antes do resto: é dele que o dots, o theme e o nvim tiram o
+# perfil depois, quando este script já não está por perto.
+msg "Gravando o perfil '$PROFILE'"
+if [[ $DRY == 1 ]]; then
+    printf '\033[2;37m[dry]\033[0m %s\n' "$STATE_DIR/profile"
+else
+    mkdir -p "$STATE_DIR"
+    printf '%s\n' "$PROFILE" > "$STATE_DIR/profile"
+    ok "$STATE_DIR/profile"
+fi
+
 dots_args=()
 if [[ $DRY == 1 ]]; then dots_args+=(--dry); fi
 DOTS="$DOTFILES/packages/bin/.local/bin/dots"
@@ -152,7 +186,7 @@ msg "Procurando symlinks do layout antigo"
 
 # O migrate não aceita --except: ele varre symlinks quebrados, não pacotes.
 msg "Linkando as configurações em ~"
-link_args=("${dots_args[@]}")
+link_args=("${dots_args[@]}" --profile "$PROFILE")
 if [[ -n $EXCEPT ]]; then link_args+=(--except "$EXCEPT"); fi
 "$DOTS" link "${link_args[@]}"
 
@@ -161,7 +195,8 @@ msg "Aplicando o tema '$THEME_NAME'"
 
 theme_args=(--no-reload)
 if [[ $DRY == 1 ]]; then theme_args+=(--dry); fi
-"$DOTFILES/packages/bin/.local/bin/theme" set "$THEME_NAME" "${theme_args[@]}"
+DOTFILES_PROFILE="$PROFILE" \
+    "$DOTFILES/packages/bin/.local/bin/theme" set "$THEME_NAME" "${theme_args[@]}"
 
 # ── 5. Serviços ───────────────────────────────────────────────────────────────
 enable_service() {
@@ -196,7 +231,11 @@ if command -v xdg-user-dirs-update >/dev/null; then
     ok "diretórios XDG atualizados"
 fi
 
-if ! command -v zsh >/dev/null; then
+# O servidor fica no bash: o zsh de lá teria que carregar zinit, starship e
+# plugin de sintaxe só para uma sessão de ssh.
+if [[ $PROFILE == server ]]; then
+    ok "perfil server: o shell padrão fica como está"
+elif ! command -v zsh >/dev/null; then
     warn "zsh não está instalado; shell padrão não foi trocado"
 elif [[ ${SHELL##*/} == zsh ]]; then
     ok "shell padrão já é zsh"
@@ -205,15 +244,21 @@ else
     run chsh -s "$(command -v zsh)" || warn "chsh falhou; troque à mão depois"
 fi
 
-TPM_DIR="$HOME/.tmux/plugins/tpm"
-if [[ ! -d $TPM_DIR ]]; then
-    run git clone --depth 1 https://github.com/tmux-plugins/tpm "$TPM_DIR"
-    ok "tpm instalado"
+# O nvim do perfil server não usa vim.pack, e o .tmux.conf só chama o tpm se
+# ele existir: nos dois casos não há o que baixar.
+if [[ $PROFILE == server ]]; then
+    msg "Perfil server: sem tpm e sem plugins do neovim"
+elif [[ $SKIP_PLUGINS == 1 ]]; then
+    msg "Pulando plugins (--skip-plugins)"
 else
-    ok "tpm já presente"
-fi
+    TPM_DIR="$HOME/.tmux/plugins/tpm"
+    if [[ ! -d $TPM_DIR ]]; then
+        run git clone --depth 1 https://github.com/tmux-plugins/tpm "$TPM_DIR"
+        ok "tpm instalado"
+    else
+        ok "tpm já presente"
+    fi
 
-if [[ $SKIP_PLUGINS == 0 ]]; then
     if [[ -x $TPM_DIR/bin/install_plugins ]]; then
         run "$TPM_DIR/bin/install_plugins" || warn "install_plugins falhou; rode prefix+I no tmux"
     fi
@@ -224,14 +269,25 @@ if [[ $SKIP_PLUGINS == 0 ]]; then
         msg "Baixando plugins do neovim (pode demorar)"
         run timeout 600 nvim --headless "+qa" || warn "bootstrap do nvim falhou; abra o nvim à mão"
     fi
-else
-    msg "Pulando plugins (--skip-plugins)"
 fi
 
 # O zinit se instala sozinho no primeiro `zsh` (ver packages/zsh/.zshrc).
 
 msg "Pronto"
-cat <<EOF
+if [[ $PROFILE == server ]]; then
+    cat <<EOF
+  Ainda precisa da sua mão:
+    - instale os pacotes pelo gerenciador da distro. O mínimo para esta
+      config: git stow tmux neovim fzf fd-find ripgrep bat zoxide lazygit
+    - reabra o shell, ou: source ~/.bashrc
+
+  Comandos do dia a dia:
+    dots status        o que está linkado
+    dots relink <pkg>  refazer os links de um pacote
+    theme set <nome>   trocar de tema (aqui só nvim, tmux, lazygit e afins)
+EOF
+else
+    cat <<EOF
   Ainda precisa da sua mão:
     - reinicie a sessão do Hyprland (ou rode: hyprctl reload)
     - abra o Zen Browser uma vez para criar o perfil, depois rode:
@@ -244,3 +300,4 @@ cat <<EOF
     theme list         temas disponíveis
     theme set <nome>   trocar de tema
 EOF
+fi
