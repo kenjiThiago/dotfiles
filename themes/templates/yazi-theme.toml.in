@@ -1,0 +1,116 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+#
+# O yazi carrega o theme-dark.toml/theme-light.toml embutido e usa este arquivo
+# como camada de override, então só precisa estar aqui o que muda de cor. O
+# comportamento fica no yazi.toml e os atalhos no keymap.toml, ambos versionados.
+#
+# As regras de [filetype] ficam de fora de propósito: elas usam nomes ANSI
+# (blue para diretório, green para executável) que o terminal já resolve com a
+# paleta do tema, via alacritty-colors.toml e ghostty-colors.
+#
+# O yazi não relê o tema em tempo de execução: instâncias abertas só pegam as
+# cores novas ao reiniciar.
+
+[mgr]
+cwd = { fg = "{{cyan}}" }
+
+# O highlight do preview é do syntect, que só lê tmTheme e exige caminho
+# absoluto. O arquivo também é gerado, pelo yazi-syntax.tmTheme.in.
+syntect_theme = "{{home}}/.config/yazi/theme.tmTheme"
+
+find_keyword  = { fg = "{{yellow}}", bold = true, italic = true, underline = true }
+find_position = { fg = "{{magenta}}", bg = "reset", bold = true, italic = true }
+
+symlink_target = { fg = "{{subtle}}", italic = true }
+
+marker_copied   = { fg = "{{success}}", bg = "{{success}}" }
+marker_cut      = { fg = "{{error}}",   bg = "{{error}}" }
+marker_marked   = { fg = "{{info}}",    bg = "{{info}}" }
+marker_selected = { fg = "{{warning}}", bg = "{{warning}}" }
+
+count_copied   = { fg = "{{text}}", bg = "{{success}}" }
+count_cut      = { fg = "{{text}}", bg = "{{error}}" }
+count_selected = { fg = "{{base}}", bg = "{{warning}}" }
+
+border_style = { fg = "{{highlight_med}}" }
+
+[tabs]
+active   = { fg = "{{base}}",   bg = "{{accent}}", bold = true }
+inactive = { fg = "{{subtle}}", bg = "{{surface}}" }
+
+[mode]
+normal_main = { fg = "{{base}}",    bg = "{{accent}}", bold = true }
+normal_alt  = { fg = "{{accent}}",  bg = "{{surface}}" }
+select_main = { fg = "{{base}}",    bg = "{{success}}", bold = true }
+select_alt  = { fg = "{{success}}", bg = "{{surface}}" }
+unset_main  = { fg = "{{base}}",    bg = "{{warning}}", bold = true }
+unset_alt   = { fg = "{{warning}}", bg = "{{surface}}" }
+
+# É aqui que mora o destaque do item sob o cursor: o yazi não tem mais
+# `hovered` no [mgr].
+[indicator]
+parent  = { fg = "{{text}}", bg = "{{highlight_med}}" }
+current = { fg = "{{base}}", bg = "{{accent_alt}}", bold = true }
+preview = { underline = true }
+
+[status]
+overall = { fg = "{{text}}", bg = "{{surface}}" }
+
+perm_sep   = { fg = "{{muted}}" }
+perm_type  = { fg = "{{green}}" }
+perm_read  = { fg = "{{yellow}}" }
+perm_write = { fg = "{{red}}" }
+perm_exec  = { fg = "{{cyan}}" }
+
+progress_label  = { fg = "{{text}}", bold = true }
+progress_normal = { fg = "{{accent}}", bg = "{{overlay}}" }
+progress_error  = { fg = "{{error}}",  bg = "{{overlay}}" }
+
+[which]
+border          = { fg = "{{accent}}" }
+mask            = { bg = "{{surface}}" }
+cand            = { fg = "{{info}}" }
+rest            = { fg = "{{muted}}" }
+desc            = { fg = "{{accent_alt}}" }
+separator_style = { fg = "{{highlight_med}}" }
+
+[confirm]
+border  = { fg = "{{accent}}" }
+title   = { fg = "{{accent}}" }
+list    = { fg = "{{info}}" }
+btn_yes = { fg = "{{base}}", bg = "{{accent}}", bold = true }
+btn_no  = { fg = "{{text}}" }
+
+[spot]
+border   = { fg = "{{accent}}" }
+title    = { fg = "{{accent}}" }
+tbl_col  = { fg = "{{info}}" }
+tbl_cell = { fg = "{{warning}}", reversed = true }
+
+[notify]
+title_info  = { fg = "{{success}}" }
+title_warn  = { fg = "{{warning}}" }
+title_error = { fg = "{{error}}" }
+
+[pick]
+border   = { fg = "{{accent}}" }
+active   = { fg = "{{accent_alt}}", bold = true }
+inactive = {}
+
+[input]
+border   = { fg = "{{accent}}" }
+selected = { reversed = true }
+
+[cmp]
+border   = { fg = "{{accent}}" }
+active   = { fg = "{{base}}", bg = "{{accent_alt}}" }
+inactive = {}
+
+[tasks]
+border  = { fg = "{{accent}}" }
+hovered = { fg = "{{accent_alt}}", bold = true }
+
+[help]
+border  = { fg = "{{accent}}" }
+chord   = { fg = "{{info}}" }
+hovered = { fg = "{{base}}", bg = "{{highlight_high}}", bold = true }

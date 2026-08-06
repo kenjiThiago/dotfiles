@@ -19,3 +19,5 @@ starship.toml.in          ~/.config/starship.toml
 nvim-theme.lua.in         ~/.config/nvim/lua/theme.lua
 btop.theme.in             ~/.config/btop/themes/dotfiles.theme
 lazygit-colors.yml.in     ~/.config/lazygit/colors.yml
+yazi-theme.toml.in        ~/.config/yazi/theme.toml
+yazi-syntax.tmTheme.in    ~/.config/yazi/theme.tmTheme

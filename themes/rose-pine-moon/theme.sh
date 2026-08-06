@@ -50,3 +50,27 @@ success="#3e8fb0"    # pine
 warning="#f6c177"    # gold
 error="#eb6f92"      # love
 info="#9ccfd8"       # foam
+
+# ── Papéis de sintaxe ─────────────────────────────────────────────────────────
+# Aqui a paleta semântica acima não serve: o nvim deste tema roda o
+# gruber-darker, que usa as mesmas tintas do Moon em papéis diferentes. Sem
+# isto, o preview do yazi mostraria o mesmo código com cores trocadas em
+# relação ao buffer ao lado. Os nomes à direita são os do gruber-darker, em
+# packages/nvim-plugins/plugins/gruber-darker/lua/gruber-darker/palette.lua.
+syn_comment="#817c9c"   # burgundy, a única que não existe na paleta acima
+syn_type="#817c9c"      # burgundy
+syn_string="$cyan"      # dusty_rose
+syn_escape="$magenta"   # plum
+syn_constant="$magenta" # plum
+syn_keyword="$red"      # crimson
+syn_tag="$red"          # crimson
+syn_function="$yellow"  # terracotta
+syn_attribute="$yellow" # terracotta
+syn_operator="$text"    # fg
+syn_variable="$text"    # fg
+syn_parameter="$text"   # fg
+
+syn_keyword_style="bold"
+syn_comment_style=""
+syn_parameter_style=""
+syn_attribute_style=""

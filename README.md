@@ -156,9 +156,20 @@ tema. Os nomes são genéricos de propósito — o "yellow" do Rosé Pine é o g
 | texto | `text` `subtle` `muted` |
 | ANSI | `black` `red` `green` `yellow` `blue` `magenta` `cyan` `white` (+ `bright_*`, que caem no normal se não forem definidos) |
 | papéis | `accent` `accent_alt` `success` `warning` `error` `info` |
+| sintaxe | `syn_comment` `syn_string` `syn_escape` `syn_constant` `syn_keyword` `syn_operator` `syn_type` `syn_function` `syn_variable` `syn_parameter` `syn_tag` `syn_attribute` |
 
 Mais os metadados: `variant` (dark/light), `nvim_colorscheme`, `zen_theme`,
-`wallpaper`, `gtk_theme`, `cursor_theme`.
+`wallpaper`, `gtk_theme`, `cursor_theme`, e os estilos de sintaxe
+`syn_comment_style`, `syn_keyword_style`, `syn_parameter_style` e
+`syn_attribute_style` (valores: `bold`, `italic`, `underline` ou vazio).
+
+O grupo de sintaxe é opcional e existe para o caso de o colorscheme do editor
+discordar da paleta. Sem ele, cada `syn_*` cai num default derivado dos papéis
+(`syn_keyword` vira `accent_alt`, `syn_string` vira `warning`, e assim por
+diante), que é o que três dos quatro temas usam. O `rose-pine-moon` declara o
+grupo inteiro porque roda o `gruber-darker` no nvim, que usa as mesmas tintas
+do Moon em papéis diferentes: sem isso, o preview do yazi mostraria o mesmo
+código com cores trocadas em relação ao buffer ao lado.
 
 `gtk_theme` e `cursor_theme` vêm vazios: assim o `theme` não escreve no
 gsettings e não sobrepõe o que você escolheu à mão. Preencha se quiser que a
@@ -192,6 +203,8 @@ Nos templates, cada chave tem quatro formas:
 | neovim | `~/.config/nvim/lua/theme.lua` | `require("theme")` em `plugins/colors.lua` |
 | btop | `~/.config/btop/themes/dotfiles.theme` | `color_theme = "dotfiles"` no `btop.conf` |
 | lazygit | `~/.config/lazygit/colors.yml` | `LG_CONFIG_FILE` junta com o `config.yml` (não tem include) |
+| yazi | `~/.config/yazi/theme.toml` | camada de override sobre o tema embutido |
+| yazi (preview) | `~/.config/yazi/theme.tmTheme` | `[mgr] syntect_theme` no `theme.toml`, com caminho absoluto |
 | zen browser | — | symlinks para `zen-themes/<zen_theme>/` |
 
 ### Criando um tema novo
@@ -233,20 +246,32 @@ for um `#rrggbb`.
   Linha começando com `-` no arquivo de paths exclui à mão.
 - **lazygit — cores**: o `config.yml` versionado tem só comportamento; o tema
   sai do `theme set` em `~/.config/lazygit/colors.yml`. Como o lazygit não tem
-  include, quem junta os dois é o `LG_CONFIG_FILE`, definido em dois lugares: no
+  include, quem junta os dois é o `LG_CONFIG_FILE`, definido em três lugares: no
   `.zshrc`, para quando você roda `lazygit` na mão, e no `tmux-lazygit`, porque
   a sessão do popup não herda o ambiente do seu shell. Sem a variável o lazygit
   ainda sobe — só sem tema. Antes do primeiro `theme set` o `colors.yml` não
   existe, e os dois lugares checam isso antes de montar a lista (arquivo
   faltando na lista impede o lazygit de iniciar).
-- **lazygit — editar** (`prefix+g`): abre num popup, sobre a sessão `scratch`. Ao editar
-  um arquivo (`e`), o `os.edit` do `config.yml` chama o `tmux-lazygit-edit` em
-  vez do `$EDITOR` — sem isso o nvim viraria filho do lazygit e ficaria preso
-  nos 75%×90% do popup. O helper manda o comando para o pane de onde você veio,
-  fecha o popup e deixa a sessão `scratch` viva, então o próximo `prefix+g`
-  reencontra o lazygit no mesmo estado. Se o pane de origem não estiver no
-  prompt (tem um build ou outro nvim rodando ali), ele abre numa janela nova em
-  vez de injetar texto por cima.
+- **lazygit — onde ele roda**: sempre no popup do tmux, sobre a sessão
+  `scratch-lg`, por `prefix+g` no terminal ou `<leader>gs` de dentro do nvim.
+  Os dois chamam o mesmo `tmux-lazygit`. A sessão é o ponto: ela sobrevive ao
+  fechar do popup, então o lazygit volta com o mesmo scroll e o mesmo estado.
+  Em troca, só a primeira abertura define o diretório; depois disso o popup
+  apenas reata, mesmo que você tenha trocado de projeto.
+- **lazygit — editar**: `os.editPreset: nvim` no `config.yml`. O arquivo abre
+  dentro do próprio popup, tomando a tela do lazygit (`editInTerminal: true`
+  vem junto do preset), e devolve para ele ao fechar o nvim. Sem RPC, sem
+  socket, sem escapar para outro pane.
+- **yazi** (`<leader>pf`): mesma ideia, float nativo com `--chooser-file`. O
+  `<C-v>`, `<C-x>` e `<C-t>` escolhem split, split horizontal ou aba. O
+  `--chooser-file` desliga os openers do yazi, então imagem e PDF voltariam como
+  binário para um buffer; o float checa o mime antes e manda imagem, vídeo,
+  áudio, PDF e epub para o `xdg-open`. O `gx` faz o mesmo por tecla, sem fechar
+  o yazi, igual ao `gx` do oil. Preview de
+  imagem não funciona dentro do float, e isso não tem conserto pela config: o
+  terminal embutido do nvim é libvterm puro, sem kitty nem sixel, então o yazi
+  não tem como desenhar. Preview de texto funciona normal. Para imagem, use o
+  `y()` no shell, que roda no ghostty e mostra em resolução real.
 - **btop**: ele reescreve o `btop.conf` ao sair quando você muda alguma opção,
   e como o arquivo é um symlink, isso suja o repositório. Rode `git status`
   depois de mexer nas configurações dele.

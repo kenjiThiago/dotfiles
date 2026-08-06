@@ -44,8 +44,13 @@ COLOR_KEYS=(
     bright_black bright_red bright_green bright_yellow
     bright_blue bright_magenta bright_cyan bright_white
     accent accent_alt success warning error info
+    syn_comment syn_string syn_escape syn_constant syn_keyword syn_operator
+    syn_type syn_function syn_variable syn_parameter syn_tag syn_attribute
 )
-META_KEYS=(variant nvim_colorscheme zen_theme wallpaper gtk_theme cursor_theme)
+META_KEYS=(
+    variant nvim_colorscheme zen_theme wallpaper gtk_theme cursor_theme
+    syn_comment_style syn_keyword_style syn_parameter_style syn_attribute_style
+)
 
 # ── Saída ─────────────────────────────────────────────────────────────────────
 msg()   { printf '\033[1;34m::\033[0m %s\n' "$*"; }
@@ -100,6 +105,28 @@ load_theme() {
         [[ -n ${!b:-} ]] || printf -v "$b" '%s' "${!c}"
     done
 
+    # Papéis de sintaxe: só quem discorda da paleta semântica precisa declarar.
+    # É o caso do rose-pine-moon, cujo colorscheme do nvim é o gruber-darker.
+    : "${syn_comment:=$muted}"
+    : "${syn_string:=$warning}"
+    : "${syn_escape:=$accent_alt}"
+    : "${syn_constant:=$accent}"
+    : "${syn_keyword:=$accent_alt}"
+    : "${syn_operator:=$subtle}"
+    : "${syn_type:=$success}"
+    : "${syn_function:=$info}"
+    : "${syn_variable:=$text}"
+    : "${syn_parameter:=$subtle}"
+    : "${syn_tag:=$accent}"
+    : "${syn_attribute:=$warning}"
+
+    # `=` sem dois-pontos de propósito: com `:=`, um tema que declara
+    # `syn_comment_style=""` para desligar o itálico levaria o default de volta.
+    : "${syn_comment_style=italic}"
+    : "${syn_keyword_style=}"
+    : "${syn_parameter_style=italic}"
+    : "${syn_attribute_style=italic}"
+
     for key in "${COLOR_KEYS[@]}"; do
         [[ -n ${!key:-} ]] || die "tema '$name': a cor '$key' não foi definida"
         [[ ${!key} =~ ^#[0-9a-fA-F]{6}$ ]] ||
@@ -135,6 +162,8 @@ render() {
         content=${content//\{\{$key\}\}/${!key}}
     done
     content=${content//\{\{wallpaper_path\}\}/$wallpaper_path}
+    # Para quem não aceita `~`, como o `syntect_theme` do yazi.
+    content=${content//\{\{home\}\}/$HOME}
 
     printf '%s\n' "$content"
 }

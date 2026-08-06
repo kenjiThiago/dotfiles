@@ -1,0 +1,42 @@
+[[mgr.prepend_keymap]]
+on   = [ "q" ]
+run  = "quit --no-cwd-file"
+desc = "Sair sem mudar o diretório do terminal"
+
+[[mgr.prepend_keymap]]
+on   = [ "Q" ]
+run  = "quit"
+desc = "Sair e mudar o diretório do terminal (cd)"
+
+# Dentro do float do Neovim o `open` vira o chooser e nunca chega nos openers do
+# yazi, então esta é a saída para abrir fora do editor. O `--orphan` é o que
+# deixa o programa sobreviver quando o yazi fecha.
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "x" ]
+run  = "shell 'for f in \"$@\"; do xdg-open \"$f\" >/dev/null 2>&1; done' --orphan --confirm"
+desc = "Abrir com o programa padrão do sistema"
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "r" ]
+run  = "shell 'ya emit cd \"$(git rev-parse --show-toplevel 2>/dev/null || echo \"${YAZI_START_DIR:-$PWD}\")\"' --confirm"
+desc = "Voltar para a raiz do repositório (ou o diretório inicial)"
+
+# O modo e o `open` precisam sair do mesmo `shell`: como dois comandos numa
+# lista, o yazi fecha no `open` antes do modo ser gravado. O fallback
+# /dev/null é para quando o yazi roda solto, sem o float do Neovim.
+
+[[mgr.prepend_keymap]]
+on   = [ "<C-v>" ]
+run  = "shell 'echo vsplit > \"${YAZI_MODE_FILE:-/dev/null}\"; ya emit open' --confirm"
+desc = "Abrir em split vertical"
+
+[[mgr.prepend_keymap]]
+on   = [ "<C-x>" ]
+run  = "shell 'echo split > \"${YAZI_MODE_FILE:-/dev/null}\"; ya emit open' --confirm"
+desc = "Abrir em split horizontal"
+
+[[mgr.prepend_keymap]]
+on   = [ "<C-t>" ]
+run  = "shell 'echo tab > \"${YAZI_MODE_FILE:-/dev/null}\"; ya emit open' --confirm"
+desc = "Abrir em nova aba"

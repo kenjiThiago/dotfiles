@@ -9,10 +9,8 @@ gui:
   border: "rounded"
   # showBottomLine: false
 
-# Sem isto o nvim abriria como filho do lazygit, preso no popup do
-# tmux-lazygit. O helper manda o comando para o pane de origem e fecha o
-# popup. Ver packages/bin/.local/bin/tmux-lazygit-edit.
+# O preset nvim abre o arquivo dentro do próprio popup, tomando a tela do
+# lazygit (editInTerminal: true) e devolvendo para ele ao fechar. Sem RPC, sem
+# escapar para outro pane.
 os:
-  edit: 'tmux-lazygit-edit {{filename}}'
-  editAtLine: 'tmux-lazygit-edit {{filename}} {{line}}'
-  editAtLineAndWait: 'tmux-lazygit-edit {{filename}} {{line}}'
+  editPreset: nvim

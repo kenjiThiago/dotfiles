@@ -111,4 +111,5 @@ power-profiles-daemon        # módulo do waybar, habilitado pelo install.sh
 # ── Aplicativos usados pelas configs ──────────────────────────────────────────
 zen-browser-bin              # AUR — keybind e exec-once
 zathura-pdf-mupdf            # puxa o zathura, que tem config em packages/
+xdg-utils                    # xdg-open, usado pelo gx do oil e do yazi
 gimp                         # printAndEdit

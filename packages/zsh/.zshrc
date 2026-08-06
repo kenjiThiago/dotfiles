@@ -104,7 +104,7 @@ export PS2="$(starship prompt --continuation)"
 # colors.yml vem do `theme set`. O tmux-lazygit repete isto por conta própria,
 # porque a sessão do popup não herda o ambiente deste shell.
 if [[ -f ~/.config/lazygit/colors.yml ]]; then
-    export LG_CONFIG_FILE=~/.config/lazygit/config.yml,~/.config/lazygit/colors.yml
+    export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml,$HOME/.config/lazygit/colors.yml"
 fi
 
 function y() {

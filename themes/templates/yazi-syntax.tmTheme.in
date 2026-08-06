@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+
+     O highlight do preview de código do yazi não sai do theme.toml: ele é feito
+     pelo syntect, que só entende o formato tmTheme do Sublime. O theme.toml
+     aponta para cá com `[mgr] syntect_theme`, que exige caminho absoluto.
+
+     As cores vêm dos papéis `syn_*` da paleta, e não das cores diretas, porque
+     um tema pode discordar do mapeamento padrão: o rose-pine-moon roda o
+     gruber-darker no nvim, que usa as mesmas tintas em papéis diferentes. Quem
+     não declara nada cai nos defaults do `theme`, derivados da paleta semântica
+     (accent, info, success, warning).
+
+     `invalid` e os `markup.inserted/deleted/changed` ficam de fora dos `syn_*`
+     de propósito: são diagnóstico, não sintaxe.
+-->
+<plist version="1.0">
+<dict>
+    <key>name</key>
+    <string>{{theme}}</string>
+    <key>settings</key>
+    <array>
+
+        <dict>
+            <key>settings</key>
+            <dict>
+                <key>background</key><string>{{base}}</string>
+                <key>foreground</key><string>{{text}}</string>
+                <key>caret</key><string>{{text}}</string>
+                <key>lineHighlight</key><string>{{highlight_low}}</string>
+                <key>selection</key><string>{{highlight_med}}</string>
+                <key>invisibles</key><string>{{muted}}</string>
+                <key>gutterForeground</key><string>{{muted}}</string>
+            </dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Comentário</string>
+            <key>scope</key><string>comment, punctuation.definition.comment</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key><string>{{syn_comment}}</string>
+                <key>fontStyle</key><string>{{syn_comment_style}}</string>
+            </dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>String</string>
+            <key>scope</key><string>string, string.quoted, string.template</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{syn_string}}</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Escape dentro de string</string>
+            <key>scope</key><string>constant.character.escape, string.regexp</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{syn_escape}}</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Número e constante</string>
+            <key>scope</key><string>constant.numeric, constant.language, constant.character</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{syn_constant}}</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Palavra-chave</string>
+            <key>scope</key><string>keyword, keyword.control, keyword.operator.word, storage, storage.type, storage.modifier</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key><string>{{syn_keyword}}</string>
+                <key>fontStyle</key><string>{{syn_keyword_style}}</string>
+            </dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Operador</string>
+            <key>scope</key><string>keyword.operator, punctuation.separator, punctuation.terminator, punctuation.accessor, meta.brace</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key><string>{{syn_operator}}</string>
+                <!-- Vazio para cancelar, e não para herdar: o syntect acumula o
+                     fontStyle das regras menos específicas, então sem isto o
+                     `keyword.operator` sairia com o negrito da regra `keyword`. -->
+                <key>fontStyle</key><string></string>
+            </dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Tipo</string>
+            <key>scope</key><string>entity.name.type, entity.name.class, entity.name.struct, entity.name.enum, entity.name.namespace, support.type, support.class</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{syn_type}}</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Função</string>
+            <key>scope</key><string>entity.name.function, support.function, variable.function, meta.function-call</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{syn_function}}</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Variável</string>
+            <key>scope</key><string>variable, variable.other, support.variable, support.constant</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{syn_variable}}</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Parâmetro</string>
+            <key>scope</key><string>variable.parameter</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key><string>{{syn_parameter}}</string>
+                <key>fontStyle</key><string>{{syn_parameter_style}}</string>
+            </dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Tag</string>
+            <key>scope</key><string>entity.name.tag</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{syn_tag}}</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Atributo</string>
+            <key>scope</key><string>entity.other.attribute-name</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key><string>{{syn_attribute}}</string>
+                <key>fontStyle</key><string>{{syn_attribute_style}}</string>
+            </dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Inválido</string>
+            <key>scope</key><string>invalid, invalid.illegal</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{error}}</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Depreciado</string>
+            <key>scope</key><string>invalid.deprecated</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key><string>{{warning}}</string>
+                <key>fontStyle</key><string>italic</string>
+            </dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Título (markdown)</string>
+            <key>scope</key><string>markup.heading, entity.name.section</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key><string>{{syn_keyword}}</string>
+                <key>fontStyle</key><string>bold</string>
+            </dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Negrito (markdown)</string>
+            <key>scope</key><string>markup.bold</string>
+            <key>settings</key>
+            <dict><key>fontStyle</key><string>bold</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Itálico (markdown)</string>
+            <key>scope</key><string>markup.italic</string>
+            <key>settings</key>
+            <dict><key>fontStyle</key><string>italic</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Link (markdown)</string>
+            <key>scope</key><string>markup.underline.link</string>
+            <key>settings</key>
+            <dict>
+                <key>foreground</key><string>{{syn_function}}</string>
+                <key>fontStyle</key><string>underline</string>
+            </dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Código literal (markdown)</string>
+            <key>scope</key><string>markup.raw, markup.inline.raw</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{syn_string}}</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Diff adicionado</string>
+            <key>scope</key><string>markup.inserted</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{success}}</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Diff removido</string>
+            <key>scope</key><string>markup.deleted</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{error}}</string></dict>
+        </dict>
+
+        <dict>
+            <key>name</key><string>Diff alterado</string>
+            <key>scope</key><string>markup.changed</string>
+            <key>settings</key>
+            <dict><key>foreground</key><string>{{warning}}</string></dict>
+        </dict>
+
+    </array>
+</dict>
+</plist>

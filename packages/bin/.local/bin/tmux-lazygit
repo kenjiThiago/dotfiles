@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# tmux-lazygit — abre o lazygit num popup, sobre a sessão 'scratch-lg'.
+# tmux-lazygit: abre o lazygit num popup, sobre a sessão 'scratch-lg'.
 #
 # O tema do lazygit é gerado pelo `theme set` num arquivo à parte, porque o
 # lazygit não tem include: o LG_CONFIG_FILE é quem junta o config.yml
-# versionado com o colors.yml gerado. A ordem importa — o último vence.
+# versionado com o colors.yml gerado. A ordem importa, o último vence.
 
 CURRENT_DIR=$(pwd)
 
