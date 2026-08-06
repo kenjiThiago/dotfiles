@@ -250,6 +250,7 @@ Nos templates, cada chave tem quatro formas:
 | ghostty | `~/.config/ghostty/colors` | `config-file = colors` |
 | zathura | `~/.config/zathura/colors` | `include "colors"` |
 | starship | `~/.config/starship.toml` | arquivo inteiro (starship não tem include) |
+| tmux | `~/.config/tmux/colors.conf` | `source-file -q` no fim do `.tmux.conf` |
 | neovim | `~/.config/nvim/lua/theme.lua` | `require("theme")` em `plugins/colors.lua` |
 | btop | `~/.config/btop/themes/dotfiles.theme` | `color_theme = "dotfiles"` no `btop.conf` |
 | lazygit | `~/.config/lazygit/colors.yml` | `LG_CONFIG_FILE` junta com o `config.yml` (não tem include) |
@@ -302,6 +303,12 @@ for um `#rrggbb`.
   symlinks, e uma sessão ali não fica dentro do repositório; o alvo certo é
   `~/dotfiles/packages/<pkg>`. O que não é do repositório continua aparecendo.
   Linha começando com `-` no arquivo de paths exclui à mão.
+- **tmux — cores**: mesma divisão do lazygit. O `.tmux.conf` versionado tem só
+  comportamento, e as cores vêm de `~/.config/tmux/colors.conf`, gerado pelo
+  `theme set`. Aqui o tmux tem include de verdade, então basta o
+  `source-file -q` no fim do arquivo; o `-q` é o que deixa o tmux subir antes
+  do primeiro `theme set`, quando o arquivo ainda não existe, só com as cores
+  padrão. Sessão já aberta não pega o tema novo sozinha: `prefix + r`.
 - **lazygit — cores**: o `config.yml` versionado tem só comportamento; o tema
   sai do `theme set` em `~/.config/lazygit/colors.yml`. Como o lazygit não tem
   include, quem junta os dois é o `LG_CONFIG_FILE`, definido em três lugares: no

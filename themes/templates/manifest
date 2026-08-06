@@ -20,6 +20,7 @@ alacritty-colors.toml.in  ~/.config/alacritty/colors.toml             desktop
 ghostty-colors.in         ~/.config/ghostty/colors                    desktop
 zathura-colors.in         ~/.config/zathura/colors                    desktop
 starship.toml.in          ~/.config/starship.toml
+tmux-colors.conf.in       ~/.config/tmux/colors.conf
 nvim-theme.lua.in         ~/.config/nvim/lua/theme.lua
 btop.theme.in             ~/.config/btop/themes/dotfiles.theme
 lazygit-colors.yml.in     ~/.config/lazygit/colors.yml

@@ -1,0 +1,10 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+#
+# O .tmux.conf versionado traz o comportamento; as cores saem daqui, por um
+# source-file. Antes do primeiro `theme set` este arquivo não existe, e o -q
+# do source-file deixa o tmux subir do mesmo jeito, só com as cores padrão.
+
+set -g status-bg "{{surface}}"
+set -g status-fg "{{text}}"
+
+set-window-option -g window-status-current-style fg="{{accent_alt}}",bg="{{overlay}}",bold
