@@ -31,7 +31,16 @@ Rectangle {
     Timer {
         id: resetTimer
         interval: 1000
-        onTriggered: island.activeMode = "clock"
+        onTriggered: {
+            // Antes quem segurava o OSD aberto durante o arrasto era o
+            // osdRequested que o poll do brilho disparava sem querer. Com o poll
+            // calado enquanto o usuário mexe, o segurar tem que ser explícito.
+            if (osdArea.pressed) {
+                resetTimer.restart();
+                return;
+            }
+            island.activeMode = "clock";
+        }
     }
 
     Connections {
@@ -482,6 +491,7 @@ Rectangle {
             font.pixelSize: 16
         }
         Rectangle {
+            id: osdTrack
             Layout.preferredWidth: 160
             Layout.preferredHeight: 6
             radius: 3
@@ -493,7 +503,10 @@ Rectangle {
                 radius: 3
                 color: Theme.yellow
                 width: parent.width * (SystemMonitor.currentBrightness / 100)
+                // Durante o arrasto a barra tem que grudar no cursor. A animação
+                // é para quando o brilho muda por fora, pelo teclado.
                 Behavior on width {
+                    enabled: !osdArea.pressed
                     NumberAnimation {
                         duration: 150
                         easing.type: Easing.OutQuad
@@ -509,15 +522,23 @@ Rectangle {
                 }
             }
             MouseArea {
+                id: osdArea
                 anchors.fill: parent
                 anchors.margins: -8
                 cursorShape: Qt.PointingHandCursor
+                // As margens negativas engordam a área de clique, então m.x não
+                // é a posição na trilha: sem o mapToItem a ponta esquerda dá 8px
+                // em vez de 0.
+                function applyAt(m) {
+                    SystemMonitor.setBrightness(100 * mapToItem(osdTrack, m.x, 0).x / osdTrack.width);
+                    resetTimer.restart();
+                }
                 onPressed: function (m) {
-                    SystemMonitor.setBrightness((m.x / parent.width) * 100);
+                    applyAt(m);
                 }
                 onPositionChanged: function (m) {
                     if (pressed)
-                        SystemMonitor.setBrightness((m.x / parent.width) * 100);
+                        applyAt(m);
                 }
             }
         }

@@ -190,10 +190,16 @@ Item {
     property real currentBrightness: -1
     property string brightnessPath: ""
     property int brightnessMax: 0
+    property int pendingBrightness: -1
     signal osdRequested(real newVal)
 
+    // Enquanto o usuário está mexendo, o sysfs ainda devolve o valor velho: o
+    // brightnessctl é um processo e leva alguns quadros para assentar. Aceitar
+    // essa leitura é o que fazia o slider voltar para trás no meio do arrasto.
+    readonly property bool brightnessBusy: brightnessSettle.running || writeBrightnessCmd.running || sys.pendingBrightness >= 0
+
     function applyBrightness(newVal) {
-        if (isNaN(newVal))
+        if (isNaN(newVal) || sys.brightnessBusy)
             return;
         if (sys.currentBrightness === -1) {
             sys.currentBrightness = newVal;
@@ -240,13 +246,37 @@ Item {
     Process {
         id: writeBrightnessCmd
         running: false
+        onExited: sys.flushBrightness()
     }
-    function setBrightness(percent) {
-        let safePct = Math.max(0, Math.min(100, Math.round(percent)));
-        currentBrightness = safePct;
-        writeBrightnessCmd.command = ["brightnessctl", "set", safePct + "%"];
+    Timer {
+        id: brightnessSettle
+        interval: 400
+    }
+
+    // Um brightnessctl de cada vez. O arrasto emite dezenas de eventos por
+    // segundo e, com o processo anterior ainda vivo, atribuir running = true de
+    // novo não faz nada e a escrita se perde: guardar só o último valor pedido
+    // resolve o descarte e a enxurrada de processos de uma vez.
+    function flushBrightness() {
+        if (sys.pendingBrightness < 0)
+            return;
+        writeBrightnessCmd.command = ["brightnessctl", "set", sys.pendingBrightness + "%"];
+        sys.pendingBrightness = -1;
+        writeBrightnessCmd.running = false;
         writeBrightnessCmd.running = true;
     }
+
+    function setBrightness(percent) {
+        let safePct = Math.max(0, Math.min(100, Math.round(percent)));
+        brightnessSettle.restart();
+        if (safePct === sys.currentBrightness)
+            return;
+        sys.currentBrightness = safePct;
+        sys.pendingBrightness = safePct;
+        if (!writeBrightnessCmd.running)
+            sys.flushBrightness();
+    }
+
     Timer {
         interval: 100
         running: true
@@ -256,6 +286,10 @@ Item {
                 brightnessCmd.running = true;
                 return;
             }
+            // A leitura é bloqueante, então nem vale abrir o arquivo enquanto
+            // quem manda no valor é o usuário.
+            if (sys.brightnessBusy)
+                return;
             brightnessFile.reload();
             sys.applyBrightness(Math.round(100 * parseInt(brightnessFile.text()) / sys.brightnessMax));
         }

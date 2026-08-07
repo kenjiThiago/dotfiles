@@ -241,6 +241,7 @@ Item {
                     }
                 }
                 Rectangle {
+                    id: volumeTrack
                     Layout.fillWidth: true
                     height: 8
                     radius: 4
@@ -268,13 +269,19 @@ Item {
                         anchors.fill: parent
                         anchors.margins: -10
                         cursorShape: Qt.PointingHandCursor
+                        // As margens negativas engordam a área de clique, então
+                        // m.x não é a posição na trilha: sem o mapToItem a ponta
+                        // esquerda dá 10px em vez de 0.
+                        function applyAt(m) {
+                            SystemMonitor.setVolume(100 * mapToItem(volumeTrack, m.x, 0).x / volumeTrack.width);
+                        }
                         onPressed: function (m) {
                             m.accepted = true;
-                            SystemMonitor.setVolume((m.x / width) * 100);
+                            applyAt(m);
                         }
                         onPositionChanged: function (m) {
                             if (pressed)
-                                SystemMonitor.setVolume((m.x / width) * 100);
+                                applyAt(m);
                         }
                     }
                 }
@@ -306,6 +313,7 @@ Item {
                     }
                 }
                 Rectangle {
+                    id: brightnessTrack
                     Layout.fillWidth: true
                     height: 8
                     radius: 4
@@ -333,13 +341,16 @@ Item {
                         anchors.fill: parent
                         anchors.margins: -10
                         cursorShape: Qt.PointingHandCursor
+                        function applyAt(m) {
+                            SystemMonitor.setBrightness(100 * mapToItem(brightnessTrack, m.x, 0).x / brightnessTrack.width);
+                        }
                         onPressed: function (m) {
                             m.accepted = true;
-                            SystemMonitor.setBrightness((m.x / width) * 100);
+                            applyAt(m);
                         }
                         onPositionChanged: function (m) {
                             if (pressed)
-                                SystemMonitor.setBrightness((m.x / width) * 100);
+                                applyAt(m);
                         }
                     }
                 }
