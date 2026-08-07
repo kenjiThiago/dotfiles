@@ -5,13 +5,15 @@
 # e as raízes de ~/.config/tmux-sessionizer/paths, para projetos que você
 # ainda não abriu. Clonar fora das raízes deixa de ser problema: basta um cd.
 #
-# Nesse arquivo, linha com `-` na frente é padrão de exclusão. Os diretórios
+# Nesse arquivo, linha com `-` na frente é padrão de exclusão e linha com `+`
+# fixa o diretório no topo da lista, na ordem em que aparece. Os diretórios
 # de ~/.config que vêm de um pacote do stow já são excluídos sozinhos.
 
 DOTFILES="${DOTFILES:-$HOME/dotfiles}"
 PATHS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/tmux-sessionizer/paths"
 ROOTS=()
 EXCLUDES=()
+PINS=()
 
 # Roda no shell principal: os arrays precisam sobreviver ao $( ) de baixo.
 load_config() {
@@ -26,10 +28,22 @@ load_config() {
         if [[ $line == -* ]]; then
             line=${line#-}
             EXCLUDES+=("${line/#\~/$HOME}")
+        elif [[ $line == +* ]]; then
+            line=${line#+}
+            PINS+=("${line/#\~/$HOME}")
         else
             ROOTS+=("$line")
         fi
     done < "$PATHS_FILE"
+}
+
+# Sem glob e sem `:profundidade`, ao contrário das raízes: o que o `+` compra é
+# um caminho literal numa posição escolhida, e glob devolveria a ordem ao find.
+list_pins() {
+    local dir
+    for dir in ${PINS[@]+"${PINS[@]}"}; do
+        [[ -d $dir ]] && printf '%s\n' "$dir"
+    done
 }
 
 list_roots() {
@@ -75,13 +89,21 @@ keep() {
 load_config
 exclude_stowed_config
 
-# --tiebreak=index: entre matches de score igual, quem vem antes ganha. Como o
-# zoxide vem primeiro, o desempate passa a ser por frecência em vez de pelo
+# --tiebreak=index: entre matches de score igual, quem vem antes ganha. Nas
+# buscas curtas o score empata quase sempre, então a ordem da entrada é que
+# decide de fato: primeiro os fixados, depois a frecência do zoxide, em vez do
 # caminho mais curto, que é o padrão do fzf.
-selected=$( { list_zoxide; list_roots; } | awk '!seen[$0]++' |
-    while IFS= read -r dir; do
-        keep "$dir" && printf '%s\n' "$dir"
-    done | fzf --height 40% --tmux center --layout reverse --tiebreak=index)
+#
+# Os fixados passam por fora do keep, e o awk fica com a primeira ocorrência:
+# assim o `+` vence o `-` e mantém a posição mesmo estando também no zoxide.
+selected=$( {
+        list_pins
+        { list_zoxide; list_roots; } |
+            while IFS= read -r dir; do
+                keep "$dir" && printf '%s\n' "$dir"
+            done
+    } | awk '!seen[$0]++' |
+    fzf --height 40% --tmux center --layout reverse --tiebreak=index)
 
 if [[ -z "$selected" ]]; then
     exit 0

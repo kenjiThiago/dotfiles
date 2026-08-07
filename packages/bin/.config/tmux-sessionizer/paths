@@ -4,6 +4,14 @@
 # Linha começando com `-` é padrão de exclusão. Os diretórios de ~/.config que
 # vêm de um pacote do stow já são excluídos automaticamente; use isto aqui só
 # para o que não é do repositório, tipo `-~/.config/discord`.
+#
+# Linha começando com `+` fixa o diretório no topo da lista, na ordem em que
+# aparece aqui, e ganha do zoxide e das linhas `-`. É caminho literal: sem glob
+# e sem `:profundidade`. Use quando dois caminhos parecidos disputam a mesma
+# busca e você quer decidir a ordem em vez de deixar por conta da frecência.
+#
+#   +~/dotfiles/packages/ghostty
+#   +~/remote/ic
 
 ~/projetos
 ~/projetos/[A-Z]*
@@ -15,3 +23,4 @@
 ~/remote
 ~/dotfiles/packages:3
 -~/plugins/*
+-~/dotfiles/packages/*/.config
