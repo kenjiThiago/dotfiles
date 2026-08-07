@@ -10,13 +10,12 @@ import "."
 Item {
     id: sys
 
-    // ── BATERIA E ENERGIA (Bug Matemático Resolvido) ──────────────────────────
+    // ── BATERIA E ENERGIA ─────────────────────────────────────────────────────
     property var device: UPower.displayDevice
 
-    // O dispositivo só é válido se não for nulo E o UPower já tiver carregado os dados (ready)
     property bool isValid: device !== null && device.ready
 
-    // O Segredo: multiplicar o valor (que é de 0.0 a 1.0) por 100 antes de arredondar
+    // O percentage do UPower vem de 0.0 a 1.0, apesar do nome.
     property int pct: isValid ? Math.round(device.percentage * 100) : 0
 
     property int batteryState: isValid ? device.state : UPowerDeviceState.Unknown
@@ -193,9 +192,9 @@ Item {
     property int pendingBrightness: -1
     signal osdRequested(real newVal)
 
-    // Enquanto o usuário está mexendo, o sysfs ainda devolve o valor velho: o
-    // brightnessctl é um processo e leva alguns quadros para assentar. Aceitar
-    // essa leitura é o que fazia o slider voltar para trás no meio do arrasto.
+    // Durante a interação o sysfs ainda devolve o valor anterior, porque o
+    // brightnessctl leva alguns quadros para assentar. Aceitar essa leitura é o
+    // que fazia o slider retroceder no meio do arrasto.
     readonly property bool brightnessBusy: brightnessSettle.running || writeBrightnessCmd.running || sys.pendingBrightness >= 0
 
     function applyBrightness(newVal) {
@@ -253,10 +252,8 @@ Item {
         interval: 400
     }
 
-    // Um brightnessctl de cada vez. O arrasto emite dezenas de eventos por
-    // segundo e, com o processo anterior ainda vivo, atribuir running = true de
-    // novo não faz nada e a escrita se perde: guardar só o último valor pedido
-    // resolve o descarte e a enxurrada de processos de uma vez.
+    // Um brightnessctl de cada vez: com o processo anterior ainda vivo, atribuir
+    // running = true de novo não faz nada e a escrita se perde.
     function flushBrightness() {
         if (sys.pendingBrightness < 0)
             return;
@@ -286,8 +283,8 @@ Item {
                 brightnessCmd.running = true;
                 return;
             }
-            // A leitura é bloqueante, então nem vale abrir o arquivo enquanto
-            // quem manda no valor é o usuário.
+            // A leitura é bloqueante, então não se abre o arquivo enquanto o
+            // valor está sendo definido pela interação.
             if (sys.brightnessBusy)
                 return;
             brightnessFile.reload();

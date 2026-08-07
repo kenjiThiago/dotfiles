@@ -2,13 +2,13 @@
 # Uma por linha. `caminho:profundidade` (padrão 1). Globs funcionam.
 #
 # Linha começando com `-` é padrão de exclusão. Os diretórios de ~/.config que
-# vêm de um pacote do stow já são excluídos automaticamente; use isto aqui só
-# para o que não é do repositório, tipo `-~/.config/discord`.
+# vêm de um pacote do stow já são excluídos automaticamente; esta seção serve
+# apenas para o que não é do repositório, como `-~/.config/discord`.
 #
 # Linha começando com `+` fixa o diretório no topo da lista, na ordem em que
-# aparece aqui, e ganha do zoxide e das linhas `-`. É caminho literal: sem glob
-# e sem `:profundidade`. Use quando dois caminhos parecidos disputam a mesma
-# busca e você quer decidir a ordem em vez de deixar por conta da frecência.
+# aparece aqui, e prevalece sobre o zoxide e sobre as linhas `-`. É caminho
+# literal: sem glob e sem `:profundidade`. Serve para quando dois caminhos
+# parecidos disputam a mesma busca e a ordem deve ser explícita.
 #
 #   +~/dotfiles/packages/ghostty
 #   +~/remote/ic

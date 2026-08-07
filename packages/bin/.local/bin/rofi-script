@@ -121,8 +121,8 @@ take_screenshot() {
 
     [[ -z "$selection" ]] && exit 0
 
-    # Captura com a tela AINDA congelada; só então descongela. Senão o grim
-    # pegaria o frame ao vivo, diferente do que você viu (incoerência c/ movimento).
+    # Captura com a tela ainda congelada e só então descongela. Na ordem
+    # inversa, o grim gravaria o frame ao vivo, diferente do exibido.
     grim -g "$selection" "$filepath" || exit 1
     [[ -n "$picker_pid" ]] && kill "$picker_pid" 2>/dev/null
     picker_pid=""

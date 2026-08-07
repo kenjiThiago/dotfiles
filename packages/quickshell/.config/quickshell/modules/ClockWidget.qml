@@ -32,9 +32,8 @@ Rectangle {
         id: resetTimer
         interval: 1000
         onTriggered: {
-            // Antes quem segurava o OSD aberto durante o arrasto era o
-            // osdRequested que o poll do brilho disparava sem querer. Com o poll
-            // calado enquanto o usuário mexe, o segurar tem que ser explícito.
+            // Com o poll do brilho suspenso durante o arrasto, nada mais renova
+            // o OSD automaticamente.
             if (osdArea.pressed) {
                 resetTimer.restart();
                 return;
@@ -526,9 +525,8 @@ Rectangle {
                 anchors.fill: parent
                 anchors.margins: -8
                 cursorShape: Qt.PointingHandCursor
-                // As margens negativas engordam a área de clique, então m.x não
-                // é a posição na trilha: sem o mapToItem a ponta esquerda dá 8px
-                // em vez de 0.
+                // As margens negativas ampliam a área de clique, então m.x não
+                // é a posição na trilha.
                 function applyAt(m) {
                     SystemMonitor.setBrightness(100 * mapToItem(osdTrack, m.x, 0).x / osdTrack.width);
                     resetTimer.restart();

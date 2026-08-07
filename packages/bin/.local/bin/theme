@@ -180,7 +180,7 @@ write_file() {
 
     mkdir -p "$(dirname "$dest")"
     # Se o destino ainda for um symlink (layout antigo do stow), remove antes:
-    # escrever por cima sujaria o repositório.
+    # escrever por cima gravaria dentro do repositório.
     if [[ -L $dest ]]; then rm -f "$dest"; fi
     printf '%s\n' "$content" > "$dest.tmp.$$" && mv -f "$dest.tmp.$$" "$dest"
     printf '   %s\n' "${dest/#$HOME/\~}"

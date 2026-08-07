@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# tmux-sessionizer — abre, ou volta para, uma sessão do tmux por diretório.
+# tmux-sessionizer: abre, ou volta para, uma sessão do tmux por diretório.
 #
-# A lista vem de duas fontes: o zoxide, que já conhece tudo que você visitou,
-# e as raízes de ~/.config/tmux-sessionizer/paths, para projetos que você
-# ainda não abriu. Clonar fora das raízes deixa de ser problema: basta um cd.
+# A lista vem de duas fontes: o zoxide, que cobre os diretórios já visitados, e
+# as raízes de ~/.config/tmux-sessionizer/paths, que cobrem os projetos ainda
+# não abertos. Um diretório clonado fora das raízes entra no zoxide após um cd.
 #
-# Nesse arquivo, linha com `-` na frente é padrão de exclusão e linha com `+`
-# fixa o diretório no topo da lista, na ordem em que aparece. Os diretórios
-# de ~/.config que vêm de um pacote do stow já são excluídos sozinhos.
+# Nesse arquivo, linha iniciada por `-` é padrão de exclusão e linha iniciada
+# por `+` fixa o diretório no topo da lista, na ordem em que aparece. Os
+# diretórios de ~/.config vindos de um pacote do stow já são excluídos.
 
 DOTFILES="${DOTFILES:-$HOME/dotfiles}"
 PATHS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/tmux-sessionizer/paths"
@@ -37,8 +37,8 @@ load_config() {
     done < "$PATHS_FILE"
 }
 
-# Sem glob e sem `:profundidade`, ao contrário das raízes: o que o `+` compra é
-# um caminho literal numa posição escolhida, e glob devolveria a ordem ao find.
+# Sem glob e sem `:profundidade`, ao contrário das raízes: o `+` define um
+# caminho literal em posição fixa, e um glob devolveria a ordenação ao find.
 list_pins() {
     local dir
     for dir in ${PINS[@]+"${PINS[@]}"}; do
@@ -61,9 +61,9 @@ list_roots() {
     done
 }
 
-# ~/.config/nvim e afins são só symlinks para o repositório, e uma sessão ali
-# não fica dentro de um git repo — o alvo certo é o pacote. Derivar do disco
-# em vez de manter lista no arquivo: pacote novo já entra, removido já sai.
+# ~/.config/nvim e afins são apenas symlinks para o repositório, e uma sessão
+# ali não fica dentro de um repositório git: o alvo correto é o pacote. A lista
+# é derivada do disco, então pacote novo já entra e pacote removido já sai.
 exclude_stowed_config() {
     local name
     while IFS= read -r name; do
@@ -89,10 +89,8 @@ keep() {
 load_config
 exclude_stowed_config
 
-# --tiebreak=index: entre matches de score igual, quem vem antes ganha. Nas
-# buscas curtas o score empata quase sempre, então a ordem da entrada é que
-# decide de fato: primeiro os fixados, depois a frecência do zoxide, em vez do
-# caminho mais curto, que é o padrão do fzf.
+# --tiebreak=index: nas buscas curtas o score empata quase sempre, então quem
+# decide é a ordem da entrada, e não o caminho mais curto do padrão do fzf.
 #
 # Os fixados passam por fora do keep, e o awk fica com a primeira ocorrência:
 # assim o `+` vence o `-` e mantém a posição mesmo estando também no zoxide.

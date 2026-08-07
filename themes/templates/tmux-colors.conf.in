@@ -4,12 +4,11 @@
 # source-file. Antes do primeiro `theme set` este arquivo não existe, e o -q
 # do source-file deixa o tmux subir do mesmo jeito, só com as cores padrão.
 #
-# Tudo aqui é hex, nunca nome ANSI. No desktop daria na mesma, porque o ghostty
-# e o alacritty recebem a paleta ANSI do mesmo `theme set`; no servidor não, que
-# lá esses dois pacotes não existem e o ANSI é o do terminal de quem conectou.
+# Hex, nunca nome ANSI: no perfil servidor não há ghostty nem alacritty para
+# receber a paleta do `theme set`, e o ANSI seria o do terminal de quem conectou.
 #
-# Os blocos %if são pelas máquinas com tmux mais velho: opção inexistente é erro
-# impresso a cada start, e dentro de um %if falso o tmux nem avalia a linha.
+# Os %if são pelas máquinas com tmux mais velho, onde opção inexistente vira erro
+# impresso a cada start. Dentro de um %if falso o tmux nem avalia a linha.
 
 # ── Barra de status ───────────────────────────────────────────────────────────
 set -g status-style bg="{{surface}}",fg="{{text}}"
@@ -21,13 +20,12 @@ set-window-option -g window-status-activity-style fg="{{warning}}"
 set-window-option -g window-status-bell-style fg="{{error}}",bold
 
 # ── Mensagens ─────────────────────────────────────────────────────────────────
-# O padrão é bloco chapado de amarelo ANSI. Aqui a mensagem fica com a cara da
-# barra e quem carrega o aviso é a cor do texto. A de comando muda de cor para
-# se distinguir do prompt normal, já que o status-keys é vi.
+# A de comando muda de cor para se distinguir do prompt normal, já que o
+# status-keys é vi.
 #
-# O fill= não é enfeite: sem ele a mensagem pinta só os caracteres que escreve e
-# o resto da linha continua mostrando a status bar por baixo. Aparece bem no
-# prefixo numérico do copy mode, que escreve um "(repeat) 46" curto.
+# O fill= é necessário: sem ele a mensagem pinta apenas os caracteres que
+# escreve, e o resto da linha continua exibindo a barra de status. O efeito fica
+# evidente no prefixo numérico do copy mode, cujo texto é curto.
 set -g message-style bg="{{overlay}}",fg="{{warning}}",fill="{{overlay}}"
 set -g message-command-style bg="{{overlay}}",fg="{{info}}",fill="{{overlay}}"
 
@@ -42,9 +40,8 @@ set-window-option -g copy-mode-current-match-style bg="{{accent}}",fg="{{base}}"
 set-window-option -g copy-mode-mark-style bg="{{highlight_high}}",fg="{{text}}"
 %endif
 
-# O indicador de posição, o [0/4], herda do mode-style, que aqui é discreto de
-# propósito por causa da seleção. Da 3.6 em diante dá para separar os dois e
-# deixar só o indicador avisando que o copy mode está ligado.
+# O [0/4] herda do mode-style, discreto de propósito por causa da seleção. Da
+# 3.6 em diante dá para separar os dois e deixar só ele chamando atenção.
 %if "#{>=:#{version},3.6}"
 set-window-option -g copy-mode-position-style bg="{{overlay}}",fg="{{warning}}"
 %endif
@@ -54,8 +51,6 @@ set-window-option -g pane-border-style fg="{{overlay}}"
 set-window-option -g pane-active-border-style "#{?pane_in_mode,fg={{warning}},#{?synchronize-panes,fg={{error}},fg={{accent}}}}"
 
 # ── Popups e menus ────────────────────────────────────────────────────────────
-# O .tmux.conf usa display-popup para o lazygit, o sessionizer, o python e o
-# testar-cor, então a borda aparece bastante.
 %if "#{>=:#{version},3.3}"
 set -g popup-style bg="{{base}}",fg="{{text}}"
 set -g popup-border-style fg="{{accent}}",bg="{{base}}"

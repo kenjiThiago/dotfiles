@@ -1,12 +1,12 @@
 #
 # ~/.bashrc
 #
-# Este arquivo vale nas duas máquinas: no desktop o bash é o shell de recurso
-# (o de todo dia é o zsh) e no servidor é o shell de verdade. Por isso tudo
-# que é ferramenta extra vem atrás de `command -v`: sem ela, o rc ainda sobe,
-# só mais simples.
+# Este arquivo vale nas duas máquinas: no desktop o bash é o shell secundário
+# (o principal é o zsh) e no servidor é o shell principal. Por isso toda
+# ferramenta extra vem atrás de `command -v`: sem ela, o rc ainda sobe, apenas
+# com menos recursos.
 
-# If not running interactively, don't do anything
+# Shell não interativo não precisa de nada abaixo.
 [[ $- != *i* ]] && return
 
 # ── Histórico ─────────────────────────────────────────────────────────────────
@@ -122,5 +122,5 @@ if ! shopt -oq posix; then
     fi
 fi
 
-# Escape hatch por máquina: nada aqui é versionado.
+# Ajustes de uma máquina só. Não é versionado.
 [ -f ~/.bashrc.local ] && . ~/.bashrc.local

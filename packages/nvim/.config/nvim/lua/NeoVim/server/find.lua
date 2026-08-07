@@ -1,5 +1,3 @@
--- O lugar do telescope no perfil servidor, com o findfunc nativo.
---
 -- O findfunc é chamado a cada tecla digitada no :find, então a lista de
 -- arquivos vem de um cache por cwd: um rg por diretório, não um por tecla.
 

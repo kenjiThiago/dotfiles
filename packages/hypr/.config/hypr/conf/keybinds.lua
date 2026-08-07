@@ -97,12 +97,9 @@ hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
--- Switch to a submap called `resize`.
 hl.bind("ALT + R", hl.dsp.submap("resize"))
 
--- Start a submap called "resize".
 hl.define_submap("resize", function()
-    -- Set repeating binds for resizing the active window.
     hl.bind("H", hl.dsp.window.resize({ x = -10, y = 0, relative = true }), { repeating = true })
     hl.bind("L", hl.dsp.window.resize({ x = 10, y = 0, relative = true }), { repeating = true })
     hl.bind("K", hl.dsp.window.resize({ x = 0, y = -10, relative = true }), { repeating = true })
@@ -113,7 +110,7 @@ hl.define_submap("resize", function()
     hl.bind("SHIFT + K", hl.dsp.window.resize({ x = 0, y = -30, relative = true }), { repeating = true })
     hl.bind("SHIFT + J", hl.dsp.window.resize({ x = 0, y = 30, relative = true }), { repeating = true })
 
-    -- Use `reset` to go back to the global submap
+    -- "reset" é o nome reservado que devolve ao submapa global.
     hl.bind("escape", hl.dsp.submap("reset"))
 end)
 

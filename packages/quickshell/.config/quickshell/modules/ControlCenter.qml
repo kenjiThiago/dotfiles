@@ -269,9 +269,8 @@ Item {
                         anchors.fill: parent
                         anchors.margins: -10
                         cursorShape: Qt.PointingHandCursor
-                        // As margens negativas engordam a área de clique, então
-                        // m.x não é a posição na trilha: sem o mapToItem a ponta
-                        // esquerda dá 10px em vez de 0.
+                        // As margens negativas ampliam a área de clique, então
+                        // m.x não é a posição na trilha.
                         function applyAt(m) {
                             SystemMonitor.setVolume(100 * mapToItem(volumeTrack, m.x, 0).x / volumeTrack.width);
                         }

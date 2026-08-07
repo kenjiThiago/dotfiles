@@ -1,13 +1,12 @@
--- Tudo que só vale no perfil servidor: nvim sem plugin nenhum, então o que no
--- desktop vem do oil, do telescope, do harpoon e do undotree.nvim aqui sai do
--- que o próprio nvim traz.
+-- Perfil servidor: nvim sem plugin nenhum, então o que no desktop vem do oil,
+-- do telescope, do harpoon e do undotree.nvim aqui sai do que o nvim traz.
 
 require("NeoVim.server.lsp")
 require("NeoVim.server.find")
 
 -- ── Cores ─────────────────────────────────────────────────────────────────────
--- O plugins/colors.lua é quem faz isto no desktop, e ele depende do vim.pack.
--- O gruber-darker não: vem versionado no pacote nvim-plugins do stow.
+-- O plugins/colors.lua não serve aqui porque depende do vim.pack; o
+-- gruber-darker vem versionado no pacote nvim-plugins do stow.
 vim.opt.runtimepath:append(vim.fn.expand("~/plugins/gruber-darker"))
 
 local loaded, theme = pcall(require, "theme")
@@ -21,7 +20,6 @@ if not pcall(vim.cmd.colorscheme, theme.colorscheme) then
 end
 
 -- ── netrw ─────────────────────────────────────────────────────────────────────
--- No desktop o init.lua desliga o netrw, porque quem navega é o oil.
 vim.g.netrw_sizestyle = "H"
 vim.g.netrw_liststyle = 3
 vim.g.netrw_banner = 0
@@ -52,12 +50,9 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.cmd.packadd("nvim.undotree")
 vim.keymap.set("n", "<leader>u", "<cmd>Undotree<CR>")
 
--- ── Achar arquivo ─────────────────────────────────────────────────────────────
--- O <leader>pf está no server/find.lua, com o findfunc nativo.
-
 -- ── Grep e diagnósticos ───────────────────────────────────────────────────────
--- O lugar do telescope e do trouble. O grepprg com rg já vem do set.lua, que é
--- compartilhado; as teclas são as mesmas do desktop de propósito.
+-- O grepprg com rg vem do set.lua, compartilhado. As teclas repetem as do
+-- desktop de propósito.
 vim.keymap.set("n", "<leader>ps", function()
     vim.ui.input({ prompt = "Grep > " }, function(padrao)
         if not padrao or padrao == "" then
@@ -76,7 +71,7 @@ end, { desc = "Diagnósticos na quickfix" })
 
 -- ── Wildmenu ──────────────────────────────────────────────────────────────────
 -- Só aqui: no desktop quem completa a cmdline é o blink.cmp, e os dois
--- brigariam pelas mesmas teclas (ver plugins/cmp.lua).
+-- disputariam as mesmas teclas (ver plugins/cmp.lua).
 vim.opt.wildmode = "noselect:lastused,full"
 vim.opt.wildoptions = "pum"
 vim.opt.pumborder = "rounded"
@@ -100,8 +95,7 @@ vim.keymap.set("c", "<C-y>", function()
 end, { expr = true, replace_keycodes = true })
 
 -- ── Marcas ────────────────────────────────────────────────────────────────────
--- O harpoon do pobre: associa o buffer a uma marca que se atualiza sozinha ao
--- sair dele, e <c-h/j/k/l> pula de volta.
+-- Substituto do harpoon: a marca se reposiciona ao sair do buffer.
 local function bind_mark_auto(mark_char)
     local buffer = vim.api.nvim_get_current_buf()
 

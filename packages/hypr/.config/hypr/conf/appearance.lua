@@ -23,16 +23,14 @@ hl.config({
 
         border_size = 2,
 
-        -- https://wiki.hyprland.org/Configuring/Variables/#variable-types for info about colors
         col = {
             active_border = { colors = { M.accent, M.accentAlt }, angle = 115 },
             inactive_border = M.muted,
         },
 
-        -- Set to true enable resizing windows by clicking and dragging on borders and gaps
         resize_on_border = false,
 
-        -- Please see https://wiki.hyprland.org/Configuring/Tearing/ before you turn this on
+        -- Ligar exige atenção: https://wiki.hyprland.org/Configuring/Tearing/
         allow_tearing = false,
 
         layout = "dwindle",
@@ -41,7 +39,6 @@ hl.config({
     decoration = {
         rounding = 4,
 
-        -- Change transparency of focused and unfocused windows
         active_opacity = 1.0,
         inactive_opacity = 1.0,
 

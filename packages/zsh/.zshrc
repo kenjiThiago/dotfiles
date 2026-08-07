@@ -1,9 +1,7 @@
 autoload -Uz compinit && compinit
 
-# Cria o diretorio do plugin manager
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
-# Instala o plugin manager se ele não estiver instalado
 if [ ! -d "$ZINIT_HOME" ]; then
     mkdir -p "$(dirname $ZINIT_HOME)"
     git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
@@ -24,11 +22,11 @@ bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey -s '^[^F' "tmux-sessionizer\n"
 
-# Aparência do Compition
+# Aparência da completação
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
-#Alias
+# Aliases
 alias nv="nvim"
 alias ls="eza --color=always --icons=auto"
 alias c="clear"
@@ -36,20 +34,16 @@ alias ll="eza -lAF --color=always --icons=auto"
 alias l="eza -AF --color=always --icons=auto"
 # alias cat="bat --paging=never"
 
-# Inicia fzf
 source <(fzf --zsh)
-# Inicia zoxide
 eval "$(zoxide init --cmd cd zsh)"
-# Inicia starship
 eval "$(starship init zsh)"
 
-# O starship.toml.in não tem right_format, então o RPROMPT que o init monta só
-# forkava o starship a cada redraw para devolver string vazia. Se um dia entrar
-# um right_format no template, é esta linha que sai.
+# Sem right_format no template, o RPROMPT do init só forkava o starship a cada
+# redraw para devolver string vazia. Se um dia entrar um, é esta linha que sai.
 RPROMPT=""
 
-# A substituição é a mesma a cada Enter, porque o PROMPT do starship não muda
-# depois do init: uma ocorrência só, a do subcomando na linha gerada pelo init.
+# O PROMPT do starship não muda depois do init, então a substituição é feita uma
+# vez só.
 STARSHIP_ORIG_PROMPT=$PROMPT
 STARSHIP_TRANSIENT_PROMPT="${PROMPT/ prompt / prompt --profile transient }"
 
@@ -62,10 +56,9 @@ zle -N set_transient_prompt
 autoload -Uz add-zle-hook-widget
 add-zle-hook-widget zle-line-finish set_transient_prompt
 
-# O TRAPINT lá embaixo aplica o transiente em qualquer SIGINT, mas nem todo
-# Ctrl-C encerra a linha: cancelar a pergunta "do you wish to see all N
+# Nem todo Ctrl-C encerra a linha: cancelar a pergunta "do you wish to see all N
 # possibilities" devolve o controle para a mesma linha, e aí o precmd nunca roda
-# para desfazer. Sem isto a edição continua com o prompt de uma linha só.
+# para desfazer o transiente que o TRAPINT aplicou.
 function restore_prompt_if_transient() {
     [[ $PROMPT == "$STARSHIP_TRANSIENT_PROMPT" ]] || return 0
     PROMPT=$STARSHIP_ORIG_PROMPT

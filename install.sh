@@ -263,8 +263,8 @@ else
         run "$TPM_DIR/bin/install_plugins" || warn "install_plugins falhou; rode prefix+I no tmux"
     fi
 
-    # Baixa os plugins do vim.pack. O mason instala em background, então pode
-    # ser que ainda falte um LSP na primeira sessão de verdade.
+    # Baixa os plugins do vim.pack. O mason instala em background, então algum
+    # LSP pode ainda faltar na primeira sessão.
     if command -v nvim >/dev/null; then
         msg "Baixando plugins do neovim (pode demorar)"
         run timeout 600 nvim --headless "+qa" || warn "bootstrap do nvim falhou; abra o nvim à mão"

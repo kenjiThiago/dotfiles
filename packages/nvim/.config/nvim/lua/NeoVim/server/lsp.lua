@@ -1,5 +1,5 @@
--- LSP sem mason e sem nvim-lspconfig: no servidor os binários vêm do venv do
--- projeto ou do pipx, e o resto é o vim.lsp.config nativo.
+-- Sem mason e sem nvim-lspconfig: os binários vêm do venv do projeto ou do
+-- pipx, e o resto é o vim.lsp.config nativo.
 
 local servers = require("NeoVim.lsp_servers")
 
@@ -29,8 +29,6 @@ vim.lsp.config.pyright = {
 }
 vim.lsp.enable("pyright")
 
--- O init_options vem do lsp_servers para não divergir do desktop; o resto é
--- daqui, porque sem lspconfig nada preenche o básico.
 vim.lsp.config.ruff = vim.tbl_deep_extend("force", servers.ruff_base, servers.ruff)
 vim.lsp.enable("ruff")
 
@@ -54,8 +52,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(e)
         local opts = { buffer = e.buf }
 
-        -- O lugar do blink.cmp: o completar nativo abre sozinho enquanto se
-        -- digita. Respeita o vim.b.completion = false do autocmd.lua.
+        -- O autotrigger respeita o vim.b.completion = false do autocmd.lua.
         local client = vim.lsp.get_client_by_id(e.data.client_id)
         if client and client:supports_method("textDocument/completion") then
             vim.lsp.completion.enable(true, client.id, e.buf, { autotrigger = true })
@@ -71,8 +68,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end,
 })
 
--- O lugar do conform.nvim. O organize-imports precisa vir antes do format, e
--- o format precisa ser síncrono, senão o BufWritePre grava o buffer velho.
+-- O organize-imports precisa vir antes do format, e o format precisa ser
+-- síncrono, senão o BufWritePre grava o buffer velho.
 vim.api.nvim_create_autocmd("BufWritePre", {
     group = vim.api.nvim_create_augroup("RuffLspFormat", { clear = true }),
     pattern = "*.py",

@@ -95,7 +95,7 @@ Scope {
                     }
                 }
 
-                // Barreira Esquerda
+                // Barreira esquerda
                 MouseArea {
                     id: barrierLeft
                     anchors {
@@ -110,7 +110,7 @@ Scope {
                     }
                 }
 
-                // Barreira Direita
+                // Barreira direita
                 MouseArea {
                     id: barrierRight
                     anchors {
@@ -125,7 +125,7 @@ Scope {
                     }
                 }
 
-                // Barreira de Baixo (Começa exatamente onde a Ilha termina)
+                // Barreira de baixo: começa onde a ilha termina.
                 MouseArea {
                     id: barrierBottom
                     anchors {

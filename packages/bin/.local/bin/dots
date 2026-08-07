@@ -14,18 +14,18 @@
 #   --except a,b                linka todos menos esses (link/unlink/relink)
 #   --profile <nome>            usa outro perfil em vez do ativo
 #
-# O --except é o avesso de passar nomes: 'dots link' pega o perfil, 'dots link
-# nvim' pega só o nvim, e 'dots link --except nvim' pega o perfil menos ele. Os
-# nomes são validados, então errar a grafia dá erro em vez de linkar caladamente.
+# O --except é o inverso de passar nomes: 'dots link' usa o perfil, 'dots link
+# nvim' usa só o nvim, e 'dots link --except nvim' usa o perfil menos ele. Os
+# nomes são validados: um erro de grafia falha em vez de linkar em silêncio.
 #
 # O perfil sai de ~/.local/state/dotfiles/profile, escrito pelo install.sh, e
 # lista em profiles/<nome> quais pacotes aquela máquina quer. Sem o arquivo, o
 # padrão é desktop; sem o profiles/<nome>, é tudo que existe em packages/.
 #
 # Todos os comandos usam --no-folding de propósito: assim ~/.config/waybar é
-# um diretório de verdade com symlinks dentro, e não um symlink para o repo.
-# Isso é o que permite ao `theme` escrever colors.css ao lado do style.css sem
-# sujar o repositório.
+# um diretório real com symlinks dentro, e não um symlink para o repositório.
+# É isso que permite ao `theme` escrever colors.css ao lado do style.css sem
+# gravar dentro do repositório.
 
 set -euo pipefail
 
@@ -125,7 +125,7 @@ stale_links() {
 
 # O --adopt do stow move o arquivo de ~ para dentro do pacote, sobrescrevendo
 # a versão do repositório, e só então linka. Serve para importar uma config que
-# já existe na máquina — o contrário de instalar uma que você já versionou.
+# já existe na máquina, o inverso de instalar uma já versionada.
 cmd_adopt() {
     local packages=("$@")
     if [[ ${#packages[@]} -eq 0 ]]; then
