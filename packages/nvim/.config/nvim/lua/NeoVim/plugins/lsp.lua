@@ -31,13 +31,10 @@ vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
             },
         })
 
-        vim.lsp.config.ruff = {
-            init_options = {
-                settings = {
-                    lint = { enable = false },
-                }
-            },
-        }
+        -- Por vim.lsp.config, e não por um lsp/ruff.lua: entre dois arquivos de
+        -- mesmo nome no runtimepath vence o encontrado por último, e o do
+        -- nvim-lspconfig vem depois deste repositório.
+        vim.lsp.config.ruff = require("NeoVim.lsp_servers").ruff
 
         vim.lsp.config.qmlls = {
             cmd = {

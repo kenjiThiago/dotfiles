@@ -3,6 +3,7 @@
 -- que o próprio nvim traz.
 
 require("NeoVim.server.lsp")
+require("NeoVim.server.find")
 
 -- ── Cores ─────────────────────────────────────────────────────────────────────
 -- O plugins/colors.lua é quem faz isto no desktop, e ele depende do vim.pack.
@@ -22,6 +23,12 @@ end
 -- ── netrw ─────────────────────────────────────────────────────────────────────
 -- No desktop o init.lua desliga o netrw, porque quem navega é o oil.
 vim.g.netrw_sizestyle = "H"
+vim.g.netrw_liststyle = 3
+vim.g.netrw_banner = 0
+vim.g.netrw_browse_split = 0
+-- Sem isto o netrw vira o buffer alternado e o <M-i> do remap.lua volta para
+-- ele, e não para o arquivo anterior.
+vim.g.netrw_altfile = 1
 
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex, { desc = "Abrir o diretório do arquivo" })
 vim.keymap.set("n", "<leader>pr", vim.cmd.Rex, { desc = "Voltar do netrw" })
@@ -46,18 +53,26 @@ vim.cmd.packadd("nvim.undotree")
 vim.keymap.set("n", "<leader>u", "<cmd>Undotree<CR>")
 
 -- ── Achar arquivo ─────────────────────────────────────────────────────────────
--- O lugar do telescope. O nvim-open-file acha por fzf e manda o :e de volta
--- para este pane, então precisa saber qual é.
-vim.keymap.set("n", "<leader>pf", function()
-    local window_id = vim.trim(vim.fn.system("tmux display-message -p '#{window_id}'"))
+-- O <leader>pf está no server/find.lua, com o findfunc nativo.
 
-    if vim.v.shell_error ~= 0 or window_id == "" then
-        vim.notify("fora do tmux: sem janela para onde mandar o arquivo", vim.log.levels.WARN)
-        return
-    end
+-- ── Grep e diagnósticos ───────────────────────────────────────────────────────
+-- O lugar do telescope e do trouble. O grepprg com rg já vem do set.lua, que é
+-- compartilhado; as teclas são as mesmas do desktop de propósito.
+vim.keymap.set("n", "<leader>ps", function()
+    vim.ui.input({ prompt = "Grep > " }, function(padrao)
+        if not padrao or padrao == "" then
+            return
+        end
 
-    vim.cmd("silent !nvim-open-file " .. window_id)
-end, { desc = "Achar arquivo (fzf)" })
+        vim.cmd("silent grep! " .. vim.fn.fnameescape(padrao))
+        vim.cmd("copen")
+    end)
+end, { desc = "Grep no projeto" })
+
+vim.keymap.set("n", "<leader>ee", function()
+    vim.diagnostic.setqflist()
+    vim.cmd("copen")
+end, { desc = "Diagnósticos na quickfix" })
 
 -- ── Wildmenu ──────────────────────────────────────────────────────────────────
 -- Só aqui: no desktop quem completa a cmdline é o blink.cmp, e os dois

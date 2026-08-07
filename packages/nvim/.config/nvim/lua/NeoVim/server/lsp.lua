@@ -1,7 +1,9 @@
 -- LSP sem mason e sem nvim-lspconfig: no servidor os binários vêm do venv do
 -- projeto ou do pipx, e o resto é o vim.lsp.config nativo.
 
-vim.opt.completeopt:append({ "menuone", "noselect", "popup" })
+local servers = require("NeoVim.lsp_servers")
+
+vim.opt.completeopt:append({ "menuone", "noselect", "popup", "fuzzy" })
 
 vim.lsp.config.pyright = {
     cmd = { "pyright-langserver", "--stdio" },
@@ -27,18 +29,9 @@ vim.lsp.config.pyright = {
 }
 vim.lsp.enable("pyright")
 
--- lint desligado: quem aponta erro é o pyright, o ruff aqui só formata e
--- organiza import.
-vim.lsp.config.ruff = {
-    cmd = { "ruff", "server" },
-    filetypes = { "python" },
-    root_markers = { "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" },
-    init_options = {
-        settings = {
-            lint = { enable = false },
-        },
-    },
-}
+-- O init_options vem do lsp_servers para não divergir do desktop; o resto é
+-- daqui, porque sem lspconfig nada preenche o básico.
+vim.lsp.config.ruff = vim.tbl_deep_extend("force", servers.ruff_base, servers.ruff)
 vim.lsp.enable("ruff")
 
 vim.diagnostic.config({
@@ -60,6 +53,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("LspServer", { clear = true }),
     callback = function(e)
         local opts = { buffer = e.buf }
+
+        -- O lugar do blink.cmp: o completar nativo abre sozinho enquanto se
+        -- digita. Respeita o vim.b.completion = false do autocmd.lua.
+        local client = vim.lsp.get_client_by_id(e.data.client_id)
+        if client and client:supports_method("textDocument/completion") then
+            vim.lsp.completion.enable(true, client.id, e.buf, { autotrigger = true })
+        end
+
         vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
         vim.keymap.set("i", "<C-e>", "<C-x><C-o>", {
             buffer = e.buf,

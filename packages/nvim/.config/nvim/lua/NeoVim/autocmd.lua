@@ -8,6 +8,31 @@ vim.api.nvim_create_autocmd("TextYankPost", {
     end
 })
 
+vim.api.nvim_create_autocmd("BufReadPost", {
+    group = vim.api.nvim_create_augroup("RestaurarCursor", { clear = true }),
+    callback = function(args)
+        -- No BufReadPost a detecção de filetype ainda não rodou, então
+        -- vim.bo.filetype está vazio aqui e é o match que responde.
+        local ft = vim.filetype.match({ buf = args.buf })
+        if ft == "gitcommit" or ft == "gitrebase" then
+            return
+        end
+
+        local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+        if mark[1] < 1 or mark[1] > vim.api.nvim_buf_line_count(args.buf) then
+            return
+        end
+
+        if not pcall(vim.api.nvim_win_set_cursor, 0, mark) then
+            return
+        end
+
+        vim.schedule(function()
+            vim.cmd("normal! zz")
+        end)
+    end
+})
+
 vim.api.nvim_create_autocmd("BufLeave", {
     group = vim.api.nvim_create_augroup("OilRelPathFix", {}),
     pattern = "oil:///*",
