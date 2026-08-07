@@ -14,6 +14,9 @@ Singleton {
 
     SystemClock {
         id: clock
-        precision: SystemClock.Minutes
+        // Com precisão de minutos o timer do Qt corre sobre CLOCK_MONOTONIC, que
+        // não conta o tempo suspenso, e o horário fica defasado por até um minuto
+        // ao voltar do suspend.
+        precision: SystemClock.Seconds
     }
 }
