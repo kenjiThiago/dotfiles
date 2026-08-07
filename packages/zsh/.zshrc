@@ -43,12 +43,18 @@ eval "$(zoxide init --cmd cd zsh)"
 # Inicia starship
 eval "$(starship init zsh)"
 
+# O starship.toml.in não tem right_format, então o RPROMPT que o init monta só
+# forkava o starship a cada redraw para devolver string vazia. Se um dia entrar
+# um right_format no template, é esta linha que sai.
+RPROMPT=""
+
+# A substituição é a mesma a cada Enter, porque o PROMPT do starship não muda
+# depois do init: uma ocorrência só, a do subcomando na linha gerada pelo init.
 STARSHIP_ORIG_PROMPT=$PROMPT
-STARSHIP_ORIG_RPROMPT=$RPROMPT
+STARSHIP_TRANSIENT_PROMPT="${PROMPT/ prompt / prompt --profile transient }"
 
 function set_transient_prompt() {
-    PROMPT="${STARSHIP_ORIG_PROMPT// prompt / prompt --profile transient }"
-    RPROMPT=""
+    PROMPT=$STARSHIP_TRANSIENT_PROMPT
     zle reset-prompt
 }
 
@@ -56,9 +62,21 @@ zle -N set_transient_prompt
 autoload -Uz add-zle-hook-widget
 add-zle-hook-widget zle-line-finish set_transient_prompt
 
+# O TRAPINT lá embaixo aplica o transiente em qualquer SIGINT, mas nem todo
+# Ctrl-C encerra a linha: cancelar a pergunta "do you wish to see all N
+# possibilities" devolve o controle para a mesma linha, e aí o precmd nunca roda
+# para desfazer. Sem isto a edição continua com o prompt de uma linha só.
+function restore_prompt_if_transient() {
+    [[ $PROMPT == "$STARSHIP_TRANSIENT_PROMPT" ]] || return 0
+    PROMPT=$STARSHIP_ORIG_PROMPT
+    zle reset-prompt
+}
+
+zle -N restore_prompt_if_transient
+add-zle-hook-widget zle-line-pre-redraw restore_prompt_if_transient
+
 function restore_starship_prompt() {
     PROMPT=$STARSHIP_ORIG_PROMPT
-    RPROMPT=$STARSHIP_ORIG_RPROMPT
 }
 
 autoload -Uz add-zsh-hook
@@ -98,7 +116,6 @@ export MANPAGER="nvim +Man!"
 export LESS='-R --use-color -Dd+r$Du+b$'
 export EDITOR="nvim"
 export MANGOHUD=0
-export PS2="$(starship prompt --continuation)"
 
 # O lazygit não tem include: o config.yml versionado traz o comportamento e o
 # colors.yml vem do `theme set`. O tmux-lazygit repete isto por conta própria,
