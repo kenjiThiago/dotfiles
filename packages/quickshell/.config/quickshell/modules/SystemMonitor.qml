@@ -192,6 +192,43 @@ Item {
     property int pendingBrightness: -1
     signal osdRequested(real newVal)
 
+    // Quem mexe no brilho é este shell, pelos atalhos do keybinds.lua. Antes um
+    // Timer relia o sysfs a 10Hz para descobrir a mudança, e isso sozinho era
+    // quatro quintos do CPU em repouso do processo.
+    IpcHandler {
+        target: "brightness"
+
+        function up(): void {
+            sys.stepBrightness(5);
+        }
+
+        function down(): void {
+            sys.stepBrightness(-5);
+        }
+    }
+
+    function stepBrightness(delta: int): void {
+        if (sys.currentBrightness < 0)
+            return;
+
+        sys.setBrightness(sys.currentBrightness + delta);
+        // Fora do applyBrightness porque o setBrightness não passa por lá, e
+        // porque no teto o valor não muda mas o OSD ainda tem que aparecer.
+        sys.osdRequested(sys.currentBrightness);
+    }
+
+    // Para o que muda o brilho por fora, como o hypridle. Sem poll, quem chama é
+    // o control center ao abrir.
+    function refreshBrightness(): void {
+        if (sys.brightnessBusy)
+            return;
+
+        if (sys.brightnessPath === "")
+            brightnessCmd.running = true;
+        else
+            brightnessFile.reload();
+    }
+
     // Durante a interação o sysfs ainda devolve o valor anterior: o brightnessctl
     // leva alguns quadros para assentar.
     readonly property bool brightnessBusy: brightnessSettle.running || writeBrightnessCmd.running || sys.pendingBrightness >= 0
@@ -235,6 +272,7 @@ Item {
         onLoaded: sys.applyBrightness(Math.round(100 * parseInt(brightnessFile.text()) / sys.brightnessMax))
     }
 
+    // Recuo para quando o detectBacklight não resolve um caminho de sysfs.
     Process {
         id: brightnessCmd
         command: ["sh", "-c", "brightnessctl -m | cut -d, -f4 | tr -d %"]
@@ -275,21 +313,5 @@ Item {
         sys.pendingBrightness = safePct;
         if (!writeBrightnessCmd.running)
             sys.flushBrightness();
-    }
-
-    Timer {
-        interval: 100
-        running: true
-        repeat: true
-        onTriggered: {
-            if (sys.brightnessPath === "") {
-                brightnessCmd.running = true;
-                return;
-            }
-            // Quem aplica a leitura é o onLoaded.
-            if (sys.brightnessBusy)
-                return;
-            brightnessFile.reload();
-        }
     }
 }

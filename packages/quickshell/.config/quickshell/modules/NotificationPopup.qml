@@ -61,6 +61,27 @@ Rectangle {
         expireTimer.restart();
     }
 
+    // O conteúdo trocou embaixo do card: o prazo recomeça do zero, e continua
+    // parado se o ponteiro estiver em cima.
+    function refreshCountdown(): void {
+        if (card.expiring)
+            return;
+
+        expireTimer.stop();
+        card.remainingMs = card.timeoutMs;
+        if (!hoverArea.containsMouse)
+            card.startCountdown();
+    }
+
+    Connections {
+        target: Notifications
+
+        function onPopupRefreshed(n) {
+            if (n === card.notification)
+                card.refreshCountdown();
+        }
+    }
+
     function pauseCountdown(): void {
         if (!expireTimer.running)
             return;

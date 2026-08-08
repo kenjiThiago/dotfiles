@@ -42,6 +42,10 @@ Item {
     readonly property alias popups: popupQueue
     readonly property int popupCount: popupQueue.count
 
+    // O replaces_id reaproveita o objeto, então o card não é recriado e o prazo
+    // dele seguiria correndo do conteúdo antigo.
+    signal popupRefreshed(n: var)
+
     // A API não carrega horário de chegada. A chave é o objeto e não o id
     // porque o replaces_id reaproveita o número.
     property var arrivalTimes: new Map()
@@ -247,10 +251,14 @@ Item {
 
             // O replaces_id pode reaproveitar o mesmo objeto, que renderia dois
             // cards para uma notificação só.
-            if (!root.dnd && root.popupIndex(n) < 0)
-                popupQueue.append({
-                    notification: n
-                });
+            if (!root.dnd) {
+                if (root.popupIndex(n) < 0)
+                    popupQueue.append({
+                        notification: n
+                    });
+                else
+                    root.popupRefreshed(n);
+            }
 
             root.trimHistory();
         }

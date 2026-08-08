@@ -32,8 +32,8 @@ Rectangle {
         id: resetTimer
         interval: 1000
         onTriggered: {
-            // Com o poll do brilho suspenso durante o arrasto, nada mais renova
-            // o OSD automaticamente.
+            // Quem renova o OSD é cada mudança de brilho; parado com o botão
+            // pressionado não chega nenhuma.
             if (osdArea.pressed) {
                 resetTimer.restart();
                 return;
@@ -127,6 +127,10 @@ Rectangle {
     property real state0Width: island.clockS0W + 34 + island.wsW + island.alertW
     property real state1Width: 64 + island.wsW + island.clockS1W + island.statusW
 
+    // A altura do estado 2, que o ControlCenter também precisa saber: ele é quem
+    // se mede por ela, e a ilha recorta o que passar.
+    readonly property int expandedHeight: 580
+
     implicitWidth: {
         if (island.activeMode === "brightness")
             return 260;
@@ -144,7 +148,7 @@ Rectangle {
             return 36;
         if (island.islandState === 1)
             return 64;
-        return 580;
+        return island.expandedHeight;
     }
 
     radius: {
@@ -600,6 +604,12 @@ Rectangle {
     ControlCenter {
         width: parent.width
         y: 0
+
+        // Sem altura própria o MouseArea que segura o clique nasce com zero, e
+        // todo clique em área vazia atravessa para o MouseArea da ilha, que
+        // fecha tudo. Fixa e não parent.height para não refazer o layout a cada
+        // quadro dos 400ms de animação da ilha.
+        height: island.expandedHeight
 
         hostWindow: island.hostWindow
         opacity: island.islandState === 2 ? 1 : 0

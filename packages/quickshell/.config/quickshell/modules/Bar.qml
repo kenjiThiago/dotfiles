@@ -215,7 +215,14 @@ Scope {
 
                 HyprlandFocusGrab {
                     id: focusGrab
-                    windows: [islandWindow, calendarWindow]
+
+                    // A janela dos popups entra na lista senão, com a ilha aberta,
+                    // o primeiro clique num card é comido pelo grab e só fecha a
+                    // ilha: a ação da notificação nunca roda. Só enquanto ela
+                    // está mapeada, porque janela desmapeada na lista custa 0,2%
+                    // de CPU contínuo; trocar a lista com o grab de pé não o
+                    // derruba.
+                    windows: notifyWindow.visible ? [islandWindow, calendarWindow, notifyWindow] : [islandWindow, calendarWindow]
 
                     active: root.islandState > 0 && root.grabAlive
 

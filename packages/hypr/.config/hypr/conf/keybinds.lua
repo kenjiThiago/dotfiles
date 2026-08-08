@@ -56,9 +56,13 @@ hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAUL
     { locked = true, repeating = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
     { locked = true, repeating = true })
-hl.bind(mainMod .. "+ SHIFT + UP", hl.dsp.exec_cmd("brightnessctl set 5%+"),
+-- Pelo quickshell para ele saber do brilho sem reler o sysfs em poll. O recuo
+-- cobre o shell fora do ar, que é justamente quando não há OSD para mostrar.
+hl.bind(mainMod .. "+ SHIFT + UP",
+    hl.dsp.exec_cmd("qs ipc call brightness up 2>/dev/null || brightnessctl set 5%+"),
     { locked = true, repeating = true })
-hl.bind(mainMod .. "+ SHIFT + DOWN", hl.dsp.exec_cmd("brightnessctl set 5%-"),
+hl.bind(mainMod .. "+ SHIFT + DOWN",
+    hl.dsp.exec_cmd("qs ipc call brightness down 2>/dev/null || brightnessctl set 5%-"),
     { locked = true, repeating = true })
 hl.bind(mainMod .. "+ F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "+ SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))

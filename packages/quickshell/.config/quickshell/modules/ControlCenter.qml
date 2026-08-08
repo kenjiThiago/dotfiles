@@ -12,8 +12,12 @@ Item {
     signal requestCalendar
 
     onVisibleChanged: {
-        if (visible)
-            Notifications.markRead();
+        if (!visible)
+            return;
+
+        Notifications.markRead();
+        // O brilho não é mais lido em poll, e o hypridle mexe nele por fora.
+        SystemMonitor.refreshBrightness();
     }
 
     MouseArea {
@@ -435,15 +439,14 @@ Item {
             id: notifList
             width: parent.width
 
-            // A ilha é fixa em 580 e recorta o que passar (ClockWidget), e o
-            // ccRoot não tem altura própria para consultar. O teto sai do que
-            // sobra depois das outras seções, em vez de um número fixo: com o
-            // tray escondido sobram uns 70px a mais para as notificações.
+            // O teto sai do que sobra depois das outras seções, em vez de um
+            // número fixo: com o tray escondido sobram uns 70px a mais para as
+            // notificações. A altura da ccColumn é imposta pelo anchors.fill, não
+            // pelo conteúdo, então não há laço de binding aqui.
             maxListHeight: {
-                const ilha = 580 - 2 * 20;
                 const secoes = statsGrid.height + slidersSection.height + 2 * ccColumn.spacing;
                 const tray = traySection.visible ? traySection.height + ccColumn.spacing : 0;
-                return Math.max(120, ilha - secoes - tray - notifList.headerHeight);
+                return Math.max(120, ccColumn.height - secoes - tray - notifList.headerHeight);
             }
         }
     }
