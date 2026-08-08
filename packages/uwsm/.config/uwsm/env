@@ -1,0 +1,13 @@
+# Temas de Cursor (Rosé Pine)
+export XCURSOR_THEME="BreezeX-RoséPine"
+export XCURSOR_SIZE=24
+# export HYPRCURSOR_THEME="BreezeX-RoséPine"
+# export HYPRCURSOR_SIZE=24
+
+# Otimizações NVIDIA
+export LIBVA_DRIVER_NAME="nvidia"
+export __GLX_VENDOR_LIBRARY_NAME="nvidia"
+
+export GTK_IM_MODULE="simple"
+
+export PATH="$HOME/.local/bin:$PATH"
