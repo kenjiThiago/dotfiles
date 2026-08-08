@@ -2,6 +2,7 @@ pragma Singleton
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Quickshell.Io
 import Quickshell.Services.Notifications
 
 Item {
@@ -14,6 +15,17 @@ Item {
     readonly property int count: server.trackedNotifications.values.length
 
     property int unreadCount: 0
+
+    // Não perturbe: segue guardando no histórico, só não mostra popup.
+    property bool dnd: false
+
+    IpcHandler {
+        target: "notifications"
+
+        function toggle(): void {
+            root.dnd = !root.dnd;
+        }
+    }
 
     // Fila dos cards ainda na tela. Separada do histórico de propósito: sair
     // daqui só tira o popup, não fecha a notificação.
@@ -81,12 +93,19 @@ Item {
             if (root.blockedApps.includes(n.appName))
                 return;
 
+            // Em não perturbe a transiente não teria popup para expirar, e é
+            // justamente o que não se guarda: ficaria presa no histórico.
+            if (root.dnd && n.transient)
+                return;
+
             // Sem isto a notificação é destruída assim que o sinal retorna.
             n.tracked = true;
 
             root.arrivalTimes[n.id] = Date.now();
             root.unreadCount++;
-            root.popups = root.popups.concat([n]);
+
+            if (!root.dnd)
+                root.popups = root.popups.concat([n]);
 
             n.closed.connect(function () {
                 delete root.arrivalTimes[n.id];

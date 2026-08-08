@@ -77,8 +77,8 @@ Rectangle {
         visible: false
     }
 
-    readonly property string bellText: "󰂚 " + Notifications.unreadCount
-    readonly property bool showBell: Notifications.unreadCount > 0
+    readonly property string bellText: (Notifications.dnd ? "󰂛" : "󰂚") + (Notifications.unreadCount > 0 ? " " + Notifications.unreadCount : "")
+    readonly property bool showBell: Notifications.unreadCount > 0 || Notifications.dnd
     readonly property bool showTemp: SystemMonitor.tempC >= 80
     readonly property bool showBatt: SystemMonitor.pct <= 20 && !SystemMonitor.isCharging
 
@@ -395,7 +395,7 @@ Rectangle {
 
                     Text {
                         text: island.bellText
-                        color: Theme.cyan
+                        color: Notifications.dnd ? Theme.muted : Theme.cyan
                         font.family: "Hack Nerd Font"
                         font.pixelSize: 15
 

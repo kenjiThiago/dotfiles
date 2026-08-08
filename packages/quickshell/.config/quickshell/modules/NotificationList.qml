@@ -31,6 +31,35 @@ Column {
         }
 
         Text {
+            id: dndBtn
+            anchors.right: clearBtn.visible ? clearBtn.left : parent.right
+            anchors.rightMargin: clearBtn.visible ? 12 : 0
+            anchors.verticalCenter: parent.verticalCenter
+            text: Notifications.dnd ? "󰂛" : "󰂚"
+            color: Notifications.dnd ? Theme.accent : (dndMouse.containsMouse ? Theme.text : Theme.muted)
+            font.family: "Hack Nerd Font"
+            font.pixelSize: 14
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: 150
+                }
+            }
+
+            MouseArea {
+                id: dndMouse
+                anchors.fill: parent
+                anchors.margins: -6
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: function (m) {
+                    m.accepted = true;
+                    Notifications.dnd = !Notifications.dnd;
+                }
+            }
+        }
+
+        Text {
             id: clearBtn
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
