@@ -10,16 +10,25 @@ Item {
     required property var notification
     property int size: 36
 
-    // O `check` faz o iconPath devolver vazio quando o tema não tem o ícone, em
-    // vez de um caminho quebrado.
     readonly property string source: {
         if (!root.notification)
             return "";
         if (root.notification.image !== "")
             return root.notification.image;
-        if (root.notification.appIcon !== "")
-            return Quickshell.iconPath(root.notification.appIcon, true);
-        return "";
+
+        const icon = root.notification.appIcon;
+        if (icon === "")
+            return "";
+
+        // O app_icon aceita caminho além de nome de tema, e o rofi-script manda
+        // o arquivo do wallpaper assim.
+        if (icon.startsWith("/") || icon.startsWith("file:"))
+            return icon;
+
+        // Sem a checagem explícita, nome que o tema não tem devolve o marcador de
+        // ícone ausente do quickshell, um xadrez magenta. Ele carrega como imagem
+        // válida e fica Ready, então o fallback abaixo nunca pegaria.
+        return Quickshell.hasThemeIcon(icon) ? Quickshell.iconPath(icon) : "";
     }
 
     implicitWidth: root.size
