@@ -4,6 +4,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Io
 import Quickshell.Services.Notifications
+import "."
 
 Item {
     id: root
@@ -36,6 +37,35 @@ Item {
 
     function markRead(): void {
         root.unreadCount = 0;
+    }
+
+    // ── Apresentação, compartilhada pelo popup e pelo histórico ───────────────
+
+    // Marca da urgência. A normal fica transparente e sem marca: é a esmagadora
+    // maioria, e pintar todas transformaria o sinal em ruído.
+    function urgencyColor(n: var): color {
+        if (!n)
+            return "transparent";
+        if (n.urgency === NotificationUrgency.Critical)
+            return Theme.error;
+        if (n.urgency === NotificationUrgency.Low)
+            return Theme.cyan;
+        return "transparent";
+    }
+
+    // Pela spec, a ação de identificador "default" não é botão: é o que acontece
+    // ao clicar no corpo da notificação.
+    function defaultAction(n: var): var {
+        if (!n)
+            return null;
+        for (const a of n.actions)
+            if (a.identifier === "default")
+                return a;
+        return null;
+    }
+
+    function buttonActions(n: var): var {
+        return n ? n.actions.filter(a => a.identifier !== "default") : [];
     }
 
     function removePopup(n: var): void {

@@ -119,6 +119,14 @@ Column {
                 radius: 12
                 color: entryMouse.containsMouse ? Theme.overlay : Theme.surface
 
+                // Mesma marca do popup: a urgência precisa sobreviver até aqui,
+                // que é onde se consulta com calma.
+                readonly property color urgencyColor: Notifications.urgencyColor(entry.modelData)
+                border.color: entry.urgencyColor
+                border.width: entry.urgencyColor.a > 0 ? 1 : 0
+
+                readonly property var defaultAction: Notifications.defaultAction(entry.modelData)
+
                 Behavior on color {
                     ColorAnimation {
                         duration: 150
@@ -129,6 +137,12 @@ Column {
                     id: entryMouse
                     anchors.fill: parent
                     hoverEnabled: true
+                    cursorShape: entry.defaultAction ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    onClicked: function (m) {
+                        m.accepted = true;
+                        if (entry.defaultAction)
+                            entry.defaultAction.invoke();
+                    }
                 }
 
                 Row {
@@ -194,7 +208,7 @@ Column {
 
                             Repeater {
                                 id: entryActions
-                                model: entry.modelData.actions
+                                model: Notifications.buttonActions(entry.modelData)
 
                                 delegate: Rectangle {
                                     id: entryAction

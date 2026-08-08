@@ -29,15 +29,11 @@ Rectangle {
     implicitHeight: layout.implicitHeight + 28
     radius: 16
     color: Theme.base
-    // O normal segue em Theme.overlay, que é a borda dos cards da ilha: dar cor
-    // a ele poria borda colorida em toda notificação.
-    border.color: {
-        if (card.isCritical)
-            return Theme.error;
-        if (card.urgency === NotificationUrgency.Low)
-            return Theme.cyan;
-        return Theme.overlay;
-    }
+
+    readonly property color urgencyColor: Notifications.urgencyColor(card.notification)
+
+    // Sem marca de urgência sobra a borda neutra dos cards da ilha.
+    border.color: card.urgencyColor.a > 0 ? card.urgencyColor : Theme.overlay
     border.width: 1
 
     Timer {
@@ -53,7 +49,19 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         onClicked: function (m) {
             m.accepted = true;
-            card.notification.dismiss();
+
+            const n = card.notification;
+            const def = Notifications.defaultAction(n);
+            if (!def) {
+                n.dismiss();
+                return;
+            }
+
+            // Só o popup sai: acionar não é motivo para apagar do histórico, e
+            // dispensar aqui esbarraria no fechamento que o próprio invoke pode
+            // disparar.
+            def.invoke();
+            Notifications.removePopup(n);
         }
     }
 
@@ -106,7 +114,7 @@ Rectangle {
 
                 Repeater {
                     id: actionRepeater
-                    model: card.notification ? card.notification.actions : []
+                    model: Notifications.buttonActions(card.notification)
 
                     delegate: Rectangle {
                         id: actionBtn
