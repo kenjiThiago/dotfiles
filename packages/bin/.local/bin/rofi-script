@@ -257,7 +257,7 @@ show_setup_menu() {
         *Tema*)      theme pick ;;
         *Wallpaper*) change_wallpaper ;;
         *Wi-Fi*)     uwsm app -- nm-connection-editor ;;
-        *Áudio*)     uwsm app -- pavucontrol ;;
+        *Áudio*)     uwsm app -- ghostty --class=com.example.wiremix --command=wiremix ;;
         *Hyprland*)  open_in_editor ~/.config/hypr/hyprland.lua ;;
         *Waybar*)    open_in_editor ~/.config/waybar/config.jsonc ;;
         *Neovim*)    open_in_editor ~/.config/nvim/init.lua ;;

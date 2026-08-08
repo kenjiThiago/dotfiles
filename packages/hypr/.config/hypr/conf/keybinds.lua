@@ -11,6 +11,9 @@ hl.bind(mainMod .. "+ ESCAPE", hl.dsp.exec_cmd("loginctl lock-session"))
 hl.bind(mainMod .. "+ V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. "+ R", hl.dsp.exec_cmd("uwsm app -- rofi-script"))
 hl.bind(mainMod .. "+ A", hl.dsp.exec_cmd("uwsm app -- rofi-script apps"))
+-- Mesma classe do control center e do rofi, para cair na regra do rules.lua.
+hl.bind(mainMod .. "+ SHIFT + A",
+    hl.dsp.exec_cmd("uwsm app -- ghostty --class=com.example.wiremix --command=wiremix"))
 hl.bind(mainMod .. "+ SHIFT + E", hl.dsp.exec_cmd("qs ipc call bar cycle"))
 hl.bind(mainMod .. "+ N", hl.dsp.exec_cmd("qs ipc call notifications toggle"))
 hl.bind(mainMod .. "+ SHIFT + N", hl.dsp.exec_cmd("qs ipc call bar center"))
