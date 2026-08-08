@@ -20,9 +20,9 @@ window {
     enabled:                     true;
     margin:                      0px;
     padding:                     0px;
-    border:                      2px solid;
-    border-radius:               12px;
-    border-color:                @accent;
+    border:                      1px solid;
+    border-radius:               16px;
+    border-color:                @overlay;
     background-color:            @base;
     cursor:                      "default";
 }
@@ -41,11 +41,10 @@ inputbar {
     enabled:                     true;
     spacing:                     10px;
     margin:                      0px;
-    padding:                     12px 15px;
-    border:                      3px solid;
-    border-radius:               8px;
-    border-color:                @surface;
-    background-color:            transparent;
+    padding:                     12px 16px;
+    border:                      0px solid;
+    border-radius:               12px;
+    background-color:            @surface;
     text-color:                  @text;
     children:                    [ "prompt", "entry" ];
 }
@@ -65,7 +64,7 @@ entry {
     background-color:            transparent;
     text-color:                  @text;
     cursor:                      text;
-    placeholder:                 "Search themes...";
+    placeholder:                 "";
     placeholder-color:           @muted;
 }
 
@@ -93,9 +92,9 @@ element {
     enabled:                     true;
     spacing:                     10px;
     margin:                      0px;
-    padding:                     10px 15px;
+    padding:                     10px 14px;
     border:                      0px solid;
-    border-radius:               8px;
+    border-radius:               12px;
     background-color:            transparent;
     text-color:                  @text;
     cursor:                      pointer;
@@ -107,8 +106,8 @@ element normal.normal {
 }
 
 element selected.normal {
-    background-color:            @surface;
-    text-color:                  @info;
+    background-color:            @overlay;
+    text-color:                  @text;
 }
 
 element-icon {
