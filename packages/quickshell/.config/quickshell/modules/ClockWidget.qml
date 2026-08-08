@@ -123,7 +123,11 @@ Rectangle {
     property real clockS0W: measureS0.implicitWidth + 28
     property real clockS1W: Math.max(measureS1Clock.implicitWidth, measureS1Date.implicitWidth) + 42
 
-    property real alertW: state0Alerts.width
+    // O alvo, não a largura já animada do state0Alerts. Como os outros termos
+    // desta conta, ele precisa ser um degrau: alimentar o implicitWidth com valor
+    // em movimento faz o Behavior dele se re-mirar a cada quadro e nunca cumprir
+    // a curva, o que arrasta a transição entre os estados.
+    readonly property real alertW: island.islandState === 0 && measureAlerts.implicitWidth > 0 ? measureAlerts.implicitWidth + 28 : 0
     property real state0Width: island.clockS0W + 34 + island.wsW + island.alertW
     property real state1Width: 64 + island.wsW + island.clockS1W + island.statusW
 
@@ -375,7 +379,7 @@ Rectangle {
             Item {
                 id: state0Alerts
 
-                width: island.islandState === 0 && measureAlerts.implicitWidth > 0 ? measureAlerts.implicitWidth + 28 : 0
+                width: island.alertW
                 height: parent.height
                 clip: true
                 opacity: island.islandState === 0 ? 1 : 0
