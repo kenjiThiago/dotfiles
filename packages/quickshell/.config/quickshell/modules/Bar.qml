@@ -305,8 +305,11 @@ Scope {
                     top: true
                     right: true
                 }
+                // Mesma margem do topo da ilha, para os popups nascerem no nível
+                // dela. A faixa da barra é transparente e vazia, e a ilha fica
+                // centralizada, então não há o que desviar aqui.
                 margins {
-                    top: 48
+                    top: 6
                     right: 12
                 }
                 color: "transparent"
