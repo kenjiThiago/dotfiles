@@ -16,8 +16,7 @@ hl.bind(mainMod .. "+ SHIFT + A",
     hl.dsp.exec_cmd("uwsm app -- ghostty --class=com.example.wiremix --command=wiremix"))
 hl.bind(mainMod .. "+ SHIFT + E", hl.dsp.exec_cmd("qs ipc call bar cycle"))
 hl.bind(mainMod .. "+ N", hl.dsp.exec_cmd("qs ipc call notifications toggle"))
--- Na mão esquerda de propósito: o control center se usa com o mouse, então a
--- direita já está ocupada quando ele abre.
+-- Na mão esquerda: o control center se usa com o mouse.
 hl.bind(mainMod .. "+ D", hl.dsp.exec_cmd("qs ipc call bar center"))
 hl.bind(mainMod .. "+ PERIOD", hl.dsp.exec_cmd("uwsm app -- rofimoji --action copy"))
 hl.bind(mainMod .. "+ P", hl.dsp.window.pseudo())

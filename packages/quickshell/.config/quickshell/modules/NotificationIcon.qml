@@ -20,14 +20,12 @@ Item {
         if (icon === "")
             return "";
 
-        // O app_icon aceita caminho além de nome de tema, e o rofi-script manda
-        // o arquivo do wallpaper assim.
+        // O app_icon aceita caminho além de nome de tema.
         if (icon.startsWith("/") || icon.startsWith("file:"))
             return icon;
 
-        // Sem a checagem explícita, nome que o tema não tem devolve o marcador de
-        // ícone ausente do quickshell, um xadrez magenta. Ele carrega como imagem
-        // válida e fica Ready, então o fallback abaixo nunca pegaria.
+        // O marcador de ícone ausente do quickshell carrega como imagem válida,
+        // então sem esta checagem o fallback abaixo nunca pegaria.
         return Quickshell.hasThemeIcon(icon) ? Quickshell.iconPath(icon) : "";
     }
 

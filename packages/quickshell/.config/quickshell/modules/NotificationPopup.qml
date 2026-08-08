@@ -12,8 +12,7 @@ Rectangle {
     readonly property int urgency: notification ? notification.urgency : NotificationUrgency.Normal
     readonly property bool isCritical: card.urgency === NotificationUrgency.Critical
 
-    // O expireTimeout vem em milissegundos, com -1 pedindo o padrão do servidor
-    // e 0 pedindo que não expire. Os padrões daqui são os que o mako usava.
+    // Em milissegundos, com -1 pedindo o padrão do servidor e 0 pedindo que não expire.
     readonly property int timeoutMs: {
         if (card.isCritical)
             return 0;
@@ -32,7 +31,6 @@ Rectangle {
 
     readonly property color urgencyColor: Notifications.urgencyColor(card.notification)
 
-    // Sem marca de urgência sobra a borda neutra dos cards da ilha.
     border.color: card.urgencyColor.a > 0 ? card.urgencyColor : Theme.overlay
     border.width: 1
 
@@ -57,9 +55,7 @@ Rectangle {
                 return;
             }
 
-            // Só o popup sai: acionar não é motivo para apagar do histórico, e
-            // dispensar aqui esbarraria no fechamento que o próprio invoke pode
-            // disparar.
+            // Só o popup sai: acionar não apaga do histórico.
             def.invoke();
             Notifications.removePopup(n);
         }

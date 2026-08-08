@@ -9,7 +9,6 @@ import "."
 Item {
     id: root
 
-    // Apps descartados por completo, sem popup e sem histórico.
     readonly property var blockedApps: ["Spotify"]
 
     readonly property var list: server.trackedNotifications
@@ -17,7 +16,6 @@ Item {
 
     property int unreadCount: 0
 
-    // Não perturbe: segue guardando no histórico, só não mostra popup.
     property bool dnd: false
 
     IpcHandler {
@@ -41,8 +39,7 @@ Item {
 
     // ── Apresentação, compartilhada pelo popup e pelo histórico ───────────────
 
-    // Marca da urgência. A normal fica transparente e sem marca: é a esmagadora
-    // maioria, e pintar todas transformaria o sinal em ruído.
+    // A urgência normal não recebe marca: é a maioria, e pintar todas viraria ruído.
     function urgencyColor(n: var): color {
         if (!n)
             return "transparent";
@@ -53,8 +50,7 @@ Item {
         return "transparent";
     }
 
-    // Pela spec, a ação de identificador "default" não é botão: é o que acontece
-    // ao clicar no corpo da notificação.
+    // Pela spec, a ação "default" não é botão: é o clique no corpo.
     function defaultAction(n: var): var {
         if (!n)
             return null;
@@ -72,13 +68,11 @@ Item {
         root.popups = root.popups.filter(p => p !== n);
     }
 
-    // Chamada quando o card expira na tela, e não quando a notificação fecha:
-    // fechar já passa pelo removePopup, e dispensar dali entraria em recursão.
+    // Só para o card expirando na tela: chamar isto no closed daria recursão.
     function expirePopup(n: var): void {
         root.removePopup(n);
 
-        // Pela spec, transiente é o que não deve ser guardado: vale como popup e
-        // acaba junto com ele, sem entrar no histórico.
+        // Transiente não se guarda: acaba junto com o popup.
         if (n && n.transient)
             n.dismiss();
     }
@@ -88,8 +82,7 @@ Item {
             n.dismiss();
     }
 
-    // O `tick` não é usado: existe para o binding de quem chama reavaliar a cada
-    // segundo do Time.now.
+    // O `tick` não é usado: força o binding de quem chama a reavaliar.
     function relativeTime(id: int, tick: var): string {
         const at = root.arrivalTimes[id];
         if (at === undefined)
@@ -123,8 +116,7 @@ Item {
             if (root.blockedApps.includes(n.appName))
                 return;
 
-            // Em não perturbe a transiente não teria popup para expirar, e é
-            // justamente o que não se guarda: ficaria presa no histórico.
+            // Sem popup não há o que expirar, e ela ficaria presa no histórico.
             if (root.dnd && n.transient)
                 return;
 

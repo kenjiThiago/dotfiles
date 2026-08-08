@@ -12,11 +12,8 @@ Scope {
     property bool calendarExpanded: false
     property bool grabAlive: true
 
-    // Abrir um menu da bandeja exige derrubar o grab, para o menu receber foco.
-    // Isso devolve o foco ao toplevel de baixo e move o ponteiro para fora do
-    // menu que ainda não apareceu, e os dois eventos caem em cima de grabAlive
-    // já falso, que é a condição de fechar a ilha. Enquanto o menu está a
-    // caminho, nenhum dos dois conta.
+    // Derrubar o grab para o menu receber foco devolve o foco ao toplevel de
+    // baixo e tira o ponteiro do menu, e os dois fechariam a ilha.
     property bool expectingMenu: false
 
     function expectMenu(): void {
@@ -45,7 +42,6 @@ Scope {
             root.grabAlive = true;
         }
 
-        // Atalho direto para o state 2, sem passar pelo ciclo.
         function center(): void {
             root.islandState = root.islandState === 2 ? 0 : 2;
             root.calendarExpanded = false;
@@ -103,11 +99,8 @@ Scope {
                 color: "transparent"
                 exclusionMode: ExclusionMode.Ignore
 
-                // Sempre mapeada. Alternar o visible de uma layer surface a
-                // desmapeia e remapeia, e o remapeamento a joga para o topo da
-                // camada, acima da ilha e do menu da bandeja. Ela é declarada
-                // antes da ilha justamente para ficar embaixo, então quem liga e
-                // desliga é a máscara.
+                // Alternar o visible remapeia a layer surface e a joga para o topo
+                // da camada, acima da ilha e do menu. Quem alterna é a máscara.
                 visible: true
 
                 readonly property bool catching: root.islandState > 0 && !root.grabAlive
@@ -305,9 +298,7 @@ Scope {
                     top: true
                     right: true
                 }
-                // Mesma margem do topo da ilha, para os popups nascerem no nível
-                // dela. A faixa da barra é transparente e vazia, e a ilha fica
-                // centralizada, então não há o que desviar aqui.
+                // Mesma margem do topo da ilha, para nascerem no nível dela.
                 margins {
                     top: 6
                     right: 12
@@ -329,8 +320,7 @@ Scope {
                     anchors.right: parent.right
                     spacing: 10
 
-                    // A entrada precisa vir daqui: a Column controla o x e o y
-                    // dos filhos, então animar isso no card não teria efeito.
+                    // A Column controla x e y dos filhos: animar no card não valeria.
                     add: Transition {
                         NumberAnimation {
                             property: "opacity"

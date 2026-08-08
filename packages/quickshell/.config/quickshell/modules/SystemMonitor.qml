@@ -192,9 +192,8 @@ Item {
     property int pendingBrightness: -1
     signal osdRequested(real newVal)
 
-    // Durante a interação o sysfs ainda devolve o valor anterior, porque o
-    // brightnessctl leva alguns quadros para assentar. Aceitar essa leitura é o
-    // que fazia o slider retroceder no meio do arrasto.
+    // Durante a interação o sysfs ainda devolve o valor anterior: o brightnessctl
+    // leva alguns quadros para assentar.
     readonly property bool brightnessBusy: brightnessSettle.running || writeBrightnessCmd.running || sys.pendingBrightness >= 0
 
     function applyBrightness(newVal) {
@@ -231,10 +230,8 @@ Item {
         path: sys.brightnessPath
         blockLoading: true
 
-        // O reload() é assíncrono e o blockLoading só cobre a carga inicial, não
-        // uma recarga de conteúdo que já está em cache. Ler no mesmo quadro do
-        // reload devolvia o valor de antes do arrasto, que é o que fazia a barra
-        // recuar ao soltar e se corrigir no poll seguinte.
+        // O reload() é assíncrono e o blockLoading só cobre a carga inicial: ler
+        // no mesmo quadro devolve o conteúdo em cache.
         onLoaded: sys.applyBrightness(Math.round(100 * parseInt(brightnessFile.text()) / sys.brightnessMax))
     }
 
@@ -289,8 +286,7 @@ Item {
                 brightnessCmd.running = true;
                 return;
             }
-            // Não se recarrega o arquivo enquanto o valor está sendo definido
-            // pela interação. Quem aplica a leitura é o onLoaded.
+            // Quem aplica a leitura é o onLoaded.
             if (sys.brightnessBusy)
                 return;
             brightnessFile.reload();

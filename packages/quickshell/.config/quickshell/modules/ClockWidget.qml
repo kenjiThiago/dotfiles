@@ -82,10 +82,8 @@ Rectangle {
     readonly property bool showTemp: SystemMonitor.tempC >= 80
     readonly property bool showBatt: SystemMonitor.pct <= 20 && !SystemMonitor.isCharging
 
-    // A linha de alertas de verdade fica na CAMADA 1, que some nos estados 1 e
-    // 2. Um positionador não refaz o layout enquanto está invisível, e quando o
-    // último filho visível some a largura congela, deixando a pílula larga ao
-    // voltar para o state 0. Esta cópia mede fora da camada, sempre visível.
+    // Medição fora da CAMADA 1: um positionador não refaz o layout enquanto está
+    // invisível, e a largura congelaria ao esvaziar a linha.
     Item {
         width: 0
         height: 0
@@ -123,10 +121,8 @@ Rectangle {
     property real clockS0W: measureS0.implicitWidth + 28
     property real clockS1W: Math.max(measureS1Clock.implicitWidth, measureS1Date.implicitWidth) + 42
 
-    // O alvo, não a largura já animada do state0Alerts. Como os outros termos
-    // desta conta, ele precisa ser um degrau: alimentar o implicitWidth com valor
-    // em movimento faz o Behavior dele se re-mirar a cada quadro e nunca cumprir
-    // a curva, o que arrasta a transição entre os estados.
+    // O alvo, não a largura já animada: valor em movimento faz o Behavior do
+    // implicitWidth se re-mirar a cada quadro e arrastar a transição.
     readonly property real alertW: island.islandState === 0 && measureAlerts.implicitWidth > 0 ? measureAlerts.implicitWidth + 28 : 0
     property real state0Width: island.clockS0W + 34 + island.wsW + island.alertW
     property real state1Width: 64 + island.wsW + island.clockS1W + island.statusW

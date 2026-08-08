@@ -119,8 +119,6 @@ Column {
                 radius: 12
                 color: entryMouse.containsMouse ? Theme.overlay : Theme.surface
 
-                // Mesma marca do popup: a urgência precisa sobreviver até aqui,
-                // que é onde se consulta com calma.
                 readonly property color urgencyColor: Notifications.urgencyColor(entry.modelData)
                 border.color: entry.urgencyColor
                 border.width: entry.urgencyColor.a > 0 ? 1 : 0

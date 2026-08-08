@@ -21,7 +21,6 @@ Row {
             id: trayItem
             required property var modelData
 
-            // Mesmo botão redondo das linhas de volume, brilho e bateria.
             width: 32
             height: 32
             radius: 16
