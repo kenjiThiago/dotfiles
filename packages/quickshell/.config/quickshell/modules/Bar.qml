@@ -44,6 +44,13 @@ Scope {
             root.calendarExpanded = false;
             root.grabAlive = true;
         }
+
+        // Atalho direto para o state 2, sem passar pelo ciclo.
+        function center(): void {
+            root.islandState = root.islandState === 2 ? 0 : 2;
+            root.calendarExpanded = false;
+            root.grabAlive = true;
+        }
     }
 
     Connections {
