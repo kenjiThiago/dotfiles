@@ -230,6 +230,12 @@ Item {
         id: brightnessFile
         path: sys.brightnessPath
         blockLoading: true
+
+        // O reload() é assíncrono e o blockLoading só cobre a carga inicial, não
+        // uma recarga de conteúdo que já está em cache. Ler no mesmo quadro do
+        // reload devolvia o valor de antes do arrasto, que é o que fazia a barra
+        // recuar ao soltar e se corrigir no poll seguinte.
+        onLoaded: sys.applyBrightness(Math.round(100 * parseInt(brightnessFile.text()) / sys.brightnessMax))
     }
 
     Process {
@@ -283,12 +289,11 @@ Item {
                 brightnessCmd.running = true;
                 return;
             }
-            // A leitura é bloqueante, então não se abre o arquivo enquanto o
-            // valor está sendo definido pela interação.
+            // Não se recarrega o arquivo enquanto o valor está sendo definido
+            // pela interação. Quem aplica a leitura é o onLoaded.
             if (sys.brightnessBusy)
                 return;
             brightnessFile.reload();
-            sys.applyBrightness(Math.round(100 * parseInt(brightnessFile.text()) / sys.brightnessMax));
         }
     }
 }
