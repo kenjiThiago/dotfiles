@@ -96,10 +96,14 @@ Scope {
                 color: "transparent"
                 exclusionMode: ExclusionMode.Ignore
 
-                // Fora enquanto um menu da bandeja está a caminho: com o menu
-                // aberto quem trata clique de fora é ele, e o escudo por cima
-                // atrapalha.
-                visible: root.islandState > 0 && !root.grabAlive && !root.expectingMenu
+                // Sempre mapeada. Alternar o visible de uma layer surface a
+                // desmapeia e remapeia, e o remapeamento a joga para o topo da
+                // camada, acima da ilha e do menu da bandeja. Ela é declarada
+                // antes da ilha justamente para ficar embaixo, então quem liga e
+                // desliga é a máscara.
+                visible: true
+
+                readonly property bool catching: root.islandState > 0 && !root.grabAlive
 
                 function closeAll() {
                     root.calendarExpanded = false;
@@ -107,15 +111,21 @@ Scope {
                     root.grabAlive = true;
                 }
 
+                Item {
+                    id: noBarrier
+                    width: 0
+                    height: 0
+                }
+
                 mask: Region {
                     Region {
-                        item: barrierLeft
+                        item: shieldWindow.catching ? barrierLeft : noBarrier
                     }
                     Region {
-                        item: barrierRight
+                        item: shieldWindow.catching ? barrierRight : noBarrier
                     }
                     Region {
-                        item: barrierBottom
+                        item: shieldWindow.catching ? barrierBottom : noBarrier
                     }
                 }
 
