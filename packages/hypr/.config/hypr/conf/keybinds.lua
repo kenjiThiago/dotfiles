@@ -8,7 +8,35 @@ hl.bind(mainMod .. "+ C", hl.dsp.window.close())
 hl.bind(mainMod .. "+ M", hl.dsp.exec_cmd("uwsm stop"))
 -- Mesmo comando que o hypridle usa no timeout e antes do suspend.
 hl.bind(mainMod .. "+ ESCAPE", hl.dsp.exec_cmd("loginctl lock-session"))
-hl.bind(mainMod .. "+ V", hl.dsp.window.float({ action = "toggle" }))
+local FLOAT_RATIO = 0.6
+
+-- O Hyprland guarda o último tamanho flutuante de cada janela, então só o primeiro
+-- float precisa de tamanho: ele herdaria a área do tile, que é a tela inteira.
+local floatedOnce = {}
+
+hl.bind(mainMod .. "+ V", function()
+    local w = hl.get_active_window()
+    if not w then
+        return
+    end
+
+    -- Lido antes do dispatch: depois do toggle o resize é animado.
+    local first = not w.floating and not floatedOnce[w.address]
+    hl.dispatch(hl.dsp.window.float({ action = "toggle" }))
+    if not first then
+        return
+    end
+
+    floatedOnce[w.address] = true
+
+    local m = w.monitor
+    local scale = (m and m.scale) or 1
+    hl.dispatch(hl.dsp.window.resize({
+        x = math.floor(m.width / scale * FLOAT_RATIO),
+        y = math.floor(m.height / scale * FLOAT_RATIO),
+    }))
+    hl.dispatch(hl.dsp.window.center())
+end)
 hl.bind(mainMod .. "+ R", hl.dsp.exec_cmd("uwsm app -- rofi-script"))
 hl.bind(mainMod .. "+ A", hl.dsp.exec_cmd("uwsm app -- rofi-script apps"))
 -- Mesma classe do control center e do rofi, para cair na regra do rules.lua.
