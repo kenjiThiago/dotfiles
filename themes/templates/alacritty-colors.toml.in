@@ -1,5 +1,8 @@
 # ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
 
+[window]
+opacity = {{opacity}}
+
 [colors.primary]
 foreground = "{{text}}"
 background = "{{term_bg}}"

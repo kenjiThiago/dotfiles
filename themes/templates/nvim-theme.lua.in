@@ -4,6 +4,7 @@ return {
     name        = "{{theme}}",
     variant     = "{{variant}}",
     colorscheme = "{{nvim_colorscheme}}",
+    transparent = {{transparent}},
 
     colors = {
         base    = "{{base}}",

@@ -6,6 +6,9 @@ if not loaded then
     theme = { name = "none", variant = "dark", colorscheme = "habamax", colors = {} }
 end
 
+-- Vem do opacity no theme.sh, via lua/theme.lua.
+local transparent = theme.transparent == true
+
 -- Evita erro caso um tema não defina alguma cor.
 local c = setmetatable(theme.colors, { __index = function() return "NONE" end })
 
@@ -14,9 +17,9 @@ vim.opt.runtimepath:append(vim.fn.expand("~/plugins/gruber-darker"))
 vim.pack.add({ gh("EdenEast/nightfox.nvim") })
 
 require("nightfox").setup({
-    -- options = {
-    --     transparent = true,
-    -- },
+    options = {
+        transparent = transparent,
+    },
     groups = {
         all = {
             NormalFloat = { bg = "none", fg = "none" },
@@ -32,7 +35,7 @@ vim.pack.add({ { src = gh("rose-pine/neovim"), name = "rose-pine" } })
 require("rose-pine").setup({
     styles = {
         italic = false,
-        -- transparency = true,
+        transparency = transparent,
     },
     highlight_groups = {
         TelescopeSelection = { fg = "text", bg = "highlight_med" },
@@ -49,6 +52,18 @@ require("rose-pine").setup({
         CursorLineNr = { fg = "gold" },
     },
 })
+
+-- O gruber-darker não tem opção de transparência, então os fundos são limpos
+-- depois que o colorscheme carrega, para os três se comportarem igual.
+if transparent then
+    vim.api.nvim_create_autocmd("ColorScheme", {
+        callback = function()
+            for _, group in ipairs({ "Normal", "NormalNC", "SignColumn", "EndOfBuffer", "FoldColumn" }) do
+                vim.api.nvim_set_hl(0, group, { bg = "none" })
+            end
+        end,
+    })
+end
 
 -- O colorscheme é escolhido pelo tema ativo (nvim_colorscheme em theme.sh).
 vim.o.background = theme.variant

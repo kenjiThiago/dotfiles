@@ -50,6 +50,7 @@ COLOR_KEYS=(
 )
 META_KEYS=(
     variant nvim_colorscheme zen_theme wallpaper gtk_theme cursor_theme
+    opacity transparent btop_bg
     syn_comment_style syn_keyword_style syn_parameter_style syn_attribute_style
 )
 
@@ -99,6 +100,13 @@ load_theme() {
     : "${term_bg:=$base}"
     : "${black:=$overlay}"
     : "${white:=$text}"
+
+    # Opacidade do terminal. O render() é substituição de texto, sem condicional,
+    # então quem depende dela em outro formato vira chave derivada aqui: o nvim
+    # precisa de booleano, e o btop de um fundo vazio para não pintar por cima.
+    : "${opacity:=1}"
+    transparent=$(awk -v o="$opacity" 'BEGIN { print (o + 0 < 1) ? "true" : "false" }')
+    btop_bg=$([[ $transparent == true ]] && printf '' || printf '%s' "$base")
 
     local c
     for c in black red green yellow blue magenta cyan white; do

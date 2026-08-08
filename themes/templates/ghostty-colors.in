@@ -3,6 +3,7 @@
 # O ghostty usa o fundo normal do tema. Quem quiser um fundo diferente do
 # resto do desktop (o alacritty usa preto puro com transparência) usa term_bg.
 background = {{base}}
+background-opacity = {{opacity}}
 foreground = {{text}}
 
 cursor-color = {{text}}

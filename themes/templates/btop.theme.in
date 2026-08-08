@@ -1,6 +1,6 @@
 # ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
 
-theme[main_bg]="{{base}}"
+theme[main_bg]="{{btop_bg}}"
 theme[main_fg]="{{text}}"
 theme[title]="{{subtle}}"
 theme[hi_fg]="{{text}}"
