@@ -29,15 +29,91 @@ Rectangle {
     radius: 16
     color: Theme.base
 
+    // A entrada é daqui e não da Transition da Column: um positionador cancela a
+    // transição para refazer o layout, e a opacidade congela onde estiver.
+    opacity: 0
+
     readonly property color urgencyColor: Notifications.urgencyColor(card.notification)
 
     border.color: card.urgencyColor.a > 0 ? card.urgencyColor : Theme.overlay
     border.width: 1
 
+    // ── Contagem para a expiração ─────────────────────────────────────────────
+
+    // O Timer do QML não pausa: religá-lo recomeça o intervalo inteiro, então o
+    // restante é guardado à mão para o hover segurar o card.
+    property double remainingMs: card.timeoutMs
+    property double startedAt: 0
+    property bool expiring: false
+
     Timer {
-        interval: card.timeoutMs
-        running: card.timeoutMs > 0 && !hoverArea.containsMouse
-        onTriggered: Notifications.expirePopup(card.notification)
+        id: expireTimer
+        running: false
+        onTriggered: card.beginExpire()
+    }
+
+    function startCountdown(): void {
+        if (card.timeoutMs <= 0 || card.expiring)
+            return;
+
+        expireTimer.interval = Math.max(card.remainingMs, 1);
+        card.startedAt = Date.now();
+        expireTimer.restart();
+    }
+
+    function pauseCountdown(): void {
+        if (!expireTimer.running)
+            return;
+
+        expireTimer.stop();
+        // O piso evita o card sumir no mesmo quadro em que o ponteiro sai dele.
+        card.remainingMs = Math.max(expireTimer.interval - (Date.now() - card.startedAt), 300);
+    }
+
+    Component.onCompleted: {
+        enterAnim.start();
+        card.startCountdown();
+    }
+
+    NumberAnimation {
+        id: enterAnim
+        target: card
+        property: "opacity"
+        to: 1
+        duration: 200
+    }
+
+    // Um positionador não tem `remove:`, mas opacity e scale são do card. Só
+    // vale para a expiração: saída por clique some na hora.
+    ParallelAnimation {
+        id: expireAnim
+
+        NumberAnimation {
+            target: card
+            property: "opacity"
+            to: 0
+            duration: 200
+            easing.type: Easing.OutCubic
+        }
+        NumberAnimation {
+            target: card
+            property: "scale"
+            to: 0.94
+            duration: 200
+            easing.type: Easing.OutCubic
+        }
+
+        onFinished: Notifications.expirePopup(card.notification)
+    }
+
+    function beginExpire(): void {
+        if (card.expiring)
+            return;
+
+        card.expiring = true;
+        // As duas disputariam a opacidade se o card expirar antes de entrar.
+        enterAnim.stop();
+        expireAnim.start();
     }
 
     MouseArea {
@@ -45,19 +121,17 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
+
+        onContainsMouseChanged: {
+            if (hoverArea.containsMouse)
+                card.pauseCountdown();
+            else
+                card.startCountdown();
+        }
+
         onClicked: function (m) {
             m.accepted = true;
-
-            const n = card.notification;
-            const def = Notifications.defaultAction(n);
-            if (!def) {
-                n.dismiss();
-                return;
-            }
-
-            // Só o popup sai: acionar não apaga do histórico.
-            def.invoke();
-            Notifications.removePopup(n);
+            Notifications.invokeDefault(card.notification);
         }
     }
 
@@ -93,7 +167,7 @@ Rectangle {
 
             Text {
                 width: parent.width
-                text: card.notification ? card.notification.body : ""
+                text: Notifications.bodyText(card.notification)
                 color: Theme.subtle
                 font.family: "Hack Nerd Font"
                 font.pixelSize: 12
@@ -144,7 +218,7 @@ Rectangle {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: function (m) {
                                 m.accepted = true;
-                                actionBtn.modelData.invoke();
+                                Notifications.invokeAction(card.notification, actionBtn.modelData);
                             }
                         }
                     }

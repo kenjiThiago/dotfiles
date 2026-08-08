@@ -6,7 +6,11 @@ import "."
 Column {
     id: listRoot
 
-    property int listHeight: 150
+    // Teto, não altura fixa: a lista encolhe até o conteúdo.
+    property int maxListHeight: 150
+
+    // O que a lista gasta acima da área rolável, para quem calcula o teto.
+    readonly property int headerHeight: 1 + listRoot.spacing + 20 + listRoot.spacing
 
     spacing: 8
 
@@ -91,7 +95,16 @@ Column {
 
     Item {
         width: parent.width
-        height: listRoot.listHeight
+        height: Notifications.count === 0 ? 32 : Math.min(view.contentHeight, listRoot.maxListHeight)
+
+        // A contentHeight se mede pela largura do delegate, não por esta altura,
+        // então não há laço de binding aqui.
+        Behavior on height {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutCubic
+            }
+        }
 
         Text {
             anchors.centerIn: parent
@@ -139,7 +152,7 @@ Column {
                     onClicked: function (m) {
                         m.accepted = true;
                         if (entry.defaultAction)
-                            entry.defaultAction.invoke();
+                            Notifications.invokeAction(entry.modelData, entry.defaultAction);
                     }
                 }
 
@@ -159,7 +172,8 @@ Column {
                     }
 
                     Column {
-                        width: parent.width - 38 - dismissBtn.width - parent.spacing
+                        // 28 do ícone mais o spacing da Row de fora.
+                        width: parent.width - 38
                         spacing: 2
                         anchors.verticalCenter: parent.verticalCenter
 
@@ -168,7 +182,7 @@ Column {
                             spacing: 6
 
                             Text {
-                                width: parent.width - timeLabel.width - parent.spacing
+                                width: parent.width - timeLabel.width - dismissBtn.width - 2 * parent.spacing
                                 text: entry.modelData.summary
                                 color: Theme.text
                                 font.family: "Hack Nerd Font"
@@ -179,17 +193,48 @@ Column {
 
                             Text {
                                 id: timeLabel
-                                text: Notifications.relativeTime(entry.modelData.id, Time.now)
+                                text: Notifications.relativeTime(entry.modelData, Time.now)
                                 color: Theme.muted
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 10
                                 anchors.verticalCenter: parent.verticalCenter
                             }
+
+                            // Na linha do título para não descer conforme o corpo
+                            // e os botões fazem o item crescer.
+                            Text {
+                                id: dismissBtn
+                                text: "󰅖"
+                                color: dismissMouse.containsMouse ? Theme.error : Theme.muted
+                                font.family: "Hack Nerd Font"
+                                font.pixelSize: 12
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 150
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: dismissMouse
+                                    anchors.fill: parent
+                                    // -6 encosta no horário sem cobri-lo, já que o
+                                    // spacing da Row também é 6.
+                                    anchors.margins: -6
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: function (m) {
+                                        m.accepted = true;
+                                        entry.modelData.dismiss();
+                                    }
+                                }
+                            }
                         }
 
                         Text {
                             width: parent.width
-                            text: entry.modelData.body
+                            text: Notifications.bodyText(entry.modelData)
                             color: Theme.subtle
                             font.family: "Hack Nerd Font"
                             font.pixelSize: 11
@@ -200,79 +245,8 @@ Column {
                             visible: text !== ""
                         }
 
-                        Row {
-                            spacing: 6
-                            visible: entryActions.count > 0
-
-                            Repeater {
-                                id: entryActions
-                                model: Notifications.buttonActions(entry.modelData)
-
-                                delegate: Rectangle {
-                                    id: entryAction
-                                    required property var modelData
-
-                                    width: entryActionLabel.implicitWidth + 16
-                                    height: 20
-                                    radius: 10
-                                    color: entryActionMouse.containsMouse ? Theme.highlightMed : Theme.overlay
-
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: 150
-                                        }
-                                    }
-
-                                    Text {
-                                        id: entryActionLabel
-                                        anchors.centerIn: parent
-                                        text: entryAction.modelData.text
-                                        color: Theme.cyan
-                                        font.family: "Hack Nerd Font"
-                                        font.pixelSize: 10
-                                        font.weight: Font.Bold
-                                    }
-
-                                    MouseArea {
-                                        id: entryActionMouse
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: function (m) {
-                                            m.accepted = true;
-                                            entryAction.modelData.invoke();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Text {
-                        id: dismissBtn
-                        text: ""
-                        color: dismissMouse.containsMouse ? Theme.error : Theme.muted
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 12
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 150
-                            }
-                        }
-
-                        MouseArea {
-                            id: dismissMouse
-                            anchors.fill: parent
-                            anchors.margins: -8
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: function (m) {
-                                m.accepted = true;
-                                entry.modelData.dismiss();
-                            }
-                        }
+                        // Sem botões de ação aqui: o cliente que espera por elas
+                        // já saiu quando a notificação chega ao histórico.
                     }
                 }
             }

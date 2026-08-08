@@ -289,71 +289,96 @@ Scope {
                     }
                 }
             }
+        }
+    }
 
-            // ── A JANELA DOS POPUPS ───────────────────────────────────────────
-            PanelWindow {
-                id: notifyWindow
-                screen: screenScope.modelData
-                anchors {
-                    top: true
-                    right: true
+    // ── A JANELA DOS POPUPS ───────────────────────────────────────────────────
+    // Fora do Variants por tela de propósito: a fila de popups é global, então
+    // uma janela por monitor mostrava a mesma notificação repetida, cada cópia
+    // com o seu próprio timer. Uma janela só, na tela que estiver em foco.
+    PanelWindow {
+        id: notifyWindow
+
+        // O HyprlandMonitor não expõe a ShellScreen, só o nome. O recuo cobre o
+        // intervalo entre subir o shell e o IPC do Hyprland responder.
+        screen: {
+            const m = Hyprland.focusedMonitor;
+            if (m)
+                for (const s of Quickshell.screens)
+                    if (s.name === m.name)
+                        return s;
+            return Quickshell.screens.length > 0 ? Quickshell.screens[0] : null;
+        }
+
+        // Ancorada embaixo para a altura vir das âncoras e não do conteúdo: cada
+        // redimensionamento da superfície passa pelo configure do Wayland, e o
+        // compositor exibe o buffer antigo enquanto isso. Transparente e com o
+        // mask limitando o clique aos cards, ocupar a coluna toda não custa nada.
+        anchors {
+            top: true
+            right: true
+            bottom: true
+        }
+        // Mesma margem do topo da ilha, para nascerem no nível dela.
+        margins {
+            top: 6
+            right: 12
+        }
+        color: "transparent"
+        exclusionMode: ExclusionMode.Ignore
+
+        visible: Notifications.popupCount > 0
+
+        implicitWidth: 400
+
+        mask: Region {
+            item: popupColumn
+        }
+
+        Column {
+            id: popupColumn
+            anchors.right: parent.right
+            spacing: 10
+
+            // Um positionador em janela desmapeada não refaz o layout, e é a
+            // geometria desta Column que define o mask: sem o forceLayout a área
+            // clicável volta com o tamanho da fila anterior.
+            Connections {
+                target: Notifications
+                function onPopupCountChanged() {
+                    popupColumn.forceLayout();
                 }
-                // Mesma margem do topo da ilha, para nascerem no nível dela.
-                margins {
-                    top: 6
-                    right: 12
+            }
+
+            // Só o x. A opacidade fica com o card porque uma transição cancelada
+            // no meio congela a propriedade, e a Column reescreve x no layout
+            // seguinte mas não a opacidade.
+            add: Transition {
+                NumberAnimation {
+                    property: "x"
+                    from: 40
+                    to: 0
+                    duration: 300
+                    easing.type: Easing.OutCubic
                 }
-                color: "transparent"
-                exclusionMode: ExclusionMode.Ignore
+            }
 
-                visible: Notifications.popups.length > 0
-
-                implicitWidth: 400
-                implicitHeight: Math.max(1, popupColumn.implicitHeight)
-
-                mask: Region {
-                    item: popupColumn
+            // Depende da altura fixa da janela: se ela voltar a sair do conteúdo,
+            // estes 250ms deixam a superfície e o desenho em desacordo.
+            move: Transition {
+                NumberAnimation {
+                    properties: "y"
+                    duration: 250
+                    easing.type: Easing.OutCubic
                 }
+            }
 
-                Column {
-                    id: popupColumn
-                    anchors.right: parent.right
-                    spacing: 10
+            Repeater {
+                model: Notifications.popups
 
-                    // A Column controla x e y dos filhos: animar no card não valeria.
-                    add: Transition {
-                        NumberAnimation {
-                            property: "opacity"
-                            from: 0
-                            to: 1
-                            duration: 200
-                        }
-                        NumberAnimation {
-                            property: "x"
-                            from: 40
-                            to: 0
-                            duration: 300
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-
-                    move: Transition {
-                        NumberAnimation {
-                            properties: "y"
-                            duration: 250
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-
-                    Repeater {
-                        model: Notifications.popups
-
-                        delegate: NotificationPopup {
-                            required property var modelData
-                            notification: modelData
-                        }
-                    }
-                }
+                // O role `notification` do ListModel entra direto no required
+                // property de mesmo nome do card.
+                delegate: NotificationPopup {}
             }
         }
     }

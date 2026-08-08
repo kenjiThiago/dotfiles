@@ -58,5 +58,11 @@ Item {
         fillMode: Image.PreserveAspectFit
         mipmap: true
         visible: status === Image.Ready
+
+        // O app manda o ícone no tamanho que quiser, e isto é desenhado a 28 ou
+        // 36px.
+        sourceSize.width: root.size * 2
+        sourceSize.height: root.size * 2
+        asynchronous: true
     }
 }

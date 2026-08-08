@@ -24,12 +24,14 @@ Item {
     }
 
     Column {
+        id: ccColumn
         anchors.fill: parent
         anchors.margins: 20
         spacing: 20
 
         // GRID: SISTEMA & ENERGIA
         Grid {
+            id: statsGrid
             columns: 2
             spacing: 12
             width: parent.width
@@ -201,6 +203,7 @@ Item {
 
         // SLIDERS: ÁUDIO & BRILHO
         Column {
+            id: slidersSection
             width: parent.width
             spacing: 16
 
@@ -405,6 +408,7 @@ Item {
 
         // SYSTEM TRAY
         Column {
+            id: traySection
             width: parent.width
             spacing: 8
             visible: sysTray.count > 0
@@ -428,8 +432,19 @@ Item {
 
         // NOTIFICAÇÕES
         NotificationList {
+            id: notifList
             width: parent.width
-            listHeight: 150
+
+            // A ilha é fixa em 580 e recorta o que passar (ClockWidget), e o
+            // ccRoot não tem altura própria para consultar. O teto sai do que
+            // sobra depois das outras seções, em vez de um número fixo: com o
+            // tray escondido sobram uns 70px a mais para as notificações.
+            maxListHeight: {
+                const ilha = 580 - 2 * 20;
+                const secoes = statsGrid.height + slidersSection.height + 2 * ccColumn.spacing;
+                const tray = traySection.visible ? traySection.height + ccColumn.spacing : 0;
+                return Math.max(120, ilha - secoes - tray - notifList.headerHeight);
+            }
         }
     }
 }
