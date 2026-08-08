@@ -3,9 +3,13 @@ module Modules
 singleton Theme 1.0 Theme.qml
 singleton Time 1.0 Time.qml
 singleton SystemMonitor 1.0 SystemMonitor.qml
+singleton Notifications 1.0 Notifications.qml
 
 Bar 1.0 Bar.qml
 CalendarWidget 1.0 CalendarWidget.qml
 ClockWidget 1.0 ClockWidget.qml
 ControlCenter 1.0 ControlCenter.qml
+NotificationIcon 1.0 NotificationIcon.qml
+NotificationList 1.0 NotificationList.qml
+NotificationPopup 1.0 NotificationPopup.qml
 TrayWidget 1.0 TrayWidget.qml

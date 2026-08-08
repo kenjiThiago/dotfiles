@@ -77,6 +77,45 @@ Rectangle {
         visible: false
     }
 
+    readonly property string bellText: "󰂚 " + Notifications.unreadCount
+    readonly property bool showBell: Notifications.unreadCount > 0
+    readonly property bool showTemp: SystemMonitor.tempC >= 80
+    readonly property bool showBatt: SystemMonitor.pct <= 20 && !SystemMonitor.isCharging
+
+    // A linha de alertas de verdade fica na CAMADA 1, que some nos estados 1 e
+    // 2. Um positionador não refaz o layout enquanto está invisível, e quando o
+    // último filho visível some a largura congela, deixando a pílula larga ao
+    // voltar para o state 0. Esta cópia mede fora da camada, sempre visível.
+    Item {
+        width: 0
+        height: 0
+        clip: true
+
+        Row {
+            id: measureAlerts
+            spacing: 8
+
+            Text {
+                text: island.bellText
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 15
+                visible: island.showBell
+            }
+            Text {
+                text: "󰈸"
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 15
+                visible: island.showTemp
+            }
+            Text {
+                text: "󰂃"
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 15
+                visible: island.showBatt
+            }
+        }
+    }
+
     property real wsBaseW: wsRow.implicitWidth
     property real wsW: wsBaseW + 28
 
@@ -105,7 +144,7 @@ Rectangle {
             return 36;
         if (island.islandState === 1)
             return 64;
-        return 352;
+        return 580;
     }
 
     radius: {
@@ -336,7 +375,7 @@ Rectangle {
             Item {
                 id: state0Alerts
 
-                width: island.islandState === 0 && alertRow.implicitWidth > 0 ? alertRow.implicitWidth + 28 : 0
+                width: island.islandState === 0 && measureAlerts.implicitWidth > 0 ? measureAlerts.implicitWidth + 28 : 0
                 height: parent.height
                 clip: true
                 opacity: island.islandState === 0 ? 1 : 0
@@ -355,6 +394,19 @@ Rectangle {
                     spacing: 8
 
                     Text {
+                        text: island.bellText
+                        color: Theme.cyan
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 15
+
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.verticalCenterOffset: -1
+
+                        visible: island.showBell
+                    }
+
+                    Text {
                         text: "󰈸"
                         color: Theme.accent
                         font.family: "Hack Nerd Font"
@@ -365,7 +417,7 @@ Rectangle {
 
                         anchors.verticalCenterOffset: -1
 
-                        visible: SystemMonitor.tempC >= 80
+                        visible: island.showTemp
                     }
 
                     Text {
@@ -378,7 +430,7 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.verticalCenterOffset: -1
 
-                        visible: SystemMonitor.pct <= 20 && !SystemMonitor.isCharging
+                        visible: island.showBatt
                     }
                 }
             }

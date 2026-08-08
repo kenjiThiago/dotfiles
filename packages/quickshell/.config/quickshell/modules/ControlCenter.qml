@@ -12,9 +12,8 @@ Item {
     signal requestCalendar
 
     onVisibleChanged: {
-        if (visible) {
-            sysTray.isExpanded = false;
-        }
+        if (visible)
+            Notifications.markRead();
     }
 
     MouseArea {
@@ -408,6 +407,7 @@ Item {
         Column {
             width: parent.width
             spacing: 8
+            visible: sysTray.count > 0
             Rectangle {
                 width: parent.width
                 height: 1
@@ -416,16 +416,20 @@ Item {
             Item {
                 width: parent.width
                 height: 36
-                Row {
-                    anchors.right: parent.right
+
+                TrayWidget {
+                    id: sysTray
+                    anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 36
-                    TrayWidget {
-                        id: sysTray
-                        hostWindow: ccRoot.hostWindow
-                    }
+                    hostWindow: ccRoot.hostWindow
                 }
             }
+        }
+
+        // NOTIFICAÇÕES
+        NotificationList {
+            width: parent.width
+            listHeight: 150
         }
     }
 }

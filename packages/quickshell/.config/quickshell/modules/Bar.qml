@@ -12,6 +12,25 @@ Scope {
     property bool calendarExpanded: false
     property bool grabAlive: true
 
+    // Abrir um menu da bandeja exige derrubar o grab, para o menu receber foco.
+    // Isso devolve o foco ao toplevel de baixo e move o ponteiro para fora do
+    // menu que ainda não apareceu, e os dois eventos caem em cima de grabAlive
+    // já falso, que é a condição de fechar a ilha. Enquanto o menu está a
+    // caminho, nenhum dos dois conta.
+    property bool expectingMenu: false
+
+    function expectMenu(): void {
+        root.grabAlive = false;
+        root.expectingMenu = true;
+        menuGrace.restart();
+    }
+
+    Timer {
+        id: menuGrace
+        interval: 1000
+        onTriggered: root.expectingMenu = false
+    }
+
     IpcHandler {
         target: "bar"
 
@@ -30,6 +49,8 @@ Scope {
     Connections {
         target: Hyprland
         function onActiveToplevelChanged() {
+            if (root.expectingMenu)
+                return;
             if (root.islandState > 0 && !root.grabAlive) {
                 root.islandState = 0;
                 root.calendarExpanded = false;
@@ -75,7 +96,10 @@ Scope {
                 color: "transparent"
                 exclusionMode: ExclusionMode.Ignore
 
-                visible: root.islandState > 0 && !root.grabAlive
+                // Fora enquanto um menu da bandeja está a caminho: com o menu
+                // aberto quem trata clique de fora é ele, e o escudo por cima
+                // atrapalha.
+                visible: root.islandState > 0 && !root.grabAlive && !root.expectingMenu
 
                 function closeAll() {
                     root.calendarExpanded = false;
@@ -153,10 +177,10 @@ Scope {
                 color: "transparent"
                 exclusionMode: ExclusionMode.Ignore
 
-                implicitHeight: 600
+                implicitHeight: 640
 
                 function expectMenu() {
-                    root.grabAlive = false;
+                    root.expectMenu();
                 }
 
                 // ── SENSOR DE FOCO CORRIGIDO (O fim do bug do duplo clique) ──
@@ -165,6 +189,8 @@ Scope {
                     hoverEnabled: true
                     acceptedButtons: Qt.NoButton // <- Essa linha impede o roubo de cliques direitos!
                     function rearm() {
+                        if (root.expectingMenu)
+                            return;
                         if (root.islandState > 0 && !root.grabAlive) {
                             root.grabAlive = true;
                         }
@@ -249,6 +275,72 @@ Scope {
                     Behavior on opacity {
                         NumberAnimation {
                             duration: 150
+                        }
+                    }
+                }
+            }
+
+            // ── A JANELA DOS POPUPS ───────────────────────────────────────────
+            PanelWindow {
+                id: notifyWindow
+                screen: screenScope.modelData
+                anchors {
+                    top: true
+                    right: true
+                }
+                margins {
+                    top: 48
+                    right: 12
+                }
+                color: "transparent"
+                exclusionMode: ExclusionMode.Ignore
+
+                visible: Notifications.popups.length > 0
+
+                implicitWidth: 400
+                implicitHeight: Math.max(1, popupColumn.implicitHeight)
+
+                mask: Region {
+                    item: popupColumn
+                }
+
+                Column {
+                    id: popupColumn
+                    anchors.right: parent.right
+                    spacing: 10
+
+                    // A entrada precisa vir daqui: a Column controla o x e o y
+                    // dos filhos, então animar isso no card não teria efeito.
+                    add: Transition {
+                        NumberAnimation {
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: 200
+                        }
+                        NumberAnimation {
+                            property: "x"
+                            from: 40
+                            to: 0
+                            duration: 300
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    move: Transition {
+                        NumberAnimation {
+                            properties: "y"
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    Repeater {
+                        model: Notifications.popups
+
+                        delegate: NotificationPopup {
+                            required property var modelData
+                            notification: modelData
                         }
                     }
                 }

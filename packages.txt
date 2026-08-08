@@ -33,7 +33,6 @@ xorg-xwayland                # apps X sob o Hyprland
 # ── Barra / shell gráfico ─────────────────────────────────────────────────────
 quickshell                   # AUR — 'qs ipc call bar cycle'
 waybar
-mako
 libnotify                    # notify-send no window-info e rofi-script
 
 # ── Menu ──────────────────────────────────────────────────────────────────────
