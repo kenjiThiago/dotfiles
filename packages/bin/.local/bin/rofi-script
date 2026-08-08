@@ -129,11 +129,15 @@ take_screenshot() {
 
     wl-copy < "$filepath"
 
+    # O id não pode ser "default": esse é o que a spec manda não desenhar como
+    # botão, por ser o que o clique no corpo dispara. E o -A implica --wait, então
+    # o -t é a janela real em que a ação ainda existe: passado ele o notify-send
+    # desiste e sai, e clicar depois, inclusive pelo histórico, não chega a ninguém.
     local action
-    action=$(notify-send "Captura Salva" "Copiado para a área de transferência.\nClique para editar." \
-        -i "$filepath" -a "Screenshot" -A "default=Editar com Satty" -t 4000)
+    action=$(notify-send "Captura Salva" "Copiado para a área de transferência." \
+        -i "$filepath" -a "Screenshot" -A "edit=Editar com Satty" -t 15000)
 
-    [[ "$action" == "default" ]] && uwsm app -- satty \
+    [[ "$action" == "edit" ]] && uwsm app -- satty \
         --filename "$filepath" \
         --output-filename "$filepath" \
         --save-after-copy \
