@@ -70,6 +70,7 @@ ghostty                      # terminal dos on-click do waybar
 # ── Shell e utilitários de linha de comando ───────────────────────────────────
 zsh
 starship
+nvm
 zoxide
 fzf
 eza
