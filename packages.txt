@@ -2,7 +2,7 @@
 #
 # Uma linha por pacote. Comentários com '#'. Linhas em branco são ignoradas.
 # Aqui está só o que algum arquivo do repositório realmente chama: config,
-# script de packages/bin, keybind do Hyprland, módulo do waybar ou tema.
+# script de packages/bin, keybind do Hyprland, widget do quickshell ou tema.
 # O resto do que está instalado na máquina de referência vive em
 # packages-extra.txt (apps, toolchains, hardware) — veja o --extra
 # do install.sh.
@@ -32,7 +32,7 @@ xorg-xwayland                # apps X sob o Hyprland
 
 # ── Barra / shell gráfico ─────────────────────────────────────────────────────
 quickshell                   # AUR — 'qs ipc call bar cycle'
-waybar
+waybar                       # fallback desligado: a barra ativa é o quickshell
 libnotify                    # notify-send no window-info e rofi-script
 
 # ── Menu ──────────────────────────────────────────────────────────────────────
@@ -65,7 +65,8 @@ otf-font-awesome             # ícones do waybar e do quickshell
 woff2-font-awesome
 
 # ── Terminal ──────────────────────────────────────────────────────────────────
-ghostty                      # terminal dos on-click do waybar
+ghostty                      # terminal dos on-click do quickshell
+alacritty                    # config e tema próprios em packages/alacritty
 
 # ── Shell e utilitários de linha de comando ───────────────────────────────────
 zsh
@@ -83,7 +84,7 @@ tmux
 viu                          # preview de wallpaper no rofi-script
 pastel                       # testar-cor
 fastfetch
-btop                         # on-click do waybar
+btop                         # on-click do quickshell
 unzip
 
 # ── Git ───────────────────────────────────────────────────────────────────────
@@ -97,16 +98,16 @@ luarocks
 
 # ── Áudio ─────────────────────────────────────────────────────────────────────
 pipewire
-pipewire-pulse               # módulo 'pulseaudio' do waybar
-wiremix                      # on-click do waybar
+pipewire-pulse               # sink padrão que o quickshell controla
+wiremix                      # on-click do quickshell
 
 # ── Rede ──────────────────────────────────────────────────────────────────────
 networkmanager               # habilitado pelo install.sh
-network-manager-applet       # ícone na tray do waybar
+network-manager-applet       # ícone na tray do quickshell
 nm-connection-editor         # aberto pelo rofi-script
 
 # ── Energia ───────────────────────────────────────────────────────────────────
-power-profiles-daemon        # módulo do waybar, habilitado pelo install.sh
+power-profiles-daemon        # perfil de energia do quickshell, habilitado pelo install.sh
 
 # ── Aplicativos usados pelas configs ──────────────────────────────────────────
 zen-browser-bin              # AUR — keybind e exec-once

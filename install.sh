@@ -48,8 +48,8 @@ SKIP_PLUGINS=0
 
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
 
-# Serviços que as configs assumem ligados: o waybar tem um módulo de
-# power-profiles-daemon e o rofi-script abre o nm-connection-editor.
+# Serviços que as configs assumem ligados: o quickshell lê o perfil de energia
+# pelo power-profiles-daemon e o rofi-script abre o nm-connection-editor.
 SERVICES=(NetworkManager power-profiles-daemon)
 
 msg()  { printf '\n\033[1;34m::\033[0m \033[1m%s\033[0m\n' "$*"; }
