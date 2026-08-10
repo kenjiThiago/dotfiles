@@ -10,6 +10,7 @@ if vim.fn.has("nvim-0.11") == 1 then
 end
 
 require("NeoVim.server.find")
+require("NeoVim.server.marcas")
 
 -- ── Cores ─────────────────────────────────────────────────────────────────────
 -- O plugins/colors.lua não serve aqui porque depende do vim.pack; o
@@ -131,28 +132,4 @@ if autocompletar then
     vim.keymap.set("c", "<C-y>", function()
         return vim.fn.wildmenumode() == 1 and "<C-y><C-z>" or "<C-y>"
     end, { expr = true, replace_keycodes = true })
-end
-
--- ── Marcas ────────────────────────────────────────────────────────────────────
--- Substituto do harpoon: a marca se reposiciona ao sair do buffer.
-local function bind_mark_auto(mark_char)
-    local buffer = vim.api.nvim_get_current_buf()
-
-    vim.cmd("normal! m" .. mark_char)
-    vim.notify("arquivo associado à marca " .. mark_char)
-
-    vim.api.nvim_create_autocmd("BufLeave", {
-        buffer = buffer,
-        callback = function()
-            vim.cmd("normal! m" .. mark_char)
-        end,
-    })
-end
-
-for _, mark in ipairs({ "H", "J", "K", "L" }) do
-    local key = mark:lower()
-    vim.keymap.set("n", "<leader><c-" .. key .. ">", function()
-        bind_mark_auto(mark)
-    end, { desc = "Associar à marca " .. mark })
-    vim.keymap.set("n", "<c-" .. key .. ">", "`" .. mark)
 end
