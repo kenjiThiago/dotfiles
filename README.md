@@ -10,7 +10,6 @@ dotfiles/
 ├── packages-extra.txt  apps, toolchains e hardware (só com --extra)
 ├── packages/           os pacotes do stow (é o -d do stow)
 ├── profiles/           quais pacotes cada tipo de máquina linka
-├── docs/               procedimentos que não cabem aqui
 ├── themes/             paletas + templates dos temas
 ├── zen-themes/         estilos do Zen Browser (CSS; as cores vêm de themes/)
 └── wallpapers/
@@ -126,9 +125,6 @@ desktop nenhum: bash, tmux, neovim pelado.
 ```sh
 ./install.sh --profile server
 ```
-
-Numa máquina que já tem configuração própria o stow não linka por cima: o
-procedimento de backup e migração está em [`docs/servidor.md`](docs/servidor.md).
 
 Cada perfil é um arquivo em `profiles/` listando os pacotes do stow que aquela
 máquina quer, um por linha. O `server` deixa de fora o Hyprland, o waybar, o
