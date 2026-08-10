@@ -31,8 +31,13 @@ set -g message-command-style bg="{{overlay}}",fg="{{info}}",fill="{{overlay}}"
 
 # ── Copy mode ─────────────────────────────────────────────────────────────────
 # O noattr vem do padrão do tmux: sem ele a seleção herda negrito e sublinhado
-# do texto que está por baixo.
+# do texto que está por baixo. É atributo de estilo da 3.6, e antes dela não
+# havia essa herança para desligar.
+%if "#{>=:#{version},3.6}"
 set-window-option -g mode-style noattr,bg="{{highlight_med}}",fg="{{text}}"
+%else
+set-window-option -g mode-style bg="{{highlight_med}}",fg="{{text}}"
+%endif
 
 %if "#{>=:#{version},3.2}"
 set-window-option -g copy-mode-match-style bg="{{overlay}}",fg="{{info}}"
