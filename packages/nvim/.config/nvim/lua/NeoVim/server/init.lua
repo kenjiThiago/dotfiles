@@ -74,6 +74,25 @@ vim.opt.wildmode = "noselect:lastused,full"
 vim.opt.wildoptions = "pum"
 vim.opt.pumborder = "rounded"
 
+-- O PmenuMatch é o trecho que casou com o que foi digitado. O padrão herda o
+-- Pmenu e só acrescenta negrito, que na lista do :find quase não se distingue.
+-- O bg do item selecionado é lido do PmenuSel em vez de sair da paleta, porque
+-- quem define o PmenuSel é o colorscheme, e os dois precisam combinar.
+local function realcar_match()
+    local cores = theme.colors
+    if not cores then
+        return
+    end
+
+    local sel = vim.api.nvim_get_hl(0, { name = "PmenuSel", link = false })
+
+    vim.api.nvim_set_hl(0, "PmenuMatch", { fg = cores.warning, bold = true })
+    vim.api.nvim_set_hl(0, "PmenuMatchSel", { fg = cores.warning, bg = sel.bg, bold = true })
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", { callback = realcar_match })
+realcar_match()
+
 vim.api.nvim_create_autocmd("CmdlineChanged", {
     group = vim.api.nvim_create_augroup("CmdlineAutocomplete", { clear = true }),
     pattern = { ":", "/", "?" },
