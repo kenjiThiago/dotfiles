@@ -6,7 +6,7 @@ variant="dark"
 
 # ── Metadados ─────────────────────────────────────────────────────────────────
 nvim_colorscheme="rose-pine"
-zen_theme="rose-pine"
+zen_theme="default"
 wallpaper="black-hole.png"
 # Vazio = o `theme` não escreve no gsettings (ver README).
 gtk_theme=""

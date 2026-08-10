@@ -1,0 +1,185 @@
+/* Estilo padrão do Zen Browser.
+ * A paleta vem do colors.css, gerado pelo `theme set` ao lado deste arquivo. */
+
+@import "colors.css";
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent: var(--dots-accent-alt);
+    --accent-hover: var(--dots-accent);
+    --accent-gradient: linear-gradient(115deg, var(--dots-accent), var(--dots-accent-alt));
+
+    --zen-colors-primary: var(--dots-base) !important;
+    --zen-primary-color: var(--accent) !important;
+    --zen-colors-secondary: var(--dots-surface) !important;
+    --zen-colors-tertiary: var(--dots-surface) !important;
+    --zen-main-browser-background-toolbar: var(--dots-base) !important;
+    --zen-colors-border: var(--accent) !important;
+    --toolbarbutton-icon-fill: var(--accent) !important;
+    --lwt-text-color: var(--dots-text) !important;
+    --toolbar-field-color: var(--dots-text) !important;
+    --tab-selected-textcolor: var(--accent) !important;
+    --toolbar-field-focus-color: var(--dots-text) !important;
+    --toolbar-color: var(--dots-text) !important;
+    --newtab-text-primary-color: var(--dots-text) !important;
+    --arrowpanel-background: var(--dots-overlay) !important;
+    --sidebar-text-color: var(--dots-text) !important;
+    --newtab-background-color: var(--dots-overlay) !important;
+    --zen-input-border-color: var(--dots-highlight-high) !important;
+    --zen-main-browser-background: var(--dots-base) !important;
+    --nebula-sidebar-width: 20em !important;
+  }
+
+  .ContentSelectDropdown-item-0 {
+    color: var(--dots-text) !important;
+  }
+
+  .ContentSelectDropdown-item-0[_moz-menuactive="true"] {
+    background-color: var(--accent) !important;
+    color: var(--dots-base) !important;
+  }
+
+  #permissions-granted-icon {
+    color: var(--dots-base) !important;
+  }
+
+  .zen-essentials-container .tabbrowser-tab {
+    .tab-background {
+      background-color: var(--dots-overlay) !important;
+    }
+  }
+
+  findbar {
+    background-color: var(--dots-base) !important;
+    position: absolute !important;
+    bottom: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    min-width: 90% !important;
+    z-index: 20 !important;
+    transition: all ease !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
+  }
+
+  .sidebar-placesTree {
+    background-color: var(--dots-surface) !important;
+  }
+
+  #zen-workspaces-button {
+    background-color: var(--dots-surface) !important;
+  }
+
+  #identity-permission-box {
+    fill: var(--dots-text) !important;
+  }
+
+  #TabsToolbar {
+    background-color: transparent !important;
+  }
+
+  html[zen-single-toolbar="true"] #urlbar:not([open]) {
+    height: 40px !important;
+  }
+
+  #urlbar[open] #urlbar-results > :nth-child(n+6),
+  #urlbar[open] #reader-mode-button {
+    display: none !important;
+  }
+
+  /* O elemento é a classe .urlbar-background; o id sumiu do browser.xhtml. */
+  .urlbar-background {
+    border: 2px solid transparent !important;
+    background: linear-gradient(var(--dots-surface), var(--dots-surface)) padding-box,
+      var(--accent-gradient) border-box !important;
+  }
+
+  #urlbar[open] .urlbar-background {
+    background-color: var(--dots-surface) !important;
+  }
+
+  #urlbar[open] #urlbar-results {
+    border-top: 1px solid var(--dots-highlight-med) !important;
+  }
+
+  #urlbar[open] #urlbar-results > * {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tab-background[selected=""] {
+    border: 1.5px solid transparent !important;
+    background: linear-gradient(var(--dots-overlay), var(--dots-overlay)) padding-box,
+      var(--accent-gradient) border-box !important;
+  }
+
+  /* Nota: este seletor não casa. O atributo zen-compact-mode fica em
+   * <html id="main-window">, que é ancestral do body, não descendente. O bloco
+   * está inerte desde sempre; trocar para :root[...] o ativa e reposiciona a
+   * barra de abas. */
+  body:has([zen-compact-mode="true"]) #titlebar {
+    padding: 8px !important;
+    border-radius: 11px !important;
+    background-color: var(--dots-base) !important;
+    top: calc(var(--zen-element-separation) / 0.685) !important;
+    left: calc(var(--zen-element-separation) / 0.65) !important;
+    width: calc(var(--nebula-sidebar-width)) !important;
+    height: calc(100% - (var(--zen-element-separation) * 2.9)) !important;
+  }
+
+  .urlbarView-url {
+    color: var(--accent) !important;
+  }
+
+  #zenEditBookmarkPanelFaviconContainer {
+    background: var(--dots-base) !important;
+  }
+
+  #zen-media-controls-toolbar {
+    & #zen-media-progress-bar {
+      &::-moz-range-track {
+        background: var(--dots-overlay) !important;
+      }
+    }
+  }
+
+  toolbar .toolbarbutton-1 {
+    &:not([disabled]) {
+      &:is([open], [checked])
+        > :is(
+          .toolbarbutton-icon,
+          .toolbarbutton-text,
+          .toolbarbutton-badge-stack
+        ) {
+        fill: var(--dots-muted);
+      }
+    }
+  }
+
+  .toolbarbutton-1:not(#tabs-newtab-button) {
+    --toolbarbutton-icon-fill: var(--accent) !important;
+  }
+
+  hbox#titlebar {
+    background-color: var(--dots-base) !important;
+    border: 1px solid var(--dots-base) !important;
+  }
+
+  #zen-appcontent-navbar-container {
+    background-color: var(--dots-base) !important;
+  }
+
+  /* ── Conserto ───────────────────────────────────────────────────────────────
+   * O Zen escreve --zen-main-browser-background inline no #zen-browser-background
+   * (ZenGradientGenerator), e declaração própria do elemento ganha do valor
+   * herdado do :root, inclusive de !important de usuário. Sem mirar o elemento,
+   * a moldura do toolbox fica no #131313 padrão do Zen.
+   *
+   * Só este elemento: o #zen-toolbar-background é o painel flutuante do modo
+   * compacto, e pintar ele daqui muda a barra lateral. */
+  #zen-browser-background {
+    --zen-main-browser-background: var(--dots-base) !important;
+    --zen-main-browser-background-old: var(--dots-base) !important;
+    --zen-background-opacity: 1 !important;
+  }
+}

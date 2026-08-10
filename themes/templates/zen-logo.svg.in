@@ -1,0 +1,18 @@
+<!-- Logo da nova aba do Zen. GERADO pelo `theme set`; ver zen-colors.css.in. -->
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ring" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="{{accent}}"/>
+      <stop offset="1" stop-color="{{accent_alt}}"/>
+    </linearGradient>
+    <clipPath id="clip">
+      <rect width="1024" height="1024" fill="white"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#clip)">
+    <rect width="1024" height="1024" rx="225" fill="{{base}}"/>
+    <circle cx="512" cy="512" r="340" stroke="url(#ring)" stroke-width="70"/>
+    <circle cx="512" cy="512" r="224.915" stroke="url(#ring)" stroke-width="51"/>
+    <circle cx="512" cy="512" r="129.018" stroke="url(#ring)" stroke-width="31"/>
+  </g>
+</svg>

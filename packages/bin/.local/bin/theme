@@ -205,8 +205,21 @@ current_profile() {
     printf 'desktop\n'
 }
 
+render_template() {
+    local tpl=$1 dest=$2 content missing
+
+    [[ -r $TEMPLATES_DIR/$tpl ]] || { warn "template '$tpl' não existe, pulando"; return 0; }
+
+    content=$(render "$(cat "$TEMPLATES_DIR/$tpl")")
+
+    missing=$(grep -o '{{[^}]*}}' <<< "$content" | sort -u | tr '\n' ' ' || true)
+    if [[ -n ${missing// /} ]]; then warn "$tpl: placeholders não resolvidos: $missing"; fi
+
+    write_file "$dest" "$content"
+}
+
 generate() {
-    local tpl dest profiles content missing wanted name skip profile
+    local tpl dest profiles wanted name skip profile
     profile=$(current_profile)
 
     while read -r tpl dest profiles; do
@@ -222,19 +235,34 @@ generate() {
             [[ $skip == 1 ]] && continue
         fi
 
-        [[ -r $TEMPLATES_DIR/$tpl ]] || { warn "template '$tpl' não existe, pulando"; continue; }
-
-        content=$(render "$(cat "$TEMPLATES_DIR/$tpl")")
-
-        missing=$(grep -o '{{[^}]*}}' <<< "$content" | sort -u | tr '\n' ' ' || true)
-        if [[ -n ${missing// /} ]]; then warn "$tpl: placeholders não resolvidos: $missing"; fi
-
-        write_file "$dest" "$content"
+        render_template "$tpl" "$dest"
     done < "$MANIFEST"
 }
 
 # ── Zen Browser ───────────────────────────────────────────────────────────────
-# O Zen não lê nada gerado: cada tema tem seu CSS próprio, então é só symlink.
+# O estilo (zen-themes/<zen_theme>/) é CSS escrito à mão e entra por symlink; as
+# cores saem do theme.sh como em qualquer outro programa. O destino não cabe no
+# manifest porque o diretório do perfil tem nome sorteado.
+ZEN_GENERATED=(
+    zen-colors.css.in:colors.css
+    zen-logo.svg.in:zen-logo.svg
+)
+
+# ~/.zen guarda um diretório por perfil, e o `Default=` da seção [Install...] do
+# profiles.ini é o único que diz qual deles o navegador abre de fato.
+zen_chrome_dir() {
+    local ini="$HOME/.zen/profiles.ini" path
+    if [[ -r $ini ]]; then
+        path=$(awk '/^\[/ { inst = ($0 ~ /^\[Install/) }
+                    inst && sub(/^Default=/, "") { print; exit }' "$ini")
+        if [[ -n $path && -d $HOME/.zen/$path ]]; then
+            printf '%s\n' "$HOME/.zen/$path/chrome"
+            return 0
+        fi
+    fi
+    find "$HOME/.zen" -maxdepth 2 -type d -name chrome 2>/dev/null | sort | head -n 1
+}
+
 apply_zen() {
     [[ -n $zen_theme ]] || return 0
     [[ $(current_profile) == desktop ]] || return 0
@@ -243,18 +271,24 @@ apply_zen() {
     [[ -d $src ]] || { warn "zen-theme '$zen_theme' não existe, pulando"; return 0; }
 
     local chrome
-    chrome=$(find "$HOME/.zen" -maxdepth 2 -type d -name chrome 2>/dev/null | head -n 1 || true)
+    chrome=$(zen_chrome_dir)
     [[ -n $chrome ]] || { warn "perfil do Zen não encontrado em ~/.zen, pulando"; return 0; }
 
     if [[ $DRY == 1 ]]; then
         printf '\033[2;37m[dry]\033[0m zen: %s -> %s\n' "$zen_theme" "$chrome"
-        return
+    else
+        mkdir -p "$chrome"
+        # O `themes/` é o que faz os @import internos do estilo resolverem.
+        ln -sfn "$src" "$chrome/themes"
+        ln -sfn "$src/userChrome.css" "$chrome/userChrome.css"
+        ln -sfn "$src/userContent.css" "$chrome/userContent.css"
+        printf '   zen: %s\n' "$zen_theme"
     fi
 
-    ln -sfn "$src" "$chrome/themes"
-    ln -sfn "$src/userChrome.css" "$chrome/userChrome.css"
-    ln -sfn "$src/userContent.css" "$chrome/userContent.css"
-    printf '   zen: %s\n' "$zen_theme"
+    local pair
+    for pair in "${ZEN_GENERATED[@]}"; do
+        render_template "${pair%%:*}" "$chrome/${pair##*:}"
+    done
 }
 
 # ── Recarregar os programas ───────────────────────────────────────────────────

@@ -1,0 +1,42 @@
+/* Paleta do tema {{theme}} para o Zen Browser.
+ *
+ * GERADO pelo `theme set` dentro do perfil do Zen. Não editar: o arquivo é
+ * reescrito a cada troca de tema. O CSS de estilo, em zen-themes/, importa
+ * este arquivo e nunca escreve cor literal.
+ *
+ * O prefixo --dots- existe porque nomes curtos como --info, --error, --success
+ * e --warning já são usados pelo Firefox.
+ */
+
+* {
+  --dots-base: {{base}};
+  --dots-surface: {{surface}};
+  --dots-overlay: {{overlay}};
+
+  /* Versões translúcidas (90%), para o que fica sobre o conteúdo da página. */
+  --dots-base-t: {{base}}e6;
+  --dots-surface-t: {{surface}}e6;
+  --dots-overlay-t: {{overlay}}e6;
+
+  --dots-highlight-low: {{highlight_low}};
+  --dots-highlight-med: {{highlight_med}};
+  --dots-highlight-high: {{highlight_high}};
+
+  --dots-text: {{text}};
+  --dots-subtle: {{subtle}};
+  --dots-muted: {{muted}};
+
+  --dots-accent: {{accent}};
+  --dots-accent-alt: {{accent_alt}};
+  --dots-success: {{success}};
+  --dots-warning: {{warning}};
+  --dots-error: {{error}};
+  --dots-info: {{info}};
+
+  --dots-red: {{red}};
+  --dots-green: {{green}};
+  --dots-yellow: {{yellow}};
+  --dots-blue: {{blue}};
+  --dots-magenta: {{magenta}};
+  --dots-cyan: {{cyan}};
+}

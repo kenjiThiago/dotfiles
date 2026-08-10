@@ -10,8 +10,9 @@ dotfiles/
 ├── packages-extra.txt  apps, toolchains e hardware (só com --extra)
 ├── packages/           os pacotes do stow (é o -d do stow)
 ├── profiles/           quais pacotes cada tipo de máquina linka
+├── docs/               procedimentos que não cabem aqui
 ├── themes/             paletas + templates dos temas
-├── zen-themes/         temas do Zen Browser (CSS, não gerado)
+├── zen-themes/         estilos do Zen Browser (CSS; as cores vêm de themes/)
 └── wallpapers/
 ```
 
@@ -125,6 +126,9 @@ desktop nenhum: bash, tmux, neovim pelado.
 ```sh
 ./install.sh --profile server
 ```
+
+Numa máquina que já tem configuração própria o stow não linka por cima: o
+procedimento de backup e migração está em [`docs/servidor.md`](docs/servidor.md).
 
 Cada perfil é um arquivo em `profiles/` listando os pacotes do stow que aquela
 máquina quer, um por linha. O `server` deixa de fora o Hyprland, o waybar, o
@@ -256,12 +260,15 @@ Nos templates, cada chave tem quatro formas:
 | lazygit | `~/.config/lazygit/colors.yml` | `LG_CONFIG_FILE` junta com o `config.yml` (não tem include) |
 | yazi | `~/.config/yazi/theme.toml` | camada de override sobre o tema embutido |
 | yazi (preview) | `~/.config/yazi/theme.tmTheme` | `[mgr] syntect_theme` no `theme.toml`, com caminho absoluto |
-| zen browser | — | symlinks para `zen-themes/<zen_theme>/` |
+| zen browser | `<perfil>/chrome/colors.css` e `zen-logo.svg` | `@import` no `userChrome.css` do estilo |
 
 Do hyprland ao zathura, tudo até o starship é marcado como `desktop` na
 terceira coluna do `manifest` e não é gerado no perfil servidor. O neovim
 consome o `theme.lua` por dois caminhos: `plugins/colors.lua` no desktop e
 `lua/NeoVim/server/init.lua` no servidor, que aplica o colorscheme sem plugin.
+
+O Zen é o único que não passa pelo `manifest`: o diretório do perfil tem nome
+sorteado, então quem escolhe o destino é o `apply_zen` do `theme`.
 
 ### Criando um tema novo
 
@@ -285,9 +292,13 @@ for um `#rrggbb`.
 
 ## Detalhes
 
-- **Zen Browser**: os temas são CSS escrito à mão, não gerado. `theme set`
-  aponta `~/.zen/<perfil>/chrome/{themes,userChrome.css,userContent.css}` para
-  `zen-themes/<zen_theme>/`. Precisa reiniciar o navegador.
+- **Zen Browser**: `zen_theme` escolhe só o *estilo* (`default` ou `nebula`), que
+  é CSS escrito à mão; as cores saem do `theme.sh` como em qualquer outro
+  programa. `theme set` aponta `~/.zen/<perfil>/chrome/{themes,userChrome.css,
+  userContent.css}` para `zen-themes/<zen_theme>/` e escreve `colors.css` e
+  `zen-logo.svg` no mesmo diretório. O perfil vem do `Default=` da seção
+  `[Install...]` do `profiles.ini`, que é o que o navegador abre de fato.
+  Precisa reiniciar o navegador.
 - **Neovim**: o tema escolhe o *colorscheme* (`nvim_colorscheme`), não as cores
   uma a uma. Se o plugin do colorscheme não estiver instalado, o nvim avisa e
   cai no `habamax`.

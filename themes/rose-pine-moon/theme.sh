@@ -9,7 +9,7 @@ variant="dark"
 
 # ── Metadados ─────────────────────────────────────────────────────────────────
 nvim_colorscheme="gruber-darker" # gruber-darker local, já tingido com o Moon
-zen_theme="rose-pine"
+zen_theme="default"
 wallpaper="space.jpg"
 # Vazio = o `theme` não escreve no gsettings (ver README).
 gtk_theme=""

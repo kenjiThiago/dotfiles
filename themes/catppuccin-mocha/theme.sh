@@ -7,7 +7,7 @@ variant="dark"
 # Não há plugin do catppuccin instalado no nvim; duskfox (nightfox) é o
 # colorscheme disponível mais próximo. Troque aqui se instalar o catppuccin.
 nvim_colorscheme="duskfox"
-zen_theme="catppuccin-mocha"
+zen_theme="default"
 wallpaper="neon.png"
 # Vazio = o `theme` não escreve no gsettings (ver README).
 gtk_theme=""
