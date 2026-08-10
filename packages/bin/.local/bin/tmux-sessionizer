@@ -8,6 +8,10 @@
 # Nesse arquivo, linha iniciada por `-` é padrão de exclusão e linha iniciada
 # por `+` fixa o diretório no topo da lista, na ordem em que aparece. Os
 # diretórios de ~/.config vindos de um pacote do stow já são excluídos.
+#
+# O paths vem do repositório e vale para as duas máquinas; o paths.local, ao
+# lado dele, é de uma máquina só e não é versionado. Os dois são lidos, nessa
+# ordem, e as listas se somam.
 
 DOTFILES="${DOTFILES:-$HOME/dotfiles}"
 PATHS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/tmux-sessionizer/paths"
@@ -17,24 +21,26 @@ PINS=()
 
 # Roda no shell principal: os arrays precisam sobreviver ao $( ) de baixo.
 load_config() {
-    [[ -r $PATHS_FILE ]] || return 0
+    local file line
+    for file in "$PATHS_FILE" "$PATHS_FILE.local"; do
+        [[ -r $file ]] || continue
 
-    local line
-    while IFS= read -r line; do
-        line=${line%%#*}
-        line=${line//[[:space:]]/}
-        [[ -z $line ]] && continue
+        while IFS= read -r line; do
+            line=${line%%#*}
+            line=${line//[[:space:]]/}
+            [[ -z $line ]] && continue
 
-        if [[ $line == -* ]]; then
-            line=${line#-}
-            EXCLUDES+=("${line/#\~/$HOME}")
-        elif [[ $line == +* ]]; then
-            line=${line#+}
-            PINS+=("${line/#\~/$HOME}")
-        else
-            ROOTS+=("$line")
-        fi
-    done < "$PATHS_FILE"
+            if [[ $line == -* ]]; then
+                line=${line#-}
+                EXCLUDES+=("${line/#\~/$HOME}")
+            elif [[ $line == +* ]]; then
+                line=${line#+}
+                PINS+=("${line/#\~/$HOME}")
+            else
+                ROOTS+=("$line")
+            fi
+        done < "$file"
+    done
 }
 
 # Sem glob e sem `:profundidade`, ao contrário das raízes: o `+` define um

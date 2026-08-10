@@ -13,6 +13,12 @@
 #   +~/dotfiles/packages/ghostty
 #   +~/remote/ic
 
+# Este arquivo é versionado e vale para as duas máquinas. O que é de uma só vai
+# em paths.local, ao lado deste, que não entra no repositório e é lido depois.
+#
+# Raiz que não existe é ignorada em silêncio, então as de desktop podem ficar
+# aqui mesmo.
+
 ~/projetos
 ~/projetos/[A-Z]*
 ~/plugins
