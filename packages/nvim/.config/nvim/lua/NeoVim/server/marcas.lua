@@ -102,7 +102,18 @@ function M.adicionar()
     vim.notify("as quatro marcas estão ocupadas", vim.log.levels.WARN)
 end
 
+-- A janela do menu, quando aberta. O <C-e> é global e vale dentro do
+-- flutuante também, então sem isto o segundo toque abriria outra janela em
+-- cima da primeira em vez de fechar.
+local janela
+
 function M.menu()
+    if janela and vim.api.nvim_win_is_valid(janela) then
+        vim.api.nvim_win_close(janela, true)
+        janela = nil
+        return
+    end
+
     local buf = vim.api.nvim_create_buf(false, true)
     vim.bo[buf].bufhidden = "wipe"
 
@@ -128,7 +139,7 @@ function M.menu()
     end
     largura = math.min(largura, vim.o.columns - 4)
 
-    local win = vim.api.nvim_open_win(buf, true, {
+    janela = vim.api.nvim_open_win(buf, true, {
         relative = "editor",
         width = largura,
         height = #MARCAS,
@@ -139,12 +150,13 @@ function M.menu()
         title = " Marcas ",
     })
 
-    vim.wo[win].cursorline = true
+    vim.wo[janela].cursorline = true
 
     local function fechar()
-        if vim.api.nvim_win_is_valid(win) then
-            vim.api.nvim_win_close(win, true)
+        if janela and vim.api.nvim_win_is_valid(janela) then
+            vim.api.nvim_win_close(janela, true)
         end
+        janela = nil
     end
 
     local function ir(indice)
