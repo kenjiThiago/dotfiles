@@ -1,6 +1,6 @@
 -- Substituto do harpoon no perfil servidor: as marcas H, J, K e L guardam um
--- arquivo cada, e um autocmd por marca a reposiciona na última posição do
--- cursor ao sair do buffer.
+-- arquivo cada, e a marca é reposicionada na última posição do cursor ao sair
+-- do buffer, para o pulo cair onde a leitura parou e não onde ela começou.
 --
 -- Marca maiúscula é global e vai para o shada, então a lista sobrevive ao
 -- restart de graça. O preço é que ela é uma só para a máquina inteira: ao
@@ -9,10 +9,6 @@
 local MARCAS = { "H", "J", "K", "L" }
 
 local M = {}
-
-local function grupo(marca)
-    return "MarcaAuto" .. marca
-end
 
 local function alvo(marca)
     for _, item in ipairs(vim.fn.getmarklist()) do
@@ -26,9 +22,36 @@ local function caminho(item)
     return vim.fn.fnamemodify(item.file or "", ":~:.")
 end
 
+local function absoluto(item)
+    return vim.fn.fnamemodify(item.file or "", ":p")
+end
+
+-- A marca volta do shada no restart, mas autocmd nenhum volta com ela. Por
+-- isso o rastreio é um BufLeave só, global, que decide na hora se o buffer que
+-- está saindo é o de alguma marca: preso ao buffer no momento da associação,
+-- ele morria a cada restart e a cada :bdelete, e a marca congelava na posição
+-- em que foi criada.
+local function rastrear()
+    local arquivo = vim.api.nvim_buf_get_name(0)
+    if arquivo == "" then
+        return
+    end
+
+    for _, marca in ipairs(MARCAS) do
+        local item = alvo(marca)
+        if item and absoluto(item) == arquivo then
+            vim.cmd("normal! m" .. marca)
+        end
+    end
+end
+
+vim.api.nvim_create_autocmd({ "BufLeave", "VimLeavePre" }, {
+    group = vim.api.nvim_create_augroup("Marcas", { clear = true }),
+    callback = rastrear,
+})
+
 function M.marcar(marca)
-    local buffer = vim.api.nvim_get_current_buf()
-    local arquivo = vim.api.nvim_buf_get_name(buffer)
+    local arquivo = vim.api.nvim_buf_get_name(0)
 
     if arquivo == "" then
         vim.notify("marcas: buffer sem arquivo", vim.log.levels.WARN)
@@ -36,30 +59,6 @@ function M.marcar(marca)
     end
 
     vim.cmd("normal! m" .. marca)
-
-    -- Um augroup por marca, recriado com clear: sem isso o autocmd do buffer
-    -- anterior segue vivo e devolve a marca para ele no BufLeave seguinte.
-    local id = vim.api.nvim_create_augroup(grupo(marca), { clear = true })
-
-    vim.api.nvim_create_autocmd("BufLeave", {
-        group = id,
-        buffer = buffer,
-        callback = function()
-            vim.cmd("normal! m" .. marca)
-        end,
-    })
-
-    -- O BufLeave não roda quando o nvim fecha com o buffer em foco, e é nesse
-    -- momento que o shada grava a marca.
-    vim.api.nvim_create_autocmd("VimLeavePre", {
-        group = id,
-        callback = function()
-            if vim.api.nvim_get_current_buf() == buffer then
-                vim.cmd("normal! m" .. marca)
-            end
-        end,
-    })
-
     vim.notify("marca " .. marca .. ": " .. vim.fn.fnamemodify(arquivo, ":~:."))
 end
 
@@ -77,7 +76,6 @@ function M.pular(marca)
 end
 
 function M.limpar(marca)
-    vim.api.nvim_create_augroup(grupo(marca), { clear = true })
     vim.cmd("delmarks " .. marca)
 end
 
@@ -88,7 +86,7 @@ function M.adicionar()
 
     for _, marca in ipairs(MARCAS) do
         local item = alvo(marca)
-        if item and vim.fn.fnamemodify(item.file or "", ":p") == atual then
+        if item and absoluto(item) == atual then
             vim.notify("já está na marca " .. marca)
             return
         end
