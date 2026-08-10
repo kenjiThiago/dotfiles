@@ -1,0 +1,18 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+#
+# Barra do tmux no perfil servidor. Sobrepõe o colors.conf, que é carregado
+# antes e assume fundo escuro. Só existe nesta máquina porque o server.conf o
+# carrega no fim; no desktop a linha do manifest não vale.
+
+# Faixa forte para não confundir com o tmux local quando as duas barras
+# aparecem na mesma tela no ssh. O `success` é o único papel de cor cheia que a
+# barra do desktop não usa.
+set -g status-style bg="{{success}}",fg="{{base}}"
+
+# Sobre a faixa clara todas as janelas precisam de texto escuro, e o realce
+# passa a vir do fundo, não do fg como no desktop.
+setw -g window-status-style fg="{{base}}"
+setw -g window-status-current-style fg="{{yellow}}",bg="{{base}}",bold
+setw -g window-status-last-style fg="{{base}}",italics
+setw -g window-status-activity-style fg="{{base}}",bg="{{yellow}}"
+setw -g window-status-bell-style fg="{{base}}",bg="{{error}}",bold

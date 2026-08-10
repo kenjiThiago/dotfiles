@@ -259,6 +259,7 @@ Nos templates, cada chave tem quatro formas:
 | zathura | `~/.config/zathura/colors` | `include "colors"` |
 | starship | `~/.config/starship.toml` | arquivo inteiro (starship não tem include) |
 | tmux | `~/.config/tmux/colors.conf` | `source-file -q` no fim do `.tmux.conf` |
+| tmux (perfil server) | `~/.config/tmux/server-colors.conf` | `source-file -q` no fim do `server.conf` |
 | neovim | `~/.config/nvim/lua/theme.lua` | `require("theme")` em `plugins/colors.lua` |
 | btop | `~/.config/btop/themes/dotfiles.theme` | `color_theme = "dotfiles"` no `btop.conf` |
 | lazygit | `~/.config/lazygit/colors.yml` | `LG_CONFIG_FILE` junta com o `config.yml` (não tem include) |
@@ -267,7 +268,8 @@ Nos templates, cada chave tem quatro formas:
 | zen browser | `<perfil>/chrome/colors.css` e `zen-logo.svg` | `@import` no `userChrome.css` do estilo |
 
 Do hyprland ao zathura, tudo até o starship é marcado como `desktop` na
-terceira coluna do `manifest` e não é gerado no perfil servidor. O neovim
+terceira coluna do `manifest` e não é gerado no perfil servidor. O
+`server-colors.conf` é o inverso: só sai no perfil servidor. O neovim
 consome o `theme.lua` por dois caminhos: `plugins/colors.lua` no desktop e
 `lua/NeoVim/server/init.lua` no servidor, que aplica o colorscheme sem plugin.
 
