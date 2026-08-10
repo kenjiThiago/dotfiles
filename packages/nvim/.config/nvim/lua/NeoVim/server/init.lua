@@ -24,6 +24,22 @@ if not loaded then
     theme = { variant = "dark", colorscheme = "gruber-darker" }
 end
 
+-- Vem do opacity no theme.sh, via lua/theme.lua, e vale para a opacidade do
+-- terminal de onde saiu o ssh: aqui não há alacritty nem ghostty para receber
+-- o valor, só o fundo a limpar para o do terminal aparecer. Nenhum colorscheme
+-- deste perfil tem opção de transparência (o gruber-darker é local e o
+-- fallback é o habamax), então os fundos são apagados depois que o colorscheme
+-- carrega, como no plugins/colors.lua.
+if theme.transparent == true then
+    vim.api.nvim_create_autocmd("ColorScheme", {
+        callback = function()
+            for _, group in ipairs({ "Normal", "NormalNC", "SignColumn", "EndOfBuffer", "FoldColumn" }) do
+                vim.api.nvim_set_hl(0, group, { bg = "none" })
+            end
+        end,
+    })
+end
+
 vim.o.background = theme.variant
 if not pcall(vim.cmd.colorscheme, theme.colorscheme) then
     pcall(vim.cmd.colorscheme, "habamax")
