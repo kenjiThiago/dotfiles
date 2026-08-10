@@ -119,7 +119,10 @@ fi
 
 selected_name=$(basename "$selected" | tr ":,. " "____")
 
-if [[ $selected_name == "nvim" ]]; then
+# O basename do home é o nome do usuário, que muda de máquina.
+if [[ ${selected%/} == "$HOME" ]]; then
+    selected_name="home"
+elif [[ $selected_name == "nvim" ]]; then
     selected_name="Nvim"
 fi
 
