@@ -1,7 +1,14 @@
 -- Perfil servidor: nvim sem plugin nenhum, então o que no desktop vem do oil,
 -- do telescope, do harpoon e do undotree.nvim aqui sai do que o nvim traz.
 
-require("NeoVim.server.lsp")
+-- O nvim daqui vem do gerenciador da distro, que costuma estar bem atrás do
+-- Arch, então cada coisa recente vem atrás de um teste. O piso é o 0.11, de
+-- onde saem o vim.lsp.config, o findfunc e o `fuzzy` do completeopt; abaixo
+-- disso o servidor fica sem LSP em vez de errar a cada arquivo aberto.
+if vim.fn.has("nvim-0.11") == 1 then
+    require("NeoVim.server.lsp")
+end
+
 require("NeoVim.server.find")
 
 -- ── Cores ─────────────────────────────────────────────────────────────────────
@@ -45,8 +52,11 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- ── Undotree ──────────────────────────────────────────────────────────────────
-vim.cmd.packadd("nvim.undotree")
-vim.keymap.set("n", "<leader>u", "<cmd>Undotree<CR>")
+-- Plugin embutido a partir do 0.12. O packadd de um pacote que não existe é
+-- erro, e sem ele o keymap só chamaria um comando inexistente.
+if pcall(vim.cmd.packadd, "nvim.undotree") then
+    vim.keymap.set("n", "<leader>u", "<cmd>Undotree<CR>")
+end
 
 -- ── Grep e diagnósticos ───────────────────────────────────────────────────────
 -- O grepprg com rg vem do set.lua, compartilhado. As teclas repetem as do
@@ -70,9 +80,19 @@ end, { desc = "Diagnósticos na quickfix" })
 -- ── Wildmenu ──────────────────────────────────────────────────────────────────
 -- Só aqui: no desktop quem completa a cmdline é o blink.cmp, e os dois
 -- disputariam as mesmas teclas (ver plugins/cmp.lua).
-vim.opt.wildmode = "noselect:lastused,full"
+--
+-- O `pum` no wildoptions é antigo e vale em qualquer versão. O resto é o
+-- autocompletar da cmdline do 0.12: o `noselect` no wildmode, o pumborder e o
+-- wildtrigger() erram cada um por conta própria antes disso. Sem eles a lista
+-- continua existindo, só que a partir do <Tab>.
+local autocompletar = vim.fn.exists("*wildtrigger") == 1
+
 vim.opt.wildoptions = "pum"
-vim.opt.pumborder = "rounded"
+vim.opt.wildmode = autocompletar and "noselect:lastused,full" or "lastused,full"
+
+if autocompletar then
+    vim.opt.pumborder = "rounded"
+end
 
 -- O PmenuMatch é o trecho que casou com o que foi digitado. O padrão herda o
 -- Pmenu e só acrescenta negrito, que na lista do :find quase não se distingue.
@@ -93,23 +113,25 @@ end
 vim.api.nvim_create_autocmd("ColorScheme", { callback = realcar_match })
 realcar_match()
 
-vim.api.nvim_create_autocmd("CmdlineChanged", {
-    group = vim.api.nvim_create_augroup("CmdlineAutocomplete", { clear = true }),
-    pattern = { ":", "/", "?" },
-    command = "call wildtrigger()",
-})
+if autocompletar then
+    vim.api.nvim_create_autocmd("CmdlineChanged", {
+        group = vim.api.nvim_create_augroup("CmdlineAutocomplete", { clear = true }),
+        pattern = { ":", "/", "?" },
+        command = "call wildtrigger()",
+    })
 
-vim.keymap.set("c", "<Up>", function()
-    return vim.fn.wildmenumode() == 1 and "<C-E><Up>" or "<Up>"
-end, { expr = true, replace_keycodes = true })
+    vim.keymap.set("c", "<Up>", function()
+        return vim.fn.wildmenumode() == 1 and "<C-E><Up>" or "<Up>"
+    end, { expr = true, replace_keycodes = true })
 
-vim.keymap.set("c", "<Down>", function()
-    return vim.fn.wildmenumode() == 1 and "<C-E><Down>" or "<Down>"
-end, { expr = true, replace_keycodes = true })
+    vim.keymap.set("c", "<Down>", function()
+        return vim.fn.wildmenumode() == 1 and "<C-E><Down>" or "<Down>"
+    end, { expr = true, replace_keycodes = true })
 
-vim.keymap.set("c", "<C-y>", function()
-    return vim.fn.wildmenumode() == 1 and "<C-y><C-z>" or "<C-y>"
-end, { expr = true, replace_keycodes = true })
+    vim.keymap.set("c", "<C-y>", function()
+        return vim.fn.wildmenumode() == 1 and "<C-y><C-z>" or "<C-y>"
+    end, { expr = true, replace_keycodes = true })
+end
 
 -- ── Marcas ────────────────────────────────────────────────────────────────────
 -- Substituto do harpoon: a marca se reposiciona ao sair do buffer.

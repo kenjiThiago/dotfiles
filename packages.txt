@@ -78,7 +78,7 @@ bat
 fd
 ripgrep
 jq                           # window-info, rofi-script
-# yazi
+yazi                         # y() do .zshrc, <leader>- do nvim, tema e config próprios
 tmux
 viu                          # preview de wallpaper no rofi-script
 pastel                       # testar-cor

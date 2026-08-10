@@ -3,7 +3,12 @@ require("NeoVim.set")
 require("NeoVim.autocmd")
 require("NeoVim.custom.statusline")
 
-require("vim._core.ui2").enable({})
+-- Módulo privado do runtime, e instável: já se chamou `vim._extui`. Sem o
+-- pcall, o erro aqui aborta o require inteiro e o desvio de perfil lá embaixo
+-- nunca roda, deixando o servidor sem o `NeoVim.server`.
+pcall(function()
+    require("vim._core.ui2").enable({})
+end)
 
 _G.icons = {
     kinds = {

@@ -2,19 +2,21 @@ autoload -Uz compinit && compinit
 
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
-if [ ! -d "$ZINIT_HOME" ]; then
+if [ ! -d "$ZINIT_HOME" ] && command -v git >/dev/null; then
     mkdir -p "$(dirname $ZINIT_HOME)"
     git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
-source "${ZINIT_HOME}/zinit.zsh"
-
 # fastfetch
 
 # Plugins
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
+if [[ -r "${ZINIT_HOME}/zinit.zsh" ]]; then
+    source "${ZINIT_HOME}/zinit.zsh"
+
+    zinit light zsh-users/zsh-syntax-highlighting
+    zinit light zsh-users/zsh-completions
+    zinit light zsh-users/zsh-autosuggestions
+fi
 
 # Keybindings
 bindkey -e
@@ -28,57 +30,75 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 # Aliases
 alias nv="nvim"
-alias ls="eza --color=always --icons=auto"
 alias c="clear"
-alias ll="eza -lAF --color=always --icons=auto"
-alias l="eza -AF --color=always --icons=auto"
 # alias cat="bat --paging=never"
 
-source <(fzf --zsh)
-eval "$(zoxide init --cmd cd zsh)"
-eval "$(starship init zsh)"
+# Como no .bashrc: sem eza não se perde a cor, se perde o `ls`.
+if command -v eza >/dev/null; then
+    alias ls="eza --color=always --icons=auto"
+    alias ll="eza -lAF --color=always --icons=auto"
+    alias l="eza -AF --color=always --icons=auto"
+else
+    alias ls="ls --color=auto"
+    alias ll="ls -alFh --color=auto"
+    alias l="ls -CF --color=auto"
+fi
 
-# Sem right_format no template, o RPROMPT do init só forkava o starship a cada
-# redraw para devolver string vazia. Se um dia entrar um, é esta linha que sai.
-RPROMPT=""
+command -v fzf >/dev/null && source <(fzf --zsh)
+command -v zoxide >/dev/null && eval "$(zoxide init --cmd cd zsh)"
 
-# O PROMPT do starship não muda depois do init, então a substituição é feita uma
-# vez só.
-STARSHIP_ORIG_PROMPT=$PROMPT
-STARSHIP_TRANSIENT_PROMPT="${PROMPT/ prompt / prompt --profile transient }"
+# O prompt transiente inteiro é do starship: o transiente é o mesmo comando com
+# --profile transient. Sem ele sobra o prompt de duas linhas abaixo, sem estado
+# do git, que no .bashrc vem do set_custom_prompt.
+if command -v starship >/dev/null; then
+    eval "$(starship init zsh)"
 
-function set_transient_prompt() {
-    PROMPT=$STARSHIP_TRANSIENT_PROMPT
-    zle reset-prompt
-}
+    # Sem right_format no template, o RPROMPT do init só forkava o starship a
+    # cada redraw para devolver string vazia. Se um dia entrar um, é esta linha
+    # que sai.
+    RPROMPT=""
 
-zle -N set_transient_prompt
-autoload -Uz add-zle-hook-widget
-add-zle-hook-widget zle-line-finish set_transient_prompt
+    # O PROMPT do starship não muda depois do init, então a substituição é feita
+    # uma vez só.
+    STARSHIP_ORIG_PROMPT=$PROMPT
+    STARSHIP_TRANSIENT_PROMPT="${PROMPT/ prompt / prompt --profile transient }"
 
-# Nem todo Ctrl-C encerra a linha: cancelar a pergunta "do you wish to see all N
-# possibilities" devolve o controle para a mesma linha, e aí o precmd nunca roda
-# para desfazer o transiente que o TRAPINT aplicou.
-function restore_prompt_if_transient() {
-    [[ $PROMPT == "$STARSHIP_TRANSIENT_PROMPT" ]] || return 0
-    PROMPT=$STARSHIP_ORIG_PROMPT
-    zle reset-prompt
-}
+    function set_transient_prompt() {
+        PROMPT=$STARSHIP_TRANSIENT_PROMPT
+        zle reset-prompt
+    }
 
-zle -N restore_prompt_if_transient
-add-zle-hook-widget zle-line-pre-redraw restore_prompt_if_transient
+    zle -N set_transient_prompt
+    autoload -Uz add-zle-hook-widget
+    add-zle-hook-widget zle-line-finish set_transient_prompt
 
-function restore_starship_prompt() {
-    PROMPT=$STARSHIP_ORIG_PROMPT
-}
+    # Nem todo Ctrl-C encerra a linha: cancelar a pergunta "do you wish to see
+    # all N possibilities" devolve o controle para a mesma linha, e aí o precmd
+    # nunca roda para desfazer o transiente que o TRAPINT aplicou.
+    function restore_prompt_if_transient() {
+        [[ $PROMPT == "$STARSHIP_TRANSIENT_PROMPT" ]] || return 0
+        PROMPT=$STARSHIP_ORIG_PROMPT
+        zle reset-prompt
+    }
 
-autoload -Uz add-zsh-hook
-add-zsh-hook precmd restore_starship_prompt
+    zle -N restore_prompt_if_transient
+    add-zle-hook-widget zle-line-pre-redraw restore_prompt_if_transient
 
-TRAPINT() {
-    zle && set_transient_prompt
-    return $(( 128 + $1 ))
-}
+    function restore_starship_prompt() {
+        PROMPT=$STARSHIP_ORIG_PROMPT
+    }
+
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd restore_starship_prompt
+
+    TRAPINT() {
+        zle && set_transient_prompt
+        return $(( 128 + $1 ))
+    }
+else
+    PROMPT='%F{cyan}%n@%m%f:%F{blue}%~%f
+%F{green}❯%f '
+fi
 
 autoload -Uz edit-command-line
 zle -N edit-command-line
@@ -132,9 +152,15 @@ if [[ -z $TMUX ]]; then
     path+=("$HOME/.local/share/nvim/mason/bin")
 fi
 
-source /usr/share/nvm/init-nvm.sh
+# Caminho do pacote nvm do Arch. É a coisa menos essencial daqui, e sem o teste
+# bastaria desinstalar o nvm para todo shell novo abrir com erro.
+[[ -f /usr/share/nvm/init-nvm.sh ]] && source /usr/share/nvm/init-nvm.sh
 
 export PATH
+
+# Ajustes de uma máquina só, como no .bashrc. Não é versionado, e vem antes do
+# exec: depois dele nada mais nesta config roda.
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 if [[ -z "$TMUX" && "$XDG_CURRENT_DESKTOP" == "Hyprland" ]]; then
     exec tmux new-session -A -s main

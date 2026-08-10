@@ -42,7 +42,12 @@ vim.opt.updatetime = 50
 vim.opt.showmode = false
 
 vim.opt.pumheight = 10
-vim.opt.winborder = "rounded"
+
+-- Este arquivo é o mesmo nos dois perfis e carrega antes do desvio: uma opção
+-- desconhecida aqui derruba a config inteira. O winborder é do 0.11.
+if vim.fn.exists("+winborder") == 1 then
+    vim.opt.winborder = "rounded"
+end
 -- vim.opt.cmdheight = 0
 
 vim.opt.colorcolumn = "80"

@@ -157,12 +157,20 @@ e os keymaps de marca, que fazem as vezes do harpoon. O núcleo (`set.lua`,
 O wildmenu nativo é só do servidor de propósito: no desktop quem completa a
 cmdline é o `blink.cmp`, e os dois brigariam pelas mesmas teclas.
 
-**No bash e no tmux** não há chave de perfil: cada ferramenta extra vem atrás
-de um teste. O `.bashrc` usa o starship se ele existir e cai num `PS1` próprio
-se não; o `.tmux.conf` só define `wl-copy` como `copy-command`, só chama o tpm
-e só cria o popup de cores se o que eles precisam estiver instalado. Para o
-que for de uma máquina só, os dois leem um arquivo não versionado no fim:
-`~/.bashrc.local` e `~/.tmux.conf.local`.
+O neovim do servidor vem do gerenciador da distro, que costuma estar bem atrás
+do Arch, então o `server/` testa antes de usar o que é recente. O piso é o
+**0.11**, de onde saem o `vim.lsp.config`, o `findfunc` e o `winborder`; abaixo
+disso a config sobe sem LSP e o `:find` cai no `path` do nvim. O autocompletar
+da cmdline (`wildtrigger()`, `pumborder`) e o `nvim.undotree` são do **0.12** e
+ficam de fora sozinhos quando não existem.
+
+**Nos shells e no tmux** não há chave de perfil: cada ferramenta extra vem
+atrás de um teste. O `.bashrc` e o `.zshrc` usam o starship se ele existir e
+caem num prompt próprio se não, e o mesmo vale para eza, fzf, zoxide e nvm; o
+`.tmux.conf` só define `wl-copy` como `copy-command`, só chama o tpm e só cria
+o popup de cores se o que eles precisam estiver instalado. Para o que for de
+uma máquina só, os três leem um arquivo não versionado no fim: `~/.bashrc.local`,
+`~/.zshrc.local` e `~/.tmux.conf.local`.
 
 ## Temas
 

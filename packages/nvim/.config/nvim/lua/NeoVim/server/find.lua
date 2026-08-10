@@ -36,7 +36,11 @@ _G.ServerFindFiles = function(cmdarg, _)
     return vim.fn.matchfuzzy(arquivos, cmdarg)
 end
 
-vim.o.findfunc = "v:lua.ServerFindFiles"
+-- Do 0.11 em diante. Sem ele o :find e o <leader>pf continuam de pé, caindo no
+-- 'path' do nvim em vez da lista do rg.
+if vim.fn.exists("+findfunc") == 1 then
+    vim.o.findfunc = "v:lua.ServerFindFiles"
+end
 
 vim.api.nvim_create_user_command("FindRefresh", function()
     cache = {}
