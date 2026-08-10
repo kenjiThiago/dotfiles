@@ -285,8 +285,11 @@ function M.setup()
         TelescopeResultsTitle = { fg = palette.bg, bg = palette.burgundy, bold = true },
         TelescopePreviewTitle = { fg = palette.bg, bg = palette.burgundy, bold = true },
         TelescopePromptPrefix = { fg = palette.crimson, bold = true },
-        TelescopeSelection = { fg = palette.crimson, bg = palette["bg+1"], bold = true },
-        TelescopeSelectionCaret = { fg = palette.crimson, bg = palette["bg+1"] },
+        -- Sem fg: um fg aqui vale para a linha inteira e apaga o
+        -- TelescopeMatching logo abaixo, além de tingir o caminho de vermelho.
+        -- Como o realce passa a sair só do fundo, ele sobe de bg+1 para bg+2.
+        TelescopeSelection = { bg = palette["bg+2"] },
+        TelescopeSelectionCaret = { fg = palette.crimson, bg = palette["bg+2"] },
         TelescopeMatching = { fg = palette.terracotta, bold = true },
 
         -- NvimTree

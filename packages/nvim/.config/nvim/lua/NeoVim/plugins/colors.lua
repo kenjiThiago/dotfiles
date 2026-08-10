@@ -38,7 +38,11 @@ require("rose-pine").setup({
         transparency = transparent,
     },
     highlight_groups = {
-        TelescopeSelection = { fg = "text", bg = "highlight_med" },
+        -- O fg vale para a linha inteira e apagaria o TelescopeMatching assim
+        -- que o item fosse selecionado. Precisa ser "none" explícito: o
+        -- highlight_groups do rose-pine mescla com o padrão dele, e omitir a
+        -- chave deixaria o fg original de pé.
+        TelescopeSelection = { fg = "none", bg = "highlight_med" },
         TelescopeSelectionCaret = { fg = "love", bg = "love" },
 
         TelescopeTitle = { fg = "rose" },
