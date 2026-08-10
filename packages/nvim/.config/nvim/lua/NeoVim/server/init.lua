@@ -1,5 +1,6 @@
 -- Perfil servidor: nvim sem plugin nenhum, então o que no desktop vem do oil,
--- do telescope, do harpoon e do undotree.nvim aqui sai do que o nvim traz.
+-- do telescope, do harpoon, do mini.align e do undotree.nvim aqui sai do que o
+-- nvim traz.
 
 -- O nvim daqui vem do gerenciador da distro, que costuma estar bem atrás do
 -- Arch, então cada coisa recente vem atrás de um teste. O piso é o 0.11, de
@@ -11,6 +12,7 @@ end
 
 require("NeoVim.server.find")
 require("NeoVim.server.marcas")
+require("NeoVim.server.align")
 
 -- ── Cores ─────────────────────────────────────────────────────────────────────
 -- O plugins/colors.lua não serve aqui porque depende do vim.pack; o
