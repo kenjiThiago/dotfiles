@@ -134,29 +134,22 @@ local function aplicar(linhas)
 
     vim.cmd("delmarks " .. table.concat(MARCAS))
 
-    -- bufload lê o arquivo do disco e acorda tudo que escuta BufRead, o LSP
-    -- inclusive. Nada disso é necessário para escrever uma marca.
-    local eventos = vim.o.eventignore
-    vim.o.eventignore = "all"
+    for i, marca in ipairs(MARCAS) do
+        local arquivo, numero = analisar(linhas[i])
+        if arquivo and vim.fn.filereadable(arquivo) == 0 then
+            vim.notify("marcas: " .. arquivo .. " não existe", vim.log.levels.WARN)
+        elseif arquivo then
+            -- Sem eventignore em volta do bufload, por mais tentador que seja
+            -- para não acordar o LSP: é o BufReadPost que detecta o filetype, e
+            -- o arquivo carregado sem ele fica sem syntax pelo resto da sessão,
+            -- já que o pulo depois encontra o buffer pronto e não relê nada.
+            local buf = vim.fn.bufadd(arquivo)
+            vim.fn.bufload(buf)
+            vim.bo[buf].buflisted = true
 
-    local ok, erro = pcall(function()
-        for i, marca in ipairs(MARCAS) do
-            local arquivo, numero = analisar(linhas[i])
-            if arquivo and vim.fn.filereadable(arquivo) == 0 then
-                vim.notify("marcas: " .. arquivo .. " não existe", vim.log.levels.WARN)
-            elseif arquivo then
-                local buf = vim.fn.bufadd(arquivo)
-                vim.fn.bufload(buf)
-                local total = vim.api.nvim_buf_line_count(buf)
-                vim.api.nvim_buf_set_mark(buf, marca, math.min(numero, total), 0, {})
-            end
+            local total = vim.api.nvim_buf_line_count(buf)
+            vim.api.nvim_buf_set_mark(buf, marca, math.min(numero, total), 0, {})
         end
-    end)
-
-    vim.o.eventignore = eventos
-
-    if not ok then
-        vim.notify("marcas: " .. tostring(erro), vim.log.levels.ERROR)
     end
 end
 
