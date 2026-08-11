@@ -59,11 +59,14 @@ set-window-option -g pane-active-border-style "#{?pane_in_mode,fg={{warning}},#{
 # O popup é opaco de propósito. A opacidade é da janela do terminal, e o blur do
 # Hyprland é da janela inteira: não existe transparência por região. Com
 # bg=default o fundo do popup ficaria idêntico ao do painel que ele cobre, e a
-# camada só existiria pela borda. Sólido, e em surface, é o único indício de
-# elevação disponível, o mesmo nível do menu-style abaixo.
+# camada só existiria pela borda.
+#
+# O fundo é base, e não uma camada acima: o popup ocupa quase a janela toda
+# (75% no lazygit) e clarear tudo isso pesa mais do que a elevação ganha. Quem
+# marca a camada é a borda em accent.
 %if "#{>=:#{version},3.3}"
-set -g popup-style bg="{{surface}}",fg="{{text}}"
-set -g popup-border-style fg="{{accent}}",bg="{{surface}}"
+set -g popup-style bg="{{base}}",fg="{{text}}"
+set -g popup-border-style fg="{{accent}}",bg="{{base}}"
 %endif
 
 %if "#{>=:#{version},3.4}"
