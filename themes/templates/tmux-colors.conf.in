@@ -56,9 +56,14 @@ set-window-option -g pane-border-style fg="{{overlay}}"
 set-window-option -g pane-active-border-style "#{?pane_in_mode,fg={{warning}},#{?synchronize-panes,fg={{error}},fg={{accent}}}}"
 
 # ── Popups e menus ────────────────────────────────────────────────────────────
+# O popup é opaco de propósito. A opacidade é da janela do terminal, e o blur do
+# Hyprland é da janela inteira: não existe transparência por região. Com
+# bg=default o fundo do popup ficaria idêntico ao do painel que ele cobre, e a
+# camada só existiria pela borda. Sólido, e em surface, é o único indício de
+# elevação disponível, o mesmo nível do menu-style abaixo.
 %if "#{>=:#{version},3.3}"
-set -g popup-style bg="{{base}}",fg="{{text}}"
-set -g popup-border-style fg="{{accent}}",bg="{{base}}"
+set -g popup-style bg="{{surface}}",fg="{{text}}"
+set -g popup-border-style fg="{{accent}}",bg="{{surface}}"
 %endif
 
 %if "#{>=:#{version},3.4}"
