@@ -75,10 +75,6 @@ function M.pular(marca)
     end
 end
 
-function M.limpar(marca)
-    vim.cmd("delmarks " .. marca)
-end
-
 -- Equivalente do `harpoon:list():add()`: cai na primeira marca livre, sem
 -- repetir um arquivo que já está em outra.
 function M.adicionar()
@@ -102,42 +98,104 @@ function M.adicionar()
     vim.notify("as quatro marcas estão ocupadas", vim.log.levels.WARN)
 end
 
--- A janela do menu, quando aberta. O <C-e> é global e vale dentro do
--- flutuante também, então sem isto o segundo toque abriria outra janela em
--- cima da primeira em vez de fechar.
+-- ── Menu ──────────────────────────────────────────────────────────────────────
+-- O menu é um buffer editável, como o do harpoon: o que vale é o texto na hora
+-- de fechar. Apagar a linha esvazia o slot, mover a linha troca a marca do
+-- arquivo, e o `:linha` no fim é o que preserva a posição no reordenamento.
+--
+-- A janela fica aqui porque o <C-e> é global e vale dentro do flutuante também:
+-- sem isto o segundo toque abriria outra janela em cima da primeira.
 local janela
+local LETRAS = vim.api.nvim_create_namespace("MarcasLetras")
+
+local function texto_de(item)
+    return item and string.format("%s:%d", caminho(item), item.pos[2]) or ""
+end
+
+-- Lido da direita para a esquerda: dois-pontos em nome de arquivo é raro, mas o
+-- sufixo numérico, quando existe, é sempre o último.
+local function analisar(texto)
+    texto = vim.trim(texto or "")
+    if texto == "" then
+        return nil
+    end
+
+    local arquivo, numero = texto:match("^(.*):(%d+)$")
+    return vim.fn.fnamemodify(arquivo or texto, ":p"), tonumber(numero) or 1
+end
+
+-- A linha 1 é sempre o H, a 2 o J, e assim por diante: reordenar é consequência
+-- do índice, não precisa de lógica própria.
+local function aplicar(linhas)
+    if #linhas > #MARCAS then
+        vim.notify(string.format("marcas: só as %d primeiras linhas valem", #MARCAS),
+            vim.log.levels.WARN)
+    end
+
+    vim.cmd("delmarks " .. table.concat(MARCAS))
+
+    -- bufload lê o arquivo do disco e acorda tudo que escuta BufRead, o LSP
+    -- inclusive. Nada disso é necessário para escrever uma marca.
+    local eventos = vim.o.eventignore
+    vim.o.eventignore = "all"
+
+    local ok, erro = pcall(function()
+        for i, marca in ipairs(MARCAS) do
+            local arquivo, numero = analisar(linhas[i])
+            if arquivo and vim.fn.filereadable(arquivo) == 0 then
+                vim.notify("marcas: " .. arquivo .. " não existe", vim.log.levels.WARN)
+            elseif arquivo then
+                local buf = vim.fn.bufadd(arquivo)
+                vim.fn.bufload(buf)
+                local total = vim.api.nvim_buf_line_count(buf)
+                vim.api.nvim_buf_set_mark(buf, marca, math.min(numero, total), 0, {})
+            end
+        end
+    end)
+
+    vim.o.eventignore = eventos
+
+    if not ok then
+        vim.notify("marcas: " .. tostring(erro), vim.log.levels.ERROR)
+    end
+end
 
 function M.menu()
     if janela and vim.api.nvim_win_is_valid(janela) then
         vim.api.nvim_win_close(janela, true)
-        janela = nil
         return
     end
 
     local buf = vim.api.nvim_create_buf(false, true)
     vim.bo[buf].bufhidden = "wipe"
 
-    local function desenhar()
-        local conteudo = {}
-        for i, marca in ipairs(MARCAS) do
-            local item = alvo(marca)
-            conteudo[i] = item
-                and string.format(" %d  %s  %s:%d", i, marca, caminho(item), item.pos[2])
-                or string.format(" %d  %s  (vazia)", i, marca)
-        end
-
-        vim.bo[buf].modifiable = true
-        vim.api.nvim_buf_set_lines(buf, 0, -1, false, conteudo)
-        vim.bo[buf].modifiable = false
-
-        return conteudo
-    end
-
+    local conteudo = {}
     local largura = 40
-    for _, linha in ipairs(desenhar()) do
-        largura = math.max(largura, vim.fn.strdisplaywidth(linha) + 2)
+    for i, marca in ipairs(MARCAS) do
+        conteudo[i] = texto_de(alvo(marca))
+        largura = math.max(largura, vim.fn.strdisplaywidth(conteudo[i]) + 6)
     end
     largura = math.min(largura, vim.o.columns - 4)
+
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, conteudo)
+
+    -- A letra é do slot, não do texto: apagar uma linha sobe o conteúdo, e o
+    -- extmark subiria junto se não fosse refeito a cada edição.
+    local function letras()
+        vim.api.nvim_buf_clear_namespace(buf, LETRAS, 0, -1)
+        local total = vim.api.nvim_buf_line_count(buf)
+
+        for i, marca in ipairs(MARCAS) do
+            if i <= total then
+                vim.api.nvim_buf_set_extmark(buf, LETRAS, i - 1, 0, {
+                    virt_text = { { " " .. marca .. " ", "Title" } },
+                    virt_text_pos = "right_align",
+                })
+            end
+        end
+    end
+
+    letras()
 
     janela = vim.api.nvim_open_win(buf, true, {
         relative = "editor",
@@ -152,32 +210,44 @@ function M.menu()
 
     vim.wo[janela].cursorline = true
 
+    vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+        buffer = buf,
+        callback = letras,
+    })
+
+    -- Um ponto só para todas as saídas: o q, o <Esc>, o segundo <C-e> e o :q.
+    -- As linhas são lidas aqui, que ainda é seguro, e a escrita vai para o
+    -- schedule porque durante o fechamento da janela o textlock barraria o
+    -- bufload.
+    vim.api.nvim_create_autocmd("BufWinLeave", {
+        buffer = buf,
+        once = true,
+        callback = function()
+            local linhas = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+            janela = nil
+            vim.schedule(function()
+                aplicar(linhas)
+            end)
+        end,
+    })
+
     local function fechar()
         if janela and vim.api.nvim_win_is_valid(janela) then
             vim.api.nvim_win_close(janela, true)
         end
-        janela = nil
     end
 
-    local function ir(indice)
-        fechar()
-        M.pular(MARCAS[indice])
-    end
-
+    -- O pulo também entra na fila, atrás do aplicar: sem isso ele leria a marca
+    -- antiga quando a linha tivesse acabado de mudar de lugar.
     vim.keymap.set("n", "<CR>", function()
-        ir(vim.fn.line("."))
+        local marca = MARCAS[vim.fn.line(".")]
+        fechar()
+        if marca then
+            vim.schedule(function()
+                M.pular(marca)
+            end)
+        end
     end, { buffer = buf })
-
-    vim.keymap.set("n", "d", function()
-        M.limpar(MARCAS[vim.fn.line(".")])
-        desenhar()
-    end, { buffer = buf })
-
-    for i = 1, #MARCAS do
-        vim.keymap.set("n", tostring(i), function()
-            ir(i)
-        end, { buffer = buf })
-    end
 
     for _, tecla in ipairs({ "q", "<Esc>" }) do
         vim.keymap.set("n", tecla, fechar, { buffer = buf })
