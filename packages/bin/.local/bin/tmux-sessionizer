@@ -98,6 +98,16 @@ exclude_stowed_config
 # --tiebreak=index: nas buscas curtas o score empata quase sempre, então quem
 # decide é a ordem da entrada, e não o caminho mais curto do padrão do fzf.
 #
+# O --tmux é o que dá o popup nos três pontos de entrada (bind do tmux, nvim e
+# shell), e o fzf o ignora sozinho fora do tmux. Ele não pode se repetir: um
+# display-popup chamado de dentro de outro modifica o popup existente em vez de
+# rodar o comando, o fzf sai na hora e a tela pisca. Quem já é popup avisa pelo
+# -e do display-popup, e aí o fzf ocupa o popup inteiro.
+FZF_OPTS=(--layout reverse --tiebreak=index)
+if [[ -z ${TMUX_SESSIONIZER_POPUP:-} ]]; then
+    FZF_OPTS+=(--height 40% --tmux center)
+fi
+
 # Os fixados passam por fora do keep, e o awk fica com a primeira ocorrência:
 # assim o `+` vence o `-` e mantém a posição mesmo estando também no zoxide.
 selected=$( {
@@ -107,7 +117,7 @@ selected=$( {
                 keep "$dir" && printf '%s\n' "$dir"
             done
     } | awk '!seen[$0]++' |
-    fzf --height 40% --tmux center --layout reverse --tiebreak=index)
+    fzf "${FZF_OPTS[@]}")
 
 if [[ -z "$selected" ]]; then
     exit 0
