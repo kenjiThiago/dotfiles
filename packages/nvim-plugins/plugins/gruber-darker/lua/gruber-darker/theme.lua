@@ -310,25 +310,29 @@ function M.setup()
 
         -- Git Commit
         --
-        -- O bloco de status é todo comentário, e o brilho ali diz o quanto
-        -- cada arquivo interessa a este commit: staged em terracotta, o que
-        -- ficou de fora em rosa, o não rastreado no mesmo tom do comentário.
-        -- Os rótulos ("modified:", "new file:") são estrutura, não conteúdo, e
-        -- ficam em burgundy para o caminho do arquivo sobrar sozinho colorido.
-        gitcommitSummary = { fg = palette.terracotta, bold = true },
+        -- Espelho da queries/gitcommit/highlights.scm do nvim-treesitter, para
+        -- o mesmo buffer sair igual com e sem parser. Os links são de propósito:
+        -- deixam o pareamento com a captura explícito, e mudar a captura move
+        -- os dois lados juntos. O prefixo de conventional commit, que a
+        -- sintaxe nativa não separa do resumo, vem do after/syntax do pacote
+        -- nvim, porque exige um syn match e não só cor.
+        gitcommitSummary = { link = "@markup.heading" },
+        gitcommitHeader = { link = "@markup.heading" },
+        gitcommitBranch = { link = "@markup.link" },
+        gitcommitSelectedType = { link = "@keyword" },
+        gitcommitDiscardedType = { link = "@keyword" },
+        gitcommitUnmergedType = { link = "@keyword" },
+        gitcommitFile = { link = "@string.special.path" },
+        gitcommitSelectedFile = { link = "@string.special.path" },
+        gitcommitDiscardedFile = { link = "@string.special.path" },
+        gitcommitUntrackedFile = { link = "@string.special.path" },
+        gitcommitUnmergedFile = { link = "@string.special.path" },
+        gitcommitArrow = { link = "@punctuation.delimiter" },
+        -- Os dois sem contraparte na query: o tree-sitter não marca estouro da
+        -- coluna 50 nem texto na linha 2, que o git espera vazia. O fg = bg que
+        -- havia no Blank fazia o texto sumir.
         gitcommitOverflow = { fg = palette.bg, bg = palette.red_error },
-        -- Texto na linha 2, que o git espera vazia. Não pode ser fg = bg: some.
         gitcommitBlank = { fg = palette.red_error },
-        gitcommitHeader = { fg = palette.burgundy, italic = true },
-        gitcommitBranch = { fg = palette.plum, bold = true },
-        gitcommitSelectedType = { fg = palette.burgundy },
-        gitcommitSelectedFile = { fg = palette.terracotta },
-        gitcommitDiscardedType = { fg = palette.burgundy },
-        gitcommitDiscardedFile = { fg = palette.dusty_rose },
-        gitcommitUntrackedFile = { fg = palette.burgundy },
-        gitcommitUnmergedType = { fg = palette.red_error },
-        gitcommitUnmergedFile = { fg = palette.red_error, bold = true },
-        gitcommitFile = { fg = palette.fg },
 
         GitSignsAdd = { fg = palette.green_ok },
         GitSignsChange = { fg = palette.yellow_warn },
