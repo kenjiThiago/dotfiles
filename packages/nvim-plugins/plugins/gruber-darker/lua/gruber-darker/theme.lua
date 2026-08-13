@@ -30,6 +30,7 @@ function M.setup()
         ErrorMsg = { fg = palette.red_error, bold = true },
         WarningMsg = { fg = palette.yellow_warn, bold = true },
         MoreMsg = { fg = palette.terracotta, bold = true },
+        OkMsg = { fg = palette.green_ok },
         ModeMsg = { fg = palette.crimson, bold = true },
         MatchParen = { fg = palette.crimson, bg = palette["bg+2"], bold = true },
         NonText = { fg = palette["bg+2"] },
@@ -38,6 +39,8 @@ function M.setup()
         WildMenu = { fg = palette.black, bg = palette.crimson },
         Search = { fg = palette.bg, bg = palette.dusty_rose },
         IncSearch = { fg = palette.bg, bg = palette.crimson },
+        CurSearch = { link = "IncSearch" },
+        Substitute = { link = "IncSearch" },
         Question = { fg = palette.green_ok },
         Title = { fg = palette.terracotta, bold = true },
         VertSplit = { fg = palette["bg+2"] },
@@ -47,6 +50,9 @@ function M.setup()
         FoldColumn = { fg = palette.burgundy, bg = palette.bg },
         StatusLine = { fg = palette.fg, bg = palette["bg+2"] },
         StatusLineNC = { fg = palette.burgundy, bg = palette["bg+1"] },
+        WinBar = { fg = palette.fg, bg = palette["bg+1"], bold = true },
+        WinBarNC = { fg = palette.burgundy, bg = palette["bg+1"] },
+        QuickFixLine = { bg = palette["bg+2"] },
         TabLine = { fg = palette.burgundy, bg = palette["bg+1"] },
         TabLineFill = { bg = palette["bg-1"] },
         TabLineSel = { fg = palette.crimson, bg = palette.bg, bold = true },
@@ -66,12 +72,23 @@ function M.setup()
         DiffDelete = { fg = palette.red_error, bg = palette["bg+2"] },
         DiffText = { fg = palette.terracotta, bg = palette["bg+3"] },
 
+        -- O syntax/diff.vim liga diffAdded, diffChanged e diffRemoved a estes
+        -- três, e é ele que pinta buffers de patch e o commit --verbose. Sem
+        -- defini-los sobra o padrão do nvim, em pasteis fora da paleta.
+        Added = { fg = palette.green_ok },
+        Changed = { fg = palette.yellow_warn },
+        Removed = { fg = palette.red_error },
+
         TrailingWhitespace = { bg = palette.crimson },
 
         -- ==========================================
         -- Sintaxe Nativa (Prioridade)
         -- ==========================================
         Comment = { fg = palette.burgundy },
+        -- Ponto de queda de meia sintaxe legada (gitcommitFile, diffOnly,
+        -- gitconfigDelim...). Sem tree-sitter é ele que responde, então não
+        -- pode ficar no padrão do nvim.
+        Constant = { fg = palette.plum },
         String = { fg = palette.dusty_rose },
         Character = { fg = palette.dusty_rose },
         Number = { fg = palette.plum },
@@ -95,6 +112,9 @@ function M.setup()
         Structure = { fg = palette.crimson },
         Typedef = { fg = palette.burgundy },
         Special = { fg = palette.fg },
+        SpecialChar = { fg = palette.plum },
+        SpecialComment = { fg = palette.burgundy },
+        Delimiter = { fg = palette.fg },
         Underlined = { underline = true },
         Error = { fg = palette.red_error, bold = true },
         Todo = { fg = palette.bg, bg = palette.crimson, bold = true },
@@ -104,6 +124,23 @@ function M.setup()
         htmlEndTag = { fg = palette.plum },
         htmlTagName = { fg = palette.crimson },
         htmlArg = { fg = palette.terracotta },
+
+        -- O markdown legado liga markdownH1..H6 aqui, e o padrão manda os seis
+        -- para Title, o que achata a hierarquia. Mesmas cores do @markup.heading.
+        htmlH1 = { fg = palette.crimson, bold = true },
+        htmlH2 = { fg = palette.terracotta, bold = true },
+        htmlH3 = { fg = palette.plum, bold = true },
+        htmlH4 = { fg = palette.dusty_rose, bold = true },
+        htmlH5 = { fg = palette.green_ok, bold = true },
+        htmlH6 = { fg = palette.burgundy, bold = true },
+
+        -- Sintaxe Nativa Específica: Markdown
+        markdownHeadingDelimiter = { fg = palette.burgundy },
+        markdownRule = { fg = palette.burgundy, bold = true },
+        markdownCode = { fg = palette.dusty_rose },
+        markdownCodeBlock = { fg = palette.dusty_rose },
+        markdownCodeDelimiter = { fg = palette.burgundy },
+        markdownLinkText = { fg = palette.terracotta, underline = true },
 
         -- Sintaxe Nativa Específica: YAML
         yamlKey = { fg = palette.plum, bold = true },
@@ -224,6 +261,18 @@ function M.setup()
         ["@markup.heading.5.marker"] = { fg = palette.green_ok, bold = true },
         ["@markup.heading.6.marker"] = { fg = palette.burgundy, bold = true },
 
+        -- Fora dos títulos o padrão do @markup é só atributo, sem cor, então o
+        -- mesmo markdown sai mais chapado com tree-sitter do que sem. Este
+        -- bloco é o espelho do markdown da sintaxe nativa, acima.
+        ["@markup.raw"] = { fg = palette.dusty_rose },
+        ["@markup.raw.block"] = { fg = palette.dusty_rose },
+        ["@markup.quote"] = { fg = palette.burgundy },
+        ["@markup.list"] = { fg = palette.crimson },
+        ["@markup.link"] = { fg = palette.terracotta, underline = true },
+        ["@markup.link.label"] = { fg = palette.terracotta, underline = true },
+        ["@markup.link.url"] = { fg = palette.plum, underline = true },
+        ["@string.special.url"] = { fg = palette.plum, underline = true },
+
         -- ==========================================
         -- Plugins
         -- ==========================================
@@ -249,6 +298,7 @@ function M.setup()
         DiagnosticWarn = { fg = palette.yellow_warn },
         DiagnosticInfo = { fg = palette.terracotta },
         DiagnosticHint = { fg = palette.plum },
+        DiagnosticOk = { fg = palette.green_ok },
         DiagnosticUnderlineError = { sp = palette.red_error, undercurl = true },
         DiagnosticUnderlineWarn = { sp = palette.yellow_warn, undercurl = true },
         DiagnosticUnderlineInfo = { sp = palette.terracotta, undercurl = true },
@@ -259,16 +309,26 @@ function M.setup()
         DiagnosticVirtualTextHint = { fg = palette.plum, bg = palette["bg+1"] },
 
         -- Git Commit
+        --
+        -- O bloco de status é todo comentário, e o brilho ali diz o quanto
+        -- cada arquivo interessa a este commit: staged em terracotta, o que
+        -- ficou de fora em rosa, o não rastreado no mesmo tom do comentário.
+        -- Os rótulos ("modified:", "new file:") são estrutura, não conteúdo, e
+        -- ficam em burgundy para o caminho do arquivo sobrar sozinho colorido.
         gitcommitSummary = { fg = palette.terracotta, bold = true },
         gitcommitOverflow = { fg = palette.bg, bg = palette.red_error },
-        gitcommitBlank = { fg = palette.bg },
+        -- Texto na linha 2, que o git espera vazia. Não pode ser fg = bg: some.
+        gitcommitBlank = { fg = palette.red_error },
         gitcommitHeader = { fg = palette.burgundy, italic = true },
         gitcommitBranch = { fg = palette.plum, bold = true },
-        gitcommitSelectedType = { fg = palette.green_ok },
-        gitcommitSelectedFile = { fg = palette.green_ok, bold = true },
-        gitcommitDiscardedType = { fg = palette.yellow_warn },
-        gitcommitDiscardedFile = { fg = palette.yellow_warn, bold = true },
-        gitcommitUntrackedFile = { fg = palette.dusty_rose },
+        gitcommitSelectedType = { fg = palette.burgundy },
+        gitcommitSelectedFile = { fg = palette.terracotta },
+        gitcommitDiscardedType = { fg = palette.burgundy },
+        gitcommitDiscardedFile = { fg = palette.dusty_rose },
+        gitcommitUntrackedFile = { fg = palette.burgundy },
+        gitcommitUnmergedType = { fg = palette.red_error },
+        gitcommitUnmergedFile = { fg = palette.red_error, bold = true },
+        gitcommitFile = { fg = palette.fg },
 
         GitSignsAdd = { fg = palette.green_ok },
         GitSignsChange = { fg = palette.yellow_warn },
@@ -308,6 +368,10 @@ function M.setup()
         PmenuSel = { fg = palette.crimson, bg = palette["bg+2"], bold = true },
         PmenuSbar = { bg = palette["bg+1"] },
         PmenuThumb = { bg = palette["bg+3"] },
+        -- Pum e wildmenu nativos, que é o que sobra no perfil servidor: mesmo
+        -- destaque de trecho casado que o blink e o cmp recebem abaixo.
+        PmenuMatch = { fg = palette.terracotta, bg = palette["bg+1"], bold = true },
+        PmenuMatchSel = { fg = palette.terracotta, bg = palette["bg+2"], bold = true },
         CmpItemAbbr = { fg = palette.fg },
         CmpItemAbbrDeprecated = { fg = palette.burgundy, strikethrough = true },
         CmpItemAbbrMatch = { fg = palette.terracotta, bold = true },
