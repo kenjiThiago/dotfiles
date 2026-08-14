@@ -104,16 +104,25 @@ hl.bind(mainMod .. "+ CTRL + W", hl.dsp.group.lock_active())
 
 hl.bind(mainMod .. " + SHIFT + I", hl.dsp.exec_cmd("window-info"))
 
-local minimized = false
-hl.bind(mainMod .. "+ X", function()
-    if minimized then
-        hl.dispatch(hl.dsp.workspace.toggle_special("minimize"))
+-- Mesmo par da magic: a tecla nua mostra e esconde a pilha, o SHIFT leva a
+-- janela para dentro e para fora dela.
+hl.bind(mainMod .. "+ X", hl.dsp.workspace.toggle_special("minimize"))
+
+-- O estado sai da janela em foco, e não de uma variável do arquivo: com um
+-- booleano único, minimizar a segunda janela restaurava a primeira, e um
+-- reload da config já o deixava mentindo. Mover para a special leva o foco
+-- junto, daí o toggle logo depois para a janela de fato sumir.
+hl.bind(mainMod .. "+ SHIFT + X", function()
+    local w = hl.get_active_window()
+    if not w then
+        return
+    end
+
+    if w.workspace and w.workspace.special then
         hl.dispatch(hl.dsp.window.move({ workspace = "+0" }))
-        minimized = false
     else
         hl.dispatch(hl.dsp.window.move({ workspace = "special:minimize" }))
         hl.dispatch(hl.dsp.workspace.toggle_special("minimize"))
-        minimized = true
     end
 end)
 
