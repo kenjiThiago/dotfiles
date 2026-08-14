@@ -1,5 +1,13 @@
 local M = require("conf.programs")
 
+-- Duas regras decidem onde cada tecla mora:
+--
+-- 1. Lado esquerdo do teclado (QWERT/ASDFG/ZXCVB) para o que se usa com a mão
+--    direita no mouse: lançadores, o shell do quickshell e o estado da janela.
+--    HJKL e vizinhos ficam com a navegação, que se faz com as duas mãos.
+-- 2. O modificador diz o alvo: SUPER foca, SUPER+SHIFT move a janela e
+--    SUPER+CTRL age sobre o grupo.
+
 local mainMod = "SUPER"
 
 hl.bind(mainMod .. "+ Q", hl.dsp.exec_cmd("uwsm app -- " .. M.terminal))
@@ -42,10 +50,11 @@ hl.bind(mainMod .. "+ A", hl.dsp.exec_cmd("uwsm app -- rofi-script apps"))
 -- Mesma classe do control center e do rofi, para cair na regra do rules.lua.
 hl.bind(mainMod .. "+ SHIFT + A",
     hl.dsp.exec_cmd("uwsm app -- ghostty --class=com.example.wiremix --command=wiremix"))
+-- O shell inteiro na mão esquerda, porque se usa com o mouse: a ilha, o
+-- control center e o não perturbe.
 hl.bind(mainMod .. "+ SHIFT + E", hl.dsp.exec_cmd("qs ipc call bar expand"))
-hl.bind(mainMod .. "+ N", hl.dsp.exec_cmd("qs ipc call notifications toggle"))
--- Na mão esquerda: o control center se usa com o mouse.
 hl.bind(mainMod .. "+ D", hl.dsp.exec_cmd("qs ipc call bar center"))
+hl.bind(mainMod .. "+ SHIFT + D", hl.dsp.exec_cmd("qs ipc call notifications toggle"))
 hl.bind(mainMod .. "+ PERIOD", hl.dsp.exec_cmd("uwsm app -- rofimoji --action copy"))
 hl.bind(mainMod .. "+ P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. "+ T", hl.dsp.layout("togglesplit"))
@@ -67,15 +76,31 @@ hl.bind(mainMod .. "+ SHIFT + DOWN",
 hl.bind(mainMod .. "+ F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "+ SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
 
-hl.bind(mainMod .. "+ Y", hl.dsp.exec_cmd("uwsm app -- rofi-script clipboard"))
+hl.bind(mainMod .. "+ SHIFT + V", hl.dsp.exec_cmd("uwsm app -- rofi-script clipboard"))
 
 hl.bind(mainMod .. "+ E", hl.dsp.exec_cmd("uwsm app -- rofi-script --screenshot region"))
-hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("uwsm app -- rofi-script --screenshot fullscreen"))
+hl.bind(mainMod .. "+ SHIFT + F", hl.dsp.exec_cmd("uwsm app -- rofi-script --screenshot fullscreen"))
 
-hl.bind(mainMod .. " + SHIFT + W", hl.dsp.group.toggle())
-hl.bind(mainMod .. "+ W", hl.dsp.group.next())
+-- ── Grupos ────────────────────────────────────────────────────────────────────
+-- A tecla nua agrupa e desagrupa; o TAB anda entre as abas do grupo, nos dois
+-- sentidos; o CTRL leva a janela para dentro do grupo do vizinho.
+hl.bind(mainMod .. "+ W", hl.dsp.group.toggle())
+hl.bind(mainMod .. "+ TAB", hl.dsp.group.next())
+hl.bind(mainMod .. "+ SHIFT + TAB", hl.dsp.group.prev())
 
-hl.bind(mainMod .. "+ O", hl.dsp.window.move({ into_or_create_group = "l" }))
+-- Em função, e não como dispatcher montado no carregamento, para um argumento
+-- recusado derrubar só esta tecla em vez da config inteira.
+hl.bind(mainMod .. "+ SHIFT + W", function()
+    hl.dispatch(hl.dsp.window.move({ out_of_group = true }))
+end)
+
+hl.bind(mainMod .. "+ CTRL + H", hl.dsp.window.move({ into_or_create_group = "l" }))
+hl.bind(mainMod .. "+ CTRL + L", hl.dsp.window.move({ into_or_create_group = "r" }))
+hl.bind(mainMod .. "+ CTRL + K", hl.dsp.window.move({ into_or_create_group = "u" }))
+hl.bind(mainMod .. "+ CTRL + J", hl.dsp.window.move({ into_or_create_group = "d" }))
+
+-- Grupo travado não absorve a próxima janela aberta ao lado.
+hl.bind(mainMod .. "+ CTRL + W", hl.dsp.group.lock_active())
 
 hl.bind(mainMod .. " + SHIFT + I", hl.dsp.exec_cmd("window-info"))
 
@@ -136,7 +161,22 @@ for i = 1, 10 do
 end
 
 hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
+
+-- Manda para a magic e traz de volta pela mesma tecla. Sem o segundo ramo a
+-- janela entra na special e só sai arrastada com o mouse. O "+0" é o workspace
+-- visível do monitor, o mesmo truque que o minimizar usa acima.
+hl.bind(mainMod .. " + SHIFT + S", function()
+    local w = hl.get_active_window()
+    if not w then
+        return
+    end
+
+    if w.workspace and w.workspace.special then
+        hl.dispatch(hl.dsp.window.move({ workspace = "+0" }))
+    else
+        hl.dispatch(hl.dsp.window.move({ workspace = "special:magic" }))
+    end
+end)
 
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
