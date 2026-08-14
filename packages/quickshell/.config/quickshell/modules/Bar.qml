@@ -28,24 +28,24 @@ Scope {
         onTriggered: root.expectingMenu = false
     }
 
+    // Toda tecla que entra num estado da ilha é toggle: repetir a mesma tecla
+    // volta para 0, e não avança para o estado seguinte. Fica fora do
+    // IpcHandler porque lá dentro toda função vira um comando do `qs ipc`.
+    function toggleIsland(estado: int): void {
+        root.islandState = root.islandState === estado ? 0 : estado;
+        root.calendarExpanded = false;
+        root.grabAlive = true;
+    }
+
     IpcHandler {
         target: "bar"
 
-        function cycle(): void {
-            if (root.islandState === 0)
-                root.islandState = 1;
-            else if (root.islandState === 1)
-                root.islandState = 2;
-            else
-                root.islandState = 0;
-            root.calendarExpanded = false;
-            root.grabAlive = true;
+        function expand(): void {
+            root.toggleIsland(1);
         }
 
         function center(): void {
-            root.islandState = root.islandState === 2 ? 0 : 2;
-            root.calendarExpanded = false;
-            root.grabAlive = true;
+            root.toggleIsland(2);
         }
     }
 

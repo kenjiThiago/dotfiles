@@ -42,7 +42,7 @@ hl.bind(mainMod .. "+ A", hl.dsp.exec_cmd("uwsm app -- rofi-script apps"))
 -- Mesma classe do control center e do rofi, para cair na regra do rules.lua.
 hl.bind(mainMod .. "+ SHIFT + A",
     hl.dsp.exec_cmd("uwsm app -- ghostty --class=com.example.wiremix --command=wiremix"))
-hl.bind(mainMod .. "+ SHIFT + E", hl.dsp.exec_cmd("qs ipc call bar cycle"))
+hl.bind(mainMod .. "+ SHIFT + E", hl.dsp.exec_cmd("qs ipc call bar expand"))
 hl.bind(mainMod .. "+ N", hl.dsp.exec_cmd("qs ipc call notifications toggle"))
 -- Na mão esquerda: o control center se usa com o mouse.
 hl.bind(mainMod .. "+ D", hl.dsp.exec_cmd("qs ipc call bar center"))
