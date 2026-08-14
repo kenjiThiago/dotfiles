@@ -183,6 +183,11 @@ Rectangle {
                 font.family: "Hack Nerd Font"
                 font.pixelSize: 13
                 font.weight: Font.Bold
+                // Título longo fica numa linha só até o mouse entrar, e aí abre
+                // inteiro. O hover já segura a contagem do timeout, então o
+                // card não some no meio da leitura.
+                wrapMode: Text.WordWrap
+                maximumLineCount: hoverArea.containsMouse ? 5 : 1
                 elide: Text.ElideRight
             }
 

@@ -188,6 +188,10 @@ Column {
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 12
                                 font.weight: Font.Bold
+                                // Igual ao popup: uma linha até o mouse entrar,
+                                // inteiro no hover.
+                                wrapMode: Text.WordWrap
+                                maximumLineCount: entryMouse.containsMouse ? 5 : 1
                                 elide: Text.ElideRight
                             }
 
@@ -197,18 +201,21 @@ Column {
                                 color: Theme.muted
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 10
-                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.top: parent.top
                             }
 
                             // Na linha do título para não descer conforme o corpo
-                            // e os botões fazem o item crescer.
+                            // e os botões fazem o item crescer. Ancorados no topo
+                            // e não no centro porque o título cresce no hover: no
+                            // centro, o 󰅖 escorregava de sob o cursor e piscava
+                            // entre as duas cores do Behavior.
                             Text {
                                 id: dismissBtn
                                 text: "󰅖"
                                 color: dismissMouse.containsMouse ? Theme.error : Theme.muted
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 12
-                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.top: parent.top
 
                                 Behavior on color {
                                     ColorAnimation {
