@@ -235,6 +235,12 @@ change_wallpaper() {
             "$CAMINHO" > "$CONF"
     fi
 
+    # O hyprlock não lê o hyprpaper.conf: o fundo dele vem do $wallpaper em
+    # conf/colors.conf, gerado pelo mesmo `theme set`. Sem esta linha o
+    # lockscreen fica no wallpaper do tema, não no que acabou de ser escolhido.
+    local CORES="$HOME/.config/hypr/conf/colors.conf"
+    [[ -f $CORES ]] && sed -i "s|^\(\$wallpaper *= *\).*|\1$CAMINHO|" "$CORES"
+
     notify-send -a "Hyprpaper" -i "$CAMINHO" "Wallpaper Atualizado" "Salvo para o próximo boot!"
 }
 
