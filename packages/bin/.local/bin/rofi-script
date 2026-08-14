@@ -135,7 +135,14 @@ take_screenshot() {
     action=$(notify-send "Captura Salva" "Copiado para a área de transferência." \
         -i "$filepath" -a "Screenshot" -A "edit=Editar com Satty" -t 15000)
 
-    [[ "$action" == "edit" ]] && uwsm app -- satty \
+    # O satty é GTK4, e o GDK inicializa Vulkan ao subir o display, mesmo com
+    # outro GSK_RENDERER. Como o único ICD Vulkan da máquina é o da NVIDIA,
+    # isso acorda a dGPU e a janela leva ~1,8s em vez de ~0,2s. Sem Vulkan o
+    # GSK cai no OpenGL da Intel sozinho. O env vai dentro do comando porque o
+    # uwsm sobe o app por uma unit do systemd.
+    [[ "$action" == "edit" ]] && uwsm app -- env \
+        GDK_DISABLE=vulkan \
+        satty \
         --filename "$filepath" \
         --output-filename "$filepath" \
         --save-after-copy \
