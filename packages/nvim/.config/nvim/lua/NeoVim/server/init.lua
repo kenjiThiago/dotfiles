@@ -11,6 +11,7 @@ if vim.fn.has("nvim-0.11") == 1 then
 end
 
 require("NeoVim.server.find")
+require("NeoVim.server.dirs")
 require("NeoVim.server.marcas")
 require("NeoVim.server.align")
 
