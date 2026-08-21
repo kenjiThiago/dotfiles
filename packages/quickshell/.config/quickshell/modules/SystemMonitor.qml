@@ -192,6 +192,12 @@ Item {
     property int pendingBrightness: -1
     signal osdRequested(real newVal)
 
+    // Piso do que este shell escreve: em 0 o backlight apaga de vez, e voltar de
+    // lá é acertar o atalho às cegas. Vale para o slider e para a roda também,
+    // que passam pelo mesmo setBrightness. O que vem de fora não é clampeado: o
+    // hypridle escurece de propósito e o applyBrightness tem que dizer a verdade.
+    readonly property int brightnessMin: 5
+
     // Quem mexe no brilho é este shell, pelos atalhos do keybinds.lua. Antes um
     // Timer relia o sysfs a 10Hz para descobrir a mudança, e isso sozinho era
     // quatro quintos do CPU em repouso do processo.
@@ -213,7 +219,7 @@ Item {
 
         sys.setBrightness(sys.currentBrightness + delta);
         // Fora do applyBrightness porque o setBrightness não passa por lá, e
-        // porque no teto o valor não muda mas o OSD ainda tem que aparecer.
+        // porque nos extremos o valor não muda mas o OSD ainda tem que aparecer.
         sys.osdRequested(sys.currentBrightness);
     }
 
@@ -305,7 +311,7 @@ Item {
     }
 
     function setBrightness(percent) {
-        let safePct = Math.max(0, Math.min(100, Math.round(percent)));
+        let safePct = Math.max(sys.brightnessMin, Math.min(100, Math.round(percent)));
         brightnessSettle.restart();
         if (safePct === sys.currentBrightness)
             return;

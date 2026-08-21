@@ -67,11 +67,14 @@ hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO
     { locked = true, repeating = true })
 -- Pelo quickshell para ele saber do brilho sem reler o sysfs em poll. O recuo
 -- cobre o shell fora do ar, que é justamente quando não há OSD para mostrar.
+-- O --min-value repete o piso do brightnessMin do SystemMonitor, senão o recuo
+-- apaga a tela onde o caminho normal não deixa. É calculado porque o
+-- brightnessctl só aceita valor bruto ali, e o máximo varia por painel.
 hl.bind(mainMod .. "+ SHIFT + UP",
     hl.dsp.exec_cmd("qs ipc call brightness up 2>/dev/null || brightnessctl set 5%+"),
     { locked = true, repeating = true })
 hl.bind(mainMod .. "+ SHIFT + DOWN",
-    hl.dsp.exec_cmd("qs ipc call brightness down 2>/dev/null || brightnessctl set 5%-"),
+    hl.dsp.exec_cmd("qs ipc call brightness down 2>/dev/null || brightnessctl --min-value=$(($(brightnessctl m) / 20)) set 5%-"),
     { locked = true, repeating = true })
 hl.bind(mainMod .. "+ F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "+ SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
