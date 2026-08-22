@@ -2,7 +2,10 @@
 
 @import "colors.css";
 
-@media (prefers-color-scheme: dark) {
+/* Quem decide se a variante é clara ou escura é a paleta, no theme.sh, e as
+ * duas condições cobrem qualquer coisa que o navegador reporte. Só com
+ * `dark` o tema light não pintaria nada aqui. */
+@media (prefers-color-scheme: dark), (prefers-color-scheme: light) {
 
   :root {
     --accent: var(--dots-accent-alt);

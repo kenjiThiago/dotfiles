@@ -185,8 +185,8 @@ theme reload             # reaplica o tema atual (depois de editar templates)
 
 Também está no menu do `rofi-script` em **Setup → Tema**.
 
-Temas disponíveis: `rose-pine-moon` (padrão), `rose-pine`, `catppuccin-mocha`,
-`tokyonight-moon`.
+Temas disponíveis: `rose-pine-moon` (padrão), `rose-pine`, `rose-pine-dawn`
+(o único claro), `catppuccin-mocha`, `tokyonight-moon`.
 
 ### Como funciona
 
@@ -233,7 +233,9 @@ código com cores trocadas em relação ao buffer ao lado.
 gsettings e não sobrepõe o que você escolheu à mão. Preencha se quiser que a
 troca de tema leve o GTK e o cursor junto — os nomes válidos são os diretórios
 em `/usr/share/icons`, `~/.local/share/icons` e `~/.themes`. O Hyprland lê o
-cursor do gsettings por causa do `sync_gsettings_theme = true`.
+cursor do gsettings por causa do `sync_gsettings_theme = true`. É também o
+que deixa os apps GTK escuros no `rose-pine-dawn`: sem `gtk_theme`, o `theme`
+não chega a pedir `prefer-light` ao gsettings.
 
 Nos templates, cada chave tem quatro formas:
 
