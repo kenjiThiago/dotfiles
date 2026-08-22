@@ -1,5 +1,5 @@
 -- O findfunc é chamado a cada tecla digitada no :find, então a lista de
--- arquivos vem de um cache por cwd: um rg por diretório, não um por tecla.
+-- arquivos vem de um cache por cwd: um rg por invocação, não um por tecla.
 
 -- Teto por passada do matchfuzzy. Sem ele a busca varre a lista inteira para
 -- ordenar milhares de resultados que a pum nunca mostra.
@@ -82,25 +82,16 @@ vim.api.nvim_create_user_command("FindRefresh", function()
     vim.notify("findfunc: cache de arquivos limpo")
 end, { desc = "Reler a lista de arquivos do :find" })
 
--- Arquivo criado dentro do nvim não está no cache do rg. A marca vem do
--- BufNewFile porque no BufWritePost o arquivo já existe em disco e não há mais
--- como distinguir criação de salvamento.
-local grupo = vim.api.nvim_create_augroup("FindCache", { clear = true })
-
-vim.api.nvim_create_autocmd("BufNewFile", {
-    group = grupo,
-    callback = function(args)
-        vim.b[args.buf].find_novo = true
-    end,
-})
-
-vim.api.nvim_create_autocmd("BufWritePost", {
-    group = grupo,
-    callback = function(args)
-        if vim.b[args.buf].find_novo then
-            vim.b[args.buf].find_novo = nil
-            cache[vim.uv.cwd() or "."] = nil
-        end
+-- Arquivo criado depois da varredura não está no cache. Invalidar ao entrar na
+-- cmdline é o intervalo certo: o rg roda no máximo uma vez por :find, e nunca
+-- durante a digitação, onde o cache é justamente o que segura o custo. O gatilho
+-- é a cmdline e não a escrita do buffer porque assim vale também para o que
+-- aparece por fora do nvim, como um git pull ou um arquivo criado no shell.
+vim.api.nvim_create_autocmd("CmdlineEnter", {
+    group = vim.api.nvim_create_augroup("FindCache", { clear = true }),
+    pattern = ":",
+    callback = function()
+        cache[vim.uv.cwd() or "."] = nil
     end,
 })
 
