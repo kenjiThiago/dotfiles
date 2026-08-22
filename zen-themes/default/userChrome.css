@@ -33,11 +33,33 @@
     --nebula-sidebar-width: 20em !important;
   }
 
-  .ContentSelectDropdown-item-0 {
+  /* ── Conserto: painel do <select> ───────────────────────────────────────────
+   * O SelectParent numera .ContentSelectDropdown-item-N por estilo computado da
+   * página, não por nível: N é a posição num cache de estilos distintos. O
+   * rótulo do <optgroup> vem em negrito, cai num índice próprio, e mirar só o
+   * zero deixava ele com a cor da página sobre o --arrowpanel-background daqui
+   * de cima, preto no escuro.
+   *
+   * O esquema do painel também vem da página (o ator copia o do <select>), então
+   * fixá-lo na variante da paleta é o que alinha o resto: separador, rolagem e
+   * item desabilitado, que saem de cor de sistema. */
+  #ContentSelectDropdown menupopup {
+    color-scheme: var(--dots-color-scheme) !important;
+  }
+
+  /* Quando a página estiliza as options, o ator repinta o scrollbox com a cor
+   * dela por background-image, por cima do fundo do painel. */
+  #ContentSelectDropdown menupopup[customoptionstyling="true"]::part(arrowscrollbox) {
+    background-image: none !important;
+    background-color: transparent !important;
+  }
+
+  [class*="ContentSelectDropdown-item-"] {
+    background-color: transparent !important;
     color: var(--dots-text) !important;
   }
 
-  .ContentSelectDropdown-item-0[_moz-menuactive="true"] {
+  [class*="ContentSelectDropdown-item-"][_moz-menuactive="true"] {
     background-color: var(--accent) !important;
     color: var(--dots-base) !important;
   }

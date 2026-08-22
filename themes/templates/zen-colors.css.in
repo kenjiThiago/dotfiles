@@ -22,6 +22,11 @@
   --dots-highlight-med: {{highlight_med}};
   --dots-highlight-high: {{highlight_high}};
 
+  /* A variante da paleta, para o CSS poder dizer ao chrome qual esquema usar.
+   * As cores de sistema do menupopup (Menu, MenuText) saem daí, e o painel do
+   * <select> herda o esquema da página quando ninguém fixa. */
+  --dots-color-scheme: {{variant}};
+
   --dots-text: {{text}};
   --dots-subtle: {{subtle}};
   --dots-muted: {{muted}};
