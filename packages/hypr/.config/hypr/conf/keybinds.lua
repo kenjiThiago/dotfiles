@@ -65,6 +65,10 @@ hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAUL
     { locked = true, repeating = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
     { locked = true, repeating = true })
+-- O playerctl fala MPRIS por D-Bus, então alcança quem está tocando sem passar
+-- pelo foco: o vídeo pausa com o navegador atrás de tudo, em outra aba ou em
+-- outro workspace. O wpctl daqui de cima não serve, ele só mexe no volume.
+hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 -- Pelo quickshell para ele saber do brilho sem reler o sysfs em poll. O recuo
 -- cobre o shell fora do ar, que é justamente quando não há OSD para mostrar.
 -- O --min-value repete o piso do brightnessMin do SystemMonitor, senão o recuo

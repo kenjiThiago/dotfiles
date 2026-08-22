@@ -99,6 +99,7 @@ luarocks
 # ── Áudio ─────────────────────────────────────────────────────────────────────
 pipewire
 pipewire-pulse               # sink padrão que o quickshell controla
+playerctl                    # play-pause do XF86AudioPlay, no keybinds.lua
 wiremix                      # on-click do quickshell
 
 # ── Rede ──────────────────────────────────────────────────────────────────────
