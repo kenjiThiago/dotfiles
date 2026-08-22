@@ -28,11 +28,27 @@ Rectangle {
 
     // ── CONTROLE DO OSD ───────────────────────────────────────────────────────
     property string activeMode: "clock"
+    readonly property bool osdActive: island.activeMode !== "clock"
+    readonly property bool osdIsVolume: island.activeMode === "volume"
+
+    // Brilho e volume são a mesma barra com fonte diferente, então o modo escolhe
+    // o que ela lê e escreve em vez de existir uma camada para cada.
+    readonly property int osdValue: island.osdIsVolume ? SystemMonitor.volumePct : Math.max(0, SystemMonitor.currentBrightness)
+    readonly property string osdIcon: island.osdIsVolume ? (SystemMonitor.isMuted ? "󰝟" : "󰕾") : "󰃠"
+    readonly property color osdColor: island.osdIsVolume ? (SystemMonitor.isMuted ? Theme.error : Theme.blue) : Theme.yellow
+
+    function showOsd(mode: string): void {
+        if (island.islandState === 2)
+            return;
+        island.activeMode = mode;
+        resetTimer.restart();
+    }
+
     Timer {
         id: resetTimer
         interval: 1000
         onTriggered: {
-            // Quem renova o OSD é cada mudança de brilho; parado com o botão
+            // Quem renova o OSD é cada mudança de valor; parado com o botão
             // pressionado não chega nenhuma.
             if (osdArea.pressed) {
                 resetTimer.restart();
@@ -44,11 +60,11 @@ Rectangle {
 
     Connections {
         target: SystemMonitor
-        function onOsdRequested(newVal) {
-            if (island.islandState !== 2) {
-                island.activeMode = "brightness";
-                resetTimer.restart();
-            }
+        function onBrightnessOsdRequested() {
+            island.showOsd("brightness");
+        }
+        function onVolumeOsdRequested() {
+            island.showOsd("volume");
         }
     }
 
@@ -132,8 +148,8 @@ Rectangle {
     readonly property int expandedHeight: 580
 
     implicitWidth: {
-        if (island.activeMode === "brightness")
-            return 260;
+        if (island.osdActive)
+            return 290;
         if (island.islandState === 0)
             return island.state0Width;
         if (island.islandState === 1)
@@ -142,7 +158,7 @@ Rectangle {
     }
 
     implicitHeight: {
-        if (island.activeMode === "brightness")
+        if (island.osdActive)
             return 36;
         if (island.islandState === 0)
             return 36;
@@ -189,7 +205,7 @@ Rectangle {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: function (mouse) {
-            if (island.activeMode !== "brightness") {
+            if (!island.osdActive) {
                 if (island.islandState === 0)
                     island.requestState(1);
                 else
@@ -203,7 +219,7 @@ Rectangle {
     // ==========================================================================
     Item {
         anchors.fill: parent
-        opacity: (island.islandState < 2 && island.activeMode === "clock") ? 1 : 0
+        opacity: (island.islandState < 2 && !island.osdActive) ? 1 : 0
         visible: opacity > 0
         // Behavior on opacity {
         //     NumberAnimation {
@@ -526,12 +542,12 @@ Rectangle {
     }
 
     // ==========================================================================
-    // ── CAMADA OSD: BRILHO ────────────────────────────────────────────────────
+    // ── CAMADA OSD: BRILHO E VOLUME ───────────────────────────────────────────
     // ==========================================================================
     RowLayout {
         anchors.centerIn: parent
         spacing: 12
-        opacity: island.activeMode === "brightness" ? 1 : 0
+        opacity: island.osdActive ? 1 : 0
         visible: opacity > 0
         // Behavior on opacity {
         //     NumberAnimation {
@@ -540,10 +556,14 @@ Rectangle {
         // }
 
         Text {
-            text: "󰃠"
+            text: island.osdIcon
             color: Theme.text
             font.family: "Hack Nerd Font"
             font.pixelSize: 16
+            // Fixa porque os glifos têm avanços diferentes: sem isso a barra dá
+            // um passo para o lado ao mudar de modo ou ao entrar no mudo.
+            Layout.preferredWidth: 20
+            horizontalAlignment: Text.AlignHCenter
         }
         Rectangle {
             id: osdTrack
@@ -556,10 +576,12 @@ Rectangle {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 radius: 3
-                color: Theme.yellow
-                width: parent.width * (SystemMonitor.currentBrightness / 100)
+                color: island.osdColor
+                // O teto é da barra e não do número: outro programa pode pôr o
+                // sink acima de 100%, e aí o texto diz e o preenchimento para.
+                width: parent.width * Math.min(1, island.osdValue / 100)
                 // Durante o arrasto a barra tem que grudar no cursor. A animação
-                // é para quando o brilho muda por fora, pelo teclado.
+                // é para quando o valor muda por fora, pelo teclado.
                 Behavior on width {
                     enabled: !osdArea.pressed
                     NumberAnimation {
@@ -571,7 +593,7 @@ Rectangle {
                     width: 12
                     height: 12
                     radius: 6
-                    color: Theme.yellow
+                    color: island.osdColor
                     anchors.horizontalCenter: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -584,7 +606,11 @@ Rectangle {
                 // As margens negativas ampliam a área de clique, então m.x não
                 // é a posição na trilha.
                 function applyAt(m) {
-                    SystemMonitor.setBrightness(100 * mapToItem(osdTrack, m.x, 0).x / osdTrack.width);
+                    const pct = 100 * mapToItem(osdTrack, m.x, 0).x / osdTrack.width;
+                    if (island.osdIsVolume)
+                        SystemMonitor.setVolume(pct);
+                    else
+                        SystemMonitor.setBrightness(pct);
                     resetTimer.restart();
                 }
                 onPressed: function (m) {
@@ -595,6 +621,17 @@ Rectangle {
                         applyAt(m);
                 }
             }
+        }
+        Text {
+            text: island.osdValue + "%"
+            color: Theme.text
+            font.family: "Hack Nerd Font"
+            font.pixelSize: 12
+            font.weight: Font.Bold
+            // Largura fixa e à direita para a barra não andar quando o número
+            // passa de um dígito para outro.
+            Layout.preferredWidth: 34
+            horizontalAlignment: Text.AlignRight
         }
     }
 

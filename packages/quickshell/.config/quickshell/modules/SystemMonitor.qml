@@ -97,6 +97,33 @@ Item {
             sink.audio.muted = !sink.audio.muted;
     }
 
+    // Quem escreve o volume é o wpctl, pelos atalhos do keybinds.lua, então aqui
+    // só se observa o Pipewire. Sai o mesmo sinal para o atalho e para o slider
+    // do control center, já que os dois terminam numa mudança do sink.
+    signal volumeOsdRequested
+
+    // O sink do Pipewire liga depois do shell, e ligar já mexe no volumePct e no
+    // isMuted. Sem essa janela o OSD apareceria sozinho no login.
+    property bool volumeSettled: false
+    Timer {
+        id: volumeSettle
+        interval: 500
+        running: true
+        onTriggered: sys.volumeSettled = true
+    }
+    onSinkChanged: {
+        sys.volumeSettled = false;
+        volumeSettle.restart();
+    }
+    onVolumePctChanged: {
+        if (sys.volumeSettled)
+            sys.volumeOsdRequested();
+    }
+    onIsMutedChanged: {
+        if (sys.volumeSettled)
+            sys.volumeOsdRequested();
+    }
+
     Process {
         id: wiremixCmd
         command: ["uwsm", "app", "--", "ghostty", "--class=com.example.wiremix", "--command=wiremix"]
@@ -190,7 +217,7 @@ Item {
     property string brightnessPath: ""
     property int brightnessMax: 0
     property int pendingBrightness: -1
-    signal osdRequested(real newVal)
+    signal brightnessOsdRequested
 
     // Piso do que este shell escreve: em 0 o backlight apaga de vez, e voltar de
     // lá é acertar o atalho às cegas. Vale para o slider e para a roda também,
@@ -220,7 +247,7 @@ Item {
         sys.setBrightness(sys.currentBrightness + delta);
         // Fora do applyBrightness porque o setBrightness não passa por lá, e
         // porque nos extremos o valor não muda mas o OSD ainda tem que aparecer.
-        sys.osdRequested(sys.currentBrightness);
+        sys.brightnessOsdRequested();
     }
 
     // Para o que muda o brilho por fora, como o hypridle. Sem poll, quem chama é
@@ -246,7 +273,7 @@ Item {
             sys.currentBrightness = newVal;
         } else if (newVal !== sys.currentBrightness) {
             sys.currentBrightness = newVal;
-            sys.osdRequested(newVal);
+            sys.brightnessOsdRequested();
         }
     }
 
