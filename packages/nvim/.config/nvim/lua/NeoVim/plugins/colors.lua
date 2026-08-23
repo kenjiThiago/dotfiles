@@ -32,7 +32,40 @@ vim.api.nvim_set_hl(0, "RenderMarkdownBullet", { link = "Boolean" })
 
 vim.pack.add({ { src = gh("rose-pine/neovim"), name = "rose-pine" } })
 
+-- O rose-pine tem paleta própria por variante e ignora o lua/theme.lua, então
+-- sem isto o editor desenha num Dawn/Main e o resto da tela noutro. Dá para ver
+-- no dawn: o `text` do plugin é #464261 e o daqui não, e a mesma palavra sai em
+-- dois tons entre o buffer e a barra do tmux. A tabela é mesclada por cima da
+-- paleta do plugin (variants[nome] = tbl_extend), então basta o que muda.
+--
+-- Os nomes à esquerda são slots do plugin, não semântica: `pine` é só o que o
+-- colorscheme pinta de pine. Por isso o mapa segue os papéis da paleta e não os
+-- nomes originais, que no dawn foram remexidos de propósito (ver theme.sh).
+local rose_pine_palette = {}
+if theme.colorscheme:match("^rose%-pine") then
+    local variant = theme.colorscheme:match("^rose%-pine%-(.+)$") or "main"
+    rose_pine_palette[variant] = {
+        base = c.base,
+        surface = c.surface,
+        overlay = c.overlay,
+        highlight_low = c.highlight_low,
+        highlight_med = c.highlight_med,
+        highlight_high = c.highlight_high,
+        muted = c.muted,
+        subtle = c.subtle,
+        text = c.text,
+        love = c.accent,
+        gold = c.warning,
+        rose = c.cyan,
+        pine = c.success,
+        foam = c.info,
+        iris = c.accent_alt,
+        leaf = c.green,
+    }
+end
+
 require("rose-pine").setup({
+    palette = rose_pine_palette,
     styles = {
         italic = false,
         transparency = transparent,
