@@ -1,5 +1,10 @@
--- lua/gruber-darker/theme.lua
-local palette = require("gruber-darker.palette").colors
+-- lua/luar/theme.lua
+--
+-- Colorscheme próprio: as tintas são as do Rosé Pine Moon, e a distribuição
+-- de papéis vem do gruber-darker (poucas cores com função, Identifier e
+-- Operator no fg, Type junto do comentário). Não é derivado de nenhum dos
+-- dois, então não há upstream de onde atualizar.
+local palette = require("luar.palette").colors
 
 local M = {}
 
@@ -9,7 +14,7 @@ function M.setup()
         vim.cmd("syntax reset")
     end
     vim.o.termguicolors = true
-    vim.g.colors_name = "gruber-rose-moon"
+    vim.g.colors_name = "luar"
 
     local groups = {
         -- ==========================================

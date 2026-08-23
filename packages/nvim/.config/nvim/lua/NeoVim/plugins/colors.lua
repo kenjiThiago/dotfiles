@@ -12,7 +12,7 @@ local transparent = theme.transparent == true
 -- Evita erro caso um tema não defina alguma cor.
 local c = setmetatable(theme.colors, { __index = function() return "NONE" end })
 
-vim.opt.runtimepath:append(vim.fn.expand("~/plugins/gruber-darker"))
+vim.opt.runtimepath:append(vim.fn.expand("~/plugins/luar"))
 
 vim.pack.add({ gh("EdenEast/nightfox.nvim") })
 
@@ -90,7 +90,7 @@ require("rose-pine").setup({
     },
 })
 
--- O gruber-darker não tem opção de transparência, então os fundos são limpos
+-- O luar não tem opção de transparência, então os fundos são limpos
 -- depois que o colorscheme carrega, para os três se comportarem igual.
 if transparent then
     vim.api.nvim_create_autocmd("ColorScheme", {

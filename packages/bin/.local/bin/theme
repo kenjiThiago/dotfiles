@@ -122,7 +122,7 @@ load_theme() {
     done
 
     # Papéis de sintaxe: só quem discorda da paleta semântica precisa declarar.
-    # É o caso do rose-pine-moon, cujo colorscheme do nvim é o gruber-darker.
+    # É o caso do rose-pine-moon, cujo colorscheme do nvim é o luar.
     : "${syn_comment:=$muted}"
     : "${syn_string:=$warning}"
     : "${syn_escape:=$accent_alt}"

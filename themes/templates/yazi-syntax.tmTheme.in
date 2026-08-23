@@ -7,7 +7,7 @@
 
      As cores vêm dos papéis `syn_*` da paleta, e não das cores diretas, porque
      um tema pode discordar do mapeamento padrão: o rose-pine-moon roda o
-     gruber-darker no nvim, que usa as mesmas tintas em papéis diferentes. Quem
+     luar no nvim, que usa as mesmas tintas em papéis diferentes. Quem
      não declara nada cai nos defaults do `theme`, derivados da paleta semântica
      (accent, info, success, warning).
 

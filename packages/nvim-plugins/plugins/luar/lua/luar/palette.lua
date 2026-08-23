@@ -1,4 +1,4 @@
--- lua/gruber-darker/palette.lua
+-- lua/luar/palette.lua
 local M = {}
 
 M.colors = {
@@ -16,7 +16,7 @@ M.colors = {
     ["bg+3"] = "#44415a", -- Highlight Med
     ["bg+4"] = "#56526e", -- Highlight High
 
-    -- A Identidade Gruber com as tintas do Moon
+    -- Papéis herdados do gruber-darker, com as tintas do Moon
     crimson = "#eb6f92",    -- (Love) Vermelho para as Keywords
     dusty_rose = "#ea9a97", -- (Rose variante Moon) Textos e Strings
     terracotta = "#f6c177", -- (Gold) Dourado para Declaração de Funções

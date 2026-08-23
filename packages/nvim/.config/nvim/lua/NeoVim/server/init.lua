@@ -17,18 +17,18 @@ require("NeoVim.server.align")
 
 -- ── Cores ─────────────────────────────────────────────────────────────────────
 -- O plugins/colors.lua não serve aqui porque depende do vim.pack; o
--- gruber-darker vem versionado no pacote nvim-plugins do stow.
-vim.opt.runtimepath:append(vim.fn.expand("~/plugins/gruber-darker"))
+-- luar vem versionado no pacote nvim-plugins do stow.
+vim.opt.runtimepath:append(vim.fn.expand("~/plugins/luar"))
 
 local loaded, theme = pcall(require, "theme")
 if not loaded then
-    theme = { variant = "dark", colorscheme = "gruber-darker" }
+    theme = { variant = "dark", colorscheme = "luar" }
 end
 
 -- Vem do opacity no theme.sh, via lua/theme.lua, e vale para a opacidade do
 -- terminal de onde saiu o ssh: aqui não há alacritty nem ghostty para receber
 -- o valor, só o fundo a limpar para o do terminal aparecer. Nenhum colorscheme
--- deste perfil tem opção de transparência (o gruber-darker é local e o
+-- deste perfil tem opção de transparência (o luar é local e o
 -- fallback é o habamax), então os fundos são apagados depois que o colorscheme
 -- carrega, como no plugins/colors.lua.
 if theme.transparent == true then

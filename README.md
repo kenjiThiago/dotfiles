@@ -225,7 +225,7 @@ O grupo de sintaxe é opcional e existe para o caso de o colorscheme do editor
 discordar da paleta. Sem ele, cada `syn_*` cai num default derivado dos papéis
 (`syn_keyword` vira `accent_alt`, `syn_string` vira `warning`, e assim por
 diante), que é o que três dos quatro temas usam. O `rose-pine-moon` declara o
-grupo inteiro porque roda o `gruber-darker` no nvim, que usa as mesmas tintas
+grupo inteiro porque roda o `luar` no nvim, que usa as mesmas tintas
 do Moon em papéis diferentes: sem isso, o preview do yazi mostraria o mesmo
 código com cores trocadas em relação ao buffer ao lado.
 
@@ -333,7 +333,7 @@ for um `#rrggbb`.
   uma a uma. Se o plugin do colorscheme não estiver instalado, o nvim avisa e
   cai no `habamax`.
 - **`~/plugins`**: o pacote `nvim-plugins` linka os plugins locais
-  (`gruber-darker`, `present`) em `~/plugins`, que é onde o `colors.lua` os
+  (`luar`, `present`) em `~/plugins`, que é onde o `colors.lua` os
   procura no `runtimepath`.
 - **Tema atual**: fica em `~/.local/state/dotfiles/current-theme`, e o perfil
   da máquina em `~/.local/state/dotfiles/profile`, ao lado.

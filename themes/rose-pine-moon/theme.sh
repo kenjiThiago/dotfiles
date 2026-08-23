@@ -8,7 +8,7 @@
 variant="dark"
 
 # ── Metadados ─────────────────────────────────────────────────────────────────
-nvim_colorscheme="gruber-darker" # gruber-darker local, já tingido com o Moon
+nvim_colorscheme="luar" # colorscheme local, já tingido com o Moon
 zen_theme="default"
 wallpaper="space.jpg"
 gtk_theme="Adwaita-dark"
@@ -52,10 +52,10 @@ info="#9ccfd8"       # foam
 
 # ── Papéis de sintaxe ─────────────────────────────────────────────────────────
 # Aqui a paleta semântica acima não serve: o nvim deste tema roda o
-# gruber-darker, que usa as mesmas tintas do Moon em papéis diferentes. Sem
+# luar, que usa as mesmas tintas do Moon em papéis diferentes. Sem
 # isto, o preview do yazi mostraria o mesmo código com cores trocadas em
-# relação ao buffer ao lado. Os nomes à direita são os do gruber-darker, em
-# packages/nvim-plugins/plugins/gruber-darker/lua/gruber-darker/palette.lua.
+# relação ao buffer ao lado. Os nomes à direita são os do luar, em
+# packages/nvim-plugins/plugins/luar/lua/luar/palette.lua.
 syn_comment="#817c9c"   # burgundy, a única que não existe na paleta acima
 syn_type="#817c9c"      # burgundy
 syn_string="$cyan"      # dusty_rose
