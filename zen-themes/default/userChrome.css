@@ -185,6 +185,44 @@
     --toolbarbutton-icon-fill: var(--accent) !important;
   }
 
+  /* ── Conserto: botões do Glance ─────────────────────────────────────────────
+   * O círculo desses três é 96% de um cinza fixo do zen-glance.css, e o
+   * light-dark() dele vem invertido: no chrome escuro escolhe o valor claro,
+   * para contrastar com o navegador em vez de combinar. Só 4% do accent chegam
+   * ali, então o ícone, que é accent, ficava em 1.7:1 sobre um quase branco.
+   *
+   * O ícone sai para --dots-text porque é utilitário, não identidade, e é o que
+   * passa dos 6:1 nas duas variantes; o accent sobre o overlay cai para 3.2:1
+   * no tema claro.
+   *
+   * O outline entra no lugar do box-shadow do Zen, preto a 7% e invisível no
+   * escuro: os botões flutuam sobre a página e precisam de limite próprio. Não
+   * é border para não somar aos width/height fixos do zen-glance.css. */
+  .zen-glance-sidebar-container toolbarbutton {
+    background: var(--dots-overlay) !important;
+    outline: 1px solid var(--dots-highlight-med) !important;
+    outline-offset: -1px !important;
+    color: var(--dots-text) !important;
+    --toolbarbutton-icon-fill: var(--dots-text) !important;
+  }
+
+  .zen-glance-sidebar-container toolbarbutton:hover {
+    background: var(--dots-highlight-med) !important;
+  }
+
+  /* Confirmação de fechar: o vermelho é semântico, só deixa de ser o #dc3545. */
+  .zen-glance-sidebar-container .zen-glance-sidebar-close[waitconfirmation] {
+    background: var(--dots-error) !important;
+    outline-color: var(--dots-error) !important;
+    color: var(--dots-base) !important;
+    fill: var(--dots-base) !important;
+    --toolbarbutton-icon-fill: var(--dots-base) !important;
+
+    & label {
+      color: var(--dots-base) !important;
+    }
+  }
+
   hbox#titlebar {
     background-color: var(--dots-base) !important;
     border: 1px solid var(--dots-base) !important;
