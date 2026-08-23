@@ -52,6 +52,7 @@ META_KEYS=(
     variant nvim_colorscheme zen_theme wallpaper gtk_theme cursor_theme
     opacity transparent btop_bg
     syn_comment_style syn_keyword_style syn_parameter_style syn_attribute_style
+    gtk_prefer_dark qt_icon_theme
 )
 
 # ── Saída ─────────────────────────────────────────────────────────────────────
@@ -107,6 +108,12 @@ load_theme() {
     : "${opacity:=1}"
     transparent=$(awk -v o="$opacity" 'BEGIN { print (o + 0 < 1) ? "true" : "false" }')
     btop_bg=$([[ $transparent == true ]] && printf '' || printf '%s' "$base")
+
+    # Mesma razão do transparent acima: o GTK quer booleano em 0/1 e o qt6ct
+    # quer o nome de um tema de ícones, e nenhum dos dois sai da paleta. São
+    # função só da variante, então derivam aqui em vez de virar chave de tema.
+    gtk_prefer_dark=$([[ $variant == dark ]] && printf 1 || printf 0)
+    qt_icon_theme=$([[ $variant == dark ]] && printf 'breeze-dark' || printf 'breeze')
 
     local c
     for c in black red green yellow blue magenta cyan white; do
@@ -322,13 +329,20 @@ reload_apps() {
         tmux source-file "$HOME/.tmux.conf" >/dev/null 2>&1 || true
     fi
 
-    if [[ -n $gtk_theme ]] && command -v gsettings >/dev/null; then
-        gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme" 2>/dev/null || true
+    # O color-scheme não depende do gtk_theme: é o que o xdg-desktop-portal-gtk
+    # republica como org.freedesktop.appearance, e é por aí que o Zen escolhe o
+    # esquema das páginas e os apps GTK4 escolhem o deles. Vale mesmo num tema
+    # que não queira mexer no tema GTK, e o Zen reage na hora, sem reabrir.
+    if command -v gsettings >/dev/null; then
         gsettings set org.gnome.desktop.interface color-scheme \
             "prefer-${variant}" 2>/dev/null || true
-    fi
-    if [[ -n $cursor_theme ]] && command -v gsettings >/dev/null; then
-        gsettings set org.gnome.desktop.interface cursor-theme "$cursor_theme" 2>/dev/null || true
+
+        if [[ -n $gtk_theme ]]; then
+            gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme" 2>/dev/null || true
+        fi
+        if [[ -n $cursor_theme ]]; then
+            gsettings set org.gnome.desktop.interface cursor-theme "$cursor_theme" 2>/dev/null || true
+        fi
     fi
 }
 
@@ -336,6 +350,19 @@ reload_apps() {
 cmd_set() {
     local name=${1:-}
     [[ -n $name ]] || die "uso: theme set <nome>"
+
+    # Guardado antes do load_theme, que sobrescreve o $variant. Serve só para o
+    # aviso do fim: o tema de ícones do Qt é resolvido uma vez, quando a
+    # QGuiApplication nasce, e nem o hot reload do quickshell nem o
+    # QFileSystemWatcher do qt6ct refazem essa resolução no processo vivo. Só
+    # importa ao cruzar claro <-> escuro, que é quando o breeze vira breeze-dark.
+    local prev prev_variant=""
+    if [[ -r $STATE_FILE ]]; then
+        read -r prev < "$STATE_FILE" || true
+        if [[ -n ${prev:-} && -r $THEMES_DIR/$prev/theme.sh ]]; then
+            prev_variant=$(sed -n 's/^variant="\(.*\)"/\1/p' "$THEMES_DIR/$prev/theme.sh" | head -n1)
+        fi
+    fi
 
     load_theme "$name"
     msg "Aplicando tema '$name'"
@@ -351,10 +378,15 @@ cmd_set() {
 
     ok "tema '$name' aplicado"
     if [[ $DRY == 0 ]]; then notify "Tema" "Agora usando <b>$name</b>" -i preferences-desktop-theme; fi
-    printf '\n   nvim, zathura, btop, yazi e lazygit já abertos só pegam o tema\n'
-    printf '   novo ao reiniciar; shells abertos, no próximo prompt.\n'
+    printf '\n   nvim, zathura, btop, yazi, lazygit e os apps GTK/Qt já abertos só\n'
+    printf '   pegam o tema novo ao reiniciar; shells abertos, no próximo prompt.\n'
     if [[ -n $zen_theme && $(current_profile) == desktop ]]; then
         printf '   O Zen Browser precisa ser reaberto.\n'
+    fi
+    if [[ -n $prev_variant && $prev_variant != "$variant" ]] &&
+        pgrep -x quickshell >/dev/null 2>&1; then
+        printf '   Claro <-> escuro: reinicie o quickshell, senão o systray fica no\n'
+        printf '   tema de ícones antigo (pkill quickshell; uwsm app -- quickshell).\n'
     fi
     return 0
 }

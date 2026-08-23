@@ -31,3 +31,7 @@ btop.theme.in             ~/.config/btop/themes/dotfiles.theme
 lazygit-colors.yml.in     ~/.config/lazygit/colors.yml
 yazi-theme.toml.in        ~/.config/yazi/theme.toml
 yazi-syntax.tmTheme.in    ~/.config/yazi/theme.tmTheme
+gtk-settings.ini.in       ~/.config/gtk-3.0/settings.ini              desktop
+gtk-settings.ini.in       ~/.config/gtk-4.0/settings.ini              desktop
+qt6ct.conf.in             ~/.config/qt6ct/qt6ct.conf                  desktop
+qt6ct-colors.conf.in      ~/.config/qt6ct/colors/dotfiles.conf        desktop

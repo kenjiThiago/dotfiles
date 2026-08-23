@@ -1,0 +1,41 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+# Fonte: themes/templates/qt6ct.conf.in
+#
+# O QT_QPA_PLATFORMTHEME=qt6ct do /etc/environment manda todo app Qt6 ler daqui.
+# O custom_palette só vale com o color_scheme_path apontando para um arquivo que
+# exista, e quem escreve esse arquivo é o qt6ct-colors.conf.in, do mesmo tema.
+#
+# O caminho vem com {{home}} porque o qt6ct não expande `~`.
+#
+# Abrir a GUI do qt6ct reescreve este arquivo; o próximo `theme set` desfaz.
+# A seção [SettingsWindow] some junto, e é só a geometria da janela dele.
+
+[Appearance]
+color_scheme_path={{home}}/.config/qt6ct/colors/dotfiles.conf
+custom_palette=true
+icon_theme={{qt_icon_theme}}
+standard_dialogs=gtk3
+style=Fusion
+
+[Fonts]
+fixed="Noto Sans Mono,11,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,Regular,0,0"
+general="Noto Sans,11,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,Regular,0,0"
+
+[Interface]
+activate_item_on_single_click=1
+buttonbox_layout=0
+cursor_flash_time=1000
+dialog_buttons_have_icons=1
+double_click_interval=400
+gui_effects=@Invalid()
+keyboard_scheme=2
+menus_have_icons=true
+show_shortcuts_in_context_menus=true
+stylesheets=@Invalid()
+toolbutton_style=4
+underline_shortcut=1
+wheel_scroll_lines=3
+
+[Troubleshooting]
+force_raster_widgets=1
+ignored_applications=@Invalid()

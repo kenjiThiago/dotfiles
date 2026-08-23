@@ -1,0 +1,28 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+# Fonte: themes/templates/gtk-settings.ini.in
+#
+# Vale para gtk-3.0 e gtk-4.0. O gtk-theme-name e o prefer-dark-theme daqui são
+# o que decide claro/escuro nos apps GTK3 sob Hyprland: sem daemon de XSettings,
+# o GTK3 lê este arquivo e ignora o org.gnome.desktop.interface. O gsettings
+# ainda importa, mas para outro público, o portal (ver `theme`, reload_apps).
+#
+# Os ícones não saem da paleta; o cursor sai, porque um cursor claro some
+# num fundo claro (ver cursor_theme no theme.sh).
+
+[Settings]
+gtk-theme-name={{gtk_theme}}
+gtk-application-prefer-dark-theme={{gtk_prefer_dark}}
+gtk-icon-theme-name=AdwaitaLegacy
+gtk-font-name=Noto Sans 11
+gtk-cursor-theme-name={{cursor_theme}}
+gtk-cursor-theme-size=24
+gtk-toolbar-style=GTK_TOOLBAR_ICONS
+gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR
+gtk-button-images=0
+gtk-menu-images=0
+gtk-enable-event-sounds=1
+gtk-enable-input-feedback-sounds=0
+gtk-xft-antialias=1
+gtk-xft-hinting=1
+gtk-xft-hintstyle=hintslight
+gtk-xft-rgba=rgb

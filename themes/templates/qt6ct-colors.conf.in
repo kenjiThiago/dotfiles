@@ -1,0 +1,24 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+# Fonte: themes/templates/qt6ct-colors.conf.in
+#
+# Paleta do Qt na ordem do enum QPalette::ColorRole, que é como o qt6ct lê a
+# lista. São 21 posições, nesta ordem:
+#
+#   0 WindowText   1 Button      2 Light        3 Midlight   4 Dark
+#   5 Mid          6 Text        7 BrightText   8 ButtonText 9 Base
+#  10 Window      11 Shadow     12 Highlight   13 HighlightedText
+#  14 Link        15 LinkVisited 16 AlternateBase 17 NoRole
+#  18 ToolTipBase 19 ToolTipText 20 PlaceholderText
+#
+# Light/Midlight/Mid/Dark/Shadow são os biséis do estilo Fusion. Saem dos
+# highlight_*, e não do base, porque só eles se afastam do fundo na mesma
+# direção nas duas variantes: num tema claro o base é o extremo claro, num
+# escuro é o extremo escuro, e usá-lo aqui inverteria o relevo em metade dos
+# temas.
+#
+# O prefixo é o alfa: ff = opaco.
+
+[ColorScheme]
+active_colors=#ff{{text:hex}}, #ff{{overlay:hex}}, #ff{{highlight_low:hex}}, #ff{{highlight_med:hex}}, #ff{{highlight_high:hex}}, #ff{{highlight_med:hex}}, #ff{{text:hex}}, #ff{{accent:hex}}, #ff{{text:hex}}, #ff{{base:hex}}, #ff{{surface:hex}}, #ff{{highlight_high:hex}}, #ff{{accent:hex}}, #ff{{base:hex}}, #ff{{info:hex}}, #ff{{accent_alt:hex}}, #ff{{overlay:hex}}, #ff{{base:hex}}, #ff{{overlay:hex}}, #ff{{text:hex}}, #ff{{muted:hex}}
+disabled_colors=#ff{{muted:hex}}, #ff{{overlay:hex}}, #ff{{highlight_low:hex}}, #ff{{highlight_med:hex}}, #ff{{highlight_high:hex}}, #ff{{highlight_med:hex}}, #ff{{muted:hex}}, #ff{{muted:hex}}, #ff{{muted:hex}}, #ff{{surface:hex}}, #ff{{surface:hex}}, #ff{{highlight_high:hex}}, #ff{{highlight_med:hex}}, #ff{{muted:hex}}, #ff{{muted:hex}}, #ff{{muted:hex}}, #ff{{overlay:hex}}, #ff{{base:hex}}, #ff{{overlay:hex}}, #ff{{muted:hex}}, #ff{{muted:hex}}
+inactive_colors=#ff{{subtle:hex}}, #ff{{overlay:hex}}, #ff{{highlight_low:hex}}, #ff{{highlight_med:hex}}, #ff{{highlight_high:hex}}, #ff{{highlight_med:hex}}, #ff{{text:hex}}, #ff{{accent:hex}}, #ff{{subtle:hex}}, #ff{{base:hex}}, #ff{{surface:hex}}, #ff{{highlight_high:hex}}, #ff{{highlight_med:hex}}, #ff{{text:hex}}, #ff{{info:hex}}, #ff{{accent_alt:hex}}, #ff{{overlay:hex}}, #ff{{base:hex}}, #ff{{overlay:hex}}, #ff{{text:hex}}, #ff{{muted:hex}}

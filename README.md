@@ -229,13 +229,26 @@ grupo inteiro porque roda o `gruber-darker` no nvim, que usa as mesmas tintas
 do Moon em papéis diferentes: sem isso, o preview do yazi mostraria o mesmo
 código com cores trocadas em relação ao buffer ao lado.
 
-`gtk_theme` e `cursor_theme` vêm vazios: assim o `theme` não escreve no
-gsettings e não sobrepõe o que você escolheu à mão. Preencha se quiser que a
-troca de tema leve o GTK e o cursor junto — os nomes válidos são os diretórios
-em `/usr/share/icons`, `~/.local/share/icons` e `~/.themes`. O Hyprland lê o
-cursor do gsettings por causa do `sync_gsettings_theme = true`. É também o
-que deixa os apps GTK escuros no `rose-pine-dawn`: sem `gtk_theme`, o `theme`
-não chega a pedir `prefer-light` ao gsettings.
+`gtk_theme` e `cursor_theme` são nomes de diretório em `/usr/share/themes`,
+`/usr/share/icons`, `~/.local/share/icons` e `~/.themes`. Vazios, o `theme` não
+escreve a chave correspondente no gsettings. O Hyprland lê o cursor do gsettings
+por causa do `sync_gsettings_theme = true`.
+
+O `color-scheme` do gsettings não depende de nenhum dos dois: sai sempre de
+`variant`, porque é o que o `xdg-desktop-portal-gtk` republica como
+`org.freedesktop.appearance`, e é daí que o Zen tira o esquema das páginas e os
+apps GTK4 tiram o deles. Trocar de tema muda o esquema do Zen na hora, sem
+reabrir. O que o Zen não segue sozinho é o esquema do *chrome*: ele tem uma
+preferência própria, `browser.theme.toolbar-theme`, e enquanto ela estiver
+fixada em claro ou escuro o `light-dark()` do CSS interno vai contra a paleta.
+Deixe em Automático (Configurações → Aparência) para o navegador inteiro seguir
+o tema.
+
+Os apps GTK e Qt não seguem por gsettings sob Hyprland, que não tem daemon de
+XSettings: seguem pelos arquivos, e por isso o `settings.ini` do GTK e o
+`qt6ct.conf` são templates como qualquer outro (ver a tabela acima). O `theme`
+deriva de `variant` o `gtk-application-prefer-dark-theme` e o tema de ícones do
+qt6ct.
 
 Nos templates, cada chave tem quatro formas:
 
@@ -268,8 +281,10 @@ Nos templates, cada chave tem quatro formas:
 | yazi | `~/.config/yazi/theme.toml` | camada de override sobre o tema embutido |
 | yazi (preview) | `~/.config/yazi/theme.tmTheme` | `[mgr] syntect_theme` no `theme.toml`, com caminho absoluto |
 | zen browser | `<perfil>/chrome/colors.css` e `zen-logo.svg` | `@import` no `userChrome.css` do estilo |
+| gtk | `~/.config/gtk-3.0/settings.ini` e `gtk-4.0/settings.ini` | arquivo inteiro (o GTK não tem include) |
+| qt | `~/.config/qt6ct/qt6ct.conf` e `qt6ct/colors/dotfiles.conf` | `custom_palette` + `color_scheme_path` |
 
-Do hyprland ao zathura, tudo até o starship é marcado como `desktop` na
+Do hyprland ao zathura, e mais o gtk e o qt, tudo é marcado como `desktop` na
 terceira coluna do `manifest` e não é gerado no perfil servidor. O
 `server-colors.conf` é o inverso: só sai no perfil servidor. O neovim
 consome o `theme.lua` por dois caminhos: `plugins/colors.lua` no desktop e
@@ -307,6 +322,13 @@ for um `#rrggbb`.
   `zen-logo.svg` no mesmo diretório. O perfil vem do `Default=` da seção
   `[Install...]` do `profiles.ini`, que é o que o navegador abre de fato.
   Precisa reiniciar o navegador.
+- **quickshell e o systray**: os ícones da barra são glifos de Nerd Font e
+  trocam de cor na recarga, como o resto. Os do systray e os das notificações
+  não: são imagens resolvidas pelo tema de ícones do Qt, que o Qt fixa uma vez,
+  quando a `QGuiApplication` nasce. Nem o hot reload do quickshell nem o
+  observador de arquivo do qt6ct refazem essa resolução. Como o tema de ícones
+  só muda ao cruzar claro e escuro, o `theme set` avisa exatamente nesse caso;
+  nas outras trocas não há nada a reiniciar.
 - **Neovim**: o tema escolhe o *colorscheme* (`nvim_colorscheme`), não as cores
   uma a uma. Se o plugin do colorscheme não estiver instalado, o nvim avisa e
   cai no `habamax`.

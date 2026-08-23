@@ -28,6 +28,7 @@ hyprpicker
 hyprpolkitagent
 uwsm                         # todo keybind lança via 'uwsm app --'
 xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk       # publica o org.freedesktop.appearance que o Zen lê
 xorg-xwayland                # apps X sob o Hyprland
 
 # ── Barra / shell gráfico ─────────────────────────────────────────────────────

@@ -9,9 +9,8 @@ variant="dark"
 nvim_colorscheme="duskfox"
 zen_theme="default"
 wallpaper="neon.png"
-# Vazio = o `theme` não escreve no gsettings (ver README).
-gtk_theme=""
-cursor_theme=""
+gtk_theme="Adwaita-dark"
+cursor_theme="BreezeX-RosePine-Linux"
 
 # ── Camadas de fundo ──────────────────────────────────────────────────────────
 base="#1e1e2e"    # base
