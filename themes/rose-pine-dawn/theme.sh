@@ -28,7 +28,7 @@
 variant="light"
 
 # ── Metadados ─────────────────────────────────────────────────────────────────
-nvim_colorscheme="rose-pine-dawn"
+nvim_colorscheme="luar"
 zen_theme="default"
 wallpaper="samurai_bebop.png"
 gtk_theme="Adwaita"
@@ -93,3 +93,43 @@ success="#205e3d"    # leaf
 warning="#795c0a"    # gold
 error="#7f2d44"      # love
 info="#174d77"       # pine
+
+# ── Papéis de sintaxe ─────────────────────────────────────────────────────────
+# O nvim deste tema roda o luar, que distribui as tintas por papel e não segue
+# o mapeamento padrão da paleta. Sem este bloco, o buffer e o preview do yazi
+# sairiam com cores trocadas um em relação ao outro.
+#
+# A distribuição é a mesma do rose-pine-moon, com duas mudanças exigidas pela
+# projeção. Os números são contraste contra o `overlay`, o fundo mais escuro em
+# que texto pousa, e o critério é o mesmo do resto do arquivo: 4.5:1.
+#
+#   - `syn_type` sai do muted e vai para o subtle. No moon o tipo divide a
+#     tinta com o comentário, que é a des-ênfase pretendida, mas aqui o muted é
+#     a cor mais apertada da paleta (4.51, e 3.89 dentro de uma seleção) e o
+#     tipo ocupa área demais para ficar no piso. O subtle sobe para 5.51 e
+#     continua a 6.1 de ΔE do comentário, ou seja, ainda lê como a mesma
+#     família.
+#   - `syn_string` sai do foam e vai para o leaf. O foam fica em 4.54 e é o
+#     mesmo teal do pine, o par que já tinha colapsado nas cores ANSI; o leaf
+#     dá 5.65 e fica a ΔE 43 ou mais de todas as outras tintas de sintaxe.
+#
+# O par mais apertado que sobra é constant x type, em ΔE 25.5, um pouco abaixo
+# do 26 que os acentos cumprem. Passa porque o `type` aqui não é acento, é
+# cinza: a distinção que importa é ele contra o texto, não contra o iris.
+syn_comment="$bright_black" # muted, 4.51
+syn_type="$subtle"          # subtle, 5.51
+syn_string="$green"         # leaf, 5.65
+syn_escape="$magenta"       # iris, 5.64
+syn_constant="$magenta"     # iris
+syn_keyword="$red"          # love, 6.53
+syn_tag="$red"              # love
+syn_function="$yellow"      # gold, 4.60; a tinta mais apertada, como no resto do tema
+syn_attribute="$yellow"     # gold
+syn_operator="$text"        # text, 8.58
+syn_variable="$text"        # text
+syn_parameter="$text"       # text
+
+syn_keyword_style="bold"
+syn_comment_style=""
+syn_parameter_style=""
+syn_attribute_style=""

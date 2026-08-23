@@ -33,4 +33,29 @@ return {
         error      = "{{error}}",
         info       = "{{info}}",
     },
+
+    -- Papéis de sintaxe. A paleta acima diz o que cada cor é; isto diz o que
+    -- cada cor faz, e um tema pode discordar do mapeamento padrão. Quem
+    -- consome é o colorscheme luar; os demais trazem paleta própria.
+    syn = {
+        comment   = "{{syn_comment}}",
+        string    = "{{syn_string}}",
+        escape    = "{{syn_escape}}",
+        constant  = "{{syn_constant}}",
+        keyword   = "{{syn_keyword}}",
+        operator  = "{{syn_operator}}",
+        type      = "{{syn_type}}",
+        func      = "{{syn_function}}",
+        variable  = "{{syn_variable}}",
+        parameter = "{{syn_parameter}}",
+        tag       = "{{syn_tag}}",
+        attribute = "{{syn_attribute}}",
+    },
+
+    syn_style = {
+        comment   = "{{syn_comment_style}}",
+        keyword   = "{{syn_keyword_style}}",
+        parameter = "{{syn_parameter_style}}",
+        attribute = "{{syn_attribute_style}}",
+    },
 }

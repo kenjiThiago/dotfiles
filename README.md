@@ -224,10 +224,16 @@ Mais os metadados: `variant` (dark/light), `nvim_colorscheme`, `zen_theme`,
 O grupo de sintaxe é opcional e existe para o caso de o colorscheme do editor
 discordar da paleta. Sem ele, cada `syn_*` cai num default derivado dos papéis
 (`syn_keyword` vira `accent_alt`, `syn_string` vira `warning`, e assim por
-diante), que é o que três dos quatro temas usam. O `rose-pine-moon` declara o
-grupo inteiro porque roda o `luar` no nvim, que usa as mesmas tintas
-do Moon em papéis diferentes: sem isso, o preview do yazi mostraria o mesmo
-código com cores trocadas em relação ao buffer ao lado.
+diante), que é o que os temas de colorscheme externo usam.
+
+Quem declara o grupo inteiro é o `rose-pine-moon` e o `rose-pine-dawn`, os dois
+que rodam o `luar`. O `luar` não traz paleta: ele é uma distribuição de papéis
+(poucas cores com função, identificador e operador sem tinta, tipo ao lado do
+comentário) e lê estes valores pelo `lua/theme.lua` gerado. Então o bloco
+`syn_*` não é uma cópia do colorscheme, é a fonte dele, e é o mesmo bloco que
+faz o preview do yazi bater com o buffer ao lado. Os dois temas usam a mesma
+distribuição, com o dawn trocando duas tintas por medida de contraste (ver os
+comentários no `themes/rose-pine-dawn/theme.sh`).
 
 `gtk_theme` e `cursor_theme` são nomes de diretório em `/usr/share/themes`,
 `/usr/share/icons`, `~/.local/share/icons` e `~/.themes`. Vazios, o `theme` não

@@ -51,23 +51,25 @@ error="#eb6f92"      # love
 info="#9ccfd8"       # foam
 
 # ── Papéis de sintaxe ─────────────────────────────────────────────────────────
-# Aqui a paleta semântica acima não serve: o nvim deste tema roda o
-# luar, que usa as mesmas tintas do Moon em papéis diferentes. Sem
-# isto, o preview do yazi mostraria o mesmo código com cores trocadas em
-# relação ao buffer ao lado. Os nomes à direita são os do luar, em
-# packages/nvim-plugins/plugins/luar/lua/luar/palette.lua.
-syn_comment="#817c9c"   # burgundy, a única que não existe na paleta acima
-syn_type="#817c9c"      # burgundy
-syn_string="$cyan"      # dusty_rose
-syn_escape="$magenta"   # plum
-syn_constant="$magenta" # plum
-syn_keyword="$red"      # crimson
-syn_tag="$red"          # crimson
-syn_function="$yellow"  # terracotta
-syn_attribute="$yellow" # terracotta
-syn_operator="$text"    # fg
-syn_variable="$text"    # fg
-syn_parameter="$text"   # fg
+# Aqui a paleta semântica acima não serve: o nvim deste tema roda o luar, que
+# distribui as tintas por papel e não segue o mapeamento padrão. Sem isto, o
+# preview do yazi mostraria o mesmo código com cores trocadas em relação ao
+# buffer ao lado.
+#
+# Este bloco é a fonte do colorscheme, não uma cópia dele: o luar lê estes
+# valores pelo lua/theme.lua gerado.
+syn_comment="#817c9c"   # a única tinta que não existe na paleta acima
+syn_type="#817c9c"      # tipo divide a tinta do comentário, é a des-ênfase pretendida
+syn_string="$cyan"      # rose
+syn_escape="$magenta"   # iris
+syn_constant="$magenta" # iris
+syn_keyword="$red"      # love
+syn_tag="$red"          # love
+syn_function="$yellow"  # gold
+syn_attribute="$yellow" # gold
+syn_operator="$text"    # text
+syn_variable="$text"    # text
+syn_parameter="$text"   # text
 
 syn_keyword_style="bold"
 syn_comment_style=""
