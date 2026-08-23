@@ -26,6 +26,14 @@
     --toolbar-color: var(--dots-text) !important;
     --newtab-text-primary-color: var(--dots-text) !important;
     --arrowpanel-background: var(--dots-overlay) !important;
+    /* O fundo do painel vem daqui, mas o texto vinha do esquema do chrome, que
+     * é preferência do navegador e não da paleta. Enquanto o
+     * browser.theme.toolbar-theme estiver fixo, um deles contradiz o outro. */
+    --arrowpanel-color: var(--dots-text) !important;
+    /* A linha de baixo de cada download é a cor do painel a 0.6. Serve para o
+     * quase-branco do Firefox; com o --dots-text, que é menos extremo, cai a
+     * 3.18:1 no tema claro. Em 0.8 passa de 4.5:1 nos cinco temas. */
+    --downloads-item-details-opacity: 0.8 !important;
     --sidebar-text-color: var(--dots-text) !important;
     --newtab-background-color: var(--dots-overlay) !important;
     --zen-input-border-color: var(--dots-highlight-high) !important;
@@ -168,6 +176,11 @@
     }
   }
 
+  /* Estado aberto: o botão cujo painel está na tela deixa de ser accent, para
+   * o accent seguir significando ação disponível. O --dots-muted fazia isso e
+   * derrubava o ícone a 2.03:1 sobre o realce de [open] no moon, que é o
+   * clique no botão de downloads. O --dots-text é o único dos três que passa
+   * de 4.5:1 nos cinco temas; o subtle reprova em três. */
   toolbar .toolbarbutton-1 {
     &:not([disabled]) {
       &:is([open], [checked])
@@ -176,7 +189,7 @@
           .toolbarbutton-text,
           .toolbarbutton-badge-stack
         ) {
-        fill: var(--dots-muted);
+        fill: var(--dots-text);
       }
     }
   }

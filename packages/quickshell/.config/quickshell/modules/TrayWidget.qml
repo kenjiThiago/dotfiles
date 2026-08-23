@@ -40,6 +40,13 @@ Row {
                 fillMode: Image.PreserveAspectFit
                 mipmap: true
                 opacity: trayItem.modelData.status === Status.Passive ? 0.6 : 1.0
+
+                // Sem sourceSize o provedor entrega o ícone no tamanho nominal
+                // dele, tipicamente 22 ou 24, e o QML reamostra para 18: é daí
+                // que vem o borrado. Pedindo o tamanho exato, o SVG do tema é
+                // rasterizado já em 18 e não sobra reamostragem nenhuma.
+                sourceSize.width: 18
+                sourceSize.height: 18
             }
 
             MouseArea {
