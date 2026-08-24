@@ -100,12 +100,14 @@ end
 
 -- ── Menu ──────────────────────────────────────────────────────────────────────
 -- O menu é um buffer editável, como o do harpoon: o que vale é o texto na hora
--- de fechar. Apagar a linha esvazia o slot, mover a linha troca a marca do
--- arquivo, e o `:linha` no fim é o que preserva a posição no reordenamento.
+-- de fechar, e o `:w` fecha. Só as linhas preenchidas aparecem, apagar uma tira
+-- o arquivo da lista, mover uma troca a marca, e o `:linha` no fim é o que
+-- preserva a posição no reordenamento.
 --
 -- A janela fica aqui porque o <C-e> é global e vale dentro do flutuante também:
 -- sem isto o segundo toque abriria outra janela em cima da primeira.
 local janela
+local contador = 0
 local LETRAS = vim.api.nvim_create_namespace("MarcasLetras")
 
 local function texto_de(item)
@@ -124,10 +126,19 @@ local function analisar(texto)
     return vim.fn.fnamemodify(arquivo or texto, ":p"), tonumber(numero) or 1
 end
 
--- A linha 1 é sempre o H, a 2 o J, e assim por diante: reordenar é consequência
--- do índice, não precisa de lógica própria.
+-- Linha em branco não é buraco: some, e as de baixo sobem. É o modelo do
+-- harpoon, em que o menu é a lista em ordem e não um mapa de slots fixos. Como
+-- a marca sai da posição na lista, reordenar é consequência do índice e não
+-- precisa de lógica própria.
 local function aplicar(linhas)
-    if #linhas > #MARCAS then
+    local lista = {}
+    for _, linha in ipairs(linhas) do
+        if vim.trim(linha or "") ~= "" then
+            lista[#lista + 1] = linha
+        end
+    end
+
+    if #lista > #MARCAS then
         vim.notify(string.format("marcas: só as %d primeiras linhas valem", #MARCAS),
             vim.log.levels.WARN)
     end
@@ -135,7 +146,7 @@ local function aplicar(linhas)
     vim.cmd("delmarks " .. table.concat(MARCAS))
 
     for i, marca in ipairs(MARCAS) do
-        local arquivo, numero = analisar(linhas[i])
+        local arquivo, numero = analisar(lista[i])
         if arquivo and vim.fn.filereadable(arquivo) == 0 then
             vim.notify("marcas: " .. arquivo .. " não existe", vim.log.levels.WARN)
         elseif arquivo then
@@ -161,27 +172,46 @@ function M.menu()
 
     local buf = vim.api.nvim_create_buf(false, true)
     vim.bo[buf].bufhidden = "wipe"
+    -- O nvim_create_buf devolve um nofile, em que o :w erra com E382. O acwrite
+    -- passa a gravação para o BufWriteCmd lá embaixo, e o nome é porque o :w
+    -- erra com E32 sem ele. Único porque o buffer do menu anterior pode não ter
+    -- sido varrido ainda quando este abre.
+    vim.bo[buf].buftype = "acwrite"
+    contador = contador + 1
+    vim.api.nvim_buf_set_name(buf, "__marcas__" .. contador)
 
+    -- Slot vazio não vira linha em branco: o buffer é a lista, e o espaço que
+    -- sobra na janela é onde se acrescenta.
     local conteudo = {}
     local largura = 40
-    for i, marca in ipairs(MARCAS) do
-        conteudo[i] = texto_de(alvo(marca))
-        largura = math.max(largura, vim.fn.strdisplaywidth(conteudo[i]) + 6)
+    for _, marca in ipairs(MARCAS) do
+        local texto = texto_de(alvo(marca))
+        if texto ~= "" then
+            conteudo[#conteudo + 1] = texto
+            largura = math.max(largura, vim.fn.strdisplaywidth(texto) + 6)
+        end
     end
     largura = math.min(largura, vim.o.columns - 4)
 
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, conteudo)
 
-    -- A letra é do slot, não do texto: apagar uma linha sobe o conteúdo, e o
-    -- extmark subiria junto se não fosse refeito a cada edição.
+    -- A letra vem da posição na lista, não do número da linha: como a linha em
+    -- branco some ao gravar, ela também não recebe letra, e o que está na tela
+    -- já é a ordem que vai valer. Refeito a cada edição porque o extmark
+    -- acompanharia o texto ao subir.
     local function letras()
         vim.api.nvim_buf_clear_namespace(buf, LETRAS, 0, -1)
-        local total = vim.api.nvim_buf_line_count(buf)
 
-        for i, marca in ipairs(MARCAS) do
-            if i <= total then
+        local slot = 0
+        for i, linha in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, false)) do
+            if vim.trim(linha) ~= "" then
+                slot = slot + 1
+                if slot > #MARCAS then
+                    break
+                end
+
                 vim.api.nvim_buf_set_extmark(buf, LETRAS, i - 1, 0, {
-                    virt_text = { { " " .. marca .. " ", "Title" } },
+                    virt_text = { { " " .. MARCAS[slot] .. " ", "Title" } },
                     virt_text_pos = "right_align",
                 })
             end
@@ -208,32 +238,66 @@ function M.menu()
         callback = letras,
     })
 
-    -- Um ponto só para todas as saídas: o q, o <Esc>, o segundo <C-e> e o :q.
-    -- As linhas são lidas aqui, que ainda é seguro, e a escrita vai para o
-    -- schedule porque durante o fechamento da janela o textlock barraria o
-    -- bufload.
-    vim.api.nvim_create_autocmd("BufWinLeave", {
-        buffer = buf,
-        once = true,
-        callback = function()
-            local linhas = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-            janela = nil
-            vim.schedule(function()
-                aplicar(linhas)
-            end)
-        end,
-    })
-
     local function fechar()
         if janela and vim.api.nvim_win_is_valid(janela) then
             vim.api.nvim_win_close(janela, true)
         end
+        janela = nil
     end
+
+    -- As linhas são lidas aqui, que ainda é seguro, e a escrita vai para o
+    -- schedule porque durante o fechamento da janela o textlock barraria o
+    -- bufload. A guarda é porque as duas saídas podem se somar: o :w grava e
+    -- fecha, e o fechar acaba disparando o BufWinLeave.
+    local gravado = false
+    local function gravar()
+        if gravado then
+            return
+        end
+        gravado = true
+
+        local linhas = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+        vim.schedule(function()
+            aplicar(linhas)
+        end)
+    end
+
+    -- Um ponto só para as saídas que não passam pelo :w: o q, o <Esc>, o
+    -- segundo <C-e> e o :q.
+    vim.api.nvim_create_autocmd("BufWinLeave", {
+        buffer = buf,
+        once = true,
+        callback = function()
+            janela = nil
+            gravar()
+        end,
+    })
+
+    -- O :w do harpoon: grava e fecha. A gravação vem antes do fechar porque o
+    -- BufWinLeave não chega a rodar de dentro do BufWriteCmd, e sem isto o :w
+    -- fecharia o menu jogando fora a edição.
+    vim.api.nvim_create_autocmd("BufWriteCmd", {
+        buffer = buf,
+        callback = function()
+            vim.bo[buf].modified = false
+            gravar()
+            fechar()
+        end,
+    })
 
     -- O pulo também entra na fila, atrás do aplicar: sem isso ele leria a marca
     -- antiga quando a linha tivesse acabado de mudar de lugar.
     vim.keymap.set("n", "<CR>", function()
-        local marca = MARCAS[vim.fn.line(".")]
+        -- A marca sai da contagem de linhas preenchidas até o cursor, e não do
+        -- número da linha, que erraria com uma linha em branco acima.
+        local slot = 0
+        for _, linha in ipairs(vim.api.nvim_buf_get_lines(buf, 0, vim.fn.line("."), false)) do
+            if vim.trim(linha) ~= "" then
+                slot = slot + 1
+            end
+        end
+
+        local marca = MARCAS[slot]
         fechar()
         if marca then
             vim.schedule(function()
