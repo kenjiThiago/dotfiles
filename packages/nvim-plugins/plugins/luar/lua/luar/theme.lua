@@ -86,6 +86,11 @@ function M.setup()
         DiffChange = { fg = palette.warning, bg = palette.overlay },
         DiffDelete = { fg = palette.error, bg = palette.overlay },
         DiffText = { fg = palette.func, bg = palette.highlight_med },
+        -- Trecho acrescentado dentro de uma linha alterada, sem correspondente
+        -- do outro lado. O padrão liga ao DiffText e os dois somem um no outro;
+        -- a cor vem do DiffAdd, porque o papel é o mesmo em escala de trecho.
+        -- Passou a aparecer sozinho: o 'diffopt' do 0.12 já traz inline:char.
+        DiffTextAdd = { fg = palette.success, bg = palette.highlight_med },
 
         -- O syntax/diff.vim liga diffAdded, diffChanged e diffRemoved a estes
         -- três, e é ele que pinta buffers de patch e o commit --verbose. Sem
@@ -387,6 +392,10 @@ function M.setup()
         PmenuSel = { fg = palette.keyword, bg = palette.overlay, bold = true },
         PmenuSbar = { bg = palette.surface },
         PmenuThumb = { bg = palette.highlight_med },
+        -- Borda do pum, do 'pumborder' que o perfil servidor liga. O padrão
+        -- herda o Pmenu e desenha a borda na cor do texto, fora do tom de todas
+        -- as outras bordas do tema, que saem do FloatBorder.
+        PmenuBorder = { fg = palette.highlight_med, bg = palette.surface },
         -- Pum e wildmenu nativos, que é o que sobra no perfil servidor: mesmo
         -- destaque de trecho casado que o blink e o cmp recebem abaixo.
         PmenuMatch = { fg = palette.func, bg = palette.surface, bold = true },
