@@ -57,6 +57,8 @@ local function setup_colors()
     set("StatusLineInf", { bg = bg_body, fg = info.fg or FALLBACK.niagara })
     set("StatusLineHnt", { bg = bg_body, fg = hint.fg or FALLBACK.quartz })
 
+    set("StatusLineProgress", { bg = bg_body, fg = slnc.fg or FALLBACK.quartz })
+
     set("StatusLineNCBody", {
         bg = slnc.bg or bg_body,
         fg = slnc.fg or FALLBACK.quartz,
@@ -93,6 +95,30 @@ local function mode_parts()
     local entry = MODES[m] or MODES[m:sub(1, 1)]
     if not entry then return " " .. m .. " ", "%#StatusLineMode#" end
     return entry[1], "%#StatusLineMode" .. entry[2] .. "#"
+end
+
+-- Progresso do vim.ui.progress_status(), que junta as mensagens de nvim_echo
+-- com kind="progress". Quem as emite no runtime é o vim.pack, ao instalar e
+-- atualizar, e o :checkhealth. O progresso de LSP não entra: ele sai pelo
+-- evento LspProgress, que é outro canal e não passa pelo nvim_echo.
+--
+-- O teste de existência é porque este arquivo é o mesmo nos dois perfis e a
+-- função é do 0.12; no servidor o nvim vem da distro e costuma estar atrás.
+local progress_status = vim.ui.progress_status
+
+local function progress()
+    if not progress_status then
+        return ""
+    end
+
+    local text = progress_status()
+    if text == "" then
+        return ""
+    end
+
+    -- O texto já vem com o "%" duplicado e com espaço no fim, pronto para o
+    -- statusline: é o "50%%(1) " do progress_status_fmt.
+    return "%#StatusLineProgress# " .. text
 end
 
 local SEVERITIES = {
@@ -134,10 +160,22 @@ _G.BuildStatusLine = function()
         mode_hl, mode_name,
         "%#StatusLineInfo# %<%f %m %r ",
         "%=",
+        progress(),
         diagnostics(bufnr),
         "%#StatusLineBody# %y ",
         "%#StatusLineInfo# %3p%% ",
         mode_hl, " %3l:%-2c ",
+    })
+end
+
+-- O statusline só se redesenha em evento de tela, e o progresso chega fora
+-- deles: sem isto a mensagem só apareceria no movimento seguinte do cursor.
+if vim.fn.exists("##Progress") == 1 then
+    vim.api.nvim_create_autocmd("Progress", {
+        group = vim.api.nvim_create_augroup("custom_statusline_progress", { clear = true }),
+        callback = function()
+            vim.cmd("redrawstatus")
+        end,
     })
 end
 
