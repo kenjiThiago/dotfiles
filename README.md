@@ -155,14 +155,17 @@ e os keymaps de marca, que fazem as vezes do harpoon. O núcleo (`set.lua`,
 `remap.lua`, `autocmd.lua`, `custom/statusline.lua`) é o mesmo arquivo nos dois.
 
 O wildmenu nativo é só do servidor de propósito: no desktop quem completa a
-cmdline é o `blink.cmp`, e os dois brigariam pelas mesmas teclas.
+cmdline é o `blink.cmp`, e os dois brigariam pelas mesmas teclas. É por ele que
+passa o `:Find` (`<leader>pf`), que faz as vezes do telescope: a lista de
+arquivos vem do rg, com cache por cwd, e quem filtra e realça é o próprio nvim,
+via `fuzzy` no `wildoptions` ligado só enquanto a cmdline é desse comando.
 
 O neovim do servidor vem do gerenciador da distro, que costuma estar bem atrás
 do Arch, então o `server/` testa antes de usar o que é recente. O piso é o
-**0.11**, de onde saem o `vim.lsp.config`, o `findfunc` e o `winborder`; abaixo
-disso a config sobe sem LSP e o `:find` cai no `path` do nvim. O autocompletar
-da cmdline (`wildtrigger()`, `pumborder`) e o `nvim.undotree` são do **0.12** e
-ficam de fora sozinhos quando não existem.
+**0.11**, de onde saem o `vim.lsp.config` e o `winborder`; abaixo disso a
+config sobe sem LSP. O autocompletar da cmdline (`wildtrigger()`, `pumborder`)
+e o `nvim.undotree` são do **0.12** e ficam de fora sozinhos quando não
+existem.
 
 **Nos shells e no tmux** não há chave de perfil: cada ferramenta extra vem
 atrás de um teste. O `.bashrc` e o `.zshrc` usam o starship se ele existir e

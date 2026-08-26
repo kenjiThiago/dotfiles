@@ -4,8 +4,8 @@
 
 -- O nvim daqui vem do gerenciador da distro, que costuma estar bem atrás do
 -- Arch, então cada coisa recente vem atrás de um teste. O piso é o 0.11, de
--- onde saem o vim.lsp.config, o findfunc e o `fuzzy` do completeopt; abaixo
--- disso o servidor fica sem LSP em vez de errar a cada arquivo aberto.
+-- onde saem o vim.lsp.config e o `fuzzy` do completeopt; abaixo disso o
+-- servidor fica sem LSP em vez de errar a cada arquivo aberto.
 if vim.fn.has("nvim-0.11") == 1 then
     require("NeoVim.server.lsp")
 end
@@ -114,8 +114,17 @@ if autocompletar then
     vim.opt.pumborder = "rounded"
 end
 
+-- O `fuzzy` entra e sai a cada tecla porque só vale para o :Find: é ele que faz
+-- o nvim filtrar a lista do server/find.lua e, com isso, realçar os trechos que
+-- casaram. Ligado o tempo todo mudaria também o :h, o :set e a completação de
+-- comando, que aqui interessam prefixadas. O padrão é `F%a*` e não `Find` por
+-- causa da abreviação: `:F ` já resolve para o comando.
+local function fuzzy_do_find()
+    vim.o.wildoptions = vim.fn.getcmdline():match("^%s*F%a*%s") and "pum,fuzzy" or "pum"
+end
+
 -- O PmenuMatch é o trecho que casou com o que foi digitado. O padrão herda o
--- Pmenu e só acrescenta negrito, que na lista do :find quase não se distingue.
+-- Pmenu e só acrescenta negrito, que na lista do :Find quase não se distingue.
 -- O bg do item selecionado é lido do PmenuSel em vez de sair da paleta, porque
 -- quem define o PmenuSel é o colorscheme, e os dois precisam combinar.
 local function realcar_match()
@@ -133,13 +142,19 @@ end
 vim.api.nvim_create_autocmd("ColorScheme", { callback = realcar_match })
 realcar_match()
 
-if autocompletar then
-    vim.api.nvim_create_autocmd("CmdlineChanged", {
-        group = vim.api.nvim_create_augroup("CmdlineAutocomplete", { clear = true }),
-        pattern = { ":", "/", "?" },
-        command = "call wildtrigger()",
-    })
+vim.api.nvim_create_autocmd("CmdlineChanged", {
+    group = vim.api.nvim_create_augroup("CmdlineAutocomplete", { clear = true }),
+    pattern = { ":", "/", "?" },
+    callback = function()
+        fuzzy_do_find()
 
+        if autocompletar then
+            vim.fn.wildtrigger()
+        end
+    end,
+})
+
+if autocompletar then
     vim.keymap.set("c", "<Up>", function()
         return vim.fn.wildmenumode() == 1 and "<C-E><Up>" or "<Up>"
     end, { expr = true, replace_keycodes = true })
