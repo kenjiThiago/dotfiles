@@ -2,6 +2,7 @@ require("NeoVim.remap")
 require("NeoVim.set")
 require("NeoVim.autocmd")
 require("NeoVim.custom.statusline")
+require("NeoVim.custom.restart")
 
 -- Módulo privado do runtime, e instável: já se chamou `vim._extui`. Sem o
 -- pcall, o erro aqui aborta o require inteiro e o desvio de perfil lá embaixo
