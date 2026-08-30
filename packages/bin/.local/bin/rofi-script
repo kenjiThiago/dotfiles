@@ -55,6 +55,9 @@ SCRIPT_PATH="$(realpath "$0")"
 SCREENSHOT_DIR="${XDG_PICTURES_DIR:-$HOME/Imagens}/screenshots"
 DOTFILES="${DOTFILES:-$HOME/dotfiles}"
 WALLPAPER_DIR="$DOTFILES/wallpapers"
+WALLPAPER_CONF="$HOME/.config/hypr/hyprpaper.conf"
+HYPR_COLORS="$HOME/.config/hypr/conf/colors.conf"
+NO_WALLPAPER="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/no-wallpaper"
 
 mkdir -p "$SCREENSHOT_DIR" "$WALLPAPER_DIR"
 
@@ -220,33 +223,67 @@ show_clipboard() {
     done
 }
 
+# Os dois arquivos são gerados por `theme set`; aqui trocamos só a linha do
+# path, para não perder o cabeçalho nem o resto da configuração. O colors.conf
+# entra junto porque o hyprlock não lê o hyprpaper.conf: o fundo dele vem do
+# $wallpaper de lá, e sem esta linha o lockscreen ficaria no wallpaper do tema,
+# não no que acabou de ser escolhido. Vazio, o hyprlock cai no `color = $base`.
+save_wallpaper_path() {
+    local CAMINHO="$1"
+
+    if [[ -f $WALLPAPER_CONF ]]; then
+        sed -i "s|^\( *path *= *\).*|\1$CAMINHO|" "$WALLPAPER_CONF"
+    else
+        printf 'splash = false\nipc = true\n\nwallpaper {\n    monitor =\n    path = %s\n    fit_mode = cover\n}\n' \
+            "$CAMINHO" > "$WALLPAPER_CONF"
+    fi
+
+    [[ -f $HYPR_COLORS ]] && sed -i "s|^\(\$wallpaper *= *\).*|\1$CAMINHO|" "$HYPR_COLORS"
+}
+
+# Sem wallpaper: o hyprpaper 0.8 não tem mais IPC de unload, então o único jeito
+# de não ter imagem nenhuma é ele não estar rodando. O que fica à mostra é o
+# misc:background_color do Hyprland, no $base do tema (ver conf/appearance.lua).
+# O marcador segura a escolha no próximo boot: quem o lê é o autostart.lua, que
+# só sobe o hyprpaper sem ele, e o `theme`, que sem ele deixa o path vazio.
+turn_wallpaper_off() {
+    mkdir -p "$(dirname "$NO_WALLPAPER")"
+    touch "$NO_WALLPAPER"
+    pkill -x hyprpaper
+    save_wallpaper_path ""
+
+    notify-send -a "Hyprpaper" "Wallpaper Removido" "Fundo sólido no tom do tema."
+}
+
 change_wallpaper() {
+    local SEM_WALLPAPER="󰸉  Sem wallpaper"
     local SELECAO
-    SELECAO=$(ls -1 "$WALLPAPER_DIR" | grep -iE '\.(jpg|jpeg|png|webp|jxl)$' | rofi -dmenu -i -p "  Wallpaper:")
+    SELECAO=$({
+        printf '%s\n' "$SEM_WALLPAPER"
+        ls -1 "$WALLPAPER_DIR" | grep -iE '\.(jpg|jpeg|png|webp|jxl)$'
+    } | rofi -dmenu -i -p "  Wallpaper:")
 
     if [[ -z "$SELECAO" ]]; then
         back_to show_setup_menu
         return
     fi
 
-    local CAMINHO="$WALLPAPER_DIR/$SELECAO"
-    hyprctl hyprpaper wallpaper ",$CAMINHO,cover"
-
-    # O hyprpaper.conf é gerado por `theme set`; aqui trocamos só a linha do
-    # path, para não perder o cabeçalho nem o resto da configuração.
-    local CONF="$HOME/.config/hypr/hyprpaper.conf"
-    if [[ -f $CONF ]]; then
-        sed -i "s|^\( *path *= *\).*|\1$CAMINHO|" "$CONF"
-    else
-        printf 'splash = false\nipc = true\n\nwallpaper {\n    monitor =\n    path = %s\n    fit_mode = cover\n}\n' \
-            "$CAMINHO" > "$CONF"
+    if [[ "$SELECAO" == "$SEM_WALLPAPER" ]]; then
+        turn_wallpaper_off
+        return
     fi
 
-    # O hyprlock não lê o hyprpaper.conf: o fundo dele vem do $wallpaper em
-    # conf/colors.conf, gerado pelo mesmo `theme set`. Sem esta linha o
-    # lockscreen fica no wallpaper do tema, não no que acabou de ser escolhido.
-    local CORES="$HOME/.config/hypr/conf/colors.conf"
-    [[ -f $CORES ]] && sed -i "s|^\(\$wallpaper *= *\).*|\1$CAMINHO|" "$CORES"
+    local CAMINHO="$WALLPAPER_DIR/$SELECAO"
+    rm -f "$NO_WALLPAPER"
+    save_wallpaper_path "$CAMINHO"
+
+    if pgrep -x hyprpaper >/dev/null; then
+        hyprctl hyprpaper wallpaper ",$CAMINHO,cover"
+    else
+        # Vindo do "sem wallpaper": ele sobe já com o path recém-escrito, e o
+        # IPC ainda não estaria de pé para receber o comando acima.
+        uwsm app -- hyprpaper
+    fi
 
     notify-send -a "Hyprpaper" -i "$CAMINHO" "Wallpaper Atualizado" "Salvo para o próximo boot!"
 }

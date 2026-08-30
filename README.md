@@ -346,6 +346,16 @@ for um `#rrggbb`.
   procura no `runtimepath`.
 - **Tema atual**: fica em `~/.local/state/dotfiles/current-theme`, e o perfil
   da máquina em `~/.local/state/dotfiles/profile`, ao lado.
+- **Wallpaper**: cada tema declara o seu, e o `rofi-script wallpaper` troca só
+  a imagem, sem trocar de tema. A primeira entrada da lista é "Sem wallpaper",
+  que encerra o hyprpaper e deixa à mostra o `misc:background_color` do
+  Hyprland, no `base` do tema. É assim porque o hyprpaper 0.8 perdeu o IPC de
+  `unload`: não há como pedir que ele apague o fundo sem sair. A escolha fica
+  em `~/.local/state/dotfiles/no-wallpaper`, o marcador que faz o
+  `autostart.lua` não subir o hyprpaper e o `theme set` gerar o path vazio, no
+  hyprpaper.conf e no `$wallpaper` que o hyprlock usa. Escolher uma imagem
+  apaga o marcador e sobe o hyprpaper de volta. Transição animada na troca não
+  existe: o hyprpaper não tem nada disso, e quem tem é o `swww`.
 - **tmux-sessionizer**: a lista vem do zoxide (tudo que você já visitou, por
   frecência) mais as raízes de `~/.config/tmux-sessionizer/paths`. Projeto
   clonado fora das raízes aparece depois do primeiro `cd`. Os diretórios de

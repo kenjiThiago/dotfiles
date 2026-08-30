@@ -32,6 +32,7 @@ WALLPAPER_DIR="$DOTFILES/wallpapers"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
 STATE_FILE="$STATE_DIR/current-theme"
 PROFILE_FILE="$STATE_DIR/profile"
+NO_WALLPAPER_FILE="$STATE_DIR/no-wallpaper"
 
 DRY=0
 RELOAD=1
@@ -149,7 +150,10 @@ load_theme() {
             die "tema '$name': '$key' = '${!key}' não é um hex #rrggbb"
     done
 
-    if [[ -n $wallpaper ]]; then
+    # O marcador de "sem wallpaper" é do `rofi-script wallpaper` e vale sobre o
+    # tema: com ele, o path sai vazio em todo lugar (hyprpaper.conf e o
+    # $wallpaper do hyprlock) e o hyprpaper não é acordado no reload_apps.
+    if [[ -n $wallpaper && ! -e $NO_WALLPAPER_FILE ]]; then
         wallpaper_path="$WALLPAPER_DIR/$wallpaper"
         [[ -e $wallpaper_path ]] || warn "wallpaper '$wallpaper' não existe em $WALLPAPER_DIR"
     else
@@ -310,7 +314,6 @@ reload_apps() {
     if command -v hyprctl >/dev/null && pgrep -x Hyprland >/dev/null 2>&1; then
         hyprctl reload >/dev/null 2>&1 || true
         if [[ -n $wallpaper_path && -e $wallpaper_path ]]; then
-            hyprctl hyprpaper preload "$wallpaper_path" >/dev/null 2>&1 || true
             hyprctl hyprpaper wallpaper ",$wallpaper_path,cover" >/dev/null 2>&1 || true
         fi
     fi

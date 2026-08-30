@@ -93,6 +93,12 @@ hl.config({
     misc = {
         force_default_wallpaper = 0,
         disable_hyprland_logo = true,
+
+        -- O que aparece quando não há wallpaper (ver autostart.lua): sem estas
+        -- linhas seriam o cinza-azulado fixo do Hyprland, fora da paleta, e o
+        -- "Read the wiki." que ele desenha por cima do fundo.
+        background_color = M.base,
+        disable_splash_rendering = true,
     },
 
     animations = {
