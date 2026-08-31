@@ -128,6 +128,13 @@ hl.window_rule({
     no_blur   = true,
     no_anim   = true,
     immediate = true,
+
+    -- Gamepad não passa pelo compositor: o jogo lê o evdev direto, e para o
+    -- protocolo de idle do Wayland você está parado. Sem isto o hypridle
+    -- escurece a tela em 5min e tranca a sessão em 10, no meio da partida.
+    -- O modo é focus e não always para o jogo em segundo plano não impedir a
+    -- máquina de dormir.
+    idle_inhibit = "focus",
 })
 
 -- workspace=1, monitor:eDP-1, persistent:true, default:true
