@@ -123,8 +123,6 @@ obs-studio
 
 # ── Jogos e Wine ──────────────────────────────────────────────────────────────
 steam
-gamemode
-lib32-gamemode               # o jogo carrega a lib na arquitetura dele
 goverlay
 wine-mono
 winetricks
