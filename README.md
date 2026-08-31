@@ -240,8 +240,17 @@ comentários no `themes/rose-pine-dawn/theme.sh`).
 
 `gtk_theme` e `cursor_theme` são nomes de diretório em `/usr/share/themes`,
 `/usr/share/icons`, `~/.local/share/icons` e `~/.themes`. Vazios, o `theme` não
-escreve a chave correspondente no gsettings. O Hyprland lê o cursor do gsettings
-por causa do `sync_gsettings_theme = true`.
+escreve a chave correspondente no gsettings. É o nome do diretório mesmo, e não
+o `Name=` do `index.theme`: o do BreezeX tem acento (`BreezeX-RoséPine` contra
+`BreezeX-RosePine-Linux`) e a busca do XCursor, que é por diretório, não acha.
+
+Quem manda no cursor é o `XCURSOR_THEME`, por dois caminhos: o `theme set` gera
+o `~/.config/uwsm/env-hyprland`, que o uwsm sourceia no login, e roda
+`hyprctl setcursor` para a sessão que já está de pé. O
+`sync_gsettings_theme = true` do Hyprland vai na direção contrária do que
+parece: ele republica o `XCURSOR_THEME` no gsettings, sobrepondo a chave que o
+próprio `theme` escreve ali. Por isso o valor precisa sair do tema nos dois
+lugares; hardcodado no `uwsm/env` ele vencia o tema em toda troca.
 
 O `color-scheme` do gsettings não depende de nenhum dos dois: sai sempre de
 `variant`, porque é o que o `xdg-desktop-portal-gtk` republica como
@@ -256,8 +265,73 @@ o tema.
 Os apps GTK e Qt não seguem por gsettings sob Hyprland, que não tem daemon de
 XSettings: seguem pelos arquivos, e por isso o `settings.ini` do GTK e o
 `qt6ct.conf` são templates como qualquer outro (ver a tabela acima). O `theme`
-deriva de `variant` o `gtk-application-prefer-dark-theme` e o tema de ícones do
-qt6ct.
+deriva de `variant` o `gtk-application-prefer-dark-theme` e a base do tema de
+ícones do qt6ct.
+
+O `settings.ini` decide só claro contra escuro; a paleta em si vem do `gtk.css`
+gerado em cada versão, que é a folha de estilo do usuário e é lida depois do
+tema, sobrepondo as cores nomeadas que o Adwaita definiu. São dois arquivos
+porque são vocabulários diferentes: o GTK3 usa `theme_bg_color` e companhia, e
+o libadwaita usa `window_bg_color`, `view_bg_color`, `headerbar_bg_color`, que
+desde a versão 1.6 são variáveis CSS com os `@define-color` de mesmo nome
+sobrando como compatibilidade. O arquivo do GTK4 traz os três vocabulários, o
+terceiro sendo os `theme_*` do Adwaita embutido, para o app GTK4 que não usa
+libadwaita.
+
+O alcance dos dois é muito diferente, e é por isso que o arquivo do GTK3 é
+bem maior que a lista de `@define-color` sugere. Medindo os dois stylesheets
+que vêm compilados nas bibliotecas:
+
+| | literais de cor | `var(--)` e `@nomeada` | responde a override |
+| --- | --- | --- | --- |
+| Adwaita do GTK3 | 1247 | 39 | 3% |
+| libadwaita 1.9 | 411 | 1130 | 73% |
+
+Ou seja, no GTK3 o `@define-color` sozinho não muda nada visível: o Adwaita
+resolveu as cores para hex na hora de compilar. Por isso o `gtk3-colors.css.in`
+traz, além dos `@define-color`, um bloco de regras reais para as superfícies que
+dominam a tela: janela, barra de título, botão, campo, lista, popover, aba,
+barra de rolagem e seleção. Como a folha do usuário tem prioridade maior que a
+do tema, essas regras vencem os literais. O que elas não alcançarem continua no
+cinza do Adwaita.
+
+No libadwaita não é preciso nada disso para as superfícies: ele ignora o
+`gtk-theme-name` e as variáveis são tudo que ele tem. As exceções são a dica de
+contexto, fixada em preto 80% com texto branco, e o link, derivado do
+`--accent-color`; as duas viram regra explícita nos dois arquivos, para
+acompanharem o `ToolTipBase` e o `Link` do Qt.
+
+Os papéis são os mesmos do `qt6ct-colors.conf.in`, para os dois toolkits caírem
+na mesma cor: `surface` na janela, `base` no conteúdo, `overlay` no que precisa
+se destacar da janela sem virar conteúdo.
+
+### Ícones do Qt
+
+Os ícones do Breeze são SVG de um traço só, com `fill:currentColor` e um bloco
+`.ColorScheme-* { color: ... }` embutido. No Plasma quem reescreve esse bloco
+conforme o esquema ativo é o `KIconThemes`; sob o qt6ct esse motor não existe,
+então cada ícone sai na cor gravada no arquivo. Na prática: botão de diálogo
+todo branco, e o que for de destaque no azul do KDE, seja qual for a paleta.
+
+O `apply_icons` do `theme` gera então um tema em
+`~/.local/share/icons/dotfiles/`, apontado pelo `icon_theme` do qt6ct, que
+herda o Breeze da variante (`breeze-dark` ou `breeze`) e reescreve esse bloco.
+Só a lista `ICON_RECOLOR` é recolorida, e não o tema inteiro: o Breeze tem
+19844 SVG e 41M, e copiar tudo a cada `theme set` custaria caro para pintar
+ícone que ninguém olha. O que ficar de fora resolve no tema herdado, com as
+cores originais.
+
+A substituição é por nome de classe, não por valor: o Breeze usa cinco azuis
+diferentes de `Accent`, então casar pelo hex erraria. Nos ícones de `status`,
+que são crachá de disco mais glifo vazado, o glifo também é trocado, por `base`:
+branco sobre o dourado do `warning` ficaria ilegível.
+
+Como o destino é um diretório de vários arquivos com os tamanhos descobertos em
+tempo de execução, isso não cabe no `manifest`; fica no `theme`, como o
+`apply_zen`.
+
+Os ícones do GTK seguem fora disso, em `AdwaitaLegacy`: são um conjunto
+próprio, já coerente entre si, e não saem da paleta.
 
 Nos templates, cada chave tem quatro formas:
 
@@ -291,10 +365,13 @@ Nos templates, cada chave tem quatro formas:
 | yazi (preview) | `~/.config/yazi/theme.tmTheme` | `[mgr] syntect_theme` no `theme.toml`, com caminho absoluto |
 | zen browser | `<perfil>/chrome/colors.css` e `zen-logo.svg` | `@import` no `userChrome.css` do estilo |
 | gtk | `~/.config/gtk-3.0/settings.ini` e `gtk-4.0/settings.ini` | arquivo inteiro (o GTK não tem include) |
+| gtk3 (cores) | `~/.config/gtk-3.0/gtk.css` | folha do usuário, sobrepõe os `@define-color` do tema |
+| gtk4 (cores) | `~/.config/gtk-4.0/gtk.css` | idem, no vocabulário do libadwaita |
 | qt | `~/.config/qt6ct/qt6ct.conf` e `qt6ct/colors/dotfiles.conf` | `custom_palette` + `color_scheme_path` |
+| cursor | `~/.config/uwsm/env-hyprland` | `XCURSOR_THEME` sourceado pelo uwsm no login |
 
-Do hyprland ao zathura, e mais o gtk e o qt, tudo é marcado como `desktop` na
-terceira coluna do `manifest` e não é gerado no perfil servidor. O
+Do hyprland ao zathura, e mais o gtk, o qt e o cursor, tudo é marcado como
+`desktop` na terceira coluna do `manifest` e não é gerado no perfil servidor. O
 `server-colors.conf` é o inverso: só sai no perfil servidor. O neovim
 consome o `theme.lua` por dois caminhos: `plugins/colors.lua` no desktop e
 `lua/NeoVim/server/init.lua` no servidor, que aplica o colorscheme sem plugin.
@@ -335,9 +412,9 @@ for um `#rrggbb`.
   trocam de cor na recarga, como o resto. Os do systray e os das notificações
   não: são imagens resolvidas pelo tema de ícones do Qt, que o Qt fixa uma vez,
   quando a `QGuiApplication` nasce. Nem o hot reload do quickshell nem o
-  observador de arquivo do qt6ct refazem essa resolução. Como o tema de ícones
-  só muda ao cruzar claro e escuro, o `theme set` avisa exatamente nesse caso;
-  nas outras trocas não há nada a reiniciar.
+  observador de arquivo do qt6ct refazem essa resolução. O nome do tema não
+  muda mais entre temas, mas o conteúdo dele sim, porque os ícones passaram a
+  ser recoloridos pela paleta, então o `theme set` avisa em toda troca.
 - **Neovim**: o tema escolhe o *colorscheme* (`nvim_colorscheme`), não as cores
   uma a uma. Se o plugin do colorscheme não estiver instalado, o nvim avisa e
   cai no `habamax`.

@@ -1,0 +1,174 @@
+/* ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+ * Fonte: themes/templates/gtk4-colors.css.in
+ *
+ * O libadwaita ignora o gtk-theme-name do settings.ini, então esta folha é o
+ * único jeito de dar a paleta a um app GTK4. São três blocos porque são três
+ * consumidores:
+ *
+ *   1. as variáveis CSS, que é como o libadwaita >= 1.6 lê as próprias cores;
+ *   2. os @define-color de mesmo nome, o caminho de compatibilidade que as
+ *      versões anteriores usavam e que a 1.9 ainda aceita;
+ *   3. os nomes theme_*, do Adwaita embutido no GTK4, para o app GTK4 que não
+ *      usa libadwaita e não enxerga nenhum dos dois de cima.
+ *
+ * Os papéis são os mesmos do qt6ct-colors.conf.in e do gtk3-colors.css.in.
+ * O surface é a janela, o base é o conteúdo, e o overlay é tudo que precisa
+ * se destacar da janela sem virar conteúdo: cabeçalho, cartão, popover.
+ */
+
+:root {
+    --window-bg-color: {{surface}};
+    --window-fg-color: {{text}};
+
+    --view-bg-color: {{base}};
+    --view-fg-color: {{text}};
+
+    --headerbar-bg-color: {{overlay}};
+    --headerbar-fg-color: {{text}};
+    --headerbar-border-color: {{text}};
+    --headerbar-backdrop-color: {{surface}};
+    --headerbar-shade-color: {{highlight_low}};
+    --headerbar-darker-shade-color: {{highlight_low}};
+
+    --sidebar-bg-color: {{overlay}};
+    --sidebar-fg-color: {{text}};
+    --sidebar-backdrop-color: {{surface}};
+    --sidebar-border-color: {{highlight_low}};
+    --sidebar-shade-color: {{highlight_low}};
+
+    --secondary-sidebar-bg-color: {{surface}};
+    --secondary-sidebar-fg-color: {{text}};
+    --secondary-sidebar-backdrop-color: {{surface}};
+    --secondary-sidebar-border-color: {{highlight_low}};
+    --secondary-sidebar-shade-color: {{highlight_low}};
+
+    --card-bg-color: {{overlay}};
+    --card-fg-color: {{text}};
+    --card-shade-color: {{highlight_low}};
+
+    --dialog-bg-color: {{surface}};
+    --dialog-fg-color: {{text}};
+
+    --popover-bg-color: {{overlay}};
+    --popover-fg-color: {{text}};
+    --popover-shade-color: {{highlight_low}};
+
+    --overview-bg-color: {{surface}};
+    --overview-fg-color: {{text}};
+
+    --thumbnail-bg-color: {{overlay}};
+    --thumbnail-fg-color: {{text}};
+
+    --active-toggle-bg-color: {{highlight_med}};
+    --active-toggle-fg-color: {{text}};
+
+    --shade-color: {{highlight_low}};
+    --scrollbar-outline-color: {{highlight_med}};
+    --border-color: {{highlight_med}};
+
+    --accent-bg-color: {{accent}};
+    --accent-fg-color: {{base}};
+    --accent-color: {{accent}};
+
+    --destructive-bg-color: {{error}};
+    --destructive-fg-color: {{base}};
+    --destructive-color: {{error}};
+
+    --success-bg-color: {{success}};
+    --success-fg-color: {{base}};
+    --success-color: {{success}};
+
+    --warning-bg-color: {{warning}};
+    --warning-fg-color: {{base}};
+    --warning-color: {{warning}};
+
+    --error-bg-color: {{error}};
+    --error-fg-color: {{base}};
+    --error-color: {{error}};
+}
+
+@define-color window_bg_color {{surface}};
+@define-color window_fg_color {{text}};
+@define-color view_bg_color {{base}};
+@define-color view_fg_color {{text}};
+@define-color headerbar_bg_color {{overlay}};
+@define-color headerbar_fg_color {{text}};
+@define-color headerbar_border_color {{text}};
+@define-color headerbar_backdrop_color {{surface}};
+@define-color headerbar_shade_color {{highlight_low}};
+@define-color headerbar_darker_shade_color {{highlight_low}};
+@define-color sidebar_bg_color {{overlay}};
+@define-color sidebar_fg_color {{text}};
+@define-color sidebar_backdrop_color {{surface}};
+@define-color sidebar_border_color {{highlight_low}};
+@define-color sidebar_shade_color {{highlight_low}};
+@define-color secondary_sidebar_bg_color {{surface}};
+@define-color secondary_sidebar_fg_color {{text}};
+@define-color secondary_sidebar_backdrop_color {{surface}};
+@define-color secondary_sidebar_border_color {{highlight_low}};
+@define-color secondary_sidebar_shade_color {{highlight_low}};
+@define-color card_bg_color {{overlay}};
+@define-color card_fg_color {{text}};
+@define-color card_shade_color {{highlight_low}};
+@define-color dialog_bg_color {{surface}};
+@define-color dialog_fg_color {{text}};
+@define-color popover_bg_color {{overlay}};
+@define-color popover_fg_color {{text}};
+@define-color popover_shade_color {{highlight_low}};
+@define-color thumbnail_bg_color {{overlay}};
+@define-color thumbnail_fg_color {{text}};
+@define-color shade_color {{highlight_low}};
+@define-color scrollbar_outline_color {{highlight_med}};
+@define-color borders {{highlight_med}};
+@define-color accent_bg_color {{accent}};
+@define-color accent_fg_color {{base}};
+@define-color accent_color {{accent}};
+@define-color destructive_bg_color {{error}};
+@define-color destructive_fg_color {{base}};
+@define-color destructive_color {{error}};
+@define-color success_bg_color {{success}};
+@define-color success_fg_color {{base}};
+@define-color success_color {{success}};
+@define-color warning_bg_color {{warning}};
+@define-color warning_fg_color {{base}};
+@define-color warning_color {{warning}};
+@define-color error_bg_color {{error}};
+@define-color error_fg_color {{base}};
+@define-color error_color {{error}};
+@define-color insensitive_bg_color {{surface}};
+@define-color insensitive_fg_color {{muted}};
+@define-color insensitive_base_color {{surface}};
+
+@define-color theme_bg_color {{surface}};
+@define-color theme_fg_color {{text}};
+@define-color theme_base_color {{base}};
+@define-color theme_text_color {{text}};
+@define-color theme_selected_bg_color {{accent}};
+@define-color theme_selected_fg_color {{base}};
+@define-color theme_unfocused_bg_color {{surface}};
+@define-color theme_unfocused_fg_color {{subtle}};
+@define-color theme_unfocused_base_color {{base}};
+@define-color theme_unfocused_text_color {{text}};
+@define-color theme_unfocused_selected_bg_color {{highlight_high}};
+@define-color theme_unfocused_selected_fg_color {{text}};
+@define-color unfocused_borders {{highlight_low}};
+@define-color unfocused_insensitive_color {{muted}};
+@define-color content_view_bg {{base}};
+@define-color text_view_bg {{base}};
+
+/* ── Dica de contexto ───────────────────────────────────────────────────── */
+/* O libadwaita fixa RGB(0 0 6/80%) com texto branco, sem variável nenhuma,
+ * então a regra inteira precisa ser reescrita para acompanhar o ToolTipBase
+ * do Qt. */
+tooltip, tooltip.background {
+    background-color: {{overlay}};
+    color: {{text}};
+    border: 1px solid {{highlight_med}};
+}
+tooltip * { background-color: transparent; color: {{text}}; }
+
+/* ── Links ──────────────────────────────────────────────────────────────── */
+/* Sem isto o libadwaita deriva o link de --accent-color e ele sai na cor do
+ * destaque. Os valores são os papéis Link e LinkVisited do Qt. */
+link, button.link { color: {{info}}; }
+link:visited, button.link:visited { color: {{accent_alt}}; }

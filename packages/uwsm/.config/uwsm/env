@@ -1,6 +1,5 @@
-# Temas de Cursor (Rosé Pine)
-export XCURSOR_THEME="BreezeX-RoséPine"
-export XCURSOR_SIZE=24
+# O cursor sai do tema ativo, pelo uwsm/env-hyprland que o `theme set` gera e
+# o uwsm sourceia depois deste arquivo.
 # export HYPRCURSOR_THEME="BreezeX-RoséPine"
 # export HYPRCURSOR_SIZE=24
 

@@ -33,5 +33,8 @@ yazi-theme.toml.in        ~/.config/yazi/theme.toml
 yazi-syntax.tmTheme.in    ~/.config/yazi/theme.tmTheme
 gtk-settings.ini.in       ~/.config/gtk-3.0/settings.ini              desktop
 gtk-settings.ini.in       ~/.config/gtk-4.0/settings.ini              desktop
+gtk3-colors.css.in        ~/.config/gtk-3.0/gtk.css                   desktop
+gtk4-colors.css.in        ~/.config/gtk-4.0/gtk.css                   desktop
 qt6ct.conf.in             ~/.config/qt6ct/qt6ct.conf                  desktop
 qt6ct-colors.conf.in      ~/.config/qt6ct/colors/dotfiles.conf        desktop
+cursor-env.in             ~/.config/uwsm/env-hyprland                 desktop

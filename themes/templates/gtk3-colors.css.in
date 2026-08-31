@@ -1,0 +1,175 @@
+/* ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+ * Fonte: themes/templates/gtk3-colors.css.in
+ *
+ * Folha de estilo do usuário, lida depois do tema e com prioridade maior.
+ *
+ * O bloco de @define-color sozinho não bastaria: o Adwaita do GTK3 que vem
+ * compilado no libgtk-3.so tem 1247 literais de cor contra 39 referências a
+ * cor nomeada, ou seja, 3% dele responde a @define-color. As regras abaixo
+ * existem por isso, e cobrem as superfícies que dominam a tela. O que elas
+ * não alcançarem continua no cinza do Adwaita.
+ *
+ * Os papéis são os do qt6ct-colors.conf.in: surface na janela, base no
+ * conteúdo, overlay no que se destaca da janela sem virar conteúdo.
+ */
+
+@define-color theme_bg_color {{surface}};
+@define-color theme_fg_color {{text}};
+@define-color theme_base_color {{base}};
+@define-color theme_text_color {{text}};
+@define-color theme_selected_bg_color {{accent}};
+@define-color theme_selected_fg_color {{base}};
+@define-color theme_unfocused_bg_color {{surface}};
+@define-color theme_unfocused_fg_color {{subtle}};
+@define-color theme_unfocused_base_color {{base}};
+@define-color theme_unfocused_text_color {{text}};
+@define-color theme_unfocused_selected_bg_color {{highlight_high}};
+@define-color theme_unfocused_selected_fg_color {{text}};
+@define-color insensitive_bg_color {{surface}};
+@define-color insensitive_fg_color {{muted}};
+@define-color insensitive_base_color {{surface}};
+@define-color unfocused_insensitive_color {{muted}};
+@define-color borders {{highlight_med}};
+@define-color unfocused_borders {{highlight_low}};
+@define-color content_view_bg {{base}};
+@define-color text_view_bg {{base}};
+@define-color warning_color {{warning}};
+@define-color error_color {{error}};
+@define-color success_color {{success}};
+@define-color bg_color {{surface}};
+@define-color text_color {{text}};
+@define-color selected_bg_color {{accent}};
+@define-color selected_fg_color {{base}};
+
+/* ── Janela ─────────────────────────────────────────────────────────────── */
+/* Só as superfícies de topo. Contêiner genérico (box, grid, stack) fica de
+ * fora de propósito: eles também existem dentro do headerbar e do popover, e
+ * pintariam por cima da cor daquelas superfícies. */
+window, dialog, messagedialog, assistant, .background, .solid-csd {
+    background-color: {{surface}};
+    color: {{text}};
+}
+
+/* ── Barra de título ────────────────────────────────────────────────────── */
+headerbar, .titlebar, headerbar:backdrop, .titlebar:backdrop, .csd headerbar {
+    background-image: none;
+    background-color: {{overlay}};
+    color: {{text}};
+    border-color: {{highlight_med}};
+    box-shadow: none;
+    text-shadow: none;
+}
+headerbar .title, headerbar .subtitle { color: {{text}}; }
+headerbar:backdrop, .titlebar:backdrop { color: {{subtle}}; }
+
+/* ── Botões ─────────────────────────────────────────────────────────────── */
+button, button.titlebutton, headerbar button, .linked > button {
+    background-image: none;
+    background-color: {{overlay}};
+    color: {{text}};
+    border-color: {{highlight_med}};
+    text-shadow: none;
+    box-shadow: none;
+}
+button:hover { background-color: {{highlight_med}}; }
+button:active, button:checked {
+    background-color: {{accent}};
+    color: {{base}};
+    border-color: {{accent}};
+}
+button:disabled {
+    background-color: {{surface}};
+    color: {{muted}};
+    border-color: {{highlight_low}};
+}
+button.flat, button.flat:backdrop { background-image: none; background-color: transparent; }
+button.suggested-action { background-color: {{accent}}; color: {{base}}; border-color: {{accent}}; }
+button.destructive-action { background-color: {{error}}; color: {{base}}; border-color: {{error}}; }
+
+/* ── Conteúdo: campos, listas, árvores ──────────────────────────────────── */
+entry, spinbutton, searchbar entry, textview, textview text,
+treeview.view, .view, iconview, list, listbox, flowbox, columnview, gridview {
+    background-image: none;
+    background-color: {{base}};
+    color: {{text}};
+}
+entry, spinbutton { border-color: {{highlight_med}}; }
+entry:focus, entry:focus-within { border-color: {{accent}}; }
+entry:disabled, textview:disabled { background-color: {{surface}}; color: {{muted}}; }
+treeview.view:hover, list row:hover, listbox row:hover { background-color: {{highlight_low}}; }
+
+/* ── Seleção ────────────────────────────────────────────────────────────── */
+*:selected, :selected, selection,
+treeview.view:selected, list row:selected, listbox row:selected,
+entry selection, textview text selection, label selection {
+    background-color: {{accent}};
+    color: {{base}};
+}
+
+/* ── Menus e popovers ───────────────────────────────────────────────────── */
+popover, popover.background, popover > contents, menu, .menu, .context-menu,
+combobox window, .popup {
+    background-color: {{overlay}};
+    color: {{text}};
+    border-color: {{highlight_med}};
+}
+menuitem:hover, .menuitem:hover, modelbutton:hover {
+    background-color: {{accent}};
+    color: {{base}};
+}
+separator, menu separator { background-color: {{highlight_med}}; color: {{highlight_med}}; }
+
+/* ── Abas ───────────────────────────────────────────────────────────────── */
+notebook > header { background-color: {{surface}}; border-color: {{highlight_med}}; }
+notebook > header > tabs > tab { background-color: transparent; color: {{muted}}; }
+notebook > header > tabs > tab:checked { color: {{text}}; box-shadow: inset 0 -3px {{accent}}; }
+
+/* ── Barras de rolagem ──────────────────────────────────────────────────── */
+scrollbar { background-color: {{surface}}; border-color: {{highlight_low}}; }
+scrollbar slider { background-color: {{muted}}; }
+scrollbar slider:hover { background-color: {{subtle}}; }
+
+/* ── Controles com tinta de destaque ────────────────────────────────────── */
+switch:checked, check:checked, radio:checked,
+checkbutton check:checked, radiobutton radio:checked,
+progressbar progress, levelbar block.filled, scale highlight, scale fill {
+    background-image: none;
+    background-color: {{accent}};
+    color: {{base}};
+    border-color: {{accent}};
+}
+scale slider { background-color: {{text}}; border-color: {{highlight_high}}; }
+progressbar trough, scale trough, levelbar trough { background-color: {{highlight_low}}; }
+
+/* ── Barra lateral e barra de status ────────────────────────────────────── */
+.sidebar, placessidebar, stacksidebar, .sidebar list {
+    background-color: {{overlay}};
+    color: {{text}};
+}
+actionbar, searchbar, toolbar, .toolbar, statusbar {
+    background-color: {{surface}};
+    color: {{text}};
+    border-color: {{highlight_med}};
+}
+
+/* ── Dica de contexto ───────────────────────────────────────────────────── */
+/* O Adwaita fixa preto 80% com texto branco, sem cor nomeada, então a regra
+ * inteira precisa ser reescrita para não destoar do Qt (ToolTipBase). */
+tooltip, tooltip.background {
+    background-color: {{overlay}};
+    color: {{text}};
+    border: 1px solid {{highlight_med}};
+}
+tooltip * { background-color: transparent; color: {{text}}; }
+
+/* ── Links ──────────────────────────────────────────────────────────────── */
+/* Mesma razão da dica: o Adwaita usa azul literal. Os valores são os papéis
+ * Link e LinkVisited do Qt, para as duas pilhas caírem na mesma cor. */
+*:link, button.link, label link { color: {{info}}; }
+*:visited, button.link:visited, label link:visited { color: {{accent_alt}}; }
+
+/* ── Barras de mensagem ─────────────────────────────────────────────────── */
+infobar.info > revealer > box { background-color: {{info}}; color: {{base}}; }
+infobar.warning > revealer > box { background-color: {{warning}}; color: {{base}}; }
+infobar.error > revealer > box { background-color: {{error}}; color: {{base}}; }
+infobar.question > revealer > box { background-color: {{accent_alt}}; color: {{base}}; }

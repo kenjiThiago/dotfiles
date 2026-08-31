@@ -34,6 +34,10 @@ STATE_FILE="$STATE_DIR/current-theme"
 PROFILE_FILE="$STATE_DIR/profile"
 NO_WALLPAPER_FILE="$STATE_DIR/no-wallpaper"
 
+# Tema de ícones gerado, em ~/.local/share/icons/. Herda o Breeze e só
+# sobrescreve o que o apply_icons recolore.
+ICON_THEME_NAME="dotfiles"
+
 DRY=0
 RELOAD=1
 
@@ -53,7 +57,7 @@ META_KEYS=(
     variant nvim_colorscheme zen_theme wallpaper gtk_theme cursor_theme
     opacity transparent btop_bg
     syn_comment_style syn_keyword_style syn_parameter_style syn_attribute_style
-    gtk_prefer_dark qt_icon_theme
+    gtk_prefer_dark qt_icon_theme qt_icon_base
 )
 
 # ── Saída ─────────────────────────────────────────────────────────────────────
@@ -114,7 +118,11 @@ load_theme() {
     # quer o nome de um tema de ícones, e nenhum dos dois sai da paleta. São
     # função só da variante, então derivam aqui em vez de virar chave de tema.
     gtk_prefer_dark=$([[ $variant == dark ]] && printf 1 || printf 0)
-    qt_icon_theme=$([[ $variant == dark ]] && printf 'breeze-dark' || printf 'breeze')
+
+    # O qt6ct aponta para o tema gerado, que herda este aqui. Se o apply_icons
+    # não conseguir gerar, ele devolve o qt_icon_theme para a base.
+    qt_icon_base=$([[ $variant == dark ]] && printf 'breeze-dark' || printf 'breeze')
+    qt_icon_theme=$ICON_THEME_NAME
 
     local c
     for c in black red green yellow blue magenta cyan white; do
@@ -279,6 +287,114 @@ zen_chrome_dir() {
     find "$HOME/.zen" -maxdepth 2 -type d -name chrome 2>/dev/null | sort | head -n 1
 }
 
+# ── Tema de ícones ────────────────────────────────────────────────────────────
+# Os SVG do Breeze são de um traço só, com `fill:currentColor` e um bloco
+# `.ColorScheme-* { color: ... }` embutido. No Plasma quem reescreve esse bloco
+# conforme o esquema ativo é o KIconThemes; sob o qt6ct esse motor não existe,
+# então todo ícone sai na cor gravada no arquivo: branco no breeze-dark, e o
+# destaque no azul do KDE, independente da paleta.
+#
+# A saída é um tema que herda o Breeze e reescreve o bloco. Só a lista abaixo é
+# recolorida: o Breeze tem 19844 SVG e 41M, e copiar tudo a cada `theme set`
+# custaria caro para pintar ícone que ninguém olha. O que ficar de fora é
+# resolvido no tema herdado, com as cores originais.
+#
+# Formato: <categoria>:<ícone>:<chave de cor>. A chave substitui a cor de
+# qualquer ColorScheme-* que o arquivo use.
+#
+# Os de `actions` são de um tom só. Os de `status` são crachá de dois tons:
+# disco pintado pela classe, mais um glifo `fill="#fff"` (ou "#000" no 64) por
+# cima. Esse glifo também é trocado, por `base`: ele é o vazado do crachá, e
+# branco sobre o dourado do warning ficaria ilegível. O `base` é o mesmo papel
+# que o HighlightedText do Qt já usa, e serve nas duas variantes.
+#
+# O `dialog-question` ficou de fora: ele é symlink para o `data-question`, cujo
+# disco é um roxo literal e não uma classe, então não há o que reescrever.
+ICON_RECOLOR=(
+    actions:dialog-ok:success
+    actions:dialog-ok-apply:success
+    actions:dialog-cancel:error
+    actions:dialog-close:error
+    actions:list-add:success
+    actions:list-remove:error
+    actions:edit-delete:error
+    status:dialog-error:error
+    status:dialog-warning:warning
+    status:dialog-information:info
+)
+
+apply_icons() {
+    [[ $(current_profile) == desktop ]] || return 0
+
+    local src="/usr/share/icons/$qt_icon_base"
+    if [[ ! -d $src ]]; then
+        warn "tema de ícones '$qt_icon_base' não instalado; qt6ct fica sem os recoloridos"
+        qt_icon_theme=$qt_icon_base
+        return 0
+    fi
+
+    local dest="${XDG_DATA_HOME:-$HOME/.local/share}/icons/$ICON_THEME_NAME"
+    local entry cat name key color file size dirs=()
+
+    for entry in "${ICON_RECOLOR[@]}"; do
+        IFS=':' read -r cat name key <<< "$entry"
+        color=${!key}
+        [[ -n $color ]] || { warn "apply_icons: chave '$key' vazia, pulando $name"; continue; }
+
+        for file in "$src/$cat"/*/"$name.svg"; do
+            [[ -e $file ]] || continue
+            size=$(basename "$(dirname "$file")")
+            dirs+=("$cat/$size")
+
+            if [[ $DRY == 0 ]]; then
+                mkdir -p "$dest/$cat/$size"
+                # O sed atravessa o symlink e grava arquivo de verdade. A
+                # substituição é por classe, não por valor: o Breeze usa cinco
+                # azuis diferentes de accent, então casar pelo hex erraria. O
+                # segundo par é o glifo vazado do crachá; nos ícones de um tom
+                # só não existe, e a expressão não casa nada.
+                sed -e 's/\(\.ColorScheme-[A-Za-z]* *{ *color: *\)[^;}]*/\1'"$color"'/g' \
+                    -e 's/fill="#\(fff\|ffffff\|000\|000000\)"/fill="'"$base"'"/g' \
+                    "$file" > "$dest/$cat/$size/$name.svg"
+            fi
+        done
+    done
+
+    if [[ ${#dirs[@]} -eq 0 ]]; then
+        warn "apply_icons: nenhum ícone encontrado em $src; qt6ct fica na base"
+        qt_icon_theme=$qt_icon_base
+        return 0
+    fi
+
+    # Ordena e remove repetidos, que é o que a chave Directories espera.
+    local uniq
+    mapfile -t uniq < <(printf '%s\n' "${dirs[@]}" | sort -u)
+
+    if [[ $DRY == 1 ]]; then
+        printf '\033[2;37m[dry]\033[0m ícones: %s recoloridos -> %s\n' \
+            "${#ICON_RECOLOR[@]}" "${dest/#$HOME/\~}"
+        return 0
+    fi
+
+    local index="$dest/index.theme" d
+    {
+        printf '# ARQUIVO GERADO POR `theme set %s` — NÃO EDITE.\n' "$THEME"
+        printf '[Icon Theme]\n'
+        printf 'Name=%s\n' "$ICON_THEME_NAME"
+        printf 'Comment=Ícones do Breeze recoloridos pela paleta do tema\n'
+        printf 'Inherits=%s,hicolor\n' "$qt_icon_base"
+        printf 'Directories=%s\n' "$(IFS=,; printf '%s' "${uniq[*]}")"
+        for d in "${uniq[@]}"; do
+            printf '\n[%s]\n' "$d"
+            printf 'Size=%s\n' "${d##*/}"
+            printf 'Context=%s\n' "$([[ ${d%%/*} == status ]] && printf 'Status' || printf 'Actions')"
+            printf 'Type=Fixed\n'
+        done
+    } > "$index"
+
+    printf '   %s\n' "${index/#$HOME/\~}"
+}
+
 apply_zen() {
     [[ -n $zen_theme ]] || return 0
     [[ $(current_profile) == desktop ]] || return 0
@@ -315,6 +431,13 @@ reload_apps() {
         hyprctl reload >/dev/null 2>&1 || true
         if [[ -n $wallpaper_path && -e $wallpaper_path ]]; then
             hyprctl hyprpaper wallpaper ",$wallpaper_path,cover" >/dev/null 2>&1 || true
+        fi
+
+        # O env-hyprland gerado só vale no próximo login, porque o uwsm o
+        # sourceia uma vez. Isto é o que troca o cursor na sessão viva, e o
+        # sync_gsettings_theme republica o valor no gsettings sozinho.
+        if [[ -n $cursor_theme ]]; then
+            hyprctl setcursor "$cursor_theme" 24 >/dev/null 2>&1 || true
         fi
     fi
 
@@ -354,21 +477,22 @@ cmd_set() {
     local name=${1:-}
     [[ -n $name ]] || die "uso: theme set <nome>"
 
-    # Guardado antes do load_theme, que sobrescreve o $variant. Serve só para o
-    # aviso do fim: o tema de ícones do Qt é resolvido uma vez, quando a
-    # QGuiApplication nasce, e nem o hot reload do quickshell nem o
-    # QFileSystemWatcher do qt6ct refazem essa resolução no processo vivo. Só
-    # importa ao cruzar claro <-> escuro, que é quando o breeze vira breeze-dark.
-    local prev prev_variant=""
+    # Guardado antes do load_theme. Serve para o aviso do fim: o tema de ícones
+    # do Qt é resolvido uma vez, quando a QGuiApplication nasce, e nem o hot
+    # reload do quickshell nem o QFileSystemWatcher do qt6ct refazem essa
+    # resolução no processo vivo. O nome do tema não muda mais entre temas, mas
+    # o conteúdo dele sim, então o aviso vale em toda troca e não só ao cruzar
+    # claro <-> escuro.
+    local prev=""
     if [[ -r $STATE_FILE ]]; then
         read -r prev < "$STATE_FILE" || true
-        if [[ -n ${prev:-} && -r $THEMES_DIR/$prev/theme.sh ]]; then
-            prev_variant=$(sed -n 's/^variant="\(.*\)"/\1/p' "$THEMES_DIR/$prev/theme.sh" | head -n1)
-        fi
     fi
 
     load_theme "$name"
     msg "Aplicando tema '$name'"
+    # Antes do generate: é o apply_icons que decide o qt_icon_theme com que o
+    # qt6ct.conf é renderizado.
+    apply_icons
     generate
     apply_zen
 
@@ -386,10 +510,10 @@ cmd_set() {
     if [[ -n $zen_theme && $(current_profile) == desktop ]]; then
         printf '   O Zen Browser precisa ser reaberto.\n'
     fi
-    if [[ -n $prev_variant && $prev_variant != "$variant" ]] &&
+    if [[ -n $prev && $prev != "$name" ]] &&
         pgrep -x quickshell >/dev/null 2>&1; then
-        printf '   Claro <-> escuro: reinicie o quickshell, senão o systray fica no\n'
-        printf '   tema de ícones antigo (pkill quickshell; uwsm app -- quickshell).\n'
+        printf '   Reinicie o quickshell, senão o systray fica nos ícones da paleta\n'
+        printf '   anterior (pkill quickshell; uwsm app -- quickshell).\n'
     fi
     return 0
 }
