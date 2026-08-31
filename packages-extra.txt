@@ -39,6 +39,8 @@ nvidia-open-dkms
 nvidia-settings
 nvtop
 vulkan-tools
+intel-media-driver           # backend VA-API da iGPU (ver uwsm/env)
+libva-utils                  # vainfo, para conferir se o decode pegou
 sbctl                        # assinatura para Secure Boot
 sof-firmware
 xf86-video-vesa
@@ -121,6 +123,8 @@ obs-studio
 
 # ── Jogos e Wine ──────────────────────────────────────────────────────────────
 steam
+gamemode
+lib32-gamemode               # o jogo carrega a lib na arquitetura dele
 goverlay
 wine-mono
 winetricks

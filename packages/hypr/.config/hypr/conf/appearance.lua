@@ -30,8 +30,11 @@ hl.config({
 
         resize_on_border = false,
 
-        -- Ligar exige atenção: https://wiki.hyprland.org/Configuring/Tearing/
-        allow_tearing = false,
+        -- Habilita o tearing, não o aplica: rasga só quem tiver a regra
+        -- immediate, que hoje é o steam_game_window do conf/rules.lua. Com esta
+        -- linha em false aquela regra vira letra morta.
+        -- https://wiki.hyprland.org/Configuring/Tearing/
+        allow_tearing = true,
 
         layout = "dwindle",
     },

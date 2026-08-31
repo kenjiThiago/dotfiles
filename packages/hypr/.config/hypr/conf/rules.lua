@@ -111,5 +111,24 @@ hl.window_rule({
     stay_focused = true,
 })
 
+-- Jogos do Steam sob XWayland, que entram com a classe steam_app_<appid>. O
+-- no_blur dispensa o compositor de trabalho que a janela nunca aproveita: em
+-- tela cheia o direct scanout já pula a composição, e em borderless os 3 passes
+-- de blur do appearance.lua rodariam a 144Hz na mesma iGPU que já copia o
+-- quadro vindo da dGPU.
+--
+-- O immediate é o que exige atenção: só tem efeito porque o allow_tearing ficou
+-- ligado no appearance.lua, e é o motivo de ele estar ligado. Vale só para as
+-- janelas casadas aqui, e o preço é a linha de corte visível quando a imagem
+-- muda rápido. Para desistir do tearing sem mexer no resto, tire esta linha.
+hl.window_rule({
+    name  = "steam_game_window",
+    match = { class = "^steam_app_[0-9]+$" },
+
+    no_blur   = true,
+    no_anim   = true,
+    immediate = true,
+})
+
 -- workspace=1, monitor:eDP-1, persistent:true, default:true
 -- workspace=2, monitor:HDMI-A-1, persistent:true, default:true
