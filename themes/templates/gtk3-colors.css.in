@@ -3,14 +3,12 @@
  *
  * Folha de estilo do usuário, lida depois do tema e com prioridade maior.
  *
- * O bloco de @define-color sozinho não bastaria: o Adwaita do GTK3 que vem
- * compilado no libgtk-3.so tem 1247 literais de cor contra 39 referências a
- * cor nomeada, ou seja, 3% dele responde a @define-color. As regras abaixo
- * existem por isso, e cobrem as superfícies que dominam a tela. O que elas
- * não alcançarem continua no cinza do Adwaita.
+ * O Adwaita do GTK3 resolve as cores para literal ao compilar, então só 3% dele
+ * responde a @define-color: daí as regras abaixo, que cobrem as superfícies
+ * que dominam a tela. O resto continua no cinza do Adwaita.
  *
- * Os papéis são os do qt6ct-colors.conf.in: surface na janela, base no
- * conteúdo, overlay no que se destaca da janela sem virar conteúdo.
+ * Papéis como no qt6ct-colors.conf.in: surface na janela, base no conteúdo,
+ * overlay no que se destaca da janela sem virar conteúdo.
  */
 
 @define-color theme_bg_color {{surface}};

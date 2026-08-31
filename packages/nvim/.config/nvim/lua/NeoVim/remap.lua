@@ -28,7 +28,6 @@ vim.keymap.set("n", "N", "Nzzzv")
 
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 
---ClipBorde
 vim.keymap.set("x", "<leader>p", "\"_dP")
 
 vim.keymap.set("n", "<leader>y", "\"+y")
@@ -54,7 +53,6 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 -- vim.keymap.set("n", "<TAB>", ">>")
 -- vim.keymap.set("n", "<S-TAB>", "<<")
 
---Tabs
 vim.keymap.set("n", "<leader>to", ":tabnew<CR>")
 vim.keymap.set("n", "<leader>tx", ":tabclose<CR>")
 vim.keymap.set("n", "<leader>tn", ":tabn<CR>")
@@ -65,12 +63,10 @@ vim.keymap.set("n", "<leader>tt", ":tabnew | term<CR>")
 -- vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
 vim.keymap.set("n", "<leader>gs", "<cmd>silent !tmux-lazygit<CR>")
 
---Highlight
 vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
 
 vim.keymap.set("n", "<leader>gc", ":Comp")
 
---ShowWhiteSpaces
 vim.cmd("match TrailingWhitespace /\\s\\+$/")
 local toggle_ws = true
 vim.api.nvim_create_user_command("ShowWhiteSpaces", function()
@@ -90,7 +86,6 @@ vim.keymap.set("n", "<leader>nr", function()
     vim.fn.setpos(".", save_cursor)
 end)
 
---Plus
 vim.api.nvim_create_user_command("Compile", function(opts)
     local result = vim.split(vim.api.nvim_buf_get_name(0), "/")
 

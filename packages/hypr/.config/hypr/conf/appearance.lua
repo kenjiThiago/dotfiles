@@ -67,17 +67,12 @@ hl.config({
             border_active = { colors = { M.green, M.yellow }, angle = 115 },
             border_inactive = M.muted,
 
-            -- Sem estas duas o grupo travado cai no oliva e no laranja fixos do
-            -- Hyprland, que não vêm da paleta.
-            --
-            -- O travado se distingue pela forma, e não pelo matiz: sólido onde
-            -- os outros dois estados ativos são gradiente. Nenhum par de cores
-            -- serviria, porque accent e accent_alt reciclam as cores nomeadas
-            -- da paleta, e o par escolhido acabaria igual ao da janela em foco
-            -- em algum tema.
+            -- Sem estas duas o travado cai no oliva e no laranja fixos do
+            -- Hyprland. Ele se distingue pela forma, e não pelo matiz: sólido
+            -- onde os outros estados são gradiente, porque accent e accent_alt
+            -- reciclam cores nomeadas e colidiriam com o foco em algum tema.
             border_locked_active = M.red,
-            -- A 40%, como fazia o padrão do Hyprland: o travado continua
-            -- legível sem competir com a borda da janela em foco.
+            -- A 40%, como o padrão do Hyprland: legível sem competir com o foco.
             border_locked_inactive = (M.red:gsub("^0x%x%x", "0x66")),
         },
 
@@ -111,24 +106,19 @@ hl.curve("easeinoutsine", { type = "bezier", points = { { 0.37, 0 }, { 0.63, 1 }
 hl.curve("snappyReturn", { type = "bezier", points = { { 0.4, 0.9 }, { 0.6, 1.0 } } })
 hl.curve("bounce", { type = "bezier", points = { { 0.4, 0.9 }, { 0.6, 1.0 } } })
 
--- Windows
 hl.animation({ leaf = "windowsIn", enabled = true, speed = 4, bezier = "snappyReturn", style = "slidevert right" })
 hl.animation({ leaf = "windowsOut", enabled = true, speed = 5, bezier = "snappyReturn", style = "slide" })
 hl.animation({ leaf = "windowsMove", enabled = true, speed = 4, bezier = "bounce", style = "slide" })
 
--- Fading
 hl.animation({ leaf = "fade", enabled = true, speed = 2.5, bezier = "fluent_decel" })
 hl.animation({ leaf = "fadeSwitch", enabled = false })
 
--- Elementos Desabilitados (0 -> enabled = false)
 hl.animation({ leaf = "fadeLayersIn", enabled = false })
 hl.animation({ leaf = "border", enabled = false })
 
--- Layers
 hl.animation({ leaf = "layersOut", enabled = true, speed = 1, bezier = "default" })
 hl.animation({ leaf = "layersIn", enabled = true, speed = 2, bezier = "easeinoutsine", style = "popin" })
 
--- Workspaces
 -- hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "fluent_decel", style = "slidefade 30%" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 3, bezier = "fluent_decel", style = "slidefadevert -30%" })
 

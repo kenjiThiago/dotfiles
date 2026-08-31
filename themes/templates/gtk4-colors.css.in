@@ -3,17 +3,12 @@
  *
  * O libadwaita ignora o gtk-theme-name do settings.ini, então esta folha é o
  * único jeito de dar a paleta a um app GTK4. São três blocos porque são três
- * consumidores:
+ * consumidores: as variáveis CSS do libadwaita >= 1.6, os @define-color de
+ * mesmo nome que as versões anteriores usavam, e os theme_* do Adwaita
+ * embutido, para o app GTK4 que não usa libadwaita.
  *
- *   1. as variáveis CSS, que é como o libadwaita >= 1.6 lê as próprias cores;
- *   2. os @define-color de mesmo nome, o caminho de compatibilidade que as
- *      versões anteriores usavam e que a 1.9 ainda aceita;
- *   3. os nomes theme_*, do Adwaita embutido no GTK4, para o app GTK4 que não
- *      usa libadwaita e não enxerga nenhum dos dois de cima.
- *
- * Os papéis são os mesmos do qt6ct-colors.conf.in e do gtk3-colors.css.in.
- * O surface é a janela, o base é o conteúdo, e o overlay é tudo que precisa
- * se destacar da janela sem virar conteúdo: cabeçalho, cartão, popover.
+ * Papéis como no qt6ct-colors.conf.in: surface na janela, base no conteúdo,
+ * overlay no que se destaca da janela sem virar conteúdo.
  */
 
 :root {

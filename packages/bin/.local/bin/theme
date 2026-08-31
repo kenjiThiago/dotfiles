@@ -288,28 +288,17 @@ zen_chrome_dir() {
 }
 
 # ── Tema de ícones ────────────────────────────────────────────────────────────
-# Os SVG do Breeze são de um traço só, com `fill:currentColor` e um bloco
-# `.ColorScheme-* { color: ... }` embutido. No Plasma quem reescreve esse bloco
-# conforme o esquema ativo é o KIconThemes; sob o qt6ct esse motor não existe,
-# então todo ícone sai na cor gravada no arquivo: branco no breeze-dark, e o
-# destaque no azul do KDE, independente da paleta.
+# Os SVG do Breeze guardam a cor num bloco `.ColorScheme-* { color: ... }` que no
+# Plasma o KIconThemes reescreve; sob o qt6ct esse motor não existe, e todo ícone
+# sai na cor gravada no arquivo. Daí um tema que herda o Breeze e reescreve o
+# bloco. Só a lista abaixo, porque copiar os 19844 SVG a cada `theme set` custaria
+# caro para pintar ícone que ninguém olha.
 #
-# A saída é um tema que herda o Breeze e reescreve o bloco. Só a lista abaixo é
-# recolorida: o Breeze tem 19844 SVG e 41M, e copiar tudo a cada `theme set`
-# custaria caro para pintar ícone que ninguém olha. O que ficar de fora é
-# resolvido no tema herdado, com as cores originais.
+# Formato: <categoria>:<ícone>:<chave de cor>.
 #
-# Formato: <categoria>:<ícone>:<chave de cor>. A chave substitui a cor de
-# qualquer ColorScheme-* que o arquivo use.
-#
-# Os de `actions` são de um tom só. Os de `status` são crachá de dois tons:
-# disco pintado pela classe, mais um glifo `fill="#fff"` (ou "#000" no 64) por
-# cima. Esse glifo também é trocado, por `base`: ele é o vazado do crachá, e
-# branco sobre o dourado do warning ficaria ilegível. O `base` é o mesmo papel
-# que o HighlightedText do Qt já usa, e serve nas duas variantes.
-#
-# O `dialog-question` ficou de fora: ele é symlink para o `data-question`, cujo
-# disco é um roxo literal e não uma classe, então não há o que reescrever.
+# Nos de `status` o glifo vazado do crachá também é trocado, por `base`: branco
+# sobre o dourado do warning ficaria ilegível. O `dialog-question` ficou de fora
+# porque o disco dele é um roxo literal, e não uma classe.
 ICON_RECOLOR=(
     actions:dialog-ok:success
     actions:dialog-ok-apply:success
@@ -477,12 +466,8 @@ cmd_set() {
     local name=${1:-}
     [[ -n $name ]] || die "uso: theme set <nome>"
 
-    # Guardado antes do load_theme. Serve para o aviso do fim: o tema de ícones
-    # do Qt é resolvido uma vez, quando a QGuiApplication nasce, e nem o hot
-    # reload do quickshell nem o QFileSystemWatcher do qt6ct refazem essa
-    # resolução no processo vivo. O nome do tema não muda mais entre temas, mas
-    # o conteúdo dele sim, então o aviso vale em toda troca e não só ao cruzar
-    # claro <-> escuro.
+    # Para o aviso do fim: o Qt resolve o tema de ícones uma vez, quando a
+    # QGuiApplication nasce, e o conteúdo do tema muda a cada troca.
     local prev=""
     if [[ -r $STATE_FILE ]]; then
         read -r prev < "$STATE_FILE" || true

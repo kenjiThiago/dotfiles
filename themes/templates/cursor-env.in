@@ -1,12 +1,9 @@
 # ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
 # Fonte: themes/templates/cursor-env.in
 #
-# O uwsm sourceia uwsm/env e depois uwsm/env-<compositor>, então este arquivo
-# vem por último e é quem decide o cursor com que a sessão nasce.
-#
-# O valor é o nome do DIRETÓRIO em /usr/share/icons, não o `Name=` do
-# index.theme: a busca do XCursor é por diretório, e o do BreezeX tem acento
-# ("BreezeX-RoséPine" contra "BreezeX-RosePine-Linux"), que não resolve.
+# Sourceado pelo uwsm depois do uwsm/env, então é quem decide o cursor com que a
+# sessão nasce. O valor é o nome do diretório em /usr/share/icons, e não o
+# `Name=` do index.theme: a busca do XCursor é por diretório.
 
 export XCURSOR_THEME="{{cursor_theme}}"
 export XCURSOR_SIZE=24

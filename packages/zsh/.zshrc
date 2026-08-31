@@ -9,7 +9,6 @@ fi
 
 # fastfetch
 
-# Plugins
 if [[ -r "${ZINIT_HOME}/zinit.zsh" ]]; then
     source "${ZINIT_HOME}/zinit.zsh"
 
@@ -18,17 +17,14 @@ if [[ -r "${ZINIT_HOME}/zinit.zsh" ]]; then
     zinit light zsh-users/zsh-autosuggestions
 fi
 
-# Keybindings
 bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey -s '^[^F' "tmux-sessionizer\n"
 
-# Aparência da completação
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
-# Aliases
 alias nv="nvim"
 alias c="clear"
 # alias cat="bat --paging=never"
@@ -111,7 +107,6 @@ clear_keep_buffer() {
 zle -N clear_keep_buffer
 bindkey "^xl" clear_keep_buffer
 
-# Historico de comandos
 HISTSIZE=2000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE

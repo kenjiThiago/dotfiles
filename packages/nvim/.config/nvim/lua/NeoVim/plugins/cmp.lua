@@ -46,8 +46,8 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "BufNewFile" }, {
                             item.label
                         local is_multi_line = item_text:find("\n") ~= nil
 
-                        -- after showing the menu upwards, we want to maintain that direction
-                        -- until we re-open the menu, so store the context id in a global variable
+                        -- Aberto para cima, o menu mantém a direção até ser
+                        -- reaberto: daí guardar o id do contexto.
                         if is_multi_line or vim.g.blink_cmp_upwards_ctx_id == ctx.id then
                             vim.g.blink_cmp_upwards_ctx_id = ctx.id
                             return { "n", "s" }

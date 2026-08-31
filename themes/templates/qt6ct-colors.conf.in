@@ -10,11 +10,8 @@
 #  14 Link        15 LinkVisited 16 AlternateBase 17 NoRole
 #  18 ToolTipBase 19 ToolTipText 20 PlaceholderText
 #
-# Light/Midlight/Mid/Dark/Shadow são os biséis do estilo Fusion. Saem dos
-# highlight_*, e não do base, porque só eles se afastam do fundo na mesma
-# direção nas duas variantes: num tema claro o base é o extremo claro, num
-# escuro é o extremo escuro, e usá-lo aqui inverteria o relevo em metade dos
-# temas.
+# Light/Midlight/Mid/Dark/Shadow são os biséis do Fusion. Saem dos highlight_*
+# porque o base inverteria o relevo entre um tema claro e um escuro.
 #
 # O prefixo é o alfa: ff = opaco.
 

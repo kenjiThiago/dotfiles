@@ -129,7 +129,6 @@ Scope {
                     }
                 }
 
-                // Barreira esquerda
                 MouseArea {
                     id: barrierLeft
                     anchors {
@@ -144,7 +143,6 @@ Scope {
                     }
                 }
 
-                // Barreira direita
                 MouseArea {
                     id: barrierRight
                     anchors {
@@ -193,11 +191,11 @@ Scope {
                     root.expectMenu();
                 }
 
-                // ── SENSOR DE FOCO CORRIGIDO (O fim do bug do duplo clique) ──
+                // ── SENSOR DE FOCO ───────────────────────────────────────────
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
-                    acceptedButtons: Qt.NoButton // <- Essa linha impede o roubo de cliques direitos!
+                    acceptedButtons: Qt.NoButton // Só hover: o clique segue para quem está embaixo.
                     function rearm() {
                         if (root.expectingMenu)
                             return;

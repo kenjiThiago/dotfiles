@@ -10,16 +10,11 @@ local finders = require("telescope.finders")
 local pickers = require("telescope.pickers")
 local themes = require("telescope.themes")
 
--- O --hidden é o que traz ~/.config, ~/.local/bin e ~/.local/share/fonts, que
--- são destino frequente. As exclusões são o que ele arrasta junto: cache de
--- navegador, de toolchain e de jogo, que levam a lista de 65 mil para menos de
--- 5 mil. Por isso são caminhos e não nomes soltos: cortar ~/.local/share
--- inteiro derrubaria fonts, applications e icons junto com o Steam. O que é
--- lixo de uma máquina só não entra aqui, e sim em ~/.config/fd/ignore, que o
--- fd já lê.
---
--- Sem --follow: symlink para diretório repetiria na lista uma árvore que já
--- está lá pelo caminho real.
+-- O --hidden traz ~/.config, ~/.local/bin e ~/.local/share/fonts, e junto o
+-- cache que leva a lista de 65 mil para menos de 5 mil. São caminhos e não
+-- nomes soltos porque cortar ~/.local/share inteiro derrubaria fonts,
+-- applications e icons junto com o Steam. O lixo de uma máquina só vai em
+-- ~/.config/fd/ignore. Sem --follow: symlink repetiria uma árvore já listada.
 local EXCLUSOES = {
     ".git", ".cache", "node_modules", ".venv",
     ".zen", ".mozilla", ".rustup", ".cargo", ".wine",
