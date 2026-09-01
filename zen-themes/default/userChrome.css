@@ -80,6 +80,32 @@
     .tab-background {
       background-color: var(--dots-overlay) !important;
     }
+
+    /* Essencial carregado se distingue do que não está: sem isto os dois são
+     * idênticos na grade, e não há como saber o que já abriu. O [pending] é a
+     * aba que nunca carregou na sessão, que é o estado da maioria logo depois
+     * de subir o navegador; o pref nativo que cobriria isso
+     * (browser.tabs.fadeOutUnloadedTabs) vem desligado, e o que vem ligado
+     * pega só o [pending][discarded], ou seja, o que foi descarregado à mão. */
+    &[pending] .tab-icon-image {
+      filter: grayscale(100%) !important;
+      opacity: 0.4 !important;
+      transition: filter 0.3s ease, opacity 0.3s ease !important;
+    }
+
+    /* O hover devolve a cor para identificar o que está sob o cursor. */
+    &[pending]:hover .tab-icon-image {
+      filter: none !important;
+      opacity: 1 !important;
+    }
+
+    /* O peso do sinal fica aqui, e não no ícone: boa parte dos essenciais tem
+     * logo monocromático (Discord, GitHub, WhatsApp), onde o grayscale acima
+     * não muda nada. O fundo é área grande e independe da cor do favicon,
+     * então lê num relance na grade. */
+    &:not([pending]) .tab-background {
+      background-color: color-mix(in srgb, var(--dots-accent) 22%, var(--dots-overlay)) !important;
+    }
   }
 
   findbar {
