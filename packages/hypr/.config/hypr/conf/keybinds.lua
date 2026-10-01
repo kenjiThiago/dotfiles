@@ -59,7 +59,8 @@ hl.bind(mainMod .. "+ PERIOD", hl.dsp.exec_cmd("uwsm app -- rofimoji --action co
 hl.bind(mainMod .. "+ P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. "+ T", hl.dsp.layout("togglesplit"))
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
+-- hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
+hl.bind(mainMod .. "+ CTRL + A", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
 -- O -l trava o teto em 100%: sem ele o wpctl passa de 1.0 e distorce.
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"),
     { locked = true, repeating = true })
@@ -78,7 +79,8 @@ hl.bind(mainMod .. "+ SHIFT + UP",
     hl.dsp.exec_cmd("qs ipc call brightness up 2>/dev/null || brightnessctl set 5%+"),
     { locked = true, repeating = true })
 hl.bind(mainMod .. "+ SHIFT + DOWN",
-    hl.dsp.exec_cmd("qs ipc call brightness down 2>/dev/null || brightnessctl --min-value=$(($(brightnessctl m) / 20)) set 5%-"),
+    hl.dsp.exec_cmd(
+    "qs ipc call brightness down 2>/dev/null || brightnessctl --min-value=$(($(brightnessctl m) / 20)) set 5%-"),
     { locked = true, repeating = true })
 hl.bind(mainMod .. "+ F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "+ SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
