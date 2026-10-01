@@ -94,7 +94,9 @@ Rectangle {
     }
 
     readonly property string bellText: (Notifications.dnd ? "󰂛" : "󰂚") + (Notifications.unreadCount > 0 ? " " + Notifications.unreadCount : "")
+
     readonly property bool showBell: Notifications.unreadCount > 0 || Notifications.dnd
+    readonly property bool showMultedMicrofone: SystemMonitor.sourceIsMuted
     readonly property bool showTemp: SystemMonitor.tempC >= 80
     readonly property bool showBatt: SystemMonitor.pct <= 20 && !SystemMonitor.isCharging
 
@@ -109,6 +111,12 @@ Rectangle {
             id: measureAlerts
             spacing: 8
 
+            Text {
+                text: "󰍭"
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 15
+                visible: island.showMultedMicrofone
+            }
             Text {
                 text: island.bellText
                 font.family: "Hack Nerd Font"
@@ -410,6 +418,19 @@ Rectangle {
                     id: alertRow
                     anchors.centerIn: parent
                     spacing: 8
+
+                    Text {
+                        text: "󰍭"
+                        color: Theme.accent
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 15
+
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.verticalCenterOffset: -1
+
+                        visible: island.showMultedMicrofone
+                    }
 
                     Text {
                         text: island.bellText

@@ -81,11 +81,14 @@ Item {
 
     // ── ÁUDIO E WIREMIX ───────────────────────────────────────────────────────
     PwObjectTracker {
-        objects: [Pipewire.defaultAudioSink]
+        objects: [Pipewire.defaultAudioSink, Pipewire.defaultAudioSource]
     }
     property var sink: Pipewire.defaultAudioSink
     property int volumePct: (sink && sink.audio) ? Math.round(sink.audio.volume * 100) : 0
     property bool isMuted: (sink && sink.audio) ? sink.audio.muted : true
+
+    property var sourceSink: Pipewire.defaultAudioSource
+    property bool sourceIsMuted: (sourceSink && sourceSink.audio) ? sourceSink.audio.muted : true
 
     function setVolume(pct) {
         if (sink && sink.audio)
