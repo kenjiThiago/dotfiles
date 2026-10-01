@@ -107,7 +107,7 @@ clear_keep_buffer() {
 zle -N clear_keep_buffer
 bindkey "^xl" clear_keep_buffer
 
-HISTSIZE=2000
+HISTSIZE=10000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
 HISTDUP=erase
