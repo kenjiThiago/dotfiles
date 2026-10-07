@@ -148,3 +148,6 @@ infobar.info > revealer > box { background-color: {{info}}; color: {{base}}; }
 infobar.warning > revealer > box { background-color: {{warning}}; color: {{base}}; }
 infobar.error > revealer > box { background-color: {{error}}; color: {{base}}; }
 infobar.question > revealer > box { background-color: {{accent_alt}}; color: {{base}}; }
+
+/* Barra do topo do Omnissa Horizon: o app a pinta de claro em código e não lhe dá nome. */
+menubar + notebook > stack > * > box { background-color: {{surface}}; }
