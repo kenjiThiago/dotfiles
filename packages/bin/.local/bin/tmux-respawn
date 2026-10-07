@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# tmux-respawn: troca cada shell ocioso da sessão atual por um shell novo, no
+# mesmo diretório. Pane rodando outra coisa (nvim, servidor, ssh) fica intacto.
+
+restarted=0
+skipped=()
+
+while IFS=$'\t' read -r pane cmd dir; do
+    case $cmd in
+        zsh|bash|sh|fish)
+            tmux respawn-pane -k -t "$pane" -c "$dir"
+            restarted=$((restarted + 1))
+            ;;
+        *)
+            skipped+=("$cmd")
+            ;;
+    esac
+done < <(tmux list-panes -s -F $'#{pane_id}\t#{pane_current_command}\t#{pane_current_path}')
+
+msg="$restarted shell(s) reiniciado(s)"
+if [[ ${#skipped[@]} -gt 0 ]]; then
+    msg+="; intocados: $(printf '%s\n' "${skipped[@]}" | sort | uniq -c | awk '{printf "%s%s×%s", (NR > 1 ? ", " : ""), $1, $2}')"
+fi
+tmux display-message "$msg"
