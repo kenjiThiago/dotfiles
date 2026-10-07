@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Quickshell
 import Quickshell.Services.SystemTray
 import "."
 
@@ -11,7 +12,41 @@ Row {
 
     readonly property int count: trayRepeater.count
 
+    signal menuClosed
+
+    property bool entryChosen: false
+
     spacing: 10
+
+    // O display() não avisa quando o menu fecha; o anchor sim.
+    QsMenuAnchor {
+        id: menuAnchor
+        anchor.window: trayRoot.hostWindow
+        onOpened: {
+            closeDebounce.stop();
+            trayRoot.entryChosen = false;
+        }
+        onClosed: closeDebounce.restart()
+    }
+
+    MenuWatcher {
+        menu: menuAnchor.menu
+        onTriggered: trayRoot.entryChosen = true
+    }
+
+    // Um menu que se reconstrói (a lista de redes do nm-applet) pode fechar e
+    // reabrir em seguida. A espera também cobre o Qt, que fecha o menu antes de
+    // emitir o triggered da entrada escolhida.
+    Timer {
+        id: closeDebounce
+        interval: 200
+        onTriggered: {
+            if (trayRoot.hostWindow && trayRoot.hostWindow.menuFinished)
+                trayRoot.hostWindow.menuFinished();
+            if (trayRoot.entryChosen)
+                trayRoot.menuClosed();
+        }
+    }
 
     Repeater {
         id: trayRepeater
@@ -63,7 +98,10 @@ Row {
                             trayRoot.hostWindow.expectMenu();
                         }
                         let pos = trayItem.mapToItem(null, mouse.x, mouse.y);
-                        trayItem.modelData.display(trayRoot.hostWindow, pos.x, pos.y);
+                        menuAnchor.menu = trayItem.modelData.menu;
+                        menuAnchor.anchor.rect.x = pos.x;
+                        menuAnchor.anchor.rect.y = pos.y;
+                        menuAnchor.open();
                     }
                 }
             }

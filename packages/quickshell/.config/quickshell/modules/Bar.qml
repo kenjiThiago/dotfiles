@@ -19,13 +19,13 @@ Scope {
     function expectMenu(): void {
         root.grabAlive = false;
         root.expectingMenu = true;
-        menuGrace.restart();
     }
 
-    Timer {
-        id: menuGrace
-        interval: 1000
-        onTriggered: root.expectingMenu = false
+    // Menu fechado sem escolha: a ilha continua aberta, com o grab de volta.
+    function menuFinished(): void {
+        root.expectingMenu = false;
+        if (root.islandState > 0)
+            root.grabAlive = true;
     }
 
     // Repetir a tecla de um estado volta para 0. Fora do IpcHandler porque lá dentro
@@ -189,6 +189,10 @@ Scope {
                     root.expectMenu();
                 }
 
+                function menuFinished() {
+                    root.menuFinished();
+                }
+
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
@@ -235,6 +239,10 @@ Scope {
                         root.islandState = newState;
                         if (newState !== 1)
                             root.calendarExpanded = false;
+                        if (newState === 0) {
+                            root.grabAlive = true;
+                            root.expectingMenu = false;
+                        }
                     }
 
                     onCalendarRequested: {
