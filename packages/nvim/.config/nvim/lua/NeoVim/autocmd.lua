@@ -158,3 +158,15 @@ vim.api.nvim_create_autocmd("BufEnter", {
         end
     end,
 })
+
+vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPre" }, {
+    group = vim.api.nvim_create_augroup("rbw_secrets", { clear = true }),
+    pattern = "/tmp/.tmp*/rbw",
+    callback = function()
+        vim.opt_local.swapfile = false
+        vim.opt_local.undofile = false
+        vim.opt_local.backup = false
+        vim.opt_local.writebackup = false
+        vim.o.shada = ""
+    end,
+})

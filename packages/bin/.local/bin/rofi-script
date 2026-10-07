@@ -327,7 +327,7 @@ show_install_remove_menu() {
 
 show_system_menu() {
     case $(menu "System" "  Lock\n󰍃  Logout\n󰒲  Suspend\n󰜉  Restart\n󰐥  Shutdown") in
-        *Lock*)     hyprlock ;;
+        *Lock*)     loginctl lock-session ;;
         *Logout*)   uwsm stop ;;
         *Suspend*)  systemctl suspend ;;
         *Restart*)  systemctl reboot ;;

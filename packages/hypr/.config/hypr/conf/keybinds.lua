@@ -56,6 +56,7 @@ hl.bind(mainMod .. "+ SHIFT + E", hl.dsp.exec_cmd("qs ipc call bar expand"))
 hl.bind(mainMod .. "+ D", hl.dsp.exec_cmd("qs ipc call bar center"))
 hl.bind(mainMod .. "+ SHIFT + D", hl.dsp.exec_cmd("qs ipc call notifications toggle"))
 hl.bind(mainMod .. "+ PERIOD", hl.dsp.exec_cmd("uwsm app -- rofimoji --action copy"))
+hl.bind(mainMod .. "+ SHIFT + P", hl.dsp.exec_cmd("uwsm app -- rofi-rbw"))
 hl.bind(mainMod .. "+ P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. "+ T", hl.dsp.layout("togglesplit"))
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
@@ -80,7 +81,7 @@ hl.bind(mainMod .. "+ SHIFT + UP",
     { locked = true, repeating = true })
 hl.bind(mainMod .. "+ SHIFT + DOWN",
     hl.dsp.exec_cmd(
-    "qs ipc call brightness down 2>/dev/null || brightnessctl --min-value=$(($(brightnessctl m) / 20)) set 5%-"),
+        "qs ipc call brightness down 2>/dev/null || brightnessctl --min-value=$(($(brightnessctl m) / 20)) set 5%-"),
     { locked = true, repeating = true })
 hl.bind(mainMod .. "+ F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. "+ SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
