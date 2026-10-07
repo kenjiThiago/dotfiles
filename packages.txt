@@ -28,6 +28,10 @@ libnotify                    # notify-send no window-info e rofi-script
 # Menu
 rofi
 rofimoji
+rofi-rbw                     # SUPER+SHIFT+P
+rbw                          # cofre do Bitwarden; o hypridle tranca no lock
+pinentry                     # pinentry-gtk, pedido da senha mestra do rbw
+wtype                        # ação de digitar do rofi-rbw
 
 # Screenshot / clipboard / input
 grim                         # rofi-script --screenshot, printAndEdit

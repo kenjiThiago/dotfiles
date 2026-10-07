@@ -1,0 +1,3 @@
+action=copy
+target=password
+clear-after=15
