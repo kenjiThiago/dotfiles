@@ -11,7 +11,6 @@ Item {
 
     readonly property var blockedApps: ["Spotify"]
 
-    // O histórico vive em memória, e cada notificação segura a própria imagem.
     readonly property int historyLimit: 50
 
     readonly property var list: server.trackedNotifications
@@ -29,11 +28,8 @@ Item {
         }
     }
 
-    // Fila dos cards ainda na tela. Separada do histórico de propósito: sair
-    // daqui só tira o popup, não fecha a notificação.
-    //
-    // ListModel e não array: um Repeater com model de array reseta o modelo
-    // inteiro a cada reatribuição, recriando todos os cards e seus timers.
+    // Fila dos cards na tela, separada do histórico: sair daqui só tira o popup.
+    // ListModel porque um Repeater sobre array recria todos os cards a cada reatribuição.
     ListModel {
         id: popupQueue
         dynamicRoles: true
@@ -42,16 +38,12 @@ Item {
     readonly property alias popups: popupQueue
     readonly property int popupCount: popupQueue.count
 
-    // O replaces_id reaproveita o objeto, então o card não é recriado e o prazo
-    // dele seguiria correndo do conteúdo antigo.
+    // O replaces_id reaproveita o objeto, então o prazo do card precisa recomeçar.
     signal popupRefreshed(n: var)
 
-    // A API não carrega horário de chegada. A chave é o objeto e não o id
-    // porque o replaces_id reaproveita o número.
+    // A API não traz horário de chegada; a chave é o objeto porque o replaces_id reaproveita o id.
     property var arrivalTimes: new Map()
 
-    // Conjunto e não contador: markRead zera tudo de uma vez, e um contador
-    // solto dessincronizaria com o decremento de cada fechamento.
     property var unreadIds: new Set()
 
     function markRead(): void {
@@ -59,9 +51,6 @@ Item {
         root.unreadCount = 0;
     }
 
-    // ── Apresentação, compartilhada pelo popup e pelo histórico ───────────────
-
-    // A urgência normal não recebe marca: é a maioria, e pintar todas viraria ruído.
     function urgencyColor(n: var): color {
         if (!n)
             return "transparent";
@@ -82,9 +71,8 @@ Item {
         return null;
     }
 
-    // Só o popup desenha estas: o --wait que o notify-send embute no -A é
-    // limitado pelo expire_timeout, então o cliente já saiu quando a
-    // notificação chega ao histórico.
+    // Só o popup desenha estas: quando a notificação chega ao histórico o cliente (o
+    // --wait do notify-send) já saiu.
     function buttonActions(n: var): var {
         return n ? n.actions.filter(a => a.identifier !== "default") : [];
     }
@@ -112,8 +100,6 @@ Item {
         return s.replace(/<(?!\/?[biu]>|br\s*\/?>)/gi, "&lt;");
     }
 
-    // ── Ciclo de vida ─────────────────────────────────────────────────────────
-
     function popupIndex(n: var): int {
         for (let i = 0; i < popupQueue.count; i++)
             if (popupQueue.get(i).notification === n)
@@ -131,13 +117,11 @@ Item {
     function expirePopup(n: var): void {
         root.removePopup(n);
 
-        // Transiente não se guarda: acaba junto com o popup.
         if (n && n.transient && n.tracked)
             n.dismiss();
     }
 
-    // O invoke() já dispensa a notificação quando ela não é resident. Sendo,
-    // ela continua de pé e o popup precisa sair na mão.
+    // Notificação resident continua de pé após o invoke(), então o popup sai na mão.
     function invokeAction(n: var, action: var): void {
         if (!n || !action)
             return;
@@ -209,8 +193,8 @@ Item {
         return Math.floor(hours / 24) + " d";
     }
 
-    // O keepOnReload devolve as notificações, mas não as repassa pelo
-    // onNotification, então elas voltariam sem horário de chegada.
+    // O keepOnReload devolve as notificações sem passar pelo onNotification, ou seja,
+    // sem horário de chegada.
     Component.onCompleted: {
         const now = Date.now();
         for (const n of root.list.values)
@@ -229,9 +213,8 @@ Item {
         imageSupported: true
         persistenceSupported: true
 
-        // O NotificationAction expõe só identifier e text. Anunciar a capability
-        // ainda transformaria o identifier em nome de ícone, quebrando a
-        // detecção da ação "default".
+        // Anunciar a capability transformaria o identifier em nome de ícone e quebraria
+        // a detecção da ação "default".
         actionIconsSupported: false
 
         onNotification: function (n) {
@@ -249,8 +232,7 @@ Item {
             root.unreadIds.add(n);
             root.unreadCount = root.unreadIds.size;
 
-            // O replaces_id pode reaproveitar o mesmo objeto, que renderia dois
-            // cards para uma notificação só.
+            // O replaces_id pode reaproveitar o objeto, o que renderia dois cards.
             if (!root.dnd) {
                 if (root.popupIndex(n) < 0)
                     popupQueue.append({
@@ -264,9 +246,7 @@ Item {
         }
     }
 
-    // Um ponto de limpeza só, no lugar de um handler de closed por notificação:
-    // alcança também o que sobreviveu ao hot reload, que nunca passa pelo
-    // onNotification.
+    // Um ponto de limpeza só, que alcança também o que sobreviveu ao hot reload.
     Connections {
         target: server.trackedNotifications
 

@@ -1,18 +1,7 @@
-# Mapa de templates -> arquivos gerados.
+# <template>   <destino>   [perfis separados por vírgula; vazio = todos]
 #
-#   <template em themes/templates/>   <destino>   [perfis]
-#
-# Tudo que aparece na coluna do meio é REGERADO a cada `theme set` e nunca
-# entra no repositório: são arquivos reais, criados ao lado dos symlinks do
-# stow (por isso o stow roda sempre com --no-folding).
-#
-# A terceira coluna é opcional: lista, separada por vírgula, dos perfis em que
-# a linha vale. Vazia significa todos. É o que impede o `theme set` de escrever
-# config de Hyprland numa máquina que não tem desktop.
-#
-# Os templates do Zen (zen-colors.css.in, zen-logo.svg.in) ficam de fora: o
-# diretório do perfil tem nome sorteado, então quem resolve o destino deles é o
-# apply_zen do `theme`.
+# Os destinos são regerados a cada `theme set` e nunca entram no repositório.
+# Os templates do Zen ficam de fora: o apply_zen do `theme` resolve o destino.
 
 hypr-colors.lua.in        ~/.config/hypr/conf/colors.lua              desktop
 hypr-colors.conf.in       ~/.config/hypr/conf/colors.conf             desktop

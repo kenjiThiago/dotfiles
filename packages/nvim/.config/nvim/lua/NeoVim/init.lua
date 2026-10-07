@@ -4,9 +4,8 @@ require("NeoVim.autocmd")
 require("NeoVim.custom.statusline")
 require("NeoVim.custom.restart")
 
--- Módulo privado do runtime, e instável: já se chamou `vim._extui`. Sem o
--- pcall, o erro aqui aborta o require inteiro e o desvio de perfil lá embaixo
--- nunca roda, deixando o servidor sem o `NeoVim.server`.
+-- Módulo privado e instável (já foi `vim._extui`): sem o pcall, um erro aqui
+-- impediria o desvio para o NeoVim.server.
 pcall(function()
     require("vim._core.ui2").enable({})
 end)
@@ -55,8 +54,7 @@ _G.icons = {
     },
 }
 
--- Daqui para baixo é o que depende de plugin, e por isso é só do desktop.
--- No servidor quem assume é o NeoVim.server (ver NeoVim.profile).
+-- Daqui para baixo depende de plugin, então é só do desktop.
 if require("NeoVim.profile").server then
     require("NeoVim.server")
     return
@@ -71,7 +69,6 @@ require("NeoVim.plugins.colors")
 require("NeoVim.plugins.telescope")
 require("NeoVim.plugins.harpoon")
 require("NeoVim.plugins.conform")
--- require("NeoVim.plugins.git")
 require("NeoVim.plugins.undotree")
 require("NeoVim.plugins.cmp")
 require("NeoVim.plugins.lsp")

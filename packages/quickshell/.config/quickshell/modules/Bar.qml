@@ -28,9 +28,8 @@ Scope {
         onTriggered: root.expectingMenu = false
     }
 
-    // Toda tecla que entra num estado da ilha é toggle: repetir a mesma tecla
-    // volta para 0, e não avança para o estado seguinte. Fica fora do
-    // IpcHandler porque lá dentro toda função vira um comando do `qs ipc`.
+    // Repetir a tecla de um estado volta para 0. Fora do IpcHandler porque lá dentro
+    // toda função vira comando do `qs ipc`.
     function toggleIsland(estado: int): void {
         root.islandState = root.islandState === estado ? 0 : estado;
         root.calendarExpanded = false;
@@ -86,7 +85,7 @@ Scope {
             id: screenScope
             required property var modelData
 
-            // ── O ESCUDO FORMATO "U" (Cobre todos os lados, exceto a Ilha) ────────
+            // Escudo em U: cobre todos os lados exceto a ilha.
             PanelWindow {
                 id: shieldWindow
                 screen: screenScope.modelData
@@ -173,7 +172,6 @@ Scope {
                 }
             }
 
-            // ── A JANELA DA ILHA ──────────────────────────────────────────────
             PanelWindow {
                 id: islandWindow
                 screen: screenScope.modelData
@@ -191,7 +189,6 @@ Scope {
                     root.expectMenu();
                 }
 
-                // ── SENSOR DE FOCO ───────────────────────────────────────────
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
@@ -214,12 +211,8 @@ Scope {
                 HyprlandFocusGrab {
                     id: focusGrab
 
-                    // A janela dos popups entra na lista senão, com a ilha aberta,
-                    // o primeiro clique num card é comido pelo grab e só fecha a
-                    // ilha: a ação da notificação nunca roda. Só enquanto ela
-                    // está mapeada, porque janela desmapeada na lista custa 0,2%
-                    // de CPU contínuo; trocar a lista com o grab de pé não o
-                    // derruba.
+                    // A janela dos popups entra na lista, senão o grab come o primeiro clique num
+                    // card. Só enquanto mapeada: desmapeada na lista custa 0,2% de CPU contínuo.
                     windows: notifyWindow.visible ? [islandWindow, calendarWindow, notifyWindow] : [islandWindow, calendarWindow]
 
                     active: root.islandState > 0 && root.grabAlive
@@ -255,7 +248,6 @@ Scope {
                 }
             }
 
-            // ── A JANELA DO CALENDÁRIO ────────────────────────────────────────
             PanelWindow {
                 id: calendarWindow
                 screen: screenScope.modelData
@@ -297,10 +289,7 @@ Scope {
         }
     }
 
-    // ── A JANELA DOS POPUPS ───────────────────────────────────────────────────
-    // Fora do Variants por tela de propósito: a fila de popups é global, então
-    // uma janela por monitor mostrava a mesma notificação repetida, cada cópia
-    // com o seu próprio timer. Uma janela só, na tela que estiver em foco.
+    // Uma janela só, na tela em foco: a fila de popups é global.
     PanelWindow {
         id: notifyWindow
 
@@ -315,10 +304,8 @@ Scope {
             return Quickshell.screens.length > 0 ? Quickshell.screens[0] : null;
         }
 
-        // Ancorada embaixo para a altura vir das âncoras e não do conteúdo: cada
-        // redimensionamento da superfície passa pelo configure do Wayland, e o
-        // compositor exibe o buffer antigo enquanto isso. Transparente e com o
-        // mask limitando o clique aos cards, ocupar a coluna toda não custa nada.
+        // Altura pelas âncoras, não pelo conteúdo: cada resize passa pelo configure do
+        // Wayland, e o compositor mostra o buffer antigo nesse meio tempo.
         anchors {
             top: true
             right: true
@@ -345,9 +332,8 @@ Scope {
             anchors.right: parent.right
             spacing: 10
 
-            // Um positionador em janela desmapeada não refaz o layout, e é a
-            // geometria desta Column que define o mask: sem o forceLayout a área
-            // clicável volta com o tamanho da fila anterior.
+            // Positionador em janela desmapeada não refaz o layout, e é esta Column que
+            // define o mask.
             Connections {
                 target: Notifications
                 function onPopupCountChanged() {
@@ -355,9 +341,7 @@ Scope {
                 }
             }
 
-            // Só o x. A opacidade fica com o card porque uma transição cancelada
-            // no meio congela a propriedade, e a Column reescreve x no layout
-            // seguinte mas não a opacidade.
+            // Só o x: transição cancelada congela a propriedade, e a Column só reescreve o x.
             add: Transition {
                 NumberAnimation {
                     property: "x"
@@ -381,8 +365,6 @@ Scope {
             Repeater {
                 model: Notifications.popups
 
-                // O role `notification` do ListModel entra direto no required
-                // property de mesmo nome do card.
                 delegate: NotificationPopup {}
             }
         }

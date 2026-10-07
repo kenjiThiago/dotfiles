@@ -10,27 +10,6 @@
 #   ./install.sh --skip-services  pula habilitar serviços do systemd
 #   ./install.sh --skip-plugins   pula baixar plugins de nvim/tmux
 #   ./install.sh --theme <nome>   usa outro tema (padrão: rose-pine-moon)
-#
-# São duas listas: packages.txt tem o que a configuração precisa e é sempre
-# instalada; packages-extra.txt tem apps pessoais, toolchains e pacotes presos
-# ao hardware da máquina de referência, e só entra com --extra.
-#
-# São dois perfis: 'desktop' é a máquina de referência, Arch com Hyprland;
-# 'server' é máquina sem desktop, com bash e nvim sem plugin. O perfil escolhe
-# quais pacotes do stow entram (ver profiles/) e quais templates de tema são
-# gerados, e fica gravado em ~/.local/state/dotfiles/profile para o dots, o
-# theme e o nvim lerem depois. O perfil server implica --skip-packages (o
-# servidor não é Arch) e --skip-services.
-#
-# Etapas, nesta ordem:
-#   1. checa dependências mínimas (git, stow, paru)
-#   2. instala os pacotes de packages.txt
-#   3. limpa links do layout antigo e linka os pacotes em ~ (dots)
-#   4. aplica o tema (theme set)
-#   5. habilita os serviços do systemd
-#   6. prepara o ambiente (shell, XDG, plugins de nvim e tmux)
-#
-# É idempotente: pode rodar de novo depois de mexer no repositório.
 
 set -euo pipefail
 
@@ -48,8 +27,6 @@ SKIP_PLUGINS=0
 
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
 
-# Serviços que as configs assumem ligados: o quickshell lê o perfil de energia
-# pelo power-profiles-daemon e o rofi-script abre o nm-connection-editor.
 SERVICES=(NetworkManager power-profiles-daemon)
 
 msg()  { printf '\n\033[1;34m::\033[0m \033[1m%s\033[0m\n' "$*"; }
@@ -77,7 +54,7 @@ while [[ $# -gt 0 ]]; do
         --theme)         shift; THEME_NAME=${1:?--theme precisa de um nome} ;;
         --profile)       shift; PROFILE=${1:?--profile precisa de um nome} ;;
         --profile=*)     PROFILE=${1#*=} ;;
-        -h|--help)       sed -n '2,33p' "$0" | sed 's/^# \?//'; exit 0 ;;
+        -h|--help)       sed -n '2,/^$/{/^#/s/^# \?//p}' "$0"; exit 0 ;;
         *)               die "opção desconhecida: $1" ;;
     esac
     shift
@@ -86,15 +63,13 @@ done
 [[ -r $DOTFILES/profiles/$PROFILE ]] \
     || die "--profile: '$PROFILE' não existe (veja: ls $DOTFILES/profiles)"
 
-# Não é Arch e não tem systemd que interesse: o servidor instala os pacotes na
-# mão, com o gerenciador da distro dele.
+# O servidor não é Arch: os pacotes ficam por conta da distro dele.
 if [[ $PROFILE == server ]]; then
     SKIP_PACKAGES=1
     SKIP_SERVICES=1
 fi
 
-# O dots valida os nomes do --except, mas só na etapa 3 — depois de já ter
-# instalado a lista inteira de pacotes. Checa aqui para errar de graça.
+# Valida o --except antes de instalar os pacotes, e não só na etapa do dots.
 if [[ -n $EXCEPT ]]; then
     IFS=',' read -ra except_names <<< "$EXCEPT"
     for name in "${except_names[@]}"; do
@@ -103,7 +78,6 @@ if [[ -n $EXCEPT ]]; then
     done
 fi
 
-# ── 1. Dependências mínimas ───────────────────────────────────────────────────
 msg "Verificando dependências"
 
 command -v git >/dev/null || die "git não está instalado"
@@ -118,7 +92,6 @@ if ! command -v stow >/dev/null; then
 fi
 ok "git e stow presentes"
 
-# ── 2. Pacotes ────────────────────────────────────────────────────────────────
 if [[ $SKIP_PACKAGES == 0 ]]; then
     msg "Instalando pacotes de packages.txt"
 
@@ -137,7 +110,6 @@ if [[ $SKIP_PACKAGES == 0 ]]; then
             fi
         fi
 
-        # Uma linha por pacote, sem comentários nem espaço em volta.
         read_list() {
             sed -e 's/#.*//' -e '/^[[:space:]]*$/d' \
                 -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' "$1"
@@ -163,9 +135,6 @@ else
     msg "Pulando instalação de pacotes (--skip-packages)"
 fi
 
-# ── 3. Symlinks ───────────────────────────────────────────────────────────────
-# O marcador vem antes do resto: é dele que o dots, o theme e o nvim tiram o
-# perfil depois, quando este script já não está por perto.
 msg "Gravando o perfil '$PROFILE'"
 if [[ $DRY == 1 ]]; then
     printf '\033[2;37m[dry]\033[0m %s\n' "$STATE_DIR/profile"
@@ -179,8 +148,7 @@ dots_args=()
 if [[ $DRY == 1 ]]; then dots_args+=(--dry); fi
 DOTS="$DOTFILES/packages/bin/.local/bin/dots"
 
-# Numa máquina que já teve o layout antigo, sobram symlinks apontando para
-# <repo>/config/. O stow se recusa a sobrescrever, então limpa antes.
+# O stow se recusa a sobrescrever os symlinks do layout antigo (<repo>/config/).
 msg "Procurando symlinks do layout antigo"
 "$DOTS" migrate "${dots_args[@]}"
 
@@ -190,7 +158,6 @@ link_args=("${dots_args[@]}" --profile "$PROFILE")
 if [[ -n $EXCEPT ]]; then link_args+=(--except "$EXCEPT"); fi
 "$DOTS" link "${link_args[@]}"
 
-# ── 4. Tema ───────────────────────────────────────────────────────────────────
 msg "Aplicando o tema '$THEME_NAME'"
 
 theme_args=(--no-reload)
@@ -198,7 +165,6 @@ if [[ $DRY == 1 ]]; then theme_args+=(--dry); fi
 DOTFILES_PROFILE="$PROFILE" \
     "$DOTFILES/packages/bin/.local/bin/theme" set "$THEME_NAME" "${theme_args[@]}"
 
-# ── 5. Serviços ───────────────────────────────────────────────────────────────
 enable_service() {
     local unit=$1
     if ! systemctl cat "$unit.service" >/dev/null 2>&1; then
@@ -221,18 +187,15 @@ elif [[ $SKIP_SERVICES == 1 ]]; then
     msg "Pulando serviços (--skip-services)"
 fi
 
-# ── 6. Ambiente do usuário ────────────────────────────────────────────────────
 msg "Preparando o ambiente"
 
-# O rofi-script salva screenshots em $XDG_PICTURES_DIR, que só existe depois
-# que o xdg-user-dirs roda pela primeira vez.
+# $XDG_PICTURES_DIR, usado pelo rofi-script, só existe depois do xdg-user-dirs.
 if command -v xdg-user-dirs-update >/dev/null; then
     run xdg-user-dirs-update
     ok "diretórios XDG atualizados"
 fi
 
-# O servidor fica no bash: o zsh de lá teria que carregar zinit, starship e
-# plugin de sintaxe só para uma sessão de ssh.
+# O servidor fica no bash: zinit, starship e cia. não compensam numa sessão de ssh.
 if [[ $PROFILE == server ]]; then
     ok "perfil server: o shell padrão fica como está"
 elif ! command -v zsh >/dev/null; then
@@ -244,8 +207,7 @@ else
     run chsh -s "$(command -v zsh)" || warn "chsh falhou; troque à mão depois"
 fi
 
-# O nvim do perfil server não usa vim.pack, e o .tmux.conf só chama o tpm se
-# ele existir: nos dois casos não há o que baixar.
+# O nvim do server não usa vim.pack e o .tmux.conf só chama o tpm se ele existir.
 if [[ $PROFILE == server ]]; then
     msg "Perfil server: sem tpm e sem plugins do neovim"
 elif [[ $SKIP_PLUGINS == 1 ]]; then
@@ -263,8 +225,7 @@ else
         run "$TPM_DIR/bin/install_plugins" || warn "install_plugins falhou; rode prefix+I no tmux"
     fi
 
-    # Baixa os plugins do vim.pack. O mason instala em background, então algum
-    # LSP pode ainda faltar na primeira sessão.
+    # O mason instala os LSPs em background: algum pode faltar na primeira sessão.
     if command -v nvim >/dev/null; then
         msg "Baixando plugins do neovim (pode demorar)"
         run timeout 600 nvim --headless "+qa" || warn "bootstrap do nvim falhou; abra o nvim à mão"

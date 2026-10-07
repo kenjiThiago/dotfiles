@@ -16,10 +16,7 @@ local function read_file(path)
     return vim.fn.readfile(path)
 end
 
--- Com `--chooser-file` o `open` do yazi para de consultar os openers dele e
--- devolve tudo para cá, então imagem e PDF caíam como binário num buffer. A
--- lista é de tipos que só têm sentido fora do nvim: qualquer outro segue para o
--- buffer, que é o caso recuperável.
+-- Com `--chooser-file` o yazi devolve tudo para cá, inclusive imagem e PDF.
 local function opens_externally(path)
     if vim.fn.executable("xdg-open") == 0 then
         return false
@@ -37,8 +34,7 @@ local function opens_externally(path)
         or mime == "application/epub+zip"
 end
 
--- Buffers sem arquivo real no disco (oil, terminal, fugitive) têm nomes como
--- `oil:///caminho/`, que o yazi não sabe abrir.
+-- Buffers sem arquivo no disco (oil, terminal, fugitive) têm nomes que o yazi não abre.
 local function resolve_target(path)
     if path and path ~= "" then
         return path

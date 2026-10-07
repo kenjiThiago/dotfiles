@@ -10,17 +10,9 @@
 #
 #   --dry                 mostra o que seria feito, sem escrever nada
 #   --no-reload           gera os arquivos mas não recarrega os programas
-#
-# Como funciona: cada tema em themes/<nome>/theme.sh define uma paleta em
-# nomes genéricos (base, surface, text, red, accent, ...). Cada template em
-# themes/templates/ traduz essa paleta para o formato de um programa. O
-# manifest diz para onde cada arquivo gerado vai.
 
 set -euo pipefail
 
-# ── Localização do repositório ────────────────────────────────────────────────
-# O script vive em packages/bin/.local/bin/, então a raiz do repo está 4
-# níveis acima — mesmo quando chamado através do symlink do stow.
 self=$(realpath "${BASH_SOURCE[0]}")
 DOTFILES=${DOTFILES:-$(cd "$(dirname "$self")/../../../.." && pwd)}
 
@@ -34,14 +26,11 @@ STATE_FILE="$STATE_DIR/current-theme"
 PROFILE_FILE="$STATE_DIR/profile"
 NO_WALLPAPER_FILE="$STATE_DIR/no-wallpaper"
 
-# Tema de ícones gerado, em ~/.local/share/icons/. Herda o Breeze e só
-# sobrescreve o que o apply_icons recolore.
 ICON_THEME_NAME="dotfiles"
 
 DRY=0
 RELOAD=1
 
-# ── Chaves da paleta ──────────────────────────────────────────────────────────
 COLOR_KEYS=(
     base surface overlay term_bg
     highlight_low highlight_med highlight_high
@@ -60,7 +49,6 @@ META_KEYS=(
     gtk_prefer_dark qt_icon_theme qt_icon_base
 )
 
-# ── Saída ─────────────────────────────────────────────────────────────────────
 msg()   { printf '\033[1;34m::\033[0m %s\n' "$*"; }
 ok()    { printf '\033[1;32m ✔\033[0m %s\n' "$*"; }
 warn()  { printf '\033[1;33m !!\033[0m %s\n' "$*" >&2; }
@@ -71,7 +59,6 @@ notify() {
     notify-send "$@" >/dev/null 2>&1 || true
 }
 
-# ── Temas ─────────────────────────────────────────────────────────────────────
 list_themes() {
     find "$THEMES_DIR" -mindepth 2 -maxdepth 2 -name theme.sh -printf '%h\n' |
         xargs -r -n1 basename | sort
@@ -95,7 +82,6 @@ load_theme() {
 
     THEME=$name
 
-    # Nem todo tema precisa declarar tudo.
     : "${variant:=dark}"
     : "${nvim_colorscheme:=default}"
     : "${zen_theme:=}"
@@ -107,20 +93,13 @@ load_theme() {
     : "${black:=$overlay}"
     : "${white:=$text}"
 
-    # Opacidade do terminal. O render() é substituição de texto, sem condicional,
-    # então quem depende dela em outro formato vira chave derivada aqui: o nvim
-    # precisa de booleano, e o btop de um fundo vazio para não pintar por cima.
+    # render() não tem condicional: o nvim quer booleano e o btop um fundo vazio.
     : "${opacity:=1}"
     transparent=$(awk -v o="$opacity" 'BEGIN { print (o + 0 < 1) ? "true" : "false" }')
     btop_bg=$([[ $transparent == true ]] && printf '' || printf '%s' "$base")
 
-    # Mesma razão do transparent acima: o GTK quer booleano em 0/1 e o qt6ct
-    # quer o nome de um tema de ícones, e nenhum dos dois sai da paleta. São
-    # função só da variante, então derivam aqui em vez de virar chave de tema.
     gtk_prefer_dark=$([[ $variant == dark ]] && printf 1 || printf 0)
 
-    # O qt6ct aponta para o tema gerado, que herda este aqui. Se o apply_icons
-    # não conseguir gerar, ele devolve o qt_icon_theme para a base.
     qt_icon_base=$([[ $variant == dark ]] && printf 'breeze-dark' || printf 'breeze')
     qt_icon_theme=$ICON_THEME_NAME
 
@@ -130,8 +109,6 @@ load_theme() {
         [[ -n ${!b:-} ]] || printf -v "$b" '%s' "${!c}"
     done
 
-    # Papéis de sintaxe: só quem discorda da paleta semântica precisa declarar.
-    # É o caso do rose-pine-moon, cujo colorscheme do nvim é o luar.
     : "${syn_comment:=$muted}"
     : "${syn_string:=$warning}"
     : "${syn_escape:=$accent_alt}"
@@ -145,8 +122,7 @@ load_theme() {
     : "${syn_tag:=$accent}"
     : "${syn_attribute:=$warning}"
 
-    # `=` sem dois-pontos de propósito: com `:=`, um tema que declara
-    # `syn_comment_style=""` para desligar o itálico levaria o default de volta.
+    # `=` e não `:=`: um tema pode declarar o estilo vazio para desligá-lo.
     : "${syn_comment_style=italic}"
     : "${syn_keyword_style=}"
     : "${syn_parameter_style=italic}"
@@ -158,9 +134,7 @@ load_theme() {
             die "tema '$name': '$key' = '${!key}' não é um hex #rrggbb"
     done
 
-    # O marcador de "sem wallpaper" é do `rofi-script wallpaper` e vale sobre o
-    # tema: com ele, o path sai vazio em todo lugar (hyprpaper.conf e o
-    # $wallpaper do hyprlock) e o hyprpaper não é acordado no reload_apps.
+    # O marcador do `rofi-script wallpaper` prevalece sobre o wallpaper do tema.
     if [[ -n $wallpaper && ! -e $NO_WALLPAPER_FILE ]]; then
         wallpaper_path="$WALLPAPER_DIR/$wallpaper"
         [[ -e $wallpaper_path ]] || warn "wallpaper '$wallpaper' não existe em $WALLPAPER_DIR"
@@ -169,7 +143,6 @@ load_theme() {
     fi
 }
 
-# ── Renderização ──────────────────────────────────────────────────────────────
 # {{chave}} -> #rrggbb, {{chave:hex}} -> rrggbb, {{chave:rgb}} -> rgb(rrggbb),
 # {{chave:argb}} -> 0xffrrggbb.
 render() {
@@ -206,19 +179,13 @@ write_file() {
     fi
 
     mkdir -p "$(dirname "$dest")"
-    # Se o destino ainda for um symlink (layout antigo do stow), remove antes:
-    # escrever por cima gravaria dentro do repositório.
+    # Symlink do layout antigo do stow: escrever por cima gravaria no repositório.
     if [[ -L $dest ]]; then rm -f "$dest"; fi
-    # Escrita no lugar, preservando o inode. O quickshell observa o inode de cada
-    # arquivo carregado, não o caminho: trocar o destino por rename derruba a
-    # observação sem disparar recarga, e daí em diante nenhum `theme set` é
-    # notado. O conteúdo já vem inteiro do render, e a recarga do quickshell é
-    # adiada o bastante para não enxergar a janela entre o truncate e o write.
+    # Sem rename: o quickshell observa o inode, não o caminho.
     printf '%s\n' "$content" > "$dest"
     printf '   %s\n' "${dest/#$HOME/\~}"
 }
 
-# Perfil da máquina, escrito pelo install.sh. Sem ele, desktop.
 current_profile() {
     if [[ -n ${DOTFILES_PROFILE:-} ]]; then printf '%s\n' "$DOTFILES_PROFILE"; return; fi
     if [[ -r $PROFILE_FILE ]]; then
@@ -249,7 +216,6 @@ generate() {
     while read -r tpl dest profiles; do
         [[ -z $tpl || $tpl == \#* ]] && continue
 
-        # Terceira coluna vazia vale para todo perfil.
         if [[ -n $profiles ]]; then
             skip=1
             IFS=',' read -ra wanted <<< "$profiles"
@@ -263,17 +229,13 @@ generate() {
     done < "$MANIFEST"
 }
 
-# ── Zen Browser ───────────────────────────────────────────────────────────────
-# O estilo (zen-themes/<zen_theme>/) é CSS escrito à mão e entra por symlink; as
-# cores saem do theme.sh como em qualquer outro programa. O destino não cabe no
-# manifest porque o diretório do perfil tem nome sorteado.
+# O diretório do perfil do Zen tem nome sorteado, por isso fica fora do manifest.
 ZEN_GENERATED=(
     zen-colors.css.in:colors.css
     zen-logo.svg.in:zen-logo.svg
 )
 
-# ~/.zen guarda um diretório por perfil, e o `Default=` da seção [Install...] do
-# profiles.ini é o único que diz qual deles o navegador abre de fato.
+# O perfil aberto é o `Default=` da seção [Install...] do profiles.ini.
 zen_chrome_dir() {
     local ini="$HOME/.zen/profiles.ini" path
     if [[ -r $ini ]]; then
@@ -287,18 +249,8 @@ zen_chrome_dir() {
     find "$HOME/.zen" -maxdepth 2 -type d -name chrome 2>/dev/null | sort | head -n 1
 }
 
-# ── Tema de ícones ────────────────────────────────────────────────────────────
-# Os SVG do Breeze guardam a cor num bloco `.ColorScheme-* { color: ... }` que no
-# Plasma o KIconThemes reescreve; sob o qt6ct esse motor não existe, e todo ícone
-# sai na cor gravada no arquivo. Daí um tema que herda o Breeze e reescreve o
-# bloco. Só a lista abaixo, porque copiar os 19844 SVG a cada `theme set` custaria
-# caro para pintar ícone que ninguém olha.
-#
-# Formato: <categoria>:<ícone>:<chave de cor>.
-#
-# Nos de `status` o glifo vazado do crachá também é trocado, por `base`: branco
-# sobre o dourado do warning ficaria ilegível. O `dialog-question` ficou de fora
-# porque o disco dele é um roxo literal, e não uma classe.
+# Sob o qt6ct ninguém reescreve o bloco `.ColorScheme-*` dos SVG do Breeze, então
+# um tema herda o Breeze e recolore só esta lista: <categoria>:<ícone>:<chave>.
 ICON_RECOLOR=(
     actions:dialog-ok:success
     actions:dialog-ok-apply:success
@@ -337,11 +289,8 @@ apply_icons() {
 
             if [[ $DRY == 0 ]]; then
                 mkdir -p "$dest/$cat/$size"
-                # O sed atravessa o symlink e grava arquivo de verdade. A
-                # substituição é por classe, não por valor: o Breeze usa cinco
-                # azuis diferentes de accent, então casar pelo hex erraria. O
-                # segundo par é o glifo vazado do crachá; nos ícones de um tom
-                # só não existe, e a expressão não casa nada.
+                # Por classe, não por hex: o Breeze usa vários azuis. O segundo par é o
+                # glifo vazado do crachá dos ícones de status.
                 sed -e 's/\(\.ColorScheme-[A-Za-z]* *{ *color: *\)[^;}]*/\1'"$color"'/g' \
                     -e 's/fill="#\(fff\|ffffff\|000\|000000\)"/fill="'"$base"'"/g' \
                     "$file" > "$dest/$cat/$size/$name.svg"
@@ -355,7 +304,6 @@ apply_icons() {
         return 0
     fi
 
-    # Ordena e remove repetidos, que é o que a chave Directories espera.
     local uniq
     mapfile -t uniq < <(printf '%s\n' "${dirs[@]}" | sort -u)
 
@@ -412,7 +360,6 @@ apply_zen() {
     done
 }
 
-# ── Recarregar os programas ───────────────────────────────────────────────────
 reload_apps() {
     [[ $RELOAD == 1 && $DRY == 0 ]] || return 0
 
@@ -422,9 +369,7 @@ reload_apps() {
             hyprctl hyprpaper wallpaper ",$wallpaper_path,cover" >/dev/null 2>&1 || true
         fi
 
-        # O env-hyprland gerado só vale no próximo login, porque o uwsm o
-        # sourceia uma vez. Isto é o que troca o cursor na sessão viva, e o
-        # sync_gsettings_theme republica o valor no gsettings sozinho.
+        # O env-hyprland só troca o cursor no próximo login; isto troca na sessão viva.
         if [[ -n $cursor_theme ]]; then
             hyprctl setcursor "$cursor_theme" 24 >/dev/null 2>&1 || true
         fi
@@ -436,18 +381,12 @@ reload_apps() {
     # O ghostty relê a config com SIGUSR2; o quickshell observa os arquivos sozinho.
     pkill -USR2 -x ghostty >/dev/null 2>&1 || true
 
-    # O servidor do tmux guarda o que leu do colors.conf, então as sessões
-    # abertas ficam nas cores antigas até alguém re-sourcear. É o .tmux.conf
-    # inteiro, e não só o colors.conf, para manter a precedência: o
-    # ~/.tmux.conf.local vem depois e pode sobrepor cor.
+    # O .tmux.conf inteiro, não só o colors.conf, para o .tmux.conf.local continuar por cima.
     if command -v tmux >/dev/null && tmux info >/dev/null 2>&1; then
         tmux source-file "$HOME/.tmux.conf" >/dev/null 2>&1 || true
     fi
 
-    # O color-scheme não depende do gtk_theme: é o que o xdg-desktop-portal-gtk
-    # republica como org.freedesktop.appearance, e é por aí que o Zen escolhe o
-    # esquema das páginas e os apps GTK4 escolhem o deles. Vale mesmo num tema
-    # que não queira mexer no tema GTK, e o Zen reage na hora, sem reabrir.
+    # O color-scheme é o que o portal repassa ao Zen e aos apps GTK4.
     if command -v gsettings >/dev/null; then
         gsettings set org.gnome.desktop.interface color-scheme \
             "prefer-${variant}" 2>/dev/null || true
@@ -461,13 +400,11 @@ reload_apps() {
     fi
 }
 
-# ── Comandos ──────────────────────────────────────────────────────────────────
 cmd_set() {
     local name=${1:-}
     [[ -n $name ]] || die "uso: theme set <nome>"
 
-    # Para o aviso do fim: o Qt resolve o tema de ícones uma vez, quando a
-    # QGuiApplication nasce, e o conteúdo do tema muda a cada troca.
+    # O Qt só resolve o tema de ícones ao iniciar; ver o aviso do quickshell no fim.
     local prev=""
     if [[ -r $STATE_FILE ]]; then
         read -r prev < "$STATE_FILE" || true
@@ -475,8 +412,7 @@ cmd_set() {
 
     load_theme "$name"
     msg "Aplicando tema '$name'"
-    # Antes do generate: é o apply_icons que decide o qt_icon_theme com que o
-    # qt6ct.conf é renderizado.
+    # Antes do generate: decide o qt_icon_theme do qt6ct.conf.
     apply_icons
     generate
     apply_zen
@@ -542,13 +478,12 @@ cmd_pick() {
     cmd_set "$chosen"
 }
 
-# ── Entrada ───────────────────────────────────────────────────────────────────
 args=()
 while [[ $# -gt 0 ]]; do
     case $1 in
         --dry|--dry-run) DRY=1 ;;
         --no-reload)     RELOAD=0 ;;
-        -h|--help)       sed -n '2,20p' "$self" | sed 's/^# \?//'; exit 0 ;;
+        -h|--help)       sed -n '2,/^$/{/^#/s/^# \?//p}' "$self"; exit 0 ;;
         *)               args+=("$1") ;;
     esac
     shift

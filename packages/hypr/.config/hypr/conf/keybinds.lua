@@ -1,12 +1,7 @@
 local M = require("conf.programs")
 
--- Duas regras decidem onde cada tecla mora:
---
--- 1. Lado esquerdo do teclado (QWERT/ASDFG/ZXCVB) para o que se usa com a mão
---    direita no mouse: lançadores, o shell do quickshell e o estado da janela.
---    HJKL e vizinhos ficam com a navegação, que se faz com as duas mãos.
--- 2. O modificador diz o alvo: SUPER foca, SUPER+SHIFT move a janela e
---    SUPER+CTRL age sobre o grupo.
+-- Lado esquerdo do teclado para o que se usa com a mão no mouse; HJKL e vizinhos
+-- para navegação. SUPER foca, SUPER+SHIFT move a janela, SUPER+CTRL age no grupo.
 
 local mainMod = "SUPER"
 
@@ -14,12 +9,10 @@ hl.bind(mainMod .. "+ Q", hl.dsp.exec_cmd("uwsm app -- " .. M.terminal))
 hl.bind(mainMod .. "+ SHIFT + Q", hl.dsp.exec_cmd("uwsm app -- zen-browser"))
 hl.bind(mainMod .. "+ C", hl.dsp.window.close())
 hl.bind(mainMod .. "+ M", hl.dsp.exec_cmd("uwsm stop"))
--- Mesmo comando que o hypridle usa no timeout e antes do suspend.
 hl.bind(mainMod .. "+ ESCAPE", hl.dsp.exec_cmd("loginctl lock-session"))
 local FLOAT_RATIO = 0.6
 
--- O Hyprland guarda o último tamanho flutuante de cada janela, então só o primeiro
--- float precisa de tamanho: ele herdaria a área do tile, que é a tela inteira.
+-- Só o primeiro float precisa de tamanho: depois o Hyprland lembra o último.
 local floatedOnce = {}
 
 hl.bind(mainMod .. "+ V", function()
@@ -50,8 +43,6 @@ hl.bind(mainMod .. "+ A", hl.dsp.exec_cmd("uwsm app -- rofi-script apps"))
 -- Mesma classe do control center e do rofi, para cair na regra do rules.lua.
 hl.bind(mainMod .. "+ SHIFT + A",
     hl.dsp.exec_cmd("uwsm app -- ghostty --class=com.example.wiremix --command=wiremix"))
--- O shell inteiro na mão esquerda, porque se usa com o mouse: a ilha, o
--- control center e o não perturbe.
 hl.bind(mainMod .. "+ SHIFT + E", hl.dsp.exec_cmd("qs ipc call bar expand"))
 hl.bind(mainMod .. "+ D", hl.dsp.exec_cmd("qs ipc call bar center"))
 hl.bind(mainMod .. "+ SHIFT + D", hl.dsp.exec_cmd("qs ipc call notifications toggle"))
@@ -60,22 +51,15 @@ hl.bind(mainMod .. "+ SHIFT + P", hl.dsp.exec_cmd("uwsm app -- rofi-rbw"))
 hl.bind(mainMod .. "+ P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. "+ T", hl.dsp.layout("togglesplit"))
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
--- hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
 hl.bind(mainMod .. "+ CTRL + A", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
 -- O -l trava o teto em 100%: sem ele o wpctl passa de 1.0 e distorce.
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"),
     { locked = true, repeating = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
     { locked = true, repeating = true })
--- O playerctl fala MPRIS por D-Bus, então alcança quem está tocando sem passar
--- pelo foco: o vídeo pausa com o navegador atrás de tudo, em outra aba ou em
--- outro workspace. O wpctl daqui de cima não serve, ele só mexe no volume.
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
--- Pelo quickshell para ele saber do brilho sem reler o sysfs em poll. O recuo
--- cobre o shell fora do ar, que é justamente quando não há OSD para mostrar.
--- O --min-value repete o piso do brightnessMin do SystemMonitor, senão o recuo
--- apaga a tela onde o caminho normal não deixa. É calculado porque o
--- brightnessctl só aceita valor bruto ali, e o máximo varia por painel.
+-- Pelo quickshell para ele mostrar o OSD; o brightnessctl é o recuo com o shell fora
+-- do ar, com o mesmo piso do brightnessMin do SystemMonitor.
 hl.bind(mainMod .. "+ SHIFT + UP",
     hl.dsp.exec_cmd("qs ipc call brightness up 2>/dev/null || brightnessctl set 5%+"),
     { locked = true, repeating = true })
@@ -91,15 +75,11 @@ hl.bind(mainMod .. "+ SHIFT + V", hl.dsp.exec_cmd("uwsm app -- rofi-script clipb
 hl.bind(mainMod .. "+ E", hl.dsp.exec_cmd("uwsm app -- rofi-script --screenshot region"))
 hl.bind(mainMod .. "+ SHIFT + F", hl.dsp.exec_cmd("uwsm app -- rofi-script --screenshot fullscreen"))
 
--- ── Grupos ────────────────────────────────────────────────────────────────────
--- A tecla nua agrupa e desagrupa; o TAB anda entre as abas do grupo, nos dois
--- sentidos; o CTRL leva a janela para dentro do grupo do vizinho.
 hl.bind(mainMod .. "+ W", hl.dsp.group.toggle())
 hl.bind(mainMod .. "+ TAB", hl.dsp.group.next())
 hl.bind(mainMod .. "+ SHIFT + TAB", hl.dsp.group.prev())
 
--- Em função, e não como dispatcher montado no carregamento, para um argumento
--- recusado derrubar só esta tecla em vez da config inteira.
+-- Em função para um argumento recusado derrubar só esta tecla, não a config inteira.
 hl.bind(mainMod .. "+ SHIFT + W", function()
     hl.dispatch(hl.dsp.window.move({ out_of_group = true }))
 end)
@@ -114,14 +94,10 @@ hl.bind(mainMod .. "+ CTRL + W", hl.dsp.group.lock_active())
 
 hl.bind(mainMod .. " + SHIFT + I", hl.dsp.exec_cmd("window-info"))
 
--- Mesmo par da magic: a tecla nua mostra e esconde a pilha, o SHIFT leva a
--- janela para dentro e para fora dela.
 hl.bind(mainMod .. "+ X", hl.dsp.workspace.toggle_special("minimize"))
 
--- O estado sai da janela em foco, e não de uma variável do arquivo: com um
--- booleano único, minimizar a segunda janela restaurava a primeira, e um
--- reload da config já o deixava mentindo. Mover para a special leva o foco
--- junto, daí o toggle logo depois para a janela de fato sumir.
+-- O estado vem da janela em foco, e não de uma variável, que se perdia com duas
+-- janelas ou num reload. Mover para a special leva o foco junto, daí o toggle.
 hl.bind(mainMod .. "+ SHIFT + X", function()
     local w = hl.get_active_window()
     if not w then
@@ -181,9 +157,7 @@ end
 
 hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
 
--- Manda para a magic e traz de volta pela mesma tecla. Sem o segundo ramo a
--- janela entra na special e só sai arrastada com o mouse. O "+0" é o workspace
--- visível do monitor, o mesmo truque que o minimizar usa acima.
+-- Sem o segundo ramo a janela só sai da special arrastada. "+0" é o workspace visível.
 hl.bind(mainMod .. " + SHIFT + S", function()
     local w = hl.get_active_window()
     if not w then
@@ -220,5 +194,4 @@ hl.define_submap("resize", function()
     hl.bind("escape", hl.dsp.submap("reset"))
 end)
 
--- Seletor de tema (também em rofi-script > Setup > Tema).
 hl.bind(mainMod .. "+ SHIFT + T", hl.dsp.exec_cmd("uwsm app -- theme pick"))

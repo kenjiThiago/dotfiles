@@ -1,11 +1,8 @@
-/* Estilo padrão do Zen Browser.
- * A paleta vem do colors.css, gerado pelo `theme set` ao lado deste arquivo. */
+/* A paleta vem do colors.css, gerado pelo `theme set` ao lado deste arquivo. */
 
 @import "colors.css";
 
-/* Quem decide se a variante é clara ou escura é a paleta, no theme.sh, e as
- * duas condições cobrem qualquer coisa que o navegador reporte. Só com
- * `dark` o tema light não pintaria nada aqui. */
+/* As duas condições: a variante clara/escura é decidida pela paleta, não pelo navegador. */
 @media (prefers-color-scheme: dark), (prefers-color-scheme: light) {
   :root {
     --accent: var(--dots-accent-alt);
@@ -26,13 +23,9 @@
     --toolbar-color: var(--dots-text) !important;
     --newtab-text-primary-color: var(--dots-text) !important;
     --arrowpanel-background: var(--dots-overlay) !important;
-    /* O fundo do painel vem daqui, mas o texto vinha do esquema do chrome, que
-     * é preferência do navegador e não da paleta. Enquanto o
-     * browser.theme.toolbar-theme estiver fixo, um deles contradiz o outro. */
+    /* Senão o texto segue o esquema do chrome, e não a paleta. */
     --arrowpanel-color: var(--dots-text) !important;
-    /* A linha de baixo de cada download é a cor do painel a 0.6. Serve para o
-     * quase-branco do Firefox; com o --dots-text, que é menos extremo, cai a
-     * 3.18:1 no tema claro. Em 0.8 passa de 4.5:1 nos cinco temas. */
+    /* 0.6 (padrão) cai a 3.18:1 no tema claro; 0.8 passa de 4.5:1 em todos. */
     --downloads-item-details-opacity: 0.8 !important;
     --sidebar-text-color: var(--dots-text) !important;
     --newtab-background-color: var(--dots-overlay) !important;
@@ -41,22 +34,13 @@
     --nebula-sidebar-width: 20em !important;
   }
 
-  /* ── Conserto: painel do <select> ───────────────────────────────────────────
-   * O SelectParent numera .ContentSelectDropdown-item-N por estilo computado da
-   * página, não por nível: N é a posição num cache de estilos distintos. O
-   * rótulo do <optgroup> vem em negrito, cai num índice próprio, e mirar só o
-   * zero deixava ele com a cor da página sobre o --arrowpanel-background daqui
-   * de cima, preto no escuro.
-   *
-   * O esquema do painel também vem da página (o ator copia o do <select>), então
-   * fixá-lo na variante da paleta é o que alinha o resto: separador, rolagem e
-   * item desabilitado, que saem de cor de sistema. */
+  /* O rótulo do <optgroup> cai num índice próprio de .ContentSelectDropdown-item-N, e
+   * o esquema do painel vem da página: fixá-lo alinha separador, rolagem e desabilitado. */
   #ContentSelectDropdown menupopup {
     color-scheme: var(--dots-color-scheme) !important;
   }
 
-  /* Quando a página estiliza as options, o ator repinta o scrollbox com a cor
-   * dela por background-image, por cima do fundo do painel. */
+  /* Página que estiliza as options repinta o scrollbox por background-image. */
   #ContentSelectDropdown menupopup[customoptionstyling="true"]::part(arrowscrollbox) {
     background-image: none !important;
     background-color: transparent !important;
@@ -81,28 +65,20 @@
       background-color: var(--dots-overlay) !important;
     }
 
-    /* Essencial carregado se distingue do que não está: sem isto os dois são
-     * idênticos na grade, e não há como saber o que já abriu. O [pending] é a
-     * aba que nunca carregou na sessão, que é o estado da maioria logo depois
-     * de subir o navegador; o pref nativo que cobriria isso
-     * (browser.tabs.fadeOutUnloadedTabs) vem desligado, e o que vem ligado
-     * pega só o [pending][discarded], ou seja, o que foi descarregado à mão. */
+    /* Distingue essencial carregado do que nunca carregou ([pending]); o pref nativo
+     * browser.tabs.fadeOutUnloadedTabs vem desligado. */
     &[pending] .tab-icon-image {
       filter: grayscale(100%) !important;
       opacity: 0.4 !important;
       transition: filter 0.3s ease, opacity 0.3s ease !important;
     }
 
-    /* O hover devolve a cor para identificar o que está sob o cursor. */
     &[pending]:hover .tab-icon-image {
       filter: none !important;
       opacity: 1 !important;
     }
 
-    /* O peso do sinal fica aqui, e não no ícone: boa parte dos essenciais tem
-     * logo monocromático (Discord, GitHub, WhatsApp), onde o grayscale acima
-     * não muda nada. O fundo é área grande e independe da cor do favicon,
-     * então lê num relance na grade. */
+    /* O sinal fica no fundo: muito favicon é monocromático e o grayscale não muda nada. */
     &:not([pending]) .tab-background {
       background-color: color-mix(in srgb, var(--dots-accent) 22%, var(--dots-overlay)) !important;
     }
@@ -146,7 +122,7 @@
     display: none !important;
   }
 
-  /* O elemento é a classe .urlbar-background; o id sumiu do browser.xhtml. */
+  /* O id sumiu do browser.xhtml; o elemento é a classe .urlbar-background. */
   .urlbar-background {
     border: 2px solid transparent !important;
     background: linear-gradient(var(--dots-surface), var(--dots-surface)) padding-box,
@@ -172,10 +148,7 @@
       var(--accent-gradient) border-box !important;
   }
 
-  /* Nota: este seletor não casa. O atributo zen-compact-mode fica em
-   * <html id="main-window">, que é ancestral do body, não descendente. O bloco
-   * está inerte desde sempre; trocar para :root[...] o ativa e reposiciona a
-   * barra de abas. */
+  /* Inerte: o zen-compact-mode fica no <html>, ancestral do body. :root[...] o ativaria. */
   body:has([zen-compact-mode="true"]) #titlebar {
     padding: 8px !important;
     border-radius: 11px !important;
@@ -202,11 +175,7 @@
     }
   }
 
-  /* Estado aberto: o botão cujo painel está na tela deixa de ser accent, para
-   * o accent seguir significando ação disponível. O --dots-muted fazia isso e
-   * derrubava o ícone a 2.03:1 sobre o realce de [open] no moon, que é o
-   * clique no botão de downloads. O --dots-text é o único dos três que passa
-   * de 4.5:1 nos cinco temas; o subtle reprova em três. */
+  /* Painel aberto deixa de ser accent; --dots-text é o único que passa de 4.5:1 em todos os temas. */
   toolbar .toolbarbutton-1 {
     &:not([disabled]) {
       &:is([open], [checked])
@@ -224,19 +193,8 @@
     --toolbarbutton-icon-fill: var(--accent) !important;
   }
 
-  /* ── Conserto: botões do Glance ─────────────────────────────────────────────
-   * O círculo desses três é 96% de um cinza fixo do zen-glance.css, e o
-   * light-dark() dele vem invertido: no chrome escuro escolhe o valor claro,
-   * para contrastar com o navegador em vez de combinar. Só 4% do accent chegam
-   * ali, então o ícone, que é accent, ficava em 1.7:1 sobre um quase branco.
-   *
-   * O ícone sai para --dots-text porque é utilitário, não identidade, e é o que
-   * passa dos 6:1 nas duas variantes; o accent sobre o overlay cai para 3.2:1
-   * no tema claro.
-   *
-   * O outline entra no lugar do box-shadow do Zen, preto a 7% e invisível no
-   * escuro: os botões flutuam sobre a página e precisam de limite próprio. Não
-   * é border para não somar aos width/height fixos do zen-glance.css. */
+  /* Botões do Glance: o zen-glance.css os pinta num cinza fixo invertido, com o ícone
+   * em accent a 1.7:1. Outline, e não border, para não somar aos tamanhos fixos. */
   .zen-glance-sidebar-container toolbarbutton {
     background: var(--dots-overlay) !important;
     outline: 1px solid var(--dots-highlight-med) !important;
@@ -249,7 +207,7 @@
     background: var(--dots-highlight-med) !important;
   }
 
-  /* Confirmação de fechar: o vermelho é semântico, só deixa de ser o #dc3545. */
+  /* O vermelho é semântico, só deixa de ser o #dc3545. */
   .zen-glance-sidebar-container .zen-glance-sidebar-close[waitconfirmation] {
     background: var(--dots-error) !important;
     outline-color: var(--dots-error) !important;
@@ -271,14 +229,8 @@
     background-color: var(--dots-base) !important;
   }
 
-  /* ── Conserto ───────────────────────────────────────────────────────────────
-   * O Zen escreve --zen-main-browser-background inline no #zen-browser-background
-   * (ZenGradientGenerator), e declaração própria do elemento ganha do valor
-   * herdado do :root, inclusive de !important de usuário. Sem mirar o elemento,
-   * a moldura do toolbox fica no #131313 padrão do Zen.
-   *
-   * Só este elemento: o #zen-toolbar-background é o painel flutuante do modo
-   * compacto, e pintar ele daqui muda a barra lateral. */
+  /* O Zen escreve --zen-main-browser-background inline neste elemento, o que ganha do
+   * :root. Só ele: o #zen-toolbar-background é o painel do modo compacto. */
   #zen-browser-background {
     --zen-main-browser-background: var(--dots-base) !important;
     --zen-main-browser-background-old: var(--dots-base) !important;

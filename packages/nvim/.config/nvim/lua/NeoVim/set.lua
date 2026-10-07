@@ -28,13 +28,10 @@ vim.opt.incsearch = true
 vim.opt.grepprg = "rg --vimgrep --smart-case"
 vim.opt.grepformat = "%f:%l:%c:%m"
 
--- vim.opt.exrc = true
-
 vim.opt.termguicolors = true
 
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 38
--- vim.opt.signcolumn = "no"
 vim.opt.fillchars = { eob = " " }
 vim.opt.isfname:append("@-@")
 
@@ -43,15 +40,12 @@ vim.opt.showmode = false
 
 vim.opt.pumheight = 10
 
--- Este arquivo é o mesmo nos dois perfis e carrega antes do desvio: uma opção
--- desconhecida aqui derruba a config inteira. O winborder é do 0.11.
+-- Carrega nos dois perfis: opção desconhecida derrubaria a config. winborder é do 0.11.
 if vim.fn.exists("+winborder") == 1 then
     vim.opt.winborder = "rounded"
 end
--- vim.opt.cmdheight = 0
 
 vim.opt.colorcolumn = "80"
--- vim.opt.statuscolumn = "%s%=%{v:virtnum < 1 ? (v:relnum ? v:relnum : v:lnum) : ''} %#LineNr#│ "
 
 vim.api.nvim_command("autocmd TermOpen * setlocal nonumber norelativenumber")
 

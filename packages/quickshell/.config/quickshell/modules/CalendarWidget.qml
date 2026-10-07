@@ -13,7 +13,6 @@ Rectangle {
     border.color: Theme.overlay
     border.width: 1
 
-    // ── Lógica de Datas ───────────────────────────────────────────────────────
     readonly property var today: Time.now
     property int currentMonth: today.getMonth()
     property int currentYear: today.getFullYear()
@@ -67,7 +66,6 @@ Rectangle {
         }
     }
 
-    // ── UI Principal ──────────────────────────────────────────────────────────
     Column {
         anchors.fill: parent
         anchors.margins: 16

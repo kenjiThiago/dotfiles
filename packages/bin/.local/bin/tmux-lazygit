@@ -1,16 +1,13 @@
 #!/usr/bin/env bash
 # tmux-lazygit: abre o lazygit num popup, sobre a sessão 'scratch-lg'.
-#
-# O tema do lazygit é gerado pelo `theme set` num arquivo à parte, porque o
-# lazygit não tem include: o LG_CONFIG_FILE é quem junta o config.yml
-# versionado com o colors.yml gerado. A ordem importa, o último vence.
+# O lazygit não tem include: o LG_CONFIG_FILE junta o config.yml e o colors.yml
+# gerado pelo `theme set`, e o último vence.
 
 CURRENT_DIR=$(pwd)
 
 LG_DIR="$HOME/.config/lazygit"
 LG_CONFIG_FILE="$LG_DIR/config.yml"
-# Antes do primeiro `theme set` o colors.yml não existe, e o lazygit se recusa
-# a subir se um arquivo da lista faltar.
+# Antes do primeiro `theme set` o colors.yml não existe, e o lazygit não sobe.
 if [[ -f $LG_DIR/colors.yml ]]; then
     LG_CONFIG_FILE="$LG_CONFIG_FILE,$LG_DIR/colors.yml"
 fi

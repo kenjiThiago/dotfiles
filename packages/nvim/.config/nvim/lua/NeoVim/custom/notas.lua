@@ -52,8 +52,6 @@ end
 
 local function abrir(path) vim.cmd.edit(vim.fn.fnameescape(path)) end
 
--- ── Aula ─────────────────────────────────────────────────────────────────────
-
 vim.api.nvim_create_user_command("NovaAula", function(opts)
     local args       = vim.split(opts.args, "%s+", { trimempty = true })
     local disciplina = table.remove(args, 1)
@@ -75,8 +73,6 @@ vim.api.nvim_create_user_command("NovaAula", function(opts)
         abrir(path)
     end
 end, { nargs = "+" })
-
--- ── Conceito e projeto ───────────────────────────────────────────────────────
 
 vim.api.nvim_create_user_command("Nota", function(opts)
     local args = vim.split(opts.args, "%s+", { trimempty = true })
@@ -103,8 +99,6 @@ end, {
     end,
 })
 
--- ── Diário e captura ─────────────────────────────────────────────────────────
-
 local function diario()
     local path = string.format("%s/diario/%s.md", ROOT, hoje())
     if vim.fn.filereadable(path) == 0 then
@@ -129,7 +123,7 @@ vim.api.nvim_create_user_command("Captura", function(opts)
     vim.cmd("startinsert")
 end, { nargs = "*" })
 
--- ── Promoção: seleção do diário vira nota de conceito ou projeto ─────────────
+-- Seleção do diário vira nota de conceito ou projeto.
 
 vim.api.nvim_create_user_command("Promover", function(opts)
     local args = vim.split(opts.args, "%s+", { trimempty = true })
@@ -158,8 +152,6 @@ vim.api.nvim_create_user_command("Promover", function(opts)
     abrir(path)
 end, { nargs = "+", range = true })
 
--- ── Marcadores ───────────────────────────────────────────────────────────────
-
 vim.api.nvim_create_user_command("Marcadores", function(opts)
     local ok = pcall(vim.cmd, "vimgrep /" .. vim.fn.escape(opts.args, "/\\") .. "/j %")
     if not ok or vim.tbl_isempty(vim.fn.getqflist()) then
@@ -171,8 +163,6 @@ end, {
     complete = function() return { "!!", "??", "vs" } end,
 })
 
--- ── Dígrafos ─────────────────────────────────────────────────────────────────
-
 vim.cmd([[
   digraphs sq 8849
   digraphs sn 8851
@@ -181,8 +171,6 @@ vim.cmd([[
   digraphs bt 8869
   digraphs md 8872
 ]])
-
--- ── Buffer ───────────────────────────────────────────────────────────────────
 
 vim.api.nvim_create_autocmd("FileType", {
     pattern  = "markdown",
@@ -208,8 +196,6 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.opt_local.path:append(ROOT .. "/**")
     end,
 })
-
--- ── Atalhos ──────────────────────────────────────────────────────────────────
 
 vim.keymap.set("n", "<leader>nd", "<cmd>Diario<cr>", { desc = "diário de hoje" })
 vim.keymap.set("n", "<leader>nc", ":Captura ", { desc = "captura rápida" })

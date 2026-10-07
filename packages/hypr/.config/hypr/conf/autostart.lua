@@ -1,7 +1,5 @@
--- O wallpaper pode estar desligado pelo `rofi-script wallpaper`. Sem hyprpaper
--- o fundo é o misc:background_color (conf/appearance.lua), que é o ponto: o
--- hyprpaper 0.8 não tem IPC de unload, então "sem wallpaper" é ele não rodar.
--- O marcador fica em ~/.local/state/dotfiles/, ao lado do current-theme.
+-- O hyprpaper 0.8 não tem IPC de unload: "sem wallpaper" (`rofi-script wallpaper`)
+-- é ele não rodar.
 local function wallpaper_ligado()
     local state = os.getenv("XDG_STATE_HOME") or (os.getenv("HOME") .. "/.local/state")
     local marker = io.open(state .. "/dotfiles/no-wallpaper", "r")

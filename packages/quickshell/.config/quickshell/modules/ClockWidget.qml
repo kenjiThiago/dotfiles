@@ -26,13 +26,11 @@ Rectangle {
 
     readonly property var kanjiIcons: ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
 
-    // ── CONTROLE DO OSD ───────────────────────────────────────────────────────
     property string activeMode: "clock"
     readonly property bool osdActive: island.activeMode !== "clock"
     readonly property bool osdIsVolume: island.activeMode === "volume"
 
-    // Brilho e volume são a mesma barra com fonte diferente, então o modo escolhe
-    // o que ela lê e escreve em vez de existir uma camada para cada.
+    // Brilho e volume são a mesma barra: o modo escolhe o que ela lê e escreve.
     readonly property int osdValue: island.osdIsVolume ? SystemMonitor.volumePct : Math.max(0, SystemMonitor.currentBrightness)
     readonly property string osdIcon: island.osdIsVolume ? (SystemMonitor.isMuted ? "󰝟" : "󰕾") : "󰃠"
     readonly property color osdColor: island.osdIsVolume ? (SystemMonitor.isMuted ? Theme.error : Theme.blue) : Theme.yellow
@@ -68,7 +66,6 @@ Rectangle {
         }
     }
 
-    // ── MATEMÁTICA DA UI E ESTADOS ────────────────────────────────────────────
     Text {
         id: measureS0
         text: Time.timeString
@@ -222,16 +219,11 @@ Rectangle {
         }
     }
 
-    // ── CAMADA 1: A PÍLULA (ESTADOS 0 E 1) ────────────────────────────────────
+    // Camada 1: a pílula (estados 0 e 1).
     Item {
         anchors.fill: parent
         opacity: (island.islandState < 2 && !island.osdActive) ? 1 : 0
         visible: opacity > 0
-        // Behavior on opacity {
-        //     NumberAnimation {
-        //         duration: 250
-        //     }
-        // }
 
         Row {
             anchors.centerIn: parent
@@ -245,7 +237,6 @@ Rectangle {
                 }
             }
 
-            // ESQUERDA: WORKSPACES
             Item {
                 width: island.wsW
                 height: parent.height
@@ -310,7 +301,6 @@ Rectangle {
                 }
             }
 
-            // CENTRO: RELÓGIO (BOTÃO)
             Rectangle {
                 id: clockBtn
                 width: island.islandState === 1 ? island.clockS1W : island.clockS0W
@@ -350,22 +340,12 @@ Rectangle {
                         font.weight: Font.Bold
                         opacity: island.islandState === 0 ? 1 : 0
                         visible: opacity > 0
-                        // Behavior on opacity {
-                        //     NumberAnimation {
-                        //         duration: 200
-                        //     }
-                        // }
                     }
                     Column {
                         anchors.centerIn: parent
                         spacing: 1
                         opacity: island.islandState === 1 ? 1 : 0
                         visible: opacity > 0
-                        // Behavior on opacity {
-                        //     NumberAnimation {
-                        //         duration: 200
-                        //     }
-                        // }
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: Time.timeString
@@ -474,7 +454,6 @@ Rectangle {
                 }
             }
 
-            // DIREITA: STATUS E ALERTAS
             Item {
                 width: island.islandState === 1 ? island.statusW : 0
                 height: parent.height
@@ -560,17 +539,12 @@ Rectangle {
         }
     }
 
-    // ── CAMADA OSD: BRILHO E VOLUME ───────────────────────────────────────────
+    // Camada OSD: brilho e volume.
     RowLayout {
         anchors.centerIn: parent
         spacing: 12
         opacity: island.osdActive ? 1 : 0
         visible: opacity > 0
-        // Behavior on opacity {
-        //     NumberAnimation {
-        //         duration: 200
-        //     }
-        // }
 
         Text {
             text: island.osdIcon
@@ -652,26 +626,18 @@ Rectangle {
         }
     }
 
-    // ── CAMADA 2: INJETA O CONTROLE CENTRAL MODULAR ───────────────────────────
+    // Camada 2: control center.
     ControlCenter {
         width: parent.width
         y: 0
 
-        // Sem altura própria o MouseArea que segura o clique nasce com zero, e
-        // todo clique em área vazia atravessa para o MouseArea da ilha, que
-        // fecha tudo. Fixa e não parent.height para não refazer o layout a cada
-        // quadro dos 400ms de animação da ilha.
+        // Altura fixa: sem ela o MouseArea nasce com zero e o clique em área vazia fecha
+        // a ilha. Fixa, e não parent.height, para não refazer o layout durante a animação.
         height: island.expandedHeight
 
         hostWindow: island.hostWindow
         opacity: island.islandState === 2 ? 1 : 0
         visible: opacity > 0
-        // Behavior on opacity {
-        //     NumberAnimation {
-        //         duration: 300
-        //         easing.type: Easing.OutCubic
-        //     }
-        // }
 
         onRequestClose: island.requestState(0)
         onRequestCalendar: island.calendarRequested()

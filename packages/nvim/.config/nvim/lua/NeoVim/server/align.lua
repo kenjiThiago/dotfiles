@@ -1,6 +1,4 @@
--- Alinhamento por delimitador, no lugar do mini.align do desktop. As teclas
--- repetem as de lá: `ga` sobre um movimento ou sobre uma seleção, o que custa o
--- `ga` nativo (código do caractere sob o cursor).
+-- Substitui o mini.align do desktop, com as mesmas teclas:
 --
 --   ga=  ip           alinha o parágrafo pelo primeiro "="
 --   :'<,'>Align :     alinha a seleção pelo primeiro ":"
@@ -8,12 +6,10 @@
 
 local M = {}
 
--- Delimitadores que colam no campo da esquerda: o padding vai depois deles, e
--- não antes.
+-- O padding vai depois destes, e não antes.
 local COLADOS = { [","] = true, [";"] = true, [":"] = true }
 
--- Alinhando por "=", o corte pega o operador inteiro. Sem isso o "=" de `~=` e
--- `==` cai numa coluna e o de `=` noutra.
+-- O corte pega o operador inteiro, para `~=`, `==` e `=` alinharem juntos.
 local COMPOSTO = "[~!<>%+%-%*/%%%.:|&%^]"
 
 local function achar(linha, delim, inicio)
@@ -57,8 +53,6 @@ local function cortar(linha, delim, limite)
     return campos, seps
 end
 
--- O pedaço que precisa caber na coluna: o campo mais o delimitador, quando ele
--- é dos que colam à esquerda.
 local function pedaco(campo, sep)
     return COLADOS[sep] and campo .. sep or campo
 end
@@ -72,8 +66,6 @@ function M.alinhar(inicio, fim, delim, todas)
     for indice, linha in ipairs(linhas) do
         local campos, seps = cortar(linha, delim, limite)
 
-        -- Linha sem o delimitador fica intacta, inclusive fora da conta das
-        -- larguras.
         if campos then
             local recuo = linha:match("^%s*")
             for i = 1, #campos do

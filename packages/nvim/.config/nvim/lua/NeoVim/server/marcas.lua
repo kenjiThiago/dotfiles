@@ -1,10 +1,5 @@
--- Substituto do harpoon no perfil servidor: as marcas H, J, K e L guardam um
--- arquivo cada, e a marca é reposicionada na última posição do cursor ao sair
--- do buffer, para o pulo cair onde a leitura parou e não onde ela começou.
---
--- Marca maiúscula é global e vai para o shada, então a lista sobrevive ao
--- restart de graça. O preço é que ela é uma só para a máquina inteira: ao
--- contrário do harpoon, não há lista por diretório.
+-- Substituto do harpoon no servidor: as marcas globais H, J, K e L, que persistem
+-- pelo shada. Ao sair do buffer a marca vai para a posição do cursor.
 
 local MARCAS = { "H", "J", "K", "L" }
 
@@ -26,11 +21,8 @@ local function absoluto(item)
     return vim.fn.fnamemodify(item.file or "", ":p")
 end
 
--- A marca volta do shada no restart, mas autocmd nenhum volta com ela. Por
--- isso o rastreio é um BufLeave só, global, que decide na hora se o buffer que
--- está saindo é o de alguma marca: preso ao buffer no momento da associação,
--- ele morria a cada restart e a cada :bdelete, e a marca congelava na posição
--- em que foi criada.
+-- Um BufLeave global, e não preso ao buffer: autocmd não volta do shada no restart
+-- nem sobrevive a um :bdelete.
 local function rastrear()
     local arquivo = vim.api.nvim_buf_get_name(0)
     if arquivo == "" then
@@ -68,15 +60,12 @@ function M.pular(marca)
         return
     end
 
-    -- O ` cru erra com E20 quando o arquivo saiu do disco; a mensagem curta
-    -- basta, e sem o pcall ela vem como erro de Lua.
+    -- Sem o pcall o E20 de arquivo apagado vem como erro de Lua.
     if not pcall(vim.cmd, "normal! `" .. marca .. "zz") then
         vim.notify("marca " .. marca .. " aponta para um arquivo que sumiu", vim.log.levels.WARN)
     end
 end
 
--- Equivalente do `harpoon:list():add()`: cai na primeira marca livre, sem
--- repetir um arquivo que já está em outra.
 function M.adicionar()
     local atual = vim.api.nvim_buf_get_name(0)
 
@@ -98,14 +87,7 @@ function M.adicionar()
     vim.notify("as quatro marcas estão ocupadas", vim.log.levels.WARN)
 end
 
--- ── Menu ──────────────────────────────────────────────────────────────────────
--- O menu é um buffer editável, como o do harpoon: o que vale é o texto na hora
--- de fechar, e o `:w` fecha. Só as linhas preenchidas aparecem, apagar uma tira
--- o arquivo da lista, mover uma troca a marca, e o `:linha` no fim é o que
--- preserva a posição no reordenamento.
---
--- A janela fica aqui porque o <C-e> é global e vale dentro do flutuante também:
--- sem isto o segundo toque abriria outra janela em cima da primeira.
+-- O menu é um buffer editável, como o do harpoon: vale o texto ao fechar.
 local janela
 local contador = 0
 local LETRAS = vim.api.nvim_create_namespace("MarcasLetras")
@@ -114,8 +96,6 @@ local function texto_de(item)
     return item and string.format("%s:%d", caminho(item), item.pos[2]) or ""
 end
 
--- Lido da direita para a esquerda: dois-pontos em nome de arquivo é raro, mas o
--- sufixo numérico, quando existe, é sempre o último.
 local function analisar(texto)
     texto = vim.trim(texto or "")
     if texto == "" then
@@ -126,10 +106,7 @@ local function analisar(texto)
     return vim.fn.fnamemodify(arquivo or texto, ":p"), tonumber(numero) or 1
 end
 
--- Linha em branco não é buraco: some, e as de baixo sobem. É o modelo do
--- harpoon, em que o menu é a lista em ordem e não um mapa de slots fixos. Como
--- a marca sai da posição na lista, reordenar é consequência do índice e não
--- precisa de lógica própria.
+-- Linha em branco some e as de baixo sobem: a marca sai da posição na lista.
 local function aplicar(linhas)
     local lista = {}
     for _, linha in ipairs(linhas) do
@@ -150,10 +127,8 @@ local function aplicar(linhas)
         if arquivo and vim.fn.filereadable(arquivo) == 0 then
             vim.notify("marcas: " .. arquivo .. " não existe", vim.log.levels.WARN)
         elseif arquivo then
-            -- Sem eventignore em volta do bufload, por mais tentador que seja
-            -- para não acordar o LSP: é o BufReadPost que detecta o filetype, e
-            -- o arquivo carregado sem ele fica sem syntax pelo resto da sessão,
-            -- já que o pulo depois encontra o buffer pronto e não relê nada.
+            -- Sem eventignore: é o BufReadPost que detecta o filetype, e o buffer ficaria
+            -- sem syntax pelo resto da sessão.
             local buf = vim.fn.bufadd(arquivo)
             vim.fn.bufload(buf)
             vim.bo[buf].buflisted = true
@@ -172,16 +147,12 @@ function M.menu()
 
     local buf = vim.api.nvim_create_buf(false, true)
     vim.bo[buf].bufhidden = "wipe"
-    -- O nvim_create_buf devolve um nofile, em que o :w erra com E382. O acwrite
-    -- passa a gravação para o BufWriteCmd lá embaixo, e o nome é porque o :w
-    -- erra com E32 sem ele. Único porque o buffer do menu anterior pode não ter
-    -- sido varrido ainda quando este abre.
+    -- acwrite para o :w cair no BufWriteCmd (nofile erra com E382); o nome evita o
+    -- E32 e é único porque o menu anterior pode não ter sido varrido ainda.
     vim.bo[buf].buftype = "acwrite"
     contador = contador + 1
     vim.api.nvim_buf_set_name(buf, "__marcas__" .. contador)
 
-    -- Slot vazio não vira linha em branco: o buffer é a lista, e o espaço que
-    -- sobra na janela é onde se acrescenta.
     local conteudo = {}
     local largura = 40
     for _, marca in ipairs(MARCAS) do
@@ -195,10 +166,7 @@ function M.menu()
 
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, conteudo)
 
-    -- A letra vem da posição na lista, não do número da linha: como a linha em
-    -- branco some ao gravar, ela também não recebe letra, e o que está na tela
-    -- já é a ordem que vai valer. Refeito a cada edição porque o extmark
-    -- acompanharia o texto ao subir.
+    -- A letra vem da posição entre as linhas preenchidas, não do número da linha.
     local function letras()
         vim.api.nvim_buf_clear_namespace(buf, LETRAS, 0, -1)
 
@@ -245,10 +213,8 @@ function M.menu()
         janela = nil
     end
 
-    -- As linhas são lidas aqui, que ainda é seguro, e a escrita vai para o
-    -- schedule porque durante o fechamento da janela o textlock barraria o
-    -- bufload. A guarda é porque as duas saídas podem se somar: o :w grava e
-    -- fecha, e o fechar acaba disparando o BufWinLeave.
+    -- No fechamento da janela o textlock barraria o bufload, daí o schedule. A guarda
+    -- é porque o :w grava, fecha e dispara o BufWinLeave.
     local gravado = false
     local function gravar()
         if gravado then
@@ -262,8 +228,6 @@ function M.menu()
         end)
     end
 
-    -- Um ponto só para as saídas que não passam pelo :w: o q, o <Esc>, o
-    -- segundo <C-e> e o :q.
     vim.api.nvim_create_autocmd("BufWinLeave", {
         buffer = buf,
         once = true,
@@ -273,9 +237,7 @@ function M.menu()
         end,
     })
 
-    -- O :w do harpoon: grava e fecha. A gravação vem antes do fechar porque o
-    -- BufWinLeave não chega a rodar de dentro do BufWriteCmd, e sem isto o :w
-    -- fecharia o menu jogando fora a edição.
+    -- Dentro do BufWriteCmd o BufWinLeave não roda, então grava antes de fechar.
     vim.api.nvim_create_autocmd("BufWriteCmd", {
         buffer = buf,
         callback = function()
@@ -285,11 +247,8 @@ function M.menu()
         end,
     })
 
-    -- O pulo também entra na fila, atrás do aplicar: sem isso ele leria a marca
-    -- antiga quando a linha tivesse acabado de mudar de lugar.
+    -- O pulo vai para a fila atrás do aplicar, senão leria a marca antiga.
     vim.keymap.set("n", "<CR>", function()
-        -- A marca sai da contagem de linhas preenchidas até o cursor, e não do
-        -- número da linha, que erraria com uma linha em branco acima.
         local slot = 0
         for _, linha in ipairs(vim.api.nvim_buf_get_lines(buf, 0, vim.fn.line("."), false)) do
             if vim.trim(linha) ~= "" then

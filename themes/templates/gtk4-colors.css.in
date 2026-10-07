@@ -1,14 +1,8 @@
 /* ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
  * Fonte: themes/templates/gtk4-colors.css.in
  *
- * O libadwaita ignora o gtk-theme-name do settings.ini, então esta folha é o
- * único jeito de dar a paleta a um app GTK4. São três blocos porque são três
- * consumidores: as variáveis CSS do libadwaita >= 1.6, os @define-color de
- * mesmo nome que as versões anteriores usavam, e os theme_* do Adwaita
- * embutido, para o app GTK4 que não usa libadwaita.
- *
- * Papéis como no qt6ct-colors.conf.in: surface na janela, base no conteúdo,
- * overlay no que se destaca da janela sem virar conteúdo.
+ * O libadwaita ignora o gtk-theme-name. Três blocos: as variáveis do libadwaita
+ * >= 1.6, os @define-color das versões anteriores e os theme_* do Adwaita embutido.
  */
 
 :root {
@@ -151,10 +145,7 @@
 @define-color content_view_bg {{base}};
 @define-color text_view_bg {{base}};
 
-/* ── Dica de contexto ───────────────────────────────────────────────────── */
-/* O libadwaita fixa RGB(0 0 6/80%) com texto branco, sem variável nenhuma,
- * então a regra inteira precisa ser reescrita para acompanhar o ToolTipBase
- * do Qt. */
+/* O libadwaita fixa a dica em RGB(0 0 6/80%), sem variável. */
 tooltip, tooltip.background {
     background-color: {{overlay}};
     color: {{text}};
@@ -162,8 +153,6 @@ tooltip, tooltip.background {
 }
 tooltip * { background-color: transparent; color: {{text}}; }
 
-/* ── Links ──────────────────────────────────────────────────────────────── */
-/* Sem isto o libadwaita deriva o link de --accent-color e ele sai na cor do
- * destaque. Os valores são os papéis Link e LinkVisited do Qt. */
+/* Sem isto o link sai na --accent-color. */
 link, button.link { color: {{info}}; }
 link:visited, button.link:visited { color: {{accent_alt}}; }

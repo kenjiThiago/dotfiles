@@ -1,8 +1,7 @@
 # ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
 # Fonte: themes/templates/qt6ct-colors.conf.in
 #
-# Paleta do Qt na ordem do enum QPalette::ColorRole, que é como o qt6ct lê a
-# lista. São 21 posições, nesta ordem:
+# Paleta na ordem do enum QPalette::ColorRole:
 #
 #   0 WindowText   1 Button      2 Light        3 Midlight   4 Dark
 #   5 Mid          6 Text        7 BrightText   8 ButtonText 9 Base
@@ -10,8 +9,8 @@
 #  14 Link        15 LinkVisited 16 AlternateBase 17 NoRole
 #  18 ToolTipBase 19 ToolTipText 20 PlaceholderText
 #
-# Light/Midlight/Mid/Dark/Shadow são os biséis do Fusion. Saem dos highlight_*
-# porque o base inverteria o relevo entre um tema claro e um escuro.
+# Os biséis do Fusion saem dos highlight_* para o relevo não inverter entre claro
+# e escuro.
 #
 # O prefixo é o alfa: ff = opaco.
 

@@ -1,16 +1,7 @@
-# Só comportamento. As cores vivem em ~/.config/lazygit/colors.yml, gerado
-# pelo `theme set` a partir de themes/templates/lazygit-colors.yml.in.
-#
-# O lazygit não tem diretiva de include, então quem junta os dois é o
-# LG_CONFIG_FILE (ver packages/bin/.local/bin/tmux-lazygit e packages/zsh/.zshrc).
-# Rodar `lazygit` sem essa variável usa só este arquivo — funciona, mas sem tema.
+# As cores vêm do colors.yml gerado, juntado a este pelo LG_CONFIG_FILE.
 gui:
   language: "en"
   border: "rounded"
-  # showBottomLine: false
 
-# O preset nvim abre o arquivo dentro do próprio popup, tomando a tela do
-# lazygit (editInTerminal: true) e devolvendo para ele ao fechar. Sem RPC, sem
-# escapar para outro pane.
 os:
   editPreset: nvim

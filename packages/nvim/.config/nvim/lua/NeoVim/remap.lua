@@ -1,11 +1,5 @@
--- Old keymaps (o verdadeiro)
--- vim.keymap.set("", "j", "k")
--- vim.keymap.set("", "k", "j")
-
 vim.g.mapleader = " "
 
--- O oil e o yazi são do desktop; no servidor o NeoVim.server põe o netrw em
--- cima do <leader>pv.
 if require("NeoVim.profile").desktop then
     vim.keymap.set("n", "<leader>pv", "<CMD>Oil<CR>", { desc = "Open parent directory" })
     vim.keymap.set("n", "<leader>-", function()
@@ -49,18 +43,12 @@ vim.keymap.set("n", "<leader>qn", "<cmd>cnewer<CR>")
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 
---Indentação
--- vim.keymap.set("n", "<TAB>", ">>")
--- vim.keymap.set("n", "<S-TAB>", "<<")
-
 vim.keymap.set("n", "<leader>to", ":tabnew<CR>")
 vim.keymap.set("n", "<leader>tx", ":tabclose<CR>")
 vim.keymap.set("n", "<leader>tn", ":tabn<CR>")
 vim.keymap.set("n", "<leader>tp", ":tabp<CR>")
 vim.keymap.set("n", "<leader>tt", ":tabnew | term<CR>")
 
---Fugitive
--- vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
 vim.keymap.set("n", "<leader>gs", "<cmd>silent !tmux-lazygit<CR>")
 
 vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)

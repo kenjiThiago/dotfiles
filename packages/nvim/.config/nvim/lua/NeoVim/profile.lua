@@ -1,9 +1,5 @@
--- Perfil da máquina: "desktop" (Arch + Hyprland, com plugins) ou "server"
--- (nvim pelado). O marcador é escrito pelo `install.sh --profile <nome>` e
--- fica em ~/.local/state/dotfiles/, ao lado do current-theme do `theme`.
---
--- Na falta do arquivo o padrão é desktop, de propósito: uma máquina que nunca
--- rodou o install novo continua se comportando como sempre.
+-- "desktop" ou "server", do marcador escrito pelo `install.sh --profile`. Sem ele,
+-- desktop.
 
 local M = {}
 

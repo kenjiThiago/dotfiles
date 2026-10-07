@@ -7,8 +7,6 @@ if [ ! -d "$ZINIT_HOME" ] && command -v git >/dev/null; then
     git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
-# fastfetch
-
 if [[ -r "${ZINIT_HOME}/zinit.zsh" ]]; then
     source "${ZINIT_HOME}/zinit.zsh"
 
@@ -27,9 +25,7 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 alias nv="nvim"
 alias c="clear"
-# alias cat="bat --paging=never"
 
-# Como no .bashrc: sem eza não se perde a cor, se perde o `ls`.
 if command -v eza >/dev/null; then
     alias ls="eza --color=always --icons=auto"
     alias ll="eza -lAF --color=always --icons=auto"
@@ -43,19 +39,11 @@ fi
 command -v fzf >/dev/null && source <(fzf --zsh)
 command -v zoxide >/dev/null && eval "$(zoxide init --cmd cd zsh)"
 
-# O prompt transiente inteiro é do starship: o transiente é o mesmo comando com
-# --profile transient. Sem ele sobra o prompt de duas linhas abaixo, sem estado
-# do git, que no .bashrc vem do set_custom_prompt.
 if command -v starship >/dev/null; then
     eval "$(starship init zsh)"
 
-    # Sem right_format no template, o RPROMPT do init só forkava o starship a
-    # cada redraw para devolver string vazia. Se um dia entrar um, é esta linha
-    # que sai.
-    RPROMPT=""
+    RPROMPT=""  # sem right_format, o RPROMPT só forkava o starship a cada redraw
 
-    # O PROMPT do starship não muda depois do init, então a substituição é feita
-    # uma vez só.
     STARSHIP_ORIG_PROMPT=$PROMPT
     STARSHIP_TRANSIENT_PROMPT="${PROMPT/ prompt / prompt --profile transient }"
 
@@ -68,9 +56,8 @@ if command -v starship >/dev/null; then
     autoload -Uz add-zle-hook-widget
     add-zle-hook-widget zle-line-finish set_transient_prompt
 
-    # Nem todo Ctrl-C encerra a linha: cancelar a pergunta "do you wish to see
-    # all N possibilities" devolve o controle para a mesma linha, e aí o precmd
-    # nunca roda para desfazer o transiente que o TRAPINT aplicou.
+    # Cancelar o "do you wish to see all N possibilities" volta para a mesma linha
+    # sem passar pelo precmd, que é quem desfaz o transiente.
     function restore_prompt_if_transient() {
         [[ $PROMPT == "$STARSHIP_TRANSIENT_PROMPT" ]] || return 0
         PROMPT=$STARSHIP_ORIG_PROMPT
@@ -125,9 +112,7 @@ export LESS='-R --use-color -Dd+r$Du+b$'
 export EDITOR="nvim"
 export MANGOHUD=0
 
-# O lazygit não tem include: o config.yml versionado traz o comportamento e o
-# colors.yml vem do `theme set`. O tmux-lazygit repete isto por conta própria,
-# porque a sessão do popup não herda o ambiente deste shell.
+# O tmux-lazygit repete isto: a sessão do popup não herda este ambiente.
 if [[ -f ~/.config/lazygit/colors.yml ]]; then
     export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml,$HOME/.config/lazygit/colors.yml"
 fi
@@ -147,14 +132,11 @@ if [[ -z $TMUX ]]; then
     path+=("$HOME/.local/share/nvim/mason/bin")
 fi
 
-# Caminho do pacote nvm do Arch. É a coisa menos essencial daqui, e sem o teste
-# bastaria desinstalar o nvm para todo shell novo abrir com erro.
 [[ -f /usr/share/nvm/init-nvm.sh ]] && source /usr/share/nvm/init-nvm.sh
 
 export PATH
 
-# Ajustes de uma máquina só, como no .bashrc. Não é versionado, e vem antes do
-# exec: depois dele nada mais nesta config roda.
+# Vem antes do exec: depois dele nada mais roda.
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 if [[ -z "$TMUX" && "$XDG_CURRENT_DESKTOP" == "Hyprland" ]]; then

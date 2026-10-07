@@ -33,7 +33,6 @@ Item {
         anchors.margins: 20
         spacing: 20
 
-        // GRID: SISTEMA & ENERGIA
         Grid {
             id: statsGrid
             columns: 2
@@ -205,7 +204,6 @@ Item {
             }
         }
 
-        // SLIDERS: ÁUDIO & BRILHO
         Column {
             id: slidersSection
             width: parent.width
@@ -410,7 +408,6 @@ Item {
             }
         }
 
-        // SYSTEM TRAY
         Column {
             id: traySection
             width: parent.width
@@ -434,15 +431,12 @@ Item {
             }
         }
 
-        // NOTIFICAÇÕES
         NotificationList {
             id: notifList
             width: parent.width
 
-            // O teto sai do que sobra depois das outras seções, em vez de um
-            // número fixo: com o tray escondido sobram uns 70px a mais para as
-            // notificações. A altura da ccColumn é imposta pelo anchors.fill, não
-            // pelo conteúdo, então não há laço de binding aqui.
+            // O teto é o que sobra das outras seções; a altura da ccColumn vem do
+            // anchors.fill, então não há laço de binding.
             maxListHeight: {
                 const secoes = statsGrid.height + slidersSection.height + 2 * ccColumn.spacing;
                 const tray = traySection.visible ? traySection.height + ccColumn.spacing : 0;

@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# ── TUI: FZF + PARU ───────────────────────────────────────────────────────────
-
 if [[ "$1" == "--paru-install" ]]; then
     pkg_names=$(pacman -Slq | fzf \
         --multi \
@@ -46,8 +44,6 @@ if [[ "$1" == "--paru-update" ]]; then
     exit 0
 fi
 
-# ── Variáveis ─────────────────────────────────────────────────────────────────
-
 BACK_TO_EXIT=false
 SCRIPT_PATH="$(realpath "$0")"
 
@@ -60,8 +56,6 @@ HYPR_COLORS="$HOME/.config/hypr/conf/colors.conf"
 NO_WALLPAPER="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/no-wallpaper"
 
 mkdir -p "$SCREENSHOT_DIR" "$WALLPAPER_DIR"
-
-# ── Utilitários ───────────────────────────────────────────────────────────────
 
 toggle_existing_menu() {
     pgrep -x "rofi" >/dev/null && { killall rofi; exit 0; }
@@ -96,8 +90,6 @@ open_in_editor() {
     uwsm app -- ghostty -e nvim "$1"
 }
 
-# ── Screenshot ────────────────────────────────────────────────────────────────
-
 take_screenshot() {
     local mode="$1"
     local filepath="$SCREENSHOT_DIR/screenshot-$(date +'%Y-%m-%d_%H-%M-%S').png"
@@ -124,23 +116,21 @@ take_screenshot() {
 
     [[ -z "$selection" ]] && exit 0
 
-    # Captura com a tela ainda congelada e só então descongela. Na ordem
-    # inversa, o grim gravaria o frame ao vivo, diferente do exibido.
+    # Captura antes de descongelar, senão o grim grava o frame ao vivo.
     grim -g "$selection" "$filepath" || exit 1
     [[ -n "$picker_pid" ]] && kill "$picker_pid" 2>/dev/null
     picker_pid=""
 
     wl-copy < "$filepath"
 
-    # O id não pode ser "default": por spec esse não vira botão. E o -A implica
-    # --wait, então o -t é a janela em que a ação ainda existe.
+    # O id não pode ser "default" (por spec não vira botão); -A implica --wait,
+    # então o -t é por quanto tempo a ação existe.
     local action
     action=$(notify-send "Captura Salva" "Copiado para a área de transferência." \
         -i "$filepath" -a "Screenshot" -A "edit=Editar com Satty" -t 15000)
 
-    # O GDK inicializa Vulkan ao subir o display, o que acorda a dGPU e leva a
-    # janela de ~0,2s para ~1,8s; sem ele o GSK cai no OpenGL da Intel sozinho.
-    # O env vai dentro do comando porque o uwsm sobe o app por uma unit.
+    # Sem Vulkan o GDK não acorda a dGPU (~1,8s → ~0,2s para abrir). O env vai
+    # dentro do comando porque o uwsm sobe o app por uma unit.
     [[ "$action" == "edit" ]] && uwsm app -- env \
         GDK_DISABLE=vulkan \
         satty \
@@ -150,8 +140,7 @@ take_screenshot() {
         --copy-command 'wl-copy'
 }
 
-# O cliphist não tem pin, então os fixados moram num diretório à parte, um
-# arquivo por entrada, e aparecem no topo da mesma lista.
+# O cliphist não tem pin: os fixados ficam num diretório à parte, um arquivo por entrada.
 CLIP_PINS="${XDG_DATA_HOME:-$HOME/.local/share}/clipboard-pins"
 PIN_MARK="  "
 
@@ -212,7 +201,6 @@ show_clipboard() {
                 else cliphist delete <<< "$entry"; fi
                 ;;
             12)
-                # wipe só mexe no histórico; os fixados ficam.
                 [[ $(printf 'não\nsim' | rofi -dmenu -i -p "Limpar o histórico?") == "sim" ]] &&
                     cliphist wipe
                 ;;
@@ -221,11 +209,8 @@ show_clipboard() {
     done
 }
 
-# Os dois arquivos são gerados por `theme set`; aqui trocamos só a linha do
-# path, para não perder o cabeçalho nem o resto da configuração. O colors.conf
-# entra junto porque o hyprlock não lê o hyprpaper.conf: o fundo dele vem do
-# $wallpaper de lá, e sem esta linha o lockscreen ficaria no wallpaper do tema,
-# não no que acabou de ser escolhido. Vazio, o hyprlock cai no `color = $base`.
+# Troca só a linha do path nos arquivos gerados pelo `theme set`. O colors.conf
+# entra porque o hyprlock tira o fundo do $wallpaper de lá, não do hyprpaper.conf.
 save_wallpaper_path() {
     local CAMINHO="$1"
 
@@ -239,11 +224,8 @@ save_wallpaper_path() {
     [[ -f $HYPR_COLORS ]] && sed -i "s|^\(\$wallpaper *= *\).*|\1$CAMINHO|" "$HYPR_COLORS"
 }
 
-# Sem wallpaper: o hyprpaper 0.8 não tem mais IPC de unload, então o único jeito
-# de não ter imagem nenhuma é ele não estar rodando. O que fica à mostra é o
-# misc:background_color do Hyprland, no $base do tema (ver conf/appearance.lua).
-# O marcador segura a escolha no próximo boot: quem o lê é o autostart.lua, que
-# só sobe o hyprpaper sem ele, e o `theme`, que sem ele deixa o path vazio.
+# O hyprpaper 0.8 não tem IPC de unload: sem wallpaper é ele não rodar. O marcador
+# guarda a escolha para o autostart.lua e o `theme`.
 turn_wallpaper_off() {
     mkdir -p "$(dirname "$NO_WALLPAPER")"
     touch "$NO_WALLPAPER"
@@ -278,8 +260,7 @@ change_wallpaper() {
     if pgrep -x hyprpaper >/dev/null; then
         hyprctl hyprpaper wallpaper ",$CAMINHO,cover"
     else
-        # Vindo do "sem wallpaper": ele sobe já com o path recém-escrito, e o
-        # IPC ainda não estaria de pé para receber o comando acima.
+        # Ele sobe já com o path novo; o IPC ainda não estaria de pé para o comando acima.
         uwsm app -- hyprpaper
     fi
 
@@ -287,8 +268,6 @@ change_wallpaper() {
 }
 
 [[ "$1" == "--screenshot" ]] && { take_screenshot "$2"; exit 0; }
-
-# ── Submenus ──────────────────────────────────────────────────────────────────
 
 show_trigger_menu() {
     case $(menu "Trigger" "  Screenshot (Região)\n  Screenshot (Tela Cheia)\n󰃉  Color Picker\n󰍜  Toggle Waybar\n  Toggle Gaps (Hyprland)") in
@@ -336,8 +315,6 @@ show_system_menu() {
     esac
 }
 
-# ── Menu principal ────────────────────────────────────────────────────────────
-
 go_to_menu() {
     case "${1,,}" in
         *apps*)      rofi -show drun -p "Launch" ;;
@@ -354,8 +331,6 @@ go_to_menu() {
 show_main_menu() {
     go_to_menu "$(menu "Menu" "󰀻  Apps\n󱓞  Trigger\n  Setup\n󰏔  Pacotes\n  System")"
 }
-
-# ── Entrada ───────────────────────────────────────────────────────────────────
 
 toggle_existing_menu
 

@@ -1,7 +1,5 @@
--- Picker de diretórios: leva a janela atual para qualquer diretório abaixo do
--- home, inclusive os que o zoxide nunca viu. O <leader>pf e o <leader>ps são
--- ancorados na cwd, e o tmux-sessionizer troca de sessão em vez de mover a
--- janela, então nenhum dos dois cobre este caso.
+-- Leva a janela atual para qualquer diretório abaixo do home, inclusive os que o
+-- zoxide nunca viu.
 
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
@@ -10,11 +8,8 @@ local finders = require("telescope.finders")
 local pickers = require("telescope.pickers")
 local themes = require("telescope.themes")
 
--- O --hidden traz ~/.config, ~/.local/bin e ~/.local/share/fonts, e junto o
--- cache que leva a lista de 65 mil para menos de 5 mil. São caminhos e não
--- nomes soltos porque cortar ~/.local/share inteiro derrubaria fonts,
--- applications e icons junto com o Steam. O lixo de uma máquina só vai em
--- ~/.config/fd/ignore. Sem --follow: symlink repetiria uma árvore já listada.
+-- Caminhos, e não nomes soltos, para não cortar fonts e applications junto com o
+-- Steam. Sem --follow: symlink repetiria uma árvore já listada.
 local EXCLUSOES = {
     ".git", ".cache", "node_modules", ".venv",
     ".zen", ".mozilla", ".rustup", ".cargo", ".wine",
@@ -31,9 +26,7 @@ local function comando()
     return cmd
 end
 
--- O fd roda com cwd na raiz, então a linha vem relativa: é ela que vai para o
--- ordinal, para o sorter não pontuar o prefixo comum a todos os candidatos. A
--- barra final é do fd, e o vim.fs.basename devolve "" com ela.
+-- O ordinal é o caminho relativo, para o sorter não pontuar o prefixo comum.
 local function entrada(raiz)
     return function(linha)
         linha = (linha:gsub("/$", ""))
@@ -47,8 +40,7 @@ local function entrada(raiz)
     end
 end
 
--- O lcd é promovido para a tab assim que o buffer do oil for deixado, pelo
--- OilRelPathFix do autocmd.lua.
+-- O OilRelPathFix do autocmd.lua promove o lcd para a tab ao sair do oil.
 local function ir(bufnr, split)
     local escolhido = action_state.get_selected_entry()
     if not escolhido then

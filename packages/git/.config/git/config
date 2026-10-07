@@ -1,5 +1,4 @@
-# Identidade e configuração por máquina ficam em config.local, fora do
-# repositório. O git ignora o include se o arquivo não existir.
+# Identidade e ajustes por máquina vão em config.local, fora do repositório.
 [include]
     path = config.local
 

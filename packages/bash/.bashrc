@@ -1,30 +1,20 @@
-#
-# ~/.bashrc
-#
-# Este arquivo vale nas duas máquinas: no desktop o bash é o shell secundário
-# (o principal é o zsh) e no servidor é o shell principal. Por isso toda
-# ferramenta extra vem atrás de `command -v`: sem ela, o rc ainda sobe, apenas
-# com menos recursos.
+# Vale no desktop (shell secundário) e no servidor (principal): toda ferramenta
+# extra fica atrás de `command -v`.
 
-# Shell não interativo não precisa de nada abaixo.
 [[ $- != *i* ]] && return
 
-# ── Histórico ─────────────────────────────────────────────────────────────────
 HISTCONTROL=ignoreboth:erasedups
 HISTSIZE=5000
 HISTFILESIZE=5000
 shopt -s histappend
 shopt -s checkwinsize
 
-# Grava e relê a cada prompt: assim dois panes do tmux enxergam o histórico um
-# do outro em vez de um sobrescrever o do outro ao sair.
+# Grava e relê a cada prompt para os panes do tmux compartilharem o histórico.
 PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND:-}"
 
-# ── Ambiente ──────────────────────────────────────────────────────────────────
 export EDITOR=nvim
 
-# O ~/.local/bin é onde o stow põe os scripts do pacote bin. O Debian só
-# adiciona pelo ~/.profile, que não roda em shell não-login.
+# O Debian só adiciona o ~/.local/bin pelo ~/.profile, que não roda em shell não-login.
 case ":$PATH:" in
     *":$HOME/.local/bin:"*) ;;
     *) PATH="$HOME/.local/bin:$PATH" ;;
@@ -33,13 +23,10 @@ export PATH
 
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# O lazygit não tem include: o config.yml versionado traz o comportamento e o
-# colors.yml vem do `theme set`. Igual ao que o .zshrc faz.
 if [[ -f ~/.config/lazygit/colors.yml ]]; then
     export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml,$HOME/.config/lazygit/colors.yml"
 fi
 
-# ── Aliases ───────────────────────────────────────────────────────────────────
 if command -v eza >/dev/null; then
     alias ls="eza --color=always --icons=auto"
     alias ll="eza -lAF --color=always --icons=auto"
@@ -59,9 +46,6 @@ alias gs="git status"
 alias gf="git fetch --all --prune"
 alias srv="source .venv/bin/activate"
 
-# ── Prompt ────────────────────────────────────────────────────────────────────
-# O starship é o mesmo do zsh, e o tema dele sai do `theme set`. Sem ele, o
-# PS1 abaixo faz o essencial: venv, caminho e estado do git.
 set_custom_prompt() {
     local RESET="\[\e[0m\]" BOLD="\[\e[1m\]" RED="\[\e[31m\]"
     local GREEN="\[\e[32m\]" YELLOW="\[\e[33m\]" BLUE="\[\e[34m\]" CYAN="\[\e[36m\]"
@@ -107,11 +91,9 @@ else
     PROMPT_COMMAND="set_custom_prompt; ${PROMPT_COMMAND:-}"
 fi
 
-# ── Ferramentas ───────────────────────────────────────────────────────────────
 command -v fzf >/dev/null && eval "$(fzf --bash)"
 command -v zoxide >/dev/null && eval "$(zoxide init --cmd cd bash)"
 
-# Mesmo bind do zsh: alt+ctrl+f abre o seletor de sessões do tmux.
 bind '"\e\C-f": "tmux-sessionizer\n"'
 
 if ! shopt -oq posix; then
@@ -122,5 +104,4 @@ if ! shopt -oq posix; then
     fi
 fi
 
-# Ajustes de uma máquina só. Não é versionado.
 [ -f ~/.bashrc.local ] && . ~/.bashrc.local

@@ -46,7 +46,6 @@ vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
             virtual_text = {
                 current_line = true,
             },
-            -- virtual_text = false,
             underline = true,
             update_in_insert = false,
             severity_sort = true,

@@ -1,15 +1,13 @@
 local gh = function(x) return "https://github.com/" .. x end
 
--- lua/theme.lua é gerado por `theme set`; sem ele, cai num padrão razoável.
+-- lua/theme.lua é gerado por `theme set`.
 local loaded, theme = pcall(require, "theme")
 if not loaded then
     theme = { name = "none", variant = "dark", colorscheme = "habamax", colors = {} }
 end
 
--- Vem do opacity no theme.sh, via lua/theme.lua.
 local transparent = theme.transparent == true
 
--- Evita erro caso um tema não defina alguma cor.
 local c = setmetatable(theme.colors, { __index = function() return "NONE" end })
 
 vim.opt.runtimepath:append(vim.fn.expand("~/plugins/luar"))
@@ -32,15 +30,8 @@ vim.api.nvim_set_hl(0, "RenderMarkdownBullet", { link = "Boolean" })
 
 vim.pack.add({ { src = gh("rose-pine/neovim"), name = "rose-pine" } })
 
--- O rose-pine tem paleta própria por variante e ignora o lua/theme.lua, então
--- sem isto o editor desenha num Dawn/Main e o resto da tela noutro. Dá para ver
--- no dawn: o `text` do plugin é #464261 e o daqui não, e a mesma palavra sai em
--- dois tons entre o buffer e a barra do tmux. A tabela é mesclada por cima da
--- paleta do plugin (variants[nome] = tbl_extend), então basta o que muda.
---
--- Os nomes à esquerda são slots do plugin, não semântica: `pine` é só o que o
--- colorscheme pinta de pine. Por isso o mapa segue os papéis da paleta e não os
--- nomes originais, que no dawn foram remexidos de propósito (ver theme.sh).
+-- O rose-pine ignora o lua/theme.lua e usa paleta própria; isto a sobrepõe para o
+-- editor combinar com o resto da tela. As chaves são slots do plugin, não papéis.
 local rose_pine_palette = {}
 if theme.colorscheme:match("^rose%-pine") then
     local variant = theme.colorscheme:match("^rose%-pine%-(.+)$") or "main"
@@ -71,10 +62,8 @@ require("rose-pine").setup({
         transparency = transparent,
     },
     highlight_groups = {
-        -- O fg vale para a linha inteira e apagaria o TelescopeMatching assim
-        -- que o item fosse selecionado. Precisa ser "none" explícito: o
-        -- highlight_groups do rose-pine mescla com o padrão dele, e omitir a
-        -- chave deixaria o fg original de pé.
+        -- "none" explícito: o rose-pine mescla com o padrão, e o fg original apagaria o
+        -- TelescopeMatching no item selecionado.
         TelescopeSelection = { fg = "none", bg = "highlight_med" },
         TelescopeSelectionCaret = { fg = "love", bg = "love" },
 
@@ -90,8 +79,7 @@ require("rose-pine").setup({
     },
 })
 
--- O luar não tem opção de transparência, então os fundos são limpos
--- depois que o colorscheme carrega, para os três se comportarem igual.
+-- O luar não tem opção de transparência.
 if transparent then
     vim.api.nvim_create_autocmd("ColorScheme", {
         callback = function()
@@ -102,7 +90,6 @@ if transparent then
     })
 end
 
--- O colorscheme é escolhido pelo tema ativo (nvim_colorscheme em theme.sh).
 vim.o.background = theme.variant
 
 if not pcall(vim.cmd.colorscheme, theme.colorscheme) then

@@ -1,16 +1,7 @@
 # ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
-#
-# O .tmux.conf versionado traz o comportamento; as cores saem daqui, por um
-# source-file. Antes do primeiro `theme set` este arquivo não existe, e o -q
-# do source-file deixa o tmux subir do mesmo jeito, só com as cores padrão.
-#
-# Hex, nunca nome ANSI: no perfil servidor não há ghostty nem alacritty para
-# receber a paleta do `theme set`, e o ANSI seria o do terminal de quem conectou.
-#
-# Os %if são pelas máquinas com tmux mais velho, onde opção inexistente vira erro
-# impresso a cada start. Dentro de um %if falso o tmux nem avalia a linha.
+# Hex, nunca nome ANSI: no servidor o ANSI seria o do terminal de quem conectou.
+# Os %if poupam erro em tmux mais velho.
 
-# ── Barra de status ───────────────────────────────────────────────────────────
 set -g status-style bg="{{surface}}",fg="{{text}}"
 
 set-window-option -g window-status-style fg="{{subtle}}"
@@ -19,20 +10,11 @@ set-window-option -g window-status-last-style fg="{{text}}"
 set-window-option -g window-status-activity-style fg="{{warning}}"
 set-window-option -g window-status-bell-style fg="{{error}}",bold
 
-# ── Mensagens ─────────────────────────────────────────────────────────────────
-# A de comando muda de cor para se distinguir do prompt normal, já que o
-# status-keys é vi.
-#
-# O fill= é necessário: sem ele a mensagem pinta apenas os caracteres que
-# escreve, e o resto da linha continua exibindo a barra de status. O efeito fica
-# evidente no prefixo numérico do copy mode, cujo texto é curto.
+# fill= para a mensagem cobrir a linha toda, e não só os caracteres escritos.
 set -g message-style bg="{{overlay}}",fg="{{warning}}",fill="{{overlay}}"
 set -g message-command-style bg="{{overlay}}",fg="{{info}}",fill="{{overlay}}"
 
-# ── Copy mode ─────────────────────────────────────────────────────────────────
-# O noattr vem do padrão do tmux: sem ele a seleção herda negrito e sublinhado
-# do texto que está por baixo. É atributo de estilo da 3.6, e antes dela não
-# havia essa herança para desligar.
+# noattr (3.6+): sem ele a seleção herda negrito e sublinhado do texto.
 %if "#{>=:#{version},3.6}"
 set-window-option -g mode-style noattr,bg="{{highlight_med}}",fg="{{text}}"
 %else
@@ -45,25 +27,16 @@ set-window-option -g copy-mode-current-match-style bg="{{accent}}",fg="{{base}}"
 set-window-option -g copy-mode-mark-style bg="{{highlight_high}}",fg="{{text}}"
 %endif
 
-# O [0/4] herda do mode-style, discreto de propósito por causa da seleção. Da
-# 3.6 em diante dá para separar os dois e deixar só ele chamando atenção.
+# Da 3.6 em diante o [0/4] se separa do mode-style.
 %if "#{>=:#{version},3.6}"
 set-window-option -g copy-mode-position-style bg="{{overlay}}",fg="{{warning}}"
 %endif
 
-# ── Painéis ───────────────────────────────────────────────────────────────────
 set-window-option -g pane-border-style fg="{{overlay}}"
 set-window-option -g pane-active-border-style "#{?pane_in_mode,fg={{warning}},#{?synchronize-panes,fg={{error}},fg={{accent}}}}"
 
-# ── Popups e menus ────────────────────────────────────────────────────────────
-# O popup é opaco de propósito. A opacidade é da janela do terminal, e o blur do
-# Hyprland é da janela inteira: não existe transparência por região. Com
-# bg=default o fundo do popup ficaria idêntico ao do painel que ele cobre, e a
-# camada só existiria pela borda.
-#
-# O fundo é base, e não uma camada acima: o popup ocupa quase a janela toda
-# (75% no lazygit) e clarear tudo isso pesa mais do que a elevação ganha. Quem
-# marca a camada é a borda em accent.
+# Opaco: a transparência é da janela inteira, e com bg=default o popup se
+# confundiria com o painel. A borda em accent marca a camada.
 %if "#{>=:#{version},3.3}"
 set -g popup-style bg="{{base}}",fg="{{text}}"
 set -g popup-border-style fg="{{accent}}",bg="{{base}}"
@@ -75,7 +48,6 @@ set -g menu-selected-style bg="{{overlay}}",fg="{{accent_alt}}",bold
 set -g menu-border-style fg="{{accent}}",bg="{{surface}}"
 %endif
 
-# ── Miudezas ──────────────────────────────────────────────────────────────────
 set-window-option -g clock-mode-colour "{{accent}}"
 set -g display-panes-colour "{{muted}}"
 set -g display-panes-active-colour "{{accent}}"

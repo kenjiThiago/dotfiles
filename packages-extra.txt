@@ -1,22 +1,6 @@
-# Pacotes extras da máquina de referência — NÃO são necessários para a
-# configuração deste repositório rodar.
-#
-# É o que sobrou do 'paru -Qeq' depois do packages.txt: sistema base, hardware,
-# toolchains, bancos e apps pessoais.
-#
-# As duas listas juntas não são mais o 'paru -Qeq' literal: pacotes que caíram
-# em desuso foram tirados de propósito (o grupo xorg — só o xorg-xwayland
-# importa, e ele está no packages.txt —, os pacotes '-debug', navegadores
-# extras e versões duplicadas de Python e JDK).
-#
-# Instalar com:  ./install.sh --extra
-#         ou:    paru -S --needed $(sed -e 's/#.*//' -e '/^\s*$/d' packages-extra.txt)
-#
-# Os marcados com "AUR" não estão nos repositórios oficiais.
+# Extras da máquina de referência, fora do necessário para a config (./install.sh --extra).
 
-# ── Sistema base e boot ───────────────────────────────────────────────────────
-# Já vêm do pacstrap numa instalação normal do Arch; ficam listados só para o
-# registro. Instalar de novo não faz nada (--needed).
+# Sistema base e boot
 base
 linux
 linux-headers
@@ -31,9 +15,8 @@ nano
 man-pages
 ntp
 
-# ── Hardware desta máquina ────────────────────────────────────────────────────
-# ATENÇÃO: revise antes de rodar em outro computador. Em CPU AMD o intel-ucode
-# instala microcode errado, e o nvidia-open-dkms não compila sem GPU NVIDIA.
+# Hardware desta máquina
+# Revise em outro computador: intel-ucode e nvidia-open-dkms dependem do hardware.
 intel-ucode
 nvidia-open-dkms
 nvidia-settings
@@ -45,27 +28,27 @@ sbctl                        # assinatura para Secure Boot
 sof-firmware
 xf86-video-vesa
 
-# ── Pacman / AUR ──────────────────────────────────────────────────────────────
+# Pacman / AUR
 pacman-contrib               # paccache, checkupdates, rankmirrors
 reflector
 downgrade                    # AUR
 
-# ── Bluetooth ─────────────────────────────────────────────────────────────────
+# Bluetooth
 bluez
 bluez-utils
 bluetui
 
-# ── Áudio ─────────────────────────────────────────────────────────────────────
+# Áudio
 alsa-utils
 noise-suppression-for-voice
 
-# ── Rede e segurança ──────────────────────────────────────────────────────────
+# Rede e segurança
 nmap
 ufw
 rsync
 sshfs
 
-# ── Linha de comando ──────────────────────────────────────────────────────────
+# Linha de comando
 bc
 entr
 inotify-tools
@@ -76,17 +59,17 @@ glow
 zip
 unrar
 
-# ── Git ───────────────────────────────────────────────────────────────────────
+# Git
 github-cli
 
-# ── Aparência ─────────────────────────────────────────────────────────────────
+# Aparência
 gnome-tweaks
 
-# ── Editores ──────────────────────────────────────────────────────────────────
+# Editores
 helix
 ctags
 
-# ── Toolchains e linguagens ───────────────────────────────────────────────────
+# Toolchains e linguagens
 gcc
 gcc-fortran
 gdb
@@ -101,13 +84,13 @@ r
 openblas
 unixodbc
 
-# ── Bancos de dados e containers ──────────────────────────────────────────────
+# Bancos de dados e containers
 postgresql
 postgresql-old-upgrade
 docker
 docker-compose
 
-# ── Documentos ────────────────────────────────────────────────────────────────
+# Documentos
 pandoc-bin                   # AUR
 typst
 tectonic
@@ -115,19 +98,19 @@ ghostscript
 libreoffice-fresh
 obsidian
 
-# ── Mídia ─────────────────────────────────────────────────────────────────────
+# Mídia
 mpv
 imv
 imagemagick
 obs-studio
 
-# ── Jogos e Wine ──────────────────────────────────────────────────────────────
+# Jogos e Wine
 steam
 goverlay
 wine-mono
 winetricks
 curseforge                   # AUR
 
-# ── Trabalho ──────────────────────────────────────────────────────────────────
+# Trabalho
 omnissa-horizon-client       # AUR
 

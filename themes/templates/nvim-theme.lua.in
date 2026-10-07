@@ -34,9 +34,7 @@ return {
         info       = "{{info}}",
     },
 
-    -- Papéis de sintaxe. A paleta acima diz o que cada cor é; isto diz o que
-    -- cada cor faz, e um tema pode discordar do mapeamento padrão. Quem
-    -- consome é o colorscheme luar; os demais trazem paleta própria.
+    -- Papéis de sintaxe, consumidos pelo luar.
     syn = {
         comment   = "{{syn_comment}}",
         string    = "{{syn_string}}",

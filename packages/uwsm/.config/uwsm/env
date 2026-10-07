@@ -1,16 +1,8 @@
-# O cursor sai do tema ativo, pelo uwsm/env-hyprland que o `theme set` gera e
-# o uwsm sourceia depois deste arquivo.
-# export HYPRCURSOR_THEME="BreezeX-RoséPine"
-# export HYPRCURSOR_SIZE=24
-
-# O decode de vídeo fica na iGPU: o compositor renderiza na Intel (a aquamarine
-# elege a card1 como primária), então o quadro já nasce na GPU que vai desenhá-lo
-# e a dGPU continua em runtime suspend. O backend iHD vem do intel-media-driver;
-# sem ele instalado, não há decode por hardware nenhum.
+# Decode de vídeo na iGPU, onde o compositor renderiza: a dGPU fica em runtime
+# suspend. O iHD vem do intel-media-driver.
 export LIBVA_DRIVER_NAME="iHD"
 
-# O OpenGL sob XWayland, ao contrário, vai para a dGPU. Sem esta linha e sem o
-# nvidia-prime não existe caminho até a RTX.
+# Já o OpenGL sob XWayland vai para a dGPU.
 export __GLX_VENDOR_LIBRARY_NAME="nvidia"
 
 export GTK_IM_MODULE="simple"

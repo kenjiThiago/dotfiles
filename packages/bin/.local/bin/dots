@@ -13,19 +13,9 @@
 #   --yes                       não pergunta antes de remover (só no migrate)
 #   --except a,b                linka todos menos esses (link/unlink/relink)
 #   --profile <nome>            usa outro perfil em vez do ativo
-#
-# O --except é o inverso de passar nomes: 'dots link' usa o perfil, 'dots link
-# nvim' usa só o nvim, e 'dots link --except nvim' usa o perfil menos ele. Os
-# nomes são validados: um erro de grafia falha em vez de linkar em silêncio.
-#
-# O perfil sai de ~/.local/state/dotfiles/profile, escrito pelo install.sh, e
-# lista em profiles/<nome> quais pacotes aquela máquina quer. Sem o arquivo, o
-# padrão é desktop; sem o profiles/<nome>, é tudo que existe em packages/.
-#
-# Todos os comandos usam --no-folding de propósito: assim ~/.config/waybar é
-# um diretório real com symlinks dentro, e não um symlink para o repositório.
-# É isso que permite ao `theme` escrever colors.css ao lado do style.css sem
-# gravar dentro do repositório.
+
+# --no-folding em tudo: ~/.config/<pacote> vira diretório real com symlinks dentro,
+# e o `theme` grava os arquivos gerados ao lado sem escrever no repositório.
 
 set -euo pipefail
 
@@ -60,8 +50,6 @@ current_profile() {
     printf 'desktop\n'
 }
 
-# Os pacotes de um perfil. Sem arquivo de perfil, é tudo — que é como o dots
-# se comportava antes de existir perfil nenhum.
 profile_packages() {
     local name=$1 file="$PROFILES_DIR/$1"
 
@@ -73,8 +61,7 @@ profile_packages() {
     sed -e 's/#.*//' -e 's/[[:space:]]//g' -e '/^$/d' "$file"
 }
 
-# Os pacotes do perfil menos os nomes passados. A comparação é de nome inteiro
-# de propósito: excluir 'nvim' não pode levar o 'nvim-plugins' junto.
+# Comparação por nome inteiro: excluir 'nvim' não leva o 'nvim-plugins' junto.
 except_packages() {
     local pkg name skip
     while IFS= read -r pkg; do
@@ -105,10 +92,7 @@ check_packages() {
     done
 }
 
-# Symlinks que apontam para dentro do repositório mas não resolvem mais.
-# É o que sobra ao trocar de layout: os links do stow antigo apontavam para
-# <repo>/config/..., caminho que deixou de existir, e o stow se recusa a
-# sobrescrever porque não reconhece como dele.
+# Symlinks quebrados para dentro do repo, sobra do layout antigo que o stow não sobrescreve.
 stale_links() {
     local link raw target
     while IFS= read -r link; do
@@ -123,9 +107,7 @@ stale_links() {
     )
 }
 
-# O --adopt do stow move o arquivo de ~ para dentro do pacote, sobrescrevendo
-# a versão do repositório, e só então linka. Serve para importar uma config que
-# já existe na máquina, o inverso de instalar uma já versionada.
+# O --adopt sobrescreve a versão do repositório com a que já existe em ~.
 cmd_adopt() {
     local packages=("$@")
     if [[ ${#packages[@]} -eq 0 ]]; then
@@ -184,9 +166,7 @@ cmd_migrate() {
     ok "removidos; agora rode: dots link"
 }
 
-# A conta é por arquivo, e não por pacote, porque é assim que o stow linka:
-# arquivo novo num pacote já linkado não ganha link sozinho, e sem o estado
-# parcial isso só aparece quando alguma coisa quebra por falta dele.
+# Por arquivo, não por pacote: arquivo novo num pacote já linkado não ganha link sozinho.
 cmd_status() {
     local pkg file target total faltando mostrar
     for pkg in $(all_packages); do
@@ -235,7 +215,7 @@ while [[ $# -gt 0 ]]; do
         --except=*)      IFS=',' read -ra names <<< "${1#*=}"; EXCEPT+=("${names[@]}") ;;
         --profile)       shift; PROFILE=${1:?--profile precisa de um nome} ;;
         --profile=*)     PROFILE=${1#*=} ;;
-        -h|--help)       sed -n '2,28p' "$self" | sed 's/^# \?//'; exit 0 ;;
+        -h|--help)       sed -n '2,/^$/{/^#/s/^# \?//p}' "$self"; exit 0 ;;
         *)               args+=("$1") ;;
     esac
     shift

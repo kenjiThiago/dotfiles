@@ -1,22 +1,6 @@
--- O ZR e o :restart guardam a sessão com mksession e a repõem no UIEnter da
--- instância nova, que sobe com o mesmo argv. Três atritos saem daí, e o mapa
--- deste arquivo existe para contorná-los:
---
--- 1. buffer do oil na sessão vira "enew | file oil://...", e um argv de
---    diretório (nvim .) já recriou esse nome antes de a sessão rodar: E95, e o
---    resto do arquivo de sessão não é lido, então o layout não volta;
--- 2. o buffer que o argv abre carrega em async. Quando a sessão troca a janela
---    dele por um arquivo antes de a carga terminar, o oil dispara doautocmd
---    BufReadPre/Post com o nome oil:// na janela que sobrou, e doautocmd vale
---    para o buffer atual: o arquivo herda filetype=oil e perde o treesitter;
--- 3. arquivo que a sessão abre não passa por detecção de filetype, que é
---    pulada dentro da cadeia de autocmd do UIEnter. O buffer fica sem filetype
---    e sem realce até um :e. Escapa só quem já veio carregado do argv.
---
--- A resposta é tirar o oil da sessão e reabri-lo por janela no comando que o
--- :restart roda depois de restaurar, descartar o buffer que veio do argv antes
--- de a sessão rodar (buffer inválido faz o callback do oil desistir) e refazer
--- a detecção de filetype fora da cadeia do UIEnter.
+-- O :restart repõe a sessão no UIEnter da instância nova, com o mesmo argv. O oil
+-- sai da sessão e é reaberto por janela depois (senão dá E95 com `nvim .` e o
+-- arquivo herda filetype=oil), e a detecção de filetype é refeita fora do UIEnter.
 
 local M = {}
 
@@ -45,8 +29,7 @@ function M.restaurar(janelas)
     end)
 end
 
--- Só o :restart sem bang repõe sessão; com bang o v:startreason é "restart!" e
--- o argv é tudo que a instância nova tem.
+-- Com bang (v:startreason "restart!") não há sessão para repor.
 if vim.v.startreason == "restart" then
     vim.api.nvim_create_autocmd("VimEnter", {
         once = true,
@@ -68,8 +51,7 @@ vim.keymap.set("n", "ZR", function()
         return
     end
 
-    -- Buffer modificado fica de fora: são renomeações pendentes do oil, e o
-    -- :restart sem bang é quem deve reclamar delas.
+    -- Buffer modificado fica de fora: o :restart sem bang é quem reclama dele.
     local janelas = {}
     for _, win in ipairs(vim.api.nvim_list_wins()) do
         local buf = vim.api.nvim_win_get_buf(win)

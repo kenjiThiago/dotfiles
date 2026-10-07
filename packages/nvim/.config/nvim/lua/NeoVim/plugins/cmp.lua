@@ -46,8 +46,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "BufNewFile" }, {
                             item.label
                         local is_multi_line = item_text:find("\n") ~= nil
 
-                        -- Aberto para cima, o menu mantém a direção até ser
-                        -- reaberto: daí guardar o id do contexto.
+                        -- Aberto para cima, o menu mantém a direção até ser reaberto.
                         if is_multi_line or vim.g.blink_cmp_upwards_ctx_id == ctx.id then
                             vim.g.blink_cmp_upwards_ctx_id = ctx.id
                             return { "n", "s" }

@@ -188,8 +188,6 @@ Column {
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 12
                                 font.weight: Font.Bold
-                                // Igual ao popup: uma linha até o mouse entrar,
-                                // inteiro no hover.
                                 wrapMode: Text.WordWrap
                                 maximumLineCount: entryMouse.containsMouse ? 5 : 1
                                 elide: Text.ElideRight
@@ -204,11 +202,8 @@ Column {
                                 anchors.top: parent.top
                             }
 
-                            // Na linha do título para não descer conforme o corpo
-                            // e os botões fazem o item crescer. Ancorados no topo
-                            // e não no centro porque o título cresce no hover: no
-                            // centro, o 󰅖 escorregava de sob o cursor e piscava
-                            // entre as duas cores do Behavior.
+                            // Ancorado no topo da linha do título, não no centro: o título cresce no hover e
+                            // o 󰅖 escorregaria de sob o cursor.
                             Text {
                                 id: dismissBtn
                                 text: "󰅖"
@@ -252,8 +247,7 @@ Column {
                             visible: text !== ""
                         }
 
-                        // Sem botões de ação aqui: o cliente que espera por elas
-                        // já saiu quando a notificação chega ao histórico.
+                        // Sem ações: o cliente que espera por elas já saiu quando a notificação chega aqui.
                     }
                 }
             }

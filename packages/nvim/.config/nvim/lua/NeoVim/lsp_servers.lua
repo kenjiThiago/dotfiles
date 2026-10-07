@@ -1,9 +1,6 @@
--- Definições que os dois perfis dividem. O ruff_base existe porque o servidor
--- não tem lspconfig para preencher o básico.
---
--- A sobrescrita vai por vim.lsp.config, e não por um lsp/ruff.lua: entre dois
--- arquivos de mesmo nome no runtimepath vence o encontrado por último, e o do
--- nvim-lspconfig vem depois deste repositório.
+-- Compartilhado pelos dois perfis; o ruff_base supre a falta do lspconfig no servidor.
+-- Sobrescrito via vim.lsp.config, e não lsp/ruff.lua, porque o arquivo do
+-- nvim-lspconfig viria depois no runtimepath e venceria.
 
 local M = {}
 

@@ -1,12 +1,4 @@
--- lua/luar/palette.lua
---
--- As cores vêm do lua/theme.lua gerado por `theme set`, o mesmo arquivo que o
--- resto da config consome. As camadas de fundo e o texto saem da paleta
--- semântica; as tintas de sintaxe saem dos papéis `syn_*`, porque a
--- distribuição do luar não é a padrão e cada tema precisa declarar a sua.
---
--- O fallback é o Rosé Pine Moon, para o colorscheme continuar carregando fora
--- do sistema de temas (nvim -u NONE, servidor sem `theme set` rodado).
+-- Cores do lua/theme.lua gerado por `theme set`; fora dele, Rosé Pine Moon.
 
 local M = {}
 
@@ -80,8 +72,7 @@ M.colors = {
     success = pick(pal, "success"),
 }
 
--- `syn_*_style` chega como a string do theme.sh ("bold", "italic", "" para
--- nenhum). Vira a tabela de atributos que o nvim_set_hl espera.
+-- `syn_*_style` ("bold", "italic" ou "") vira a tabela do nvim_set_hl.
 function M.style(role)
     local out = {}
     local spec = syn_style[role] or fallback_style[role] or ""

@@ -38,8 +38,6 @@ Rectangle {
     border.color: card.urgencyColor.a > 0 ? card.urgencyColor : Theme.overlay
     border.width: 1
 
-    // ── Contagem para a expiração ─────────────────────────────────────────────
-
     // O Timer do QML não pausa: religá-lo recomeça o intervalo inteiro, então o
     // restante é guardado à mão para o hover segurar o card.
     property double remainingMs: card.timeoutMs
@@ -61,8 +59,7 @@ Rectangle {
         expireTimer.restart();
     }
 
-    // O conteúdo trocou embaixo do card: o prazo recomeça do zero, e continua
-    // parado se o ponteiro estiver em cima.
+    // O conteúdo trocou: o prazo recomeça, e continua parado se o ponteiro estiver em cima.
     function refreshCountdown(): void {
         if (card.expiring)
             return;
@@ -183,9 +180,7 @@ Rectangle {
                 font.family: "Hack Nerd Font"
                 font.pixelSize: 13
                 font.weight: Font.Bold
-                // Título longo fica numa linha só até o mouse entrar, e aí abre
-                // inteiro. O hover já segura a contagem do timeout, então o
-                // card não some no meio da leitura.
+                // Título numa linha até o mouse entrar; o hover já segura o timeout.
                 wrapMode: Text.WordWrap
                 maximumLineCount: hoverArea.containsMouse ? 5 : 1
                 elide: Text.ElideRight

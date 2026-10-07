@@ -37,12 +37,6 @@ require("telescope").setup({
     },
     defaults = {
         file_ignore_patterns = { "node_modules", "%.git", ".venv" },
-        -- mappings = {
-        --     n = {
-        --         ["j"] = "move_selection_previous",
-        --         ["k"] = "move_selection_next",
-        --     }
-        -- }
     },
     extensions = {
         fzf = {}

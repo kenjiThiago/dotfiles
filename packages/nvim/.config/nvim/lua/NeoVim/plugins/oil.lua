@@ -44,10 +44,6 @@ require("oil").setup({
     view_options = {
         show_hidden = true,
     },
-    win_options = {
-        -- number = false,
-        -- relativenumber = false,
-    },
     columns = {
         { "permissions", highlight = "Keyword" },
         { "size",        highlight = "Define" },

@@ -1,14 +1,8 @@
 /* ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
  * Fonte: themes/templates/gtk3-colors.css.in
  *
- * Folha de estilo do usuário, lida depois do tema e com prioridade maior.
- *
- * O Adwaita do GTK3 resolve as cores para literal ao compilar, então só 3% dele
- * responde a @define-color: daí as regras abaixo, que cobrem as superfícies
- * que dominam a tela. O resto continua no cinza do Adwaita.
- *
- * Papéis como no qt6ct-colors.conf.in: surface na janela, base no conteúdo,
- * overlay no que se destaca da janela sem virar conteúdo.
+ * O Adwaita do GTK3 resolve as cores ao compilar e só 3% dele responde a
+ * @define-color, daí as regras que cobrem as superfícies principais.
  */
 
 @define-color theme_bg_color {{surface}};
@@ -39,16 +33,12 @@
 @define-color selected_bg_color {{accent}};
 @define-color selected_fg_color {{base}};
 
-/* ── Janela ─────────────────────────────────────────────────────────────── */
-/* Só as superfícies de topo. Contêiner genérico (box, grid, stack) fica de
- * fora de propósito: eles também existem dentro do headerbar e do popover, e
- * pintariam por cima da cor daquelas superfícies. */
+/* Contêineres genéricos ficam de fora: pintariam por cima do headerbar e do popover. */
 window, dialog, messagedialog, assistant, .background, .solid-csd {
     background-color: {{surface}};
     color: {{text}};
 }
 
-/* ── Barra de título ────────────────────────────────────────────────────── */
 headerbar, .titlebar, headerbar:backdrop, .titlebar:backdrop, .csd headerbar {
     background-image: none;
     background-color: {{overlay}};
@@ -60,7 +50,6 @@ headerbar, .titlebar, headerbar:backdrop, .titlebar:backdrop, .csd headerbar {
 headerbar .title, headerbar .subtitle { color: {{text}}; }
 headerbar:backdrop, .titlebar:backdrop { color: {{subtle}}; }
 
-/* ── Botões ─────────────────────────────────────────────────────────────── */
 button, button.titlebutton, headerbar button, .linked > button {
     background-image: none;
     background-color: {{overlay}};
@@ -84,7 +73,6 @@ button.flat, button.flat:backdrop { background-image: none; background-color: tr
 button.suggested-action { background-color: {{accent}}; color: {{base}}; border-color: {{accent}}; }
 button.destructive-action { background-color: {{error}}; color: {{base}}; border-color: {{error}}; }
 
-/* ── Conteúdo: campos, listas, árvores ──────────────────────────────────── */
 entry, spinbutton, searchbar entry, textview, textview text,
 treeview.view, .view, iconview, list, listbox, flowbox, columnview, gridview {
     background-image: none;
@@ -96,7 +84,6 @@ entry:focus, entry:focus-within { border-color: {{accent}}; }
 entry:disabled, textview:disabled { background-color: {{surface}}; color: {{muted}}; }
 treeview.view:hover, list row:hover, listbox row:hover { background-color: {{highlight_low}}; }
 
-/* ── Seleção ────────────────────────────────────────────────────────────── */
 *:selected, :selected, selection,
 treeview.view:selected, list row:selected, listbox row:selected,
 entry selection, textview text selection, label selection {
@@ -104,7 +91,6 @@ entry selection, textview text selection, label selection {
     color: {{base}};
 }
 
-/* ── Menus e popovers ───────────────────────────────────────────────────── */
 popover, popover.background, popover > contents, menu, .menu, .context-menu,
 combobox window, .popup {
     background-color: {{overlay}};
@@ -117,17 +103,14 @@ menuitem:hover, .menuitem:hover, modelbutton:hover {
 }
 separator, menu separator { background-color: {{highlight_med}}; color: {{highlight_med}}; }
 
-/* ── Abas ───────────────────────────────────────────────────────────────── */
 notebook > header { background-color: {{surface}}; border-color: {{highlight_med}}; }
 notebook > header > tabs > tab { background-color: transparent; color: {{muted}}; }
 notebook > header > tabs > tab:checked { color: {{text}}; box-shadow: inset 0 -3px {{accent}}; }
 
-/* ── Barras de rolagem ──────────────────────────────────────────────────── */
 scrollbar { background-color: {{surface}}; border-color: {{highlight_low}}; }
 scrollbar slider { background-color: {{muted}}; }
 scrollbar slider:hover { background-color: {{subtle}}; }
 
-/* ── Controles com tinta de destaque ────────────────────────────────────── */
 switch:checked, check:checked, radio:checked,
 checkbutton check:checked, radiobutton radio:checked,
 progressbar progress, levelbar block.filled, scale highlight, scale fill {
@@ -139,7 +122,6 @@ progressbar progress, levelbar block.filled, scale highlight, scale fill {
 scale slider { background-color: {{text}}; border-color: {{highlight_high}}; }
 progressbar trough, scale trough, levelbar trough { background-color: {{highlight_low}}; }
 
-/* ── Barra lateral e barra de status ────────────────────────────────────── */
 .sidebar, placessidebar, stacksidebar, .sidebar list {
     background-color: {{overlay}};
     color: {{text}};
@@ -150,9 +132,7 @@ actionbar, searchbar, toolbar, .toolbar, statusbar {
     border-color: {{highlight_med}};
 }
 
-/* ── Dica de contexto ───────────────────────────────────────────────────── */
-/* O Adwaita fixa preto 80% com texto branco, sem cor nomeada, então a regra
- * inteira precisa ser reescrita para não destoar do Qt (ToolTipBase). */
+/* O Adwaita fixa a dica em preto 80%, sem cor nomeada. */
 tooltip, tooltip.background {
     background-color: {{overlay}};
     color: {{text}};
@@ -160,13 +140,10 @@ tooltip, tooltip.background {
 }
 tooltip * { background-color: transparent; color: {{text}}; }
 
-/* ── Links ──────────────────────────────────────────────────────────────── */
-/* Mesma razão da dica: o Adwaita usa azul literal. Os valores são os papéis
- * Link e LinkVisited do Qt, para as duas pilhas caírem na mesma cor. */
+/* O Adwaita usa azul literal; os valores seguem Link e LinkVisited do Qt. */
 *:link, button.link, label link { color: {{info}}; }
 *:visited, button.link:visited, label link:visited { color: {{accent_alt}}; }
 
-/* ── Barras de mensagem ─────────────────────────────────────────────────── */
 infobar.info > revealer > box { background-color: {{info}}; color: {{base}}; }
 infobar.warning > revealer > box { background-color: {{warning}}; color: {{base}}; }
 infobar.error > revealer > box { background-color: {{error}}; color: {{base}}; }

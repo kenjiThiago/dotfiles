@@ -43,7 +43,6 @@ describe("present.parse_slides", function()
             "```",
         })
 
-        -- Should have only on slide
         eq(1, #result.slides)
 
         local slide = result.slides[1]

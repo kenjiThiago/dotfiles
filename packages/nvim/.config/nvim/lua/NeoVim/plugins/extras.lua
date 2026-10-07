@@ -30,7 +30,6 @@ vim.keymap.set("n", "<leader>zZ", function()
             },
         },
         window = {
-            -- width = 80,
             options = {
                 number = false,
                 relativenumber = false,

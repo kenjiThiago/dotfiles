@@ -1,24 +1,13 @@
-# Pacotes que esta configuração precisa (Arch Linux, instalados com paru).
-#
-# Uma linha por pacote. Comentários com '#'. Linhas em branco são ignoradas.
-# Aqui está só o que algum arquivo do repositório realmente chama: config,
-# script de packages/bin, keybind do Hyprland, widget do quickshell ou tema.
-# O resto do que está instalado na máquina de referência vive em
-# packages-extra.txt (apps, toolchains, hardware) — veja o --extra
-# do install.sh.
-#
-# Os marcados com "AUR" não estão nos repositórios oficiais.
-#
-# Pacotes que entram sozinhos como dependência (wireplumber, polkit, glib2,
-# python, nodejs…) não são listados de propósito: o paru resolve.
+# Só o que algum arquivo do repositório chama; o resto vai no packages-extra.txt.
+# Dependências que o paru resolve sozinho não entram.
 
-# ── Base ──────────────────────────────────────────────────────────────────────
+# Base
 git                          # install.sh, tmux-sessionizer
 stow                         # dots link/migrate
 base-devel                   # makepkg, para compilar do AUR
 paru                         # AUR (o install.sh compila sozinho se faltar)
 
-# ── Hyprland e sessão ─────────────────────────────────────────────────────────
+# Hyprland e sessão
 hyprland
 hyprpaper                    # exec-once + troca de wallpaper no rofi-script
 hypridle
@@ -31,16 +20,16 @@ xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk       # publica o org.freedesktop.appearance que o Zen lê
 xorg-xwayland                # apps X sob o Hyprland
 
-# ── Barra / shell gráfico ─────────────────────────────────────────────────────
+# Barra / shell gráfico
 quickshell                   # AUR — 'qs ipc call bar cycle'
 waybar                       # fallback desligado: a barra ativa é o quickshell
 libnotify                    # notify-send no window-info e rofi-script
 
-# ── Menu ──────────────────────────────────────────────────────────────────────
+# Menu
 rofi
 rofimoji
 
-# ── Screenshot / clipboard / input ────────────────────────────────────────────
+# Screenshot / clipboard / input
 grim                         # rofi-script --screenshot, printAndEdit
 slurp
 satty
@@ -50,7 +39,7 @@ wev
 keyd
 brightnessctl
 
-# ── Aparência ─────────────────────────────────────────────────────────────────
+# Aparência
 gnome-themes-extra           # temas GTK que o 'theme' aplica via gsettings
 nwg-look
 qt5-quickcontrols2
@@ -58,7 +47,7 @@ qt6ct
 breeze-icons                 # base do tema de ícones que o 'theme' recolore
 rose-pine-cursor             # AUR
 
-# ── Fontes ────────────────────────────────────────────────────────────────────
+# Fontes
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
@@ -66,11 +55,11 @@ ttf-dejavu
 otf-font-awesome             # ícones do waybar e do quickshell
 woff2-font-awesome
 
-# ── Terminal ──────────────────────────────────────────────────────────────────
+# Terminal
 ghostty                      # terminal dos on-click do quickshell
 alacritty                    # config e tema próprios em packages/alacritty
 
-# ── Shell e utilitários de linha de comando ───────────────────────────────────
+# Shell e utilitários de linha de comando
 zsh
 starship
 nvm
@@ -89,30 +78,30 @@ fastfetch
 btop                         # on-click do quickshell
 unzip
 
-# ── Git ───────────────────────────────────────────────────────────────────────
+# Git
 lazygit                      # tmux-lazygit
 
-# ── Editor ────────────────────────────────────────────────────────────────────
+# Editor
 neovim
 tree-sitter-cli
 lua51                        # dependência do luarocks
 luarocks
 
-# ── Áudio ─────────────────────────────────────────────────────────────────────
+# Áudio
 pipewire
 pipewire-pulse               # sink padrão que o quickshell controla
 playerctl                    # play-pause do XF86AudioPlay, no keybinds.lua
 wiremix                      # on-click do quickshell
 
-# ── Rede ──────────────────────────────────────────────────────────────────────
+# Rede
 networkmanager               # habilitado pelo install.sh
 network-manager-applet       # ícone na tray do quickshell
 nm-connection-editor         # aberto pelo rofi-script
 
-# ── Energia ───────────────────────────────────────────────────────────────────
+# Energia
 power-profiles-daemon        # perfil de energia do quickshell, habilitado pelo install.sh
 
-# ── Aplicativos usados pelas configs ──────────────────────────────────────────
+# Aplicativos usados pelas configs
 zen-browser-bin              # AUR — keybind e exec-once
 zathura-pdf-mupdf            # puxa o zathura, que tem config em packages/
 xdg-utils                    # xdg-open, usado pelo gx do oil e do yazi

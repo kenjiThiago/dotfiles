@@ -10,7 +10,6 @@ import "."
 Item {
     id: sys
 
-    // ── BATERIA E ENERGIA ─────────────────────────────────────────────────────
     property var device: UPower.displayDevice
 
     property bool isValid: device !== null && device.ready
@@ -79,7 +78,6 @@ Item {
         }
     }
 
-    // ── ÁUDIO E WIREMIX ───────────────────────────────────────────────────────
     PwObjectTracker {
         objects: [Pipewire.defaultAudioSink, Pipewire.defaultAudioSource]
     }
@@ -100,9 +98,7 @@ Item {
             sink.audio.muted = !sink.audio.muted;
     }
 
-    // Quem escreve o volume é o wpctl, pelos atalhos do keybinds.lua, então aqui
-    // só se observa o Pipewire. Sai o mesmo sinal para o atalho e para o slider
-    // do control center, já que os dois terminam numa mudança do sink.
+    // O volume é escrito pelo wpctl (keybinds.lua); aqui só se observa o Pipewire.
     signal volumeOsdRequested
 
     // O sink do Pipewire liga depois do shell, e ligar já mexe no volumePct e no
@@ -137,7 +133,6 @@ Item {
         wiremixCmd.running = true;
     }
 
-    // ── HARDWARE (CPU/RAM/TEMP) ───────────────────────────────────────────────
     property int cpuPct: 0
     property int ramPct: 0
     property int tempC: 0
@@ -215,22 +210,17 @@ Item {
         btopCmd.running = true;
     }
 
-    // ── BRILHO E OSD ──────────────────────────────────────────────────────────
     property real currentBrightness: -1
     property string brightnessPath: ""
     property int brightnessMax: 0
     property int pendingBrightness: -1
     signal brightnessOsdRequested
 
-    // Piso do que este shell escreve: em 0 o backlight apaga de vez, e voltar de
-    // lá é acertar o atalho às cegas. Vale para o slider e para a roda também,
-    // que passam pelo mesmo setBrightness. O que vem de fora não é clampeado: o
-    // hypridle escurece de propósito e o applyBrightness tem que dizer a verdade.
+    // Piso do que este shell escreve: em 0 o backlight apaga de vez. O que vem de
+    // fora, como o hypridle, não é clampeado.
     readonly property int brightnessMin: 5
 
-    // Quem mexe no brilho é este shell, pelos atalhos do keybinds.lua. Antes um
-    // Timer relia o sysfs a 10Hz para descobrir a mudança, e isso sozinho era
-    // quatro quintos do CPU em repouso do processo.
+    // Sem poll do sysfs: a 10Hz ele custava quatro quintos do CPU em repouso.
     IpcHandler {
         target: "brightness"
 
@@ -248,13 +238,12 @@ Item {
             return;
 
         sys.setBrightness(sys.currentBrightness + delta);
-        // Fora do applyBrightness porque o setBrightness não passa por lá, e
-        // porque nos extremos o valor não muda mas o OSD ainda tem que aparecer.
+        // Aqui porque o setBrightness não passa pelo applyBrightness, e nos extremos o
+        // valor não muda mas o OSD ainda tem que aparecer.
         sys.brightnessOsdRequested();
     }
 
-    // Para o que muda o brilho por fora, como o hypridle. Sem poll, quem chama é
-    // o control center ao abrir.
+    // Para o que muda o brilho por fora, como o hypridle; chamado ao abrir o control center.
     function refreshBrightness(): void {
         if (sys.brightnessBusy)
             return;
@@ -329,8 +318,7 @@ Item {
         interval: 400
     }
 
-    // Um brightnessctl de cada vez: com o processo anterior ainda vivo, atribuir
-    // running = true de novo não faz nada e a escrita se perde.
+    // Um processo de cada vez: com o anterior vivo, running = true não faz nada.
     function flushBrightness() {
         if (sys.pendingBrightness < 0)
             return;

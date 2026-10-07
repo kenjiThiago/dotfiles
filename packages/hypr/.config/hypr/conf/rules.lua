@@ -111,16 +111,8 @@ hl.window_rule({
     stay_focused = true,
 })
 
--- Jogos do Steam sob XWayland, que entram com a classe steam_app_<appid>. O
--- no_blur dispensa o compositor de trabalho que a janela nunca aproveita: em
--- tela cheia o direct scanout já pula a composição, e em borderless os 3 passes
--- de blur do appearance.lua rodariam a 144Hz na mesma iGPU que já copia o
--- quadro vindo da dGPU.
---
--- O immediate é o que exige atenção: só tem efeito porque o allow_tearing ficou
--- ligado no appearance.lua, e é o motivo de ele estar ligado. Vale só para as
--- janelas casadas aqui, e o preço é a linha de corte visível quando a imagem
--- muda rápido. Para desistir do tearing sem mexer no resto, tire esta linha.
+-- Jogos do Steam (XWayland). O immediate depende do allow_tearing do appearance.lua,
+-- que só está ligado por causa dele; para desistir do tearing, tire essa linha.
 hl.window_rule({
     name  = "steam_game_window",
     match = { class = "^steam_app_[0-9]+$" },
@@ -129,13 +121,7 @@ hl.window_rule({
     no_anim   = true,
     immediate = true,
 
-    -- Gamepad não passa pelo compositor: o jogo lê o evdev direto, e para o
-    -- protocolo de idle do Wayland você está parado. Sem isto o hypridle
-    -- escurece a tela em 5min e tranca a sessão em 10, no meio da partida.
-    -- O modo é focus e não always para o jogo em segundo plano não impedir a
-    -- máquina de dormir.
+    -- O gamepad não conta como atividade para o Wayland: sem isto o hypridle tranca a
+    -- sessão no meio da partida. focus, e não always, para não impedir o sleep.
     idle_inhibit = "focus",
 })
-
--- workspace=1, monitor:eDP-1, persistent:true, default:true
--- workspace=2, monitor:HDMI-A-1, persistent:true, default:true

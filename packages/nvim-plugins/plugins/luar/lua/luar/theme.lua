@@ -1,10 +1,5 @@
--- lua/luar/theme.lua
---
--- Colorscheme próprio. A distribuição de papéis vem do gruber-darker: poucas
--- cores com função, Identifier e Operator sem tinta, Type ao lado do
--- comentário. As tintas vêm do tema ativo, pelo lua/theme.lua, então isto
--- funciona sobre qualquer paleta que declare os papéis `syn_*`. Não é derivado
--- de nenhum dos dois, e não há upstream de onde atualizar.
+-- Colorscheme próprio, com a distribuição de papéis do gruber-darker. As tintas
+-- vêm dos papéis `syn_*` do tema ativo (lua/theme.lua).
 local luar = require("luar.palette")
 local palette = luar.colors
 
@@ -18,8 +13,7 @@ function M.setup()
     vim.o.termguicolors = true
     vim.g.colors_name = "luar"
 
-    -- Os papéis que o theme.sh pode estilizar (bold/italic) vêm de lá; os
-    -- demais grupos trazem o atributo escrito.
+    -- Os papéis estilizáveis no theme.sh trazem o atributo de lá.
     local function styled(color, role)
         local hl = luar.style(role)
         hl.fg = color
@@ -27,9 +21,6 @@ function M.setup()
     end
 
     local groups = {
-        -- ==========================================
-        -- UI do Editor
-        -- ==========================================
         Normal = { fg = palette.text, bg = palette.base },
         NormalFloat = { fg = palette.text, bg = palette.surface },
         NormalNC = { fg = palette.text, bg = palette.base },
@@ -75,39 +66,29 @@ function M.setup()
         FloatTitle = { fg = palette.keyword, bg = palette.surface, bold = true },
         YankHighlight = { fg = palette.base, bg = palette.keyword },
 
-        -- Spell Checking Nativo
         SpellBad = { sp = palette.error, undercurl = true },
         SpellCap = { sp = palette.warning, undercurl = true },
         SpellLocal = { sp = palette.func, undercurl = true },
         SpellRare = { sp = palette.constant, undercurl = true },
 
-        -- Diff Nativo
         DiffAdd = { fg = palette.success, bg = palette.overlay },
         DiffChange = { fg = palette.warning, bg = palette.overlay },
         DiffDelete = { fg = palette.error, bg = palette.overlay },
         DiffText = { fg = palette.func, bg = palette.highlight_med },
-        -- Trecho acrescentado dentro de uma linha alterada, sem correspondente
-        -- do outro lado. O padrão liga ao DiffText e os dois somem um no outro;
-        -- a cor vem do DiffAdd, porque o papel é o mesmo em escala de trecho.
-        -- Passou a aparecer sozinho: o 'diffopt' do 0.12 já traz inline:char.
+        -- Trecho inline sem correspondente (inline:char, padrão do 0.12): por padrão
+        -- liga ao DiffText e os dois se confundem.
         DiffTextAdd = { fg = palette.success, bg = palette.highlight_med },
 
-        -- O syntax/diff.vim liga diffAdded, diffChanged e diffRemoved a estes
-        -- três, e é ele que pinta buffers de patch e o commit --verbose. Sem
-        -- defini-los sobra o padrão do nvim, em pasteis fora da paleta.
+        -- O syntax/diff.vim liga diffAdded/Changed/Removed a estes; sem eles sobram os
+        -- pastéis padrão do nvim.
         Added = { fg = palette.success },
         Changed = { fg = palette.warning },
         Removed = { fg = palette.error },
 
         TrailingWhitespace = { bg = palette.keyword },
 
-        -- ==========================================
-        -- Sintaxe Nativa (Prioridade)
-        -- ==========================================
         Comment = styled(palette.comment, "comment"),
-        -- Ponto de queda de meia sintaxe legada (gitcommitFile, diffOnly,
-        -- gitconfigDelim...). Sem tree-sitter é ele que responde, então não
-        -- pode ficar no padrão do nvim.
+        -- Queda de meia sintaxe legada (gitcommitFile, diffOnly...) quando não há tree-sitter.
         Constant = { fg = palette.constant },
         String = { fg = palette.string },
         Character = { fg = palette.string },
@@ -139,14 +120,12 @@ function M.setup()
         Error = { fg = palette.error, bold = true },
         Todo = { fg = palette.base, bg = palette.keyword, bold = true },
 
-        -- Sintaxe Nativa Específica: HTML
         htmlTag = { fg = palette.constant },
         htmlEndTag = { fg = palette.constant },
         htmlTagName = { fg = palette.keyword },
         htmlArg = { fg = palette.func },
 
-        -- O markdown legado liga markdownH1..H6 aqui, e o padrão manda os seis
-        -- para Title, o que achata a hierarquia. Mesmas cores do @markup.heading.
+        -- O padrão manda markdownH1..H6 para Title e achata a hierarquia.
         htmlH1 = { fg = palette.keyword, bold = true },
         htmlH2 = { fg = palette.func, bold = true },
         htmlH3 = { fg = palette.constant, bold = true },
@@ -154,7 +133,6 @@ function M.setup()
         htmlH5 = { fg = palette.success, bold = true },
         htmlH6 = { fg = palette.comment, bold = true },
 
-        -- Sintaxe Nativa Específica: Markdown
         markdownHeadingDelimiter = { fg = palette.comment },
         markdownRule = { fg = palette.comment, bold = true },
         markdownCode = { fg = palette.string },
@@ -162,7 +140,6 @@ function M.setup()
         markdownCodeDelimiter = { fg = palette.comment },
         markdownLinkText = { fg = palette.func, underline = true },
 
-        -- Sintaxe Nativa Específica: YAML
         yamlKey = { fg = palette.constant, bold = true },
         yamlBlockMappingKey = { fg = palette.constant, bold = true },
         yamlString = { link = "String" },
@@ -174,7 +151,6 @@ function M.setup()
         yamlDocumentStart = { fg = palette.comment, bold = true },
         yamlDocumentEnd = { fg = palette.comment, bold = true },
 
-        -- Sintaxe Nativa Específica: OWL / XML (Web Ontology Language / RDF)
         xmlTag = { fg = palette.constant },
         xmlEndTag = { fg = palette.constant },
         xmlTagName = { fg = palette.keyword },
@@ -186,7 +162,6 @@ function M.setup()
         owlProperty = { fg = palette.func },
         owlRestriction = { fg = palette.keyword },
 
-        -- Sintaxe Nativa Específica: CSV / Rainbow
         csvCol0 = { fg = palette.text },
         csvCol1 = { fg = palette.keyword },
         csvCol2 = { fg = palette.func },
@@ -217,9 +192,6 @@ function M.setup()
         rainbow8 = { link = "csvCol8" },
         rainbow9 = { link = "csvCol9" },
 
-        -- ==========================================
-        -- Tree-Sitter
-        -- ==========================================
         ["@variable"] = { fg = palette.variable },
         ["@variable.builtin"] = { fg = palette.variable },
         ["@variable.parameter"] = styled(palette.parameter, "parameter"),
@@ -261,7 +233,6 @@ function M.setup()
         ["@comment.todo"] = { link = "Todo" },
         ["@property.yaml"] = { link = "@property" },
 
-        -- Tree-Sitter: Tags (Usado por XML, HTML, e formatos OWL baseados em RDF)
         ["@tag"] = { fg = palette.tag },
         ["@tag.builtin"] = { fg = palette.tag },
         ["@tag.attribute"] = styled(palette.attribute, "attribute"),
@@ -281,9 +252,7 @@ function M.setup()
         ["@markup.heading.5.marker"] = { fg = palette.success, bold = true },
         ["@markup.heading.6.marker"] = { fg = palette.comment, bold = true },
 
-        -- Fora dos títulos o padrão do @markup é só atributo, sem cor, então o
-        -- mesmo markdown sai mais chapado com tree-sitter do que sem. Este
-        -- bloco é o espelho do markdown da sintaxe nativa, acima.
+        -- Espelho do markdown nativo: sem isto o tree-sitter sai mais chapado.
         ["@markup.raw"] = { fg = palette.string },
         ["@markup.raw.block"] = { fg = palette.string },
         ["@markup.quote"] = { fg = palette.comment },
@@ -293,10 +262,6 @@ function M.setup()
         ["@markup.link.url"] = { fg = palette.constant, underline = true },
         ["@string.special.url"] = { fg = palette.constant, underline = true },
 
-        -- ==========================================
-        -- Plugins
-        -- ==========================================
-        -- Markdown Plugins
         RenderMarkdownH1bg = { fg = palette.keyword, bg = palette.none, bold = true },
         RenderMarkdownH2bg = { fg = palette.func, bg = palette.none, bold = true },
         RenderMarkdownH3bg = { fg = palette.constant, bg = palette.none, bold = true },
@@ -313,7 +278,6 @@ function M.setup()
         Headline5 = { fg = palette.success, bg = palette.none, bold = true },
         Headline6 = { fg = palette.comment, bg = palette.none, bold = true },
 
-        -- LSP & Diagnostics
         DiagnosticError = { fg = palette.error },
         DiagnosticWarn = { fg = palette.warning },
         DiagnosticInfo = { fg = palette.func },
@@ -328,14 +292,8 @@ function M.setup()
         DiagnosticVirtualTextInfo = { fg = palette.func, bg = palette.surface },
         DiagnosticVirtualTextHint = { fg = palette.constant, bg = palette.surface },
 
-        -- Git Commit
-        --
-        -- Espelho da queries/gitcommit/highlights.scm do nvim-treesitter, para
-        -- o mesmo buffer sair igual com e sem parser. Os links são de propósito:
-        -- deixam o pareamento com a captura explícito, e mudar a captura move
-        -- os dois lados juntos. O prefixo de conventional commit, que a
-        -- sintaxe nativa não separa do resumo, vem do after/syntax do pacote
-        -- nvim, porque exige um syn match e não só cor.
+        -- Espelho da query gitcommit do nvim-treesitter, para o buffer sair igual com e
+        -- sem parser.
         gitcommitSummary = { link = "@markup.heading" },
         gitcommitHeader = { link = "@markup.heading" },
         gitcommitBranch = { link = "@markup.link" },
@@ -348,9 +306,7 @@ function M.setup()
         gitcommitUntrackedFile = { link = "@string.special.path" },
         gitcommitUnmergedFile = { link = "@string.special.path" },
         gitcommitArrow = { link = "@punctuation.delimiter" },
-        -- Os dois sem contraparte na query: o tree-sitter não marca estouro da
-        -- coluna 50 nem texto na linha 2, que o git espera vazia. O fg = bg que
-        -- havia no Blank fazia o texto sumir.
+        -- Sem contraparte na query: estouro da coluna 50 e texto na linha 2.
         gitcommitOverflow = { fg = palette.base, bg = palette.error },
         gitcommitBlank = { fg = palette.error },
 
@@ -358,7 +314,6 @@ function M.setup()
         GitSignsChange = { fg = palette.warning },
         GitSignsDelete = { fg = palette.error },
 
-        -- Telescope
         TelescopeNormal = { fg = palette.text, bg = palette.base },
         TelescopePromptNormal = { fg = palette.text, bg = palette.base },
         TelescopeBorder = { fg = palette.highlight_med, bg = palette.base },
@@ -369,14 +324,11 @@ function M.setup()
         TelescopeResultsTitle = { fg = palette.base, bg = palette.comment, bold = true },
         TelescopePreviewTitle = { fg = palette.base, bg = palette.comment, bold = true },
         TelescopePromptPrefix = { fg = palette.keyword, bold = true },
-        -- Sem fg: um fg aqui vale para a linha inteira e apaga o
-        -- TelescopeMatching logo abaixo, além de tingir o caminho de vermelho.
-        -- Como o realce passa a sair só do fundo, ele sobe de bg+1 para bg+2.
+        -- Sem fg: valeria para a linha inteira e apagaria o TelescopeMatching.
         TelescopeSelection = { bg = palette.overlay },
         TelescopeSelectionCaret = { fg = palette.keyword, bg = palette.overlay },
         TelescopeMatching = { fg = palette.func, bold = true },
 
-        -- NvimTree
         NvimTreeFolderIcon = { fg = palette.func },
         NvimTreeFolderName = { fg = palette.func },
         NvimTreeRootFolder = { fg = palette.keyword, bold = true },
@@ -387,17 +339,13 @@ function M.setup()
         NvimTreeNormal = { fg = palette.text, bg = palette.base },
         NvimTreeWinSeparator = { fg = palette.base, bg = palette.base },
 
-        -- Pmenu & Autocompletar Base (Cmp)
         Pmenu = { fg = palette.text, bg = palette.surface },
         PmenuSel = { fg = palette.keyword, bg = palette.overlay, bold = true },
         PmenuSbar = { bg = palette.surface },
         PmenuThumb = { bg = palette.highlight_med },
-        -- Borda do pum, do 'pumborder' que o perfil servidor liga. O padrão
-        -- herda o Pmenu e desenha a borda na cor do texto, fora do tom de todas
-        -- as outras bordas do tema, que saem do FloatBorder.
+        -- Borda do 'pumborder' do perfil servidor, no tom do FloatBorder.
         PmenuBorder = { fg = palette.highlight_med, bg = palette.surface },
-        -- Pum e wildmenu nativos, que é o que sobra no perfil servidor: mesmo
-        -- destaque de trecho casado que o blink e o cmp recebem abaixo.
+        -- Pum e wildmenu nativos do perfil servidor.
         PmenuMatch = { fg = palette.func, bg = palette.surface, bold = true },
         PmenuMatchSel = { fg = palette.func, bg = palette.overlay, bold = true },
         CmpItemAbbr = { fg = palette.text },
@@ -430,7 +378,6 @@ function M.setup()
         CmpItemKindEvent = { fg = palette.func },
         CmpItemKindOperator = { fg = palette.operator },
 
-        -- Blink.cmp
         BlinkCmpMenu = { link = "Pmenu" },
         BlinkCmpMenuSelection = { bg = palette.overlay, bold = true },
         BlinkCmpLabel = { fg = palette.text },
@@ -442,16 +389,10 @@ function M.setup()
         BlinkCmpSource = { fg = palette.highlight_high },
     }
 
-    -- ==========================================
-    -- Aplicação dos Highlights via API do Neovim
-    -- ==========================================
     for group, highlight in pairs(groups) do
         vim.api.nvim_set_hl(0, group, highlight)
     end
 
-    -- ==========================================
-    -- Cores do Terminal Integrado (Terminals)
-    -- ==========================================
     vim.g.terminal_color_0 = palette.black
     vim.g.terminal_color_1 = palette.error
     vim.g.terminal_color_2 = palette.success

@@ -1,21 +1,12 @@
 # ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
 #
-# O yazi carrega o theme-dark.toml/theme-light.toml embutido e usa este arquivo
-# como camada de override, então só precisa estar aqui o que muda de cor. O
-# comportamento fica no yazi.toml e os atalhos no keymap.toml, ambos versionados.
-#
-# As regras de [filetype] ficam de fora de propósito: elas usam nomes ANSI
-# (blue para diretório, green para executável) que o terminal já resolve com a
-# paleta do tema, via alacritty-colors.toml e ghostty-colors.
-#
-# O yazi não relê o tema em tempo de execução: instâncias abertas só pegam as
-# cores novas ao reiniciar.
+# Override do tema embutido do yazi: só o que muda de cor. O [filetype] fica de
+# fora porque usa nomes ANSI, que o terminal já resolve.
 
 [mgr]
 cwd = { fg = "{{cyan}}" }
 
-# O highlight do preview é do syntect, que só lê tmTheme e exige caminho
-# absoluto. O arquivo também é gerado, pelo yazi-syntax.tmTheme.in.
+# O syntect só lê tmTheme por caminho absoluto (gerado de yazi-syntax.tmTheme.in).
 syntect_theme = "{{home}}/.config/yazi/theme.tmTheme"
 
 find_keyword  = { fg = "{{yellow}}", bold = true, italic = true, underline = true }
@@ -46,8 +37,7 @@ select_alt  = { fg = "{{success}}", bg = "{{surface}}" }
 unset_main  = { fg = "{{base}}",    bg = "{{warning}}", bold = true }
 unset_alt   = { fg = "{{warning}}", bg = "{{surface}}" }
 
-# É aqui que mora o destaque do item sob o cursor: o yazi não tem mais
-# `hovered` no [mgr].
+# O yazi não tem mais `hovered` no [mgr]; o destaque do cursor mora aqui.
 [indicator]
 parent  = { fg = "{{text}}", bg = "{{highlight_med}}" }
 current = { fg = "{{base}}", bg = "{{accent_alt}}", bold = true }

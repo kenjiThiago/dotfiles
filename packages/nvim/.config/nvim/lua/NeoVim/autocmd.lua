@@ -11,8 +11,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 vim.api.nvim_create_autocmd("BufReadPost", {
     group = vim.api.nvim_create_augroup("RestaurarCursor", { clear = true }),
     callback = function(args)
-        -- No BufReadPost a detecção de filetype ainda não rodou, então
-        -- vim.bo.filetype está vazio aqui e é o match que responde.
+        -- O filetype ainda não foi detectado no BufReadPost.
         local ft = vim.filetype.match({ buf = args.buf })
         if ft == "gitcommit" or ft == "gitrebase" then
             return

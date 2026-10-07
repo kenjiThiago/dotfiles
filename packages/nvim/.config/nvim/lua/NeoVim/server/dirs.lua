@@ -1,24 +1,17 @@
--- Contraparte do server/find.lua para diretórios: leva a janela para qualquer
--- diretório abaixo do home, pela completação da cmdline. A lista vem de uma
--- varredura só, em cache, porque a completação é chamada a cada tecla.
+-- Contraparte do server/find.lua para diretórios, com a lista em cache.
 
 local LIMITE = 50
 
 local lista = nil
 local avisou = false
 
--- Mesmo conjunto do desktop (ver custom/dirs.lua): o --hidden traz ~/.config,
--- ~/.local/bin e ~/.local/share/fonts, e as exclusões tiram o cache que ele
--- arrasta junto. O lixo de uma máquina só vai em ~/.config/fd/ignore.
 local EXCLUSOES = {
     ".git", ".cache", "node_modules", ".venv",
     ".zen", ".mozilla", ".rustup", ".cargo", ".wine",
     "go/pkg", ".local/share/Steam", ".local/share/nvim*",
 }
 
--- O find é o último recurso: o servidor vem do gerenciador da distro, e lá o
--- fd pode não existir, ou existir como `fdfind`. Padrão com barra vira -path,
--- que exige o caminho inteiro; o resto casa pelo nome, em qualquer nível.
+-- find como último recurso: no servidor o fd pode faltar ou se chamar `fdfind`.
 local function comando_find()
     local home = vim.env.HOME
     local cmd = { "find", home, "(" }
@@ -73,7 +66,6 @@ local function candidatos()
         return {}
     end
 
-    -- A barra final é do fd, e o vim.fs.basename devolve "" com ela.
     lista = {}
     for _, caminho in ipairs(saida) do
         local curto = vim.fn.fnamemodify((caminho:gsub("/$", "")), ":~")
@@ -83,8 +75,7 @@ local function candidatos()
     return lista
 end
 
--- O ';' separa termos como no :find (ver server/find.lua): a completação
--- recebe só a última palavra da cmdline, então espaço não serve.
+-- ';' separa termos: a completação recebe só a última palavra da cmdline.
 local function completar(arg)
     local itens = candidatos()
     local consulta = vim.trim((arg:gsub(";", " ")))
@@ -95,8 +86,7 @@ local function completar(arg)
         end, itens)
     end
 
-    -- Duas passadas, pelo mesmo motivo do find: quem casa no nome do diretório
-    -- vem antes de quem casa em algum trecho do caminho.
+    -- Duas passadas: quem casa no nome vem antes de quem casa no caminho.
     local vistos, saida = {}, {}
 
     for _, chave in ipairs({ "nome", "caminho" }) do

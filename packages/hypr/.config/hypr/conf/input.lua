@@ -4,12 +4,11 @@ hl.config({
         kb_variant = "",
         kb_model = "",
         kb_options = "grp:win_space_toggle",
-        -- kb_options = "ctrl:nocaps",
         kb_rules = "",
 
         follow_mouse = 1,
 
-        sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
+        sensitivity = 0,
         scroll_factor = 1,
 
         repeat_delay = 300,
