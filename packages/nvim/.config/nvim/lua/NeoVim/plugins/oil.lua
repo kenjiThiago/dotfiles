@@ -2,6 +2,13 @@ local gh = function(x) return "https://github.com/" .. x end
 
 vim.pack.add({ gh("stevearc/oil.nvim") })
 
+local colunas_completas = {
+    { "permissions", highlight = "LineNr" },
+    { "size",        highlight = "LineNr" },
+    { "mtime",       highlight = "LineNr" },
+    { "icon" },
+}
+
 require("oil").setup({
     keymaps = {
         ["<C-h>"] = false,
@@ -15,12 +22,7 @@ require("oil").setup({
                 local config = require("oil.config")
 
                 if #config.columns == 1 then
-                    oil.set_columns({
-                        { "permissions", highlight = "Keyword" },
-                        { "size",        highlight = "Boolean" },
-                        { "mtime",       highlight = "Define" },
-                        { "icon" },
-                    })
+                    oil.set_columns(colunas_completas)
                 else
                     oil.set_columns({
                         { "icon" },
@@ -44,11 +46,6 @@ require("oil").setup({
     view_options = {
         show_hidden = true,
     },
-    columns = {
-        { "permissions", highlight = "Keyword" },
-        { "size",        highlight = "Define" },
-        { "mtime",       highlight = "Boolean" },
-        { "icon" },
-    },
+    columns = colunas_completas,
     skip_confirm_for_simple_edits = true,
 })
