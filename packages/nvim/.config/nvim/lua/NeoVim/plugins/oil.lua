@@ -12,6 +12,11 @@ local function destacar_permissoes(texto)
 end
 
 local colunas_completas = {
+    {
+        "type",
+        icons = { directory = "d", file = "-", link = "l", socket = "s" },
+        highlight = destacar_permissoes,
+    },
     { "permissions", highlight = destacar_permissoes },
     { "size",        highlight = "LineNr" },
     { "mtime",       highlight = "LineNr" },
