@@ -2,8 +2,17 @@ local gh = function(x) return "https://github.com/" .. x end
 
 vim.pack.add({ gh("stevearc/oil.nvim") })
 
+local function destacar_permissoes(texto)
+    local trechos = {}
+    for i = 1, #texto do
+        local grupo = texto:sub(i, i) == "-" and "LineNr" or "Comment"
+        table.insert(trechos, { grupo, i - 1, i })
+    end
+    return trechos
+end
+
 local colunas_completas = {
-    { "permissions", highlight = "LineNr" },
+    { "permissions", highlight = destacar_permissoes },
     { "size",        highlight = "LineNr" },
     { "mtime",       highlight = "LineNr" },
     { "icon" },
