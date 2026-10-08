@@ -339,6 +339,10 @@ function M.setup()
         NvimTreeNormal = { fg = palette.text, bg = palette.base },
         NvimTreeWinSeparator = { fg = palette.base, bg = palette.base },
 
+        -- Sem cor própria, os ícones genéricos saem no Normal e ficam acima dos
+        -- nomes apagados, como os de arquivos ocultos no oil.
+        MiniIconsGrey = { fg = palette.comment },
+
         Pmenu = { fg = palette.text, bg = palette.surface },
         PmenuSel = { fg = palette.keyword, bg = palette.overlay, bold = true },
         PmenuSbar = { bg = palette.surface },
