@@ -45,7 +45,7 @@ if vim.fn.exists("+winborder") == 1 then
     vim.opt.winborder = "rounded"
 end
 
-vim.opt.colorcolumn = "80"
+vim.opt.colorcolumn = ""
 
 vim.api.nvim_command("autocmd TermOpen * setlocal nonumber norelativenumber")
 
@@ -55,7 +55,7 @@ vim.filetype.add({
     },
 })
 
-vim.opt.list = true
+vim.opt.list = false
 
 vim.opt.listchars = {
     tab = "» ",

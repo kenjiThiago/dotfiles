@@ -68,6 +68,10 @@ vim.api.nvim_create_user_command("ShowWhiteSpaces", function()
 end, {})
 
 vim.keymap.set("n", "<leader>ns", ":ShowWhiteSpaces<CR>")
+vim.keymap.set("n", "<leader>nl", "<cmd>set list!<CR>", { desc = "Mostrar espaços e tabs" })
+vim.keymap.set("n", "<leader>n8", function()
+    vim.o.colorcolumn = vim.o.colorcolumn == "" and "80" or ""
+end, { desc = "Mostrar a coluna 80" })
 vim.keymap.set("n", "<leader>nr", function()
     local save_cursor = vim.fn.getpos(".")
     vim.cmd([[%s/\s\+$//e]])
