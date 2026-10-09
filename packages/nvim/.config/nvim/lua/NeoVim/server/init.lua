@@ -123,6 +123,31 @@ vim.api.nvim_create_autocmd("CmdlineChanged", {
 })
 
 if autocompletar then
+    -- O wildtrigger na busca grava o padrão em @/ mesmo quando a busca é cancelada
+    -- ou apagada, e o n e o hlsearch usariam o padrão descartado.
+    local busca_anterior
+    local cmd_busca = vim.api.nvim_create_augroup("BuscaCancelada", { clear = true })
+
+    vim.api.nvim_create_autocmd("CmdlineEnter", {
+        group = cmd_busca,
+        pattern = { "/", "?" },
+        callback = function()
+            busca_anterior = vim.fn.getreg("/")
+        end,
+    })
+
+    vim.api.nvim_create_autocmd("CmdlineLeave", {
+        group = cmd_busca,
+        pattern = { "/", "?" },
+        callback = function()
+            if vim.v.event.abort or vim.fn.getcmdline() == "" then
+                vim.schedule(function()
+                    vim.fn.setreg("/", busca_anterior)
+                end)
+            end
+        end,
+    })
+
     vim.keymap.set("c", "<Up>", function()
         return vim.fn.wildmenumode() == 1 and "<C-E><Up>" or "<Up>"
     end, { expr = true, replace_keycodes = true })
