@@ -48,6 +48,14 @@ set -g menu-selected-style bg="{{overlay}}",fg="{{accent_alt}}",bold
 set -g menu-border-style fg="{{accent}}",bg="{{surface}}"
 %endif
 
+# Da 3.8 em diante o choose-tree e as barras de rolagem usam cores próprias do tmux.
+%if "#{>=:#{version},3.8}"
+set-window-option -g tree-mode-border-style fg="{{muted}}"
+set-window-option -g tree-mode-preview-style "fg=#{?#{||:#{&&:#{pane_format},#{pane_active}},#{&&:#{window_format},#{window_active}}},{{accent}},{{subtle}}}"
+set-window-option -g switch-mode-match-style bg="{{overlay}}",fg="{{info}}"
+set-window-option -g pane-scrollbars-style bg="{{surface}}",fg="{{overlay}}",width=1,pad=0
+%endif
+
 set-window-option -g clock-mode-colour "{{accent}}"
 set -g display-panes-colour "{{muted}}"
 set -g display-panes-active-colour "{{accent}}"
