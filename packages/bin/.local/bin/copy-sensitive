@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# A seleção primária não passa pelo cliphist, que só observa o clipboard.
+text=$(wl-paste --primary --no-newline --type text 2>/dev/null)
+
+if [[ -z "$text" ]]; then
+    notify-send "Nada selecionado."
+    exit 1
+fi
+
+printf %s "$text" | wl-copy --sensitive
+wl-copy --primary --clear
+notify-send "Copiado (${#text} caracteres)"
+sleep "${1:-15}"
+
+if [[ "$(wl-paste --no-newline --type text 2>/dev/null)" == "$text" ]]; then
+    wl-copy --clear
+fi
