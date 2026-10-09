@@ -4,4 +4,4 @@
 .DS_Store
 tags
 .direnv/
-ready-tmux
+.ready-tmux
