@@ -7,8 +7,6 @@ if require("NeoVim.profile").desktop then
     end, { desc = "Abrir o yazi no diretório do arquivo" })
 end
 
-vim.keymap.set("i", "jk", "<ESC>")
-
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
