@@ -11,6 +11,21 @@ local function destacar_permissoes(texto)
     return trechos
 end
 
+local EXECUCAO = tonumber("111", 8)
+
+-- Sem colunas de detalhe o oil não faz stat, então a entrada pode vir sem ele.
+local function eh_executavel(entry, bufnr)
+    if entry.type ~= "file" then
+        return false
+    end
+    local stat = entry.meta and entry.meta.stat
+    if not stat then
+        local dir = require("oil").get_current_dir(bufnr)
+        stat = dir and vim.uv.fs_stat(dir .. entry.name)
+    end
+    return stat ~= nil and bit.band(stat.mode, EXECUCAO) ~= 0
+end
+
 local colunas_completas = {
     {
         "type",
@@ -59,6 +74,11 @@ require("oil").setup({
     },
     view_options = {
         show_hidden = true,
+        highlight_filename = function(entry, is_hidden, _, _, bufnr)
+            if not is_hidden and eh_executavel(entry, bufnr) then
+                return "DiagnosticOk"
+            end
+        end,
     },
     columns = colunas_completas,
     skip_confirm_for_simple_edits = true,
