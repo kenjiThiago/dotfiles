@@ -26,8 +26,6 @@ require("nightfox").setup({
     }
 })
 
-vim.api.nvim_set_hl(0, "RenderMarkdownBullet", { link = "Boolean" })
-
 vim.pack.add({ { src = gh("rose-pine/neovim"), name = "rose-pine" } })
 
 -- O rose-pine ignora o lua/theme.lua e usa paleta própria; isto a sobrepõe para o
@@ -77,6 +75,13 @@ require("rose-pine").setup({
         RenderMarkdownCode = { bg = "surface" },
         CursorLineNr = { fg = "gold" },
     },
+})
+
+-- O :colorscheme limpa os highlights, então o que é nosso volta a cada troca.
+vim.api.nvim_create_autocmd("ColorScheme", {
+    callback = function()
+        vim.api.nvim_set_hl(0, "RenderMarkdownBullet", { link = "Boolean" })
+    end,
 })
 
 -- O luar não tem opção de transparência.

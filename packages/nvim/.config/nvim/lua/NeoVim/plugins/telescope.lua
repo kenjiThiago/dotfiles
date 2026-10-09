@@ -25,7 +25,7 @@ require("telescope").setup({
         },
         grep_string = {
             theme = "ivy",
-            file_ignore_patterns = { "go.sum" },
+            file_ignore_patterns = { "^go%.sum$", "/go%.sum$" },
         },
         git_files = {
             theme = "dropdown",
@@ -36,7 +36,12 @@ require("telescope").setup({
         }
     },
     defaults = {
-        file_ignore_patterns = { "node_modules", "%.git", ".venv" },
+        -- Padrões Lua sobre o caminho inteiro: sem as barras, "%.git" esconderia o .github.
+        file_ignore_patterns = {
+            "^node_modules/", "/node_modules/",
+            "^%.git/", "/%.git/",
+            "^%.venv/", "/%.venv/",
+        },
     },
     extensions = {
         fzf = {}

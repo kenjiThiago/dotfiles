@@ -114,6 +114,22 @@ local function diagnostics(bufnr)
     return table.concat(out)
 end
 
+-- O oil abre os arquivos pelo caminho absoluto, e o %f mostra o nome como o buffer
+-- guardou. O cwd é o da janela desenhada, que pode ter lcd próprio.
+local function file_name(winid, bufnr)
+    local name = vim.api.nvim_buf_get_name(bufnr)
+    if name == "" then return "%f" end
+
+    local cwd = vim.fn.getcwd(winid)
+    if name:sub(1, #cwd + 1) == cwd .. "/" then
+        name = name:sub(#cwd + 2)
+    else
+        name = vim.fn.fnamemodify(name, ":~")
+    end
+
+    return (name:gsub("%%", "%%%%"))
+end
+
 _G.BuildStatusLine = function()
     -- statusline_winid é a janela sendo desenhada, não necessariamente a ativa
     local winid = vim.g.statusline_winid or vim.api.nvim_get_current_win()
@@ -122,7 +138,7 @@ _G.BuildStatusLine = function()
     if winid ~= vim.api.nvim_get_current_win() then
         return table.concat({
             "%#StatusLineNCBody#",
-            " %<%f %m%r",
+            " %<" .. file_name(winid, bufnr) .. " %m%r",
             "%=",
             " %3p%% ",
         })
@@ -132,7 +148,7 @@ _G.BuildStatusLine = function()
 
     return table.concat({
         mode_hl, mode_name,
-        "%#StatusLineInfo# %<%f %m %r ",
+        "%#StatusLineInfo# %<" .. file_name(winid, bufnr) .. " %m %r ",
         "%=",
         diagnostics(bufnr),
         "%#StatusLineBody# %y ",

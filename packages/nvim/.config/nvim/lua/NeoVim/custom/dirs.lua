@@ -1,4 +1,4 @@
--- Leva a janela atual para qualquer diretório abaixo do home, inclusive os que o
+-- Leva a tab atual para qualquer diretório abaixo do home, inclusive os que o
 -- zoxide nunca viu.
 
 local actions = require("telescope.actions")
@@ -40,7 +40,6 @@ local function entrada(raiz)
     end
 end
 
--- O OilRelPathFix do autocmd.lua promove o lcd para a tab ao sair do oil.
 local function ir(bufnr, split)
     local escolhido = action_state.get_selected_entry()
     if not escolhido then
@@ -53,7 +52,7 @@ local function ir(bufnr, split)
         vim.cmd(split)
     end
 
-    vim.cmd.lcd(vim.fn.fnameescape(escolhido.value))
+    vim.cmd.tcd(vim.fn.fnameescape(escolhido.value))
     require("oil").open(escolhido.value)
 end
 

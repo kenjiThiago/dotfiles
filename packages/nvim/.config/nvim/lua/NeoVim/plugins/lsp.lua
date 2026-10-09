@@ -18,11 +18,6 @@ vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
 
         require("mason-lspconfig").setup({
             ensure_installed = { "lua_ls", },
-            handlers = {
-                function(server_name)
-                    vim.lsp.enable(server_name)
-                end,
-            },
         })
 
         require("lazydev").setup({

@@ -68,23 +68,41 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end,
 })
 
--- O organize-imports precisa vir antes do format, e o format precisa ser
--- síncrono, senão o BufWritePre grava o buffer velho.
+-- Tudo síncrono e no buffer gravado, que no :wa não é o da janela atual. O ruff
+-- pode mandar a ação sem a edição, que aí vem pelo codeAction/resolve.
+local function organizar_imports(client, buf)
+    local params = {
+        textDocument = { uri = vim.uri_from_bufnr(buf) },
+        range = {
+            start = { line = 0, character = 0 },
+            ["end"] = { line = vim.api.nvim_buf_line_count(buf), character = 0 },
+        },
+        context = { only = { "source.organizeImports" }, diagnostics = {} },
+    }
+
+    local resposta = client:request_sync("textDocument/codeAction", params, 1000, buf)
+    for _, acao in ipairs(resposta and resposta.result or {}) do
+        if not acao.edit and client:supports_method("codeAction/resolve") then
+            local resolvida = client:request_sync("codeAction/resolve", acao, 1000, buf)
+            acao = resolvida and resolvida.result or acao
+        end
+
+        if acao.edit then
+            vim.lsp.util.apply_workspace_edit(acao.edit, client.offset_encoding)
+        end
+    end
+end
+
 vim.api.nvim_create_autocmd("BufWritePre", {
     group = vim.api.nvim_create_augroup("RuffLspFormat", { clear = true }),
     pattern = "*.py",
     callback = function(args)
-        local clients = vim.lsp.get_clients({ bufnr = args.buf, name = "ruff" })
-        if #clients == 0 then
+        local client = vim.lsp.get_clients({ bufnr = args.buf, name = "ruff" })[1]
+        if not client then
             return
         end
 
-        vim.lsp.buf.code_action({
-            context = { only = { "source.organizeImports" } },
-            apply = true,
-        })
-
-        vim.wait(100)
-        vim.lsp.buf.format({ async = false, id = clients[1].id })
+        organizar_imports(client, args.buf)
+        vim.lsp.buf.format({ async = false, id = client.id, bufnr = args.buf })
     end,
 })

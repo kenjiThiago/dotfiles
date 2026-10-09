@@ -53,15 +53,50 @@ vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
 
 vim.keymap.set("n", "<leader>gc", ":Comp")
 
-vim.cmd("match TrailingWhitespace /\\s\\+$/")
-local toggle_ws = true
+-- O :match e o matchadd valem por janela, então cada janela nova recebe o seu.
+-- As flutuantes ficam de fora para não marcar o que se digita no telescope.
+local mostrar_espacos = true
+
+-- Só o luar define o grupo; nos outros temas o destaque ficaria invisível.
+local function realce_padrao()
+    vim.api.nvim_set_hl(0, "TrailingWhitespace", { link = "Error", default = true })
+end
+
+realce_padrao()
+vim.api.nvim_create_autocmd("ColorScheme", {
+    group = vim.api.nvim_create_augroup("EspacosNoFimRealce", { clear = true }),
+    callback = realce_padrao,
+})
+
+local function destacar_espacos(win)
+    if vim.api.nvim_win_get_config(win).relative ~= "" then
+        return
+    end
+
+    local id = vim.w[win].espacos_no_fim
+    if mostrar_espacos and not id then
+        vim.w[win].espacos_no_fim = vim.fn.matchadd("TrailingWhitespace", [[\s\+$]], 10, -1, { window = win })
+    elseif not mostrar_espacos and id then
+        pcall(vim.fn.matchdelete, id, win)
+        vim.w[win].espacos_no_fim = nil
+    end
+end
+
+for _, win in ipairs(vim.api.nvim_list_wins()) do
+    destacar_espacos(win)
+end
+
+vim.api.nvim_create_autocmd("WinNew", {
+    group = vim.api.nvim_create_augroup("EspacosNoFim", { clear = true }),
+    callback = function()
+        destacar_espacos(vim.api.nvim_get_current_win())
+    end,
+})
+
 vim.api.nvim_create_user_command("ShowWhiteSpaces", function()
-    if not toggle_ws then
-        vim.cmd("match TrailingWhitespace /\\s\\+$/")
-        toggle_ws = true
-    else
-        vim.cmd("match none")
-        toggle_ws = false
+    mostrar_espacos = not mostrar_espacos
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        destacar_espacos(win)
     end
 end, {})
 
@@ -77,23 +112,21 @@ vim.keymap.set("n", "<leader>nr", function()
 end)
 
 vim.api.nvim_create_user_command("Compile", function(opts)
-    local result = vim.split(vim.api.nvim_buf_get_name(0), "/")
-
-    local bufName = result[#result]
-
-    local pieces = vim.split(bufName, ".", { plain = true })
+    local nome = vim.fn.expand("%:t")
+    local extensao = vim.fn.expand("%:e")
 
     local command = "make "
 
-    command = command .. pieces[1]
-    if not (pieces[2] == "c" or pieces[2] == "cpp") then
-        command = command .. "." .. pieces[2]
+    if extensao == "c" or extensao == "cpp" then
+        command = command .. vim.fn.expand("%:t:r")
+    else
+        command = command .. nome
     end
 
     for _, arg in ipairs(opts.fargs) do
         if arg == "-l" then
             command = "l" .. command
-        elseif arg.find(arg, "^-c") then
+        elseif arg:find("^-c") then
             local compiler = vim.split(arg, "-c=")[2]
             vim.cmd("compiler " .. compiler)
         else

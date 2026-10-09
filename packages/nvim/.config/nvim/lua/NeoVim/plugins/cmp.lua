@@ -23,7 +23,6 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "BufNewFile" }, {
         })
 
         require("luasnip.loaders.from_vscode").lazy_load()
-        require("luasnip.loaders.from_lua").load({ paths = "~/.config/nvim/lua/NeoVim/snippets/" })
 
         require("blink.cmp").setup({
             signature = {

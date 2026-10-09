@@ -22,7 +22,7 @@ local ACENTOS   = {
 }
 
 local function slugify(s)
-    s = s:lower()
+    s = vim.fn.tolower(s)
     for k, v in pairs(ACENTOS) do s = s:gsub(k, v) end
     return (s:gsub("[^%w]+", "-"):gsub("^%-+", ""):gsub("%-+$", ""))
 end

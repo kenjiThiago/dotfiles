@@ -32,14 +32,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end
 })
 
-vim.api.nvim_create_autocmd("BufLeave", {
-    group = vim.api.nvim_create_augroup("OilRelPathFix", {}),
-    pattern = "oil:///*",
-    callback = function()
-        vim.cmd("tcd .")
-    end
-})
-
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("Lsp", {}),
     callback = function(e)
@@ -50,10 +42,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 })
 
-vim.api.nvim_create_autocmd("BufEnter", {
-    pattern = { "*.html", "*.tsx", "*.js", "*.json", "*.ts", "*.css" },
+local filetypes = vim.api.nvim_create_augroup("FileTypeOpcoes", { clear = true })
+
+vim.api.nvim_create_autocmd("FileType", {
+    group = filetypes,
+    pattern = { "html", "typescriptreact", "javascript", "json", "jsonc", "typescript", "css" },
     callback = function()
-        vim.cmd("setlocal sw=2")
+        vim.opt_local.shiftwidth = 2
+        vim.opt_local.softtabstop = 2
     end
 })
 
@@ -66,8 +62,9 @@ vim.api.nvim_create_autocmd("BufEnter", {
     end,
 })
 
-vim.api.nvim_create_autocmd("BufEnter", {
-    pattern = "*.csv",
+vim.api.nvim_create_autocmd("FileType", {
+    group = filetypes,
+    pattern = "csv",
     callback = function()
         vim.b.completion = false
     end,
@@ -122,8 +119,6 @@ vim.api.nvim_create_autocmd("BufEnter", {
     callback = function(ev)
         if vim.bo[ev.buf].filetype ~= "oil" then return end
 
-        if vim.bo[ev.buf].modified then return end
-
         local oil = require("oil")
         local current_dir = oil.get_current_dir(ev.buf)
 
@@ -131,30 +126,21 @@ vim.api.nvim_create_autocmd("BufEnter", {
 
         current_dir = current_dir:gsub("[/\\]$", "")
 
-        local function safe_sort(sort_opts)
-            local original_notify = vim.notify
-            vim.notify = function(msg, level, opts)
-                if type(msg) == "string" and msg:match("Cannot change sorting") then
-                    return
-                end
-                original_notify(msg, level, opts)
-            end
-
-            pcall(oil.set_sort, sort_opts)
-
-            vim.notify = original_notify
-        end
-
+        local sort
         if is_in_dir(current_dir, downloads_dir) or is_in_dir(current_dir, imagens_dir) then
-            safe_sort({
-                { "birthtime", "desc" },
-            })
+            sort = { { "birthtime", "desc" } }
         else
-            safe_sort({
-                { "type", "asc" },
-                { "name", "asc" }
-            })
+            sort = { { "type", "asc" }, { "name", "asc" } }
         end
+
+        -- O set_sort é global: relê todos os buffers do oil e recusa, com aviso,
+        -- se qualquer um deles estiver modificado.
+        if vim.deep_equal(require("oil.config").view_options.sort, sort) then return end
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            if vim.bo[buf].filetype == "oil" and vim.bo[buf].modified then return end
+        end
+
+        oil.set_sort(sort)
     end,
 })
 
