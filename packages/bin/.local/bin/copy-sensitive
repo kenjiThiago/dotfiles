@@ -8,7 +8,8 @@ if [[ -z "$text" ]]; then
     exit 1
 fi
 
-printf %s "$text" | wl-copy --sensitive
+# Sem o --type, o wl-copy adivinha o tipo pelo conteúdo e pode anunciar um que não cola.
+printf %s "$text" | wl-copy --sensitive --type text/plain
 wl-copy --primary --clear
 notify-send "Copiado (${#text} caracteres)"
 sleep "${1:-15}"
