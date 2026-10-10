@@ -67,9 +67,14 @@ vim.api.nvim_create_autocmd("FileType", {
             return
         end
 
+        -- O fold guardou o buffer sem parser: o filetype limpa esse cache e o zx recalcula
+        -- as janelas. Só se instalou, senão o FileType tentaria instalar de novo.
         ts.install({ lang }):await(vim.schedule_wrap(function()
-            if vim.api.nvim_buf_is_valid(buf) then
-                pcall(vim.treesitter.start, buf, lang)
+            if vim.api.nvim_buf_is_valid(buf) and vim.tbl_contains(tsc.get_installed(), lang) then
+                vim.bo[buf].filetype = vim.bo[buf].filetype
+                for _, win in ipairs(vim.fn.win_findbuf(buf)) do
+                    vim.api.nvim_win_call(win, function() vim.cmd("normal! zx") end)
+                end
             end
         end))
     end,
