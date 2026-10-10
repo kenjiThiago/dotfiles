@@ -343,6 +343,8 @@ function M.setup()
         -- nomes apagados, como os de arquivos ocultos no oil.
         MiniIconsGrey = { fg = palette.comment },
 
+        OilLink = { fg = palette.constant },
+
         Pmenu = { fg = palette.text, bg = palette.surface },
         PmenuSel = { fg = palette.keyword, bg = palette.overlay, bold = true },
         PmenuSbar = { bg = palette.surface },
