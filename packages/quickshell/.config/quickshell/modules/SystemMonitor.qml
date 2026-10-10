@@ -2,6 +2,7 @@ pragma Singleton
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Services.UPower
 import Quickshell.Services.Pipewire
@@ -337,5 +338,35 @@ Item {
         sys.pendingBrightness = safePct;
         if (!writeBrightnessCmd.running)
             sys.flushBrightness();
+    }
+
+    property string keyboardLayout: ""
+    property bool keyboardIsDefault: true
+
+    // O activelayout traz o nome longo ("Greek"); o código vem da lista do kb_layout.
+    Process {
+        id: keyboardCmd
+        command: ["hyprctl", "devices", "-j"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const kb = JSON.parse(this.text).keyboards.find(k => k.main);
+                if (!kb)
+                    return;
+                const layouts = kb.layout.split(",").map(l => l.trim());
+                sys.keyboardLayout = (layouts[kb.active_layout_index] || "").toUpperCase();
+                sys.keyboardIsDefault = kb.active_layout_index === 0;
+            }
+        }
+    }
+
+    Connections {
+        target: Hyprland
+        function onRawEvent(event) {
+            if (event.name !== "activelayout" && event.name !== "configreloaded")
+                return;
+            keyboardCmd.running = false;
+            keyboardCmd.running = true;
+        }
     }
 }

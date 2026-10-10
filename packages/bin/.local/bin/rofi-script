@@ -267,6 +267,27 @@ change_wallpaper() {
     notify-send -a "Hyprpaper" -i "$CAMINHO" "Wallpaper Atualizado" "Salvo para o próximo boot!"
 }
 
+change_keyboard_layout() {
+    local kb layouts current choice index
+    kb=$(hyprctl devices -j | jq -c '.keyboards[] | select(.main)')
+    layouts=$(jq -r '.layout | split(",")[] | gsub(" "; "") | ascii_upcase' <<< "$kb")
+    current=$(sed -n "$(($(jq '.active_layout_index' <<< "$kb") + 1))p" <<< "$layouts")
+
+    choice=$(menu "󰌌  Teclado" "$layouts" "$current")
+    index=$(grep -nxF "$choice" <<< "$layouts" | cut -d: -f1)
+    if [[ -z $choice || -z $index ]]; then
+        back_to show_setup_menu
+        return
+    fi
+
+    hyprctl switchxkblayout all "$((index - 1))" >/dev/null
+    if ((index == 1)); then
+        notify-send -u low -a "Teclado" "Teclado em $choice"
+    else
+        notify-send -u low -a "Teclado" "Teclado em $choice" "Super+Shift+Espaço volta para o padrão."
+    fi
+}
+
 [[ "$1" == "--screenshot" ]] && { take_screenshot "$2"; exit 0; }
 
 show_trigger_menu() {
@@ -281,10 +302,11 @@ show_trigger_menu() {
 }
 
 show_setup_menu() {
-    case $(menu "Setup" "  Clipboard\n  Tema\n  Wallpaper\n  Wi-Fi\n  Áudio\n  Hyprland Config\n󰍜  Waybar Config\n  Neovim Config\n  Ghostty Config") in
+    case $(menu "Setup" "  Clipboard\n  Tema\n  Wallpaper\n󰌌  Teclado\n  Wi-Fi\n  Áudio\n  Hyprland Config\n󰍜  Waybar Config\n  Neovim Config\n  Ghostty Config") in
         *Clipboard*) show_clipboard ;;
         *Tema*)      theme pick ;;
         *Wallpaper*) change_wallpaper ;;
+        *Teclado*)   change_keyboard_layout ;;
         *Wi-Fi*)     uwsm app -- nm-connection-editor ;;
         *Áudio*)     uwsm app -- ghostty --class=com.example.wiremix --command=wiremix ;;
         *Hyprland*)  open_in_editor ~/.config/hypr/hyprland.lua ;;
@@ -325,6 +347,7 @@ go_to_menu() {
         *wallpaper*) change_wallpaper ;;
         *tema*)      theme pick ;;
         *clipboard*) show_clipboard ;;
+        *teclado*)   change_keyboard_layout ;;
     esac
 }
 

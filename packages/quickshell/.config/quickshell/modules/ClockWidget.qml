@@ -96,6 +96,7 @@ Rectangle {
     readonly property bool showMultedMicrofone: SystemMonitor.sourceIsMuted
     readonly property bool showTemp: SystemMonitor.tempC >= 80
     readonly property bool showBatt: SystemMonitor.pct <= 20 && !SystemMonitor.isCharging
+    readonly property bool showLayout: !SystemMonitor.keyboardIsDefault && SystemMonitor.keyboardLayout !== ""
 
     // Medição fora da CAMADA 1: um positionador não refaz o layout enquanto está
     // invisível, e a largura congelaria ao esvaziar a linha.
@@ -108,6 +109,13 @@ Rectangle {
             id: measureAlerts
             spacing: 8
 
+            Text {
+                text: SystemMonitor.keyboardLayout
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 13
+                font.weight: Font.Bold
+                visible: island.showLayout
+            }
             Text {
                 text: "󰍭"
                 font.family: "Hack Nerd Font"
@@ -398,6 +406,20 @@ Rectangle {
                     id: alertRow
                     anchors.centerIn: parent
                     spacing: 8
+
+                    Text {
+                        text: SystemMonitor.keyboardLayout
+                        color: Theme.yellow
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 13
+                        font.weight: Font.Bold
+
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.verticalCenterOffset: -1
+
+                        visible: island.showLayout
+                    }
 
                     Text {
                         text: "󰍭"

@@ -49,6 +49,8 @@ hl.bind(mainMod .. "+ SHIFT + D", hl.dsp.exec_cmd("qs ipc call notifications tog
 hl.bind(mainMod .. "+ PERIOD", hl.dsp.exec_cmd("uwsm app -- rofimoji --action copy"))
 hl.bind(mainMod .. "+ SHIFT + P", hl.dsp.exec_cmd("uwsm app -- rofi-rbw"))
 hl.bind(mainMod .. "+ SHIFT + C", hl.dsp.exec_cmd("copy-sensitive"))
+-- Volta para o primeiro do kb_layout. Espaço, e não letra, porque o keysym não muda no grego.
+hl.bind(mainMod .. "+ SHIFT + SPACE", hl.dsp.exec_cmd("hyprctl switchxkblayout all 0"))
 hl.bind(mainMod .. "+ P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. "+ T", hl.dsp.layout("togglesplit"))
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })

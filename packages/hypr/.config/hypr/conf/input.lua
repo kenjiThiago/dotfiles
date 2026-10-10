@@ -3,7 +3,7 @@ hl.config({
         kb_layout = "br, gr",
         kb_variant = "",
         kb_model = "",
-        kb_options = "grp:win_space_toggle",
+        kb_options = "",
         kb_rules = "",
 
         follow_mouse = 1,
