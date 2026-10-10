@@ -132,7 +132,10 @@ if [[ -z $TMUX ]]; then
     path+=("$HOME/.local/share/nvim/mason/bin")
 fi
 
-[[ -f /usr/share/nvm/init-nvm.sh ]] && source /usr/share/nvm/init-nvm.sh
+if command -v fnm >/dev/null; then
+    eval "$(fnm env --use-on-cd --version-file-strategy=recursive --shell zsh)"
+    eval "$(fnm completions --shell zsh)"
+fi
 
 export PATH
 
