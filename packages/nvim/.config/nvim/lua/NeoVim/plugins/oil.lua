@@ -82,4 +82,5 @@ require("oil").setup({
     },
     columns = colunas_completas,
     skip_confirm_for_simple_edits = true,
+    watch_for_changes = true,
 })
