@@ -151,6 +151,23 @@ if command -v fnm >/dev/null; then
     eval "$(fnm completions --shell zsh)"
 fi
 
+auto_venv() {
+    local dir=$PWD
+    while [[ $dir != / && ! -d $dir/.venv ]]; do dir=${dir:h}; done
+
+    if [[ -f $dir/.venv/bin/activate ]]; then
+        [[ $VIRTUAL_ENV == $dir/.venv ]] && return
+        (( $+functions[deactivate] )) && deactivate
+        source $dir/.venv/bin/activate
+    elif (( $+functions[deactivate] )); then
+        deactivate
+    fi
+}
+
+autoload -Uz add-zsh-hook
+add-zsh-hook chpwd auto_venv
+auto_venv
+
 export PATH
 
 # Vem antes do exec: depois dele nada mais roda.
