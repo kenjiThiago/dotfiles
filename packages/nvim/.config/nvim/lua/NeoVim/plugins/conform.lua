@@ -4,6 +4,8 @@ end
 
 vim.pack.add({ gh("stevearc/conform.nvim") })
 
+local formatar_ao_salvar = false
+
 require("conform").setup({
 	formatters_by_ft = {
 		python = { "ruff_format", "ruff_organize_imports" },
@@ -11,11 +13,17 @@ require("conform").setup({
 		typescript = { "biome-check" },
 		typescriptreact = { "biome-check" },
 	},
-	format_on_save = {
-		lsp_format = "fallback",
-		timeout_ms = 500,
-	},
+	format_on_save = function()
+		if formatar_ao_salvar then
+			return { lsp_format = "fallback", timeout_ms = 500 }
+		end
+	end,
 })
+
+vim.api.nvim_create_user_command("FormatToggle", function()
+	formatar_ao_salvar = not formatar_ao_salvar
+	vim.notify("Formatar ao salvar: " .. (formatar_ao_salvar and "ligado" or "desligado"))
+end, { desc = "Liga e desliga o format on save" })
 
 vim.keymap.set("", "<leader>f", function()
 	require("conform").format({ async = true, lsp_format = "fallback" }, function(err)
