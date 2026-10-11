@@ -94,6 +94,20 @@ clear_keep_buffer() {
 zle -N clear_keep_buffer
 bindkey "^xl" clear_keep_buffer
 
+copy_buffer() {
+    if command -v wl-copy >/dev/null; then
+        print -rn -- "$BUFFER" | wl-copy --type text/plain
+    else
+        printf '\e]52;c;%s\a' "$(print -rn -- "$BUFFER" | base64 -w0)"
+    fi
+    zle -M "Comando copiado"
+}
+
+zle -N copy_buffer
+bindkey "^xy" copy_buffer
+
+bindkey " " magic-space
+
 HISTSIZE=10000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
