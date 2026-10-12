@@ -59,8 +59,9 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
-vim.api.nvim_create_autocmd("BufEnter", {
-	pattern = "*.tex",
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "tex", "markdown" },
+	group = filetypes,
 	callback = function()
 		vim.cmd("setlocal spell spelllang=pt_br,en_us")
 		vim.cmd("setlocal wrap")
