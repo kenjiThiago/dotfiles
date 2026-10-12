@@ -101,6 +101,7 @@ wiremix                      # on-click do quickshell
 networkmanager               # habilitado pelo install.sh
 network-manager-applet       # ícone na tray do quickshell
 nm-connection-editor         # aberto pelo rofi-script
+networkmanager-fortisslvpn   # AUR — conexão USP da VPN no rofi-script
 
 # Energia
 power-profiles-daemon        # perfil de energia do quickshell, habilitado pelo install.sh

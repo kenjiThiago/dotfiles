@@ -288,6 +288,21 @@ change_keyboard_layout() {
     fi
 }
 
+toggle_vpn() {
+    if nmcli -t -f NAME connection show --active | grep -qxF USP; then
+        nmcli connection down USP >/dev/null && notify-send -u low -a "VPN" "VPN da USP desligada"
+        return
+    fi
+
+    # Sem --ask a senha é pedida pelo nm-applet, já que aqui não há terminal.
+    notify-send -u low -a "VPN" "Conectando na VPN da USP..."
+    if nmcli connection up USP >/dev/null 2>&1; then
+        notify-send -u low -a "VPN" "VPN da USP ligada"
+    else
+        notify-send -u critical -a "VPN" "Falha ao conectar na VPN da USP"
+    fi
+}
+
 [[ "$1" == "--screenshot" ]] && { take_screenshot "$2"; exit 0; }
 
 show_trigger_menu() {
@@ -302,12 +317,13 @@ show_trigger_menu() {
 }
 
 show_setup_menu() {
-    case $(menu "Setup" "  Clipboard\n  Tema\n  Wallpaper\n󰌌  Teclado\n  Wi-Fi\n  Áudio\n  Hyprland Config\n󰍜  Waybar Config\n  Neovim Config\n  Ghostty Config") in
+    case $(menu "Setup" "  Clipboard\n  Tema\n  Wallpaper\n󰌌  Teclado\n  Wi-Fi\n󰖂  VPN USP\n  Áudio\n  Hyprland Config\n󰍜  Waybar Config\n  Neovim Config\n  Ghostty Config") in
         *Clipboard*) show_clipboard ;;
         *Tema*)      theme pick ;;
         *Wallpaper*) change_wallpaper ;;
         *Teclado*)   change_keyboard_layout ;;
         *Wi-Fi*)     uwsm app -- nm-connection-editor ;;
+        *VPN*)       toggle_vpn ;;
         *Áudio*)     uwsm app -- ghostty --class=com.example.wiremix --command=wiremix ;;
         *Hyprland*)  open_in_editor ~/.config/hypr/hyprland.lua ;;
         *Waybar*)    open_in_editor ~/.config/waybar/config.jsonc ;;
@@ -348,6 +364,7 @@ go_to_menu() {
         *tema*)      theme pick ;;
         *clipboard*) show_clipboard ;;
         *teclado*)   change_keyboard_layout ;;
+        *vpn*)       toggle_vpn ;;
     esac
 }
 

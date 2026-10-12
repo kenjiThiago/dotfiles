@@ -369,4 +369,27 @@ Item {
             keyboardCmd.running = true;
         }
     }
+
+    property bool vpnActive: false
+
+    Process {
+        id: vpnCmd
+        command: ["nmcli", "-t", "-f", "TYPE", "connection", "show", "--active"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: sys.vpnActive = this.text.split("\n").includes("vpn")
+        }
+    }
+
+    // O monitor só avisa que algo mudou; o estado vem de uma consulta nova.
+    Process {
+        command: ["nmcli", "monitor"]
+        running: true
+        stdout: SplitParser {
+            onRead: {
+                vpnCmd.running = false;
+                vpnCmd.running = true;
+            }
+        }
+    }
 }
