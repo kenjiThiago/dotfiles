@@ -17,9 +17,9 @@ set -g message-command-style bg="{{overlay}}",fg="{{info}}",fill="{{overlay}}"
 
 # noattr (3.6+): sem ele a seleção herda negrito e sublinhado do texto.
 %if "#{>=:#{version},3.6}"
-set-window-option -g mode-style noattr,bg="{{highlight_med}}",fg="{{text}}"
+set-window-option -g mode-style noattr,bg="{{highlight_med}}",fg=default
 %else
-set-window-option -g mode-style bg="{{highlight_med}}",fg="{{text}}"
+set-window-option -g mode-style bg="{{highlight_med}}",fg=default
 %endif
 
 %if "#{>=:#{version},3.2}"
