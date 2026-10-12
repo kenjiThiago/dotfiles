@@ -10,21 +10,20 @@ Item {
     required property var notification
     property int size: 36
 
-    readonly property string source: {
-        if (!root.notification)
-            return "";
-        if (root.notification.image !== "")
-            return root.notification.image;
-
-        const icon = root.notification.appIcon;
-        if (icon === "")
-            return "";
-
-        if (icon.startsWith("/") || icon.startsWith("file:"))
+    function resolve(icon) {
+        if (icon.startsWith("image://icon/"))
+            icon = icon.slice("image://icon/".length);
+        if (icon === "" || icon.startsWith("/") || icon.startsWith("file:") || icon.startsWith("image://"))
             return icon;
 
         // O marcador de ícone ausente carrega como imagem válida; sem isto o fallback nunca pega.
         return Quickshell.hasThemeIcon(icon) ? Quickshell.iconPath(icon) : "";
+    }
+
+    readonly property string source: {
+        if (!root.notification)
+            return "";
+        return root.resolve(root.notification.image) || root.resolve(root.notification.appIcon);
     }
 
     implicitWidth: root.size
