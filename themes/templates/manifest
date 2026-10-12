@@ -11,6 +11,7 @@ rofi-colors.rasi.in       ~/.config/rofi/themes/colors.rasi           desktop
 quickshell-Theme.qml.in   ~/.config/quickshell/modules/Theme.qml      desktop
 alacritty-colors.toml.in  ~/.config/alacritty/colors.toml             desktop
 ghostty-colors.in         ~/.config/ghostty/colors                    desktop
+ghostty-progress.css.in   ~/.config/ghostty/progress.css              desktop
 zathura-colors.in         ~/.config/zathura/colors                    desktop
 starship.toml.in          ~/.config/starship.toml
 tmux-colors.conf.in       ~/.config/tmux/colors.conf

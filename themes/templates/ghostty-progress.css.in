@@ -1,0 +1,10 @@
+/* ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+ * Fonte: themes/templates/ghostty-progress.css.in
+ *
+ * Barra do OSC 9;4 (vim.pack, por exemplo). O padrão do libadwaita tem 2px e a
+ * cor de destaque, a mesma da borda do Hyprland.
+ */
+
+progressbar.osd > trough,
+progressbar.osd > trough > progress { min-height: 5px; }
+progressbar.osd > trough > progress { background-color: {{info}}; }

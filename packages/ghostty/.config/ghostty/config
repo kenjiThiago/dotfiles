@@ -2,8 +2,9 @@ font-family = HackNerdFont
 font-size = 12
 bold-is-bright = true
 
-# ./colors é gerado por `theme set`.
+# ./colors e ./progress.css são gerados por `theme set`.
 config-file = colors
+gtk-custom-css = ?progress.css
 
 cursor-style = block
 cursor-style-blink = true
