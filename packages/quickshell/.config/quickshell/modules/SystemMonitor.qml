@@ -363,8 +363,17 @@ Item {
     Connections {
         target: Hyprland
         function onRawEvent(event) {
-            if (event.name !== "activelayout" && event.name !== "configreloaded")
-                return;
+            if (event.name === "activelayout" || event.name === "configreloaded")
+                keyboardSettle.restart();
+        }
+    }
+
+    // O activelayout chega uma vez por teclado, em rajada; reiniciar o hyprctl a
+    // cada um mata a saída no meio e o JSON.parse recebe um pedaço.
+    Timer {
+        id: keyboardSettle
+        interval: 100
+        onTriggered: {
             keyboardCmd.running = false;
             keyboardCmd.running = true;
         }
@@ -381,15 +390,21 @@ Item {
         }
     }
 
-    // O monitor só avisa que algo mudou; o estado vem de uma consulta nova.
+    // O monitor só avisa que algo mudou, e em várias linhas por mudança.
     Process {
         command: ["nmcli", "monitor"]
         running: true
         stdout: SplitParser {
-            onRead: {
-                vpnCmd.running = false;
-                vpnCmd.running = true;
-            }
+            onRead: vpnSettle.restart()
+        }
+    }
+
+    Timer {
+        id: vpnSettle
+        interval: 300
+        onTriggered: {
+            vpnCmd.running = false;
+            vpnCmd.running = true;
         }
     }
 }
