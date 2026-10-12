@@ -3,6 +3,7 @@
 # Os %if poupam erro em tmux mais velho.
 
 set -g status-style bg="{{surface}}",fg="{{text}}"
+set -g status-left "#[fg={{accent}},bold] #S  "
 
 set-window-option -g window-status-style fg="{{subtle}}"
 set-window-option -g window-status-current-style fg="{{accent_alt}}",bg="{{overlay}}",bold
