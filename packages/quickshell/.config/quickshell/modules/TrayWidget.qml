@@ -45,6 +45,8 @@ Row {
                 trayRoot.hostWindow.menuFinished();
             if (trayRoot.entryChosen)
                 trayRoot.menuClosed();
+            // Segurar o menu de um item que saiu do tray (o "Sair" do app) derruba o quickshell.
+            menuAnchor.menu = null;
         }
     }
 
