@@ -13,11 +13,9 @@ vim.api.nvim_create_autocmd("FileType", {
 	once = true,
 	pattern = { "markdown", "norg", "rmd", "org" },
 	callback = function()
-		vim.pack.add({
-			gh("MeanderingProgrammer/render-markdown.nvim"),
-		})
-
-		require("render-markdown").setup({
+		-- O plugin se anexa ao buffer atual assim que carrega, com o que estiver
+		-- aqui; um setup() depois do pack.add só valeria do segundo buffer em diante.
+		vim.g.render_markdown_config = {
 			enabled = false,
 			code = {
 				sign = false,
@@ -29,6 +27,10 @@ vim.api.nvim_create_autocmd("FileType", {
 				icons = {},
 			},
 			html = { comment = { conceal = false } },
+		}
+
+		vim.pack.add({
+			gh("MeanderingProgrammer/render-markdown.nvim"),
 		})
 	end,
 })
