@@ -1,0 +1,7 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+# Fonte: themes/templates/glow.yml.in
+#
+# O glow só expande o `~` ao validar o caminho do estilo, não ao abri-lo.
+style: "{{home}}/.config/glow/style.json"
+width: 80
+pager: true

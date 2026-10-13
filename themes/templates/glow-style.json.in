@@ -1,0 +1,104 @@
+{
+  "document": {
+    "block_prefix": "\n",
+    "block_suffix": "\n",
+    "color": "{{text}}",
+    "margin": 2
+  },
+  "block_quote": {
+    "color": "{{subtle}}",
+    "indent": 1,
+    "indent_token": "│ "
+  },
+  "paragraph": {},
+  "list": {
+    "level_indent": 2
+  },
+  "heading": {
+    "block_suffix": "\n",
+    "bold": true
+  },
+  "h1": {
+    "prefix": " ",
+    "suffix": " ",
+    "color": "{{base}}",
+    "background_color": "{{magenta}}"
+  },
+  "h2": { "prefix": "## ", "color": "{{blue}}" },
+  "h3": { "prefix": "### ", "color": "{{cyan}}" },
+  "h4": { "prefix": "#### ", "color": "{{yellow}}" },
+  "h5": { "prefix": "##### ", "color": "{{green}}" },
+  "h6": { "prefix": "###### ", "color": "{{subtle}}" },
+  "text": {},
+  "strikethrough": { "crossed_out": true },
+  "emph": { "italic": true },
+  "strong": { "bold": true },
+  "hr": {
+    "color": "{{highlight_high}}",
+    "format": "\n────────\n"
+  },
+  "item": { "block_prefix": "• " },
+  "enumeration": { "block_prefix": ". " },
+  "task": {
+    "ticked": "[✓] ",
+    "unticked": "[ ] "
+  },
+  "link": {
+    "color": "{{muted}}",
+    "underline": true
+  },
+  "link_text": {
+    "color": "{{info}}",
+    "bold": true
+  },
+  "image": {
+    "color": "{{muted}}",
+    "underline": true
+  },
+  "image_text": { "color": "{{accent_alt}}" },
+  "code": {
+    "prefix": " ",
+    "suffix": " ",
+    "color": "{{cyan}}",
+    "background_color": "{{surface}}"
+  },
+  "code_block": {
+    "color": "{{text}}",
+    "margin": 2,
+    "chroma": {
+      "text": { "color": "{{text}}" },
+      "error": { "color": "{{base}}", "background_color": "{{error}}" },
+      "comment": { "color": "{{syn_comment}}" },
+      "comment_preproc": { "color": "{{syn_keyword}}" },
+      "keyword": { "color": "{{syn_keyword}}" },
+      "keyword_reserved": { "color": "{{syn_keyword}}" },
+      "keyword_namespace": { "color": "{{syn_keyword}}" },
+      "keyword_type": { "color": "{{syn_type}}" },
+      "operator": { "color": "{{syn_operator}}" },
+      "punctuation": { "color": "{{subtle}}" },
+      "name": { "color": "{{syn_variable}}" },
+      "name_builtin": { "color": "{{syn_function}}" },
+      "name_tag": { "color": "{{syn_tag}}" },
+      "name_attribute": { "color": "{{syn_attribute}}" },
+      "name_class": { "color": "{{syn_type}}", "bold": true },
+      "name_constant": { "color": "{{syn_constant}}" },
+      "name_decorator": { "color": "{{syn_attribute}}" },
+      "name_function": { "color": "{{syn_function}}" },
+      "literal_number": { "color": "{{syn_constant}}" },
+      "literal_string": { "color": "{{syn_string}}" },
+      "literal_string_escape": { "color": "{{syn_escape}}" },
+      "generic_deleted": { "color": "{{red}}" },
+      "generic_emph": { "italic": true },
+      "generic_inserted": { "color": "{{green}}" },
+      "generic_strong": { "bold": true },
+      "generic_subheading": { "color": "{{subtle}}" },
+      "background": { "background_color": "{{surface}}" }
+    }
+  },
+  "table": {},
+  "definition_list": {},
+  "definition_term": {},
+  "definition_description": { "block_prefix": "\n→ " },
+  "html_block": {},
+  "html_span": {}
+}
