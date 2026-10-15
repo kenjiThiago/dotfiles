@@ -3,4 +3,5 @@
 #
 # O glow só expande o `~` ao validar o caminho do estilo, não ao abri-lo.
 style: "{{home}}/.config/glow/style.json"
+width: 190
 pager: true
