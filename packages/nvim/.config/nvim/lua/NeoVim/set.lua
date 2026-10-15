@@ -34,6 +34,7 @@ vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 38
 vim.opt.fillchars = { eob = " " }
 vim.opt.isfname:append("@-@")
+vim.opt.isfname:remove("=")
 
 vim.opt.updatetime = 50
 vim.opt.showmode = false
