@@ -1,5 +1,9 @@
 local M = {}
 
+-- O slide ocupa a tela toda: com o fundo de popup, o bloco de código do
+-- render-markdown fica da mesma cor e some.
+local winhighlight = "NormalFloat:Normal,FloatBorder:WinSeparator"
+
 local function create_floating_window(config, enter)
     if enter == nil then
         enter = false
@@ -8,6 +12,7 @@ local function create_floating_window(config, enter)
     local buf = vim.api.nvim_create_buf(false, true)
 
     local win = vim.api.nvim_open_win(buf, enter or false, config)
+    vim.wo[win].winhighlight = winhighlight
 
     return { buf = buf, win = win }
 end
@@ -309,6 +314,7 @@ M.start_presentation = function(opts)
             row = math.floor((vim.o.lines - temp_height) / 2),
             col = math.floor((vim.o.columns - temp_width) / 2),
         })
+        vim.wo[win].winhighlight = winhighlight
 
         present_keymap("n", "q", function()
             vim.api.nvim_win_close(win, true)
