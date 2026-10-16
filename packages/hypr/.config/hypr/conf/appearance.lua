@@ -98,13 +98,14 @@ hl.config({
 hl.curve("fluent_decel", { type = "bezier", points = { { 0, 0.2 }, { 0.4, 1 } } })
 hl.curve("easeinoutsine", { type = "bezier", points = { { 0.37, 0 }, { 0.63, 1 } } })
 hl.curve("snappyReturn", { type = "bezier", points = { { 0.4, 0.9 }, { 0.6, 1.0 } } })
-hl.curve("bounce", { type = "bezier", points = { { 0.4, 0.9 }, { 0.6, 1.0 } } })
+hl.curve("accel", { type = "bezier", points = { { 0.4, 0 }, { 1, 1 } } })
 
 hl.animation({ leaf = "windowsIn", enabled = true, speed = 4, bezier = "snappyReturn", style = "slidevert right" })
-hl.animation({ leaf = "windowsOut", enabled = true, speed = 5, bezier = "snappyReturn", style = "slide" })
-hl.animation({ leaf = "windowsMove", enabled = true, speed = 4, bezier = "bounce", style = "slide" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 3, bezier = "accel", style = "slide" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 4, bezier = "snappyReturn", style = "slide" })
 
 hl.animation({ leaf = "fade", enabled = true, speed = 2.5, bezier = "fluent_decel" })
+hl.animation({ leaf = "fadeOut", enabled = true, speed = 3, bezier = "accel" })
 hl.animation({ leaf = "fadeSwitch", enabled = false })
 
 hl.animation({ leaf = "fadeLayersIn", enabled = false })
