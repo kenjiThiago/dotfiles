@@ -86,4 +86,6 @@ require("oil").setup({
 	columns = colunas_completas,
 	skip_confirm_for_simple_edits = true,
 	watch_for_changes = true,
+	-- O oil abre o destino real de um symlink; sem os buffers antigos o <C-o> não volta para a pasta do link.
+	cleanup_delay_ms = false,
 })
