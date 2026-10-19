@@ -1,5 +1,5 @@
--- Leva a tab atual para qualquer diretório abaixo do home, inclusive os que o
--- zoxide nunca viu.
+-- Abre no oil qualquer diretório abaixo do home, inclusive os que o zoxide nunca
+-- viu.
 
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
@@ -61,7 +61,6 @@ local function ir(bufnr, split)
 		vim.cmd(split)
 	end
 
-	vim.cmd.tcd(vim.fn.fnameescape(escolhido.value))
 	require("oil").open(escolhido.value)
 end
 

@@ -118,7 +118,6 @@ vim.api.nvim_create_user_command("Dir", function(opts)
 		return
 	end
 
-	vim.cmd.lcd(vim.fn.fnameescape(alvo))
 	vim.cmd.edit(vim.fn.fnameescape(alvo))
 end, {
 	nargs = 1,
