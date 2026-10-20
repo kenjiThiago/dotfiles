@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Pelo XWayland, o grab de teclado e ponteiro falha enquanto um jogo do Steam os segura.
+# O rbw passa --display, que força o GTK no X11 mesmo com GDK_BACKEND=wayland.
+args=()
+while (($#)); do
+    case $1 in
+        --display) shift; (($#)) && shift ;;
+        --display=*) shift ;;
+        *) args+=("$1"); shift ;;
+    esac
+done
+
+GDK_BACKEND=wayland,x11 exec /usr/bin/pinentry-gtk "${args[@]}"

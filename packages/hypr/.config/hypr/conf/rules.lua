@@ -111,6 +111,16 @@ hl.window_rule({
     stay_focused = true,
 })
 
+-- No Wayland, o GTK transforma o grab de teclado do pinentry em pedido para inibir os atalhos.
+hl.window_rule({
+    name  = "pinentry_window",
+    match = { class = "^([Pp]inentry-gtk)$" },
+
+    float = true,
+    center = true,
+    no_shortcuts_inhibit = true,
+})
+
 -- Jogos do Steam (XWayland). O immediate depende do allow_tearing do appearance.lua,
 -- que só está ligado por causa dele; para desistir do tearing, tire essa linha.
 hl.window_rule({
