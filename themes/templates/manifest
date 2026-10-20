@@ -19,6 +19,7 @@ tmux-server-colors.in     ~/.config/tmux/server-colors.conf           server
 nvim-theme.lua.in         ~/.config/nvim/lua/theme.lua
 btop.theme.in             ~/.config/btop/themes/dotfiles.theme
 lazygit-colors.yml.in     ~/.config/lazygit/colors.yml
+fzf-colors.in             ~/.config/fzf/colors
 glow-style.json.in        ~/.config/glow/style.json
 glow.yml.in               ~/.config/glow/glow.yml
 yazi-theme.toml.in        ~/.config/yazi/theme.toml

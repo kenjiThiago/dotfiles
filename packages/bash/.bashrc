@@ -27,6 +27,9 @@ if [[ -f ~/.config/lazygit/colors.yml ]]; then
     export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml,$HOME/.config/lazygit/colors.yml"
 fi
 
+# Sem o arquivo, o fzf recusa abrir.
+[[ -f ~/.config/fzf/colors ]] && export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/colors"
+
 if command -v eza >/dev/null; then
     alias ls="eza --color=always --icons=auto"
     alias ll="eza -lAF --color=always --icons=auto"

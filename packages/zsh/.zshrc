@@ -131,6 +131,9 @@ if [[ -f ~/.config/lazygit/colors.yml ]]; then
     export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml,$HOME/.config/lazygit/colors.yml"
 fi
 
+# Sem o arquivo, o fzf recusa abrir.
+[[ -f ~/.config/fzf/colors ]] && export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/colors"
+
 function y() {
     export YAZI_START_DIR="$PWD"
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
