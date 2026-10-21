@@ -18,9 +18,15 @@ local function funcao_acima(node, linha)
 	end
 end
 
+-- O nvim do servidor vem da distro: get_node é do 0.9, e antes do 0.11 o
+-- get_parser erra em vez de devolver nil quando não há parser.
+if not vim.treesitter.get_node then
+	return
+end
+
 vim.keymap.set("n", "[f", function()
-	local parser = vim.treesitter.get_parser(0, nil, { error = false })
-	if not parser then
+	local ok, parser = pcall(vim.treesitter.get_parser, 0)
+	if not ok or not parser then
 		return
 	end
 
