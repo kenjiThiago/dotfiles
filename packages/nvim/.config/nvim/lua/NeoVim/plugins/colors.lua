@@ -87,6 +87,18 @@ require("rose-pine").setup({
 vim.api.nvim_create_autocmd("ColorScheme", {
 	callback = function()
 		vim.api.nvim_set_hl(0, "RenderMarkdownBullet", { link = "Boolean" })
+
+		-- Com fundo próprio, a winbar do oil se funde à barra do tmux logo acima; o
+		-- negrito vazaria para a pasta-mãe, que deve ficar apagada.
+		for _, group in ipairs({ "WinBar", "WinBarNC" }) do
+			local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+			hl.bg = nil
+			hl.bold = nil
+			if hl.cterm then
+				hl.cterm.bold = nil
+			end
+			vim.api.nvim_set_hl(0, group, hl)
+		end
 	end,
 })
 

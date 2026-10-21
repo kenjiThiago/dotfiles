@@ -41,7 +41,21 @@ local colunas_completas = {
 	{ "icon" },
 }
 
+function _G.OilWinbar()
+	local bufnr = vim.api.nvim_win_get_buf(vim.g.statusline_winid)
+	local dir = require("oil").get_current_dir(bufnr) or vim.api.nvim_buf_get_name(bufnr)
+	local caminho = vim.fn.fnamemodify(dir, ":~"):gsub("%%", "%%%%")
+	local pai, atual = caminho:match("^(.-)([^/]+/)$")
+	if not atual then
+		pai, atual = "", caminho
+	end
+	return " %#LineNr#" .. pai .. "%#Directory#" .. atual
+end
+
 require("oil").setup({
+	win_options = {
+		winbar = "%!v:lua.OilWinbar()",
+	},
 	keymaps = {
 		["<C-h>"] = false,
 		["<C-b>"] = { "actions.select", opts = { horizontal = true }, desc = "Open the entry in a horizontal split" },
