@@ -216,7 +216,7 @@ tema. Os nomes são genéricos de propósito — o "yellow" do Rosé Pine é o g
 | realces | `highlight_low` `highlight_med` `highlight_high` |
 | texto | `text` `subtle` `muted` |
 | ANSI | `black` `red` `green` `yellow` `blue` `magenta` `cyan` `white` (+ `bright_*`, que caem no normal se não forem definidos) |
-| papéis | `accent` `accent_alt` `success` `warning` `error` `info` |
+| papéis | `accent` `accent_alt` `success` `warning` `error` `info` `match` (trecho que casou com a busca; cai em `syn_function` se não for definido) |
 | sintaxe | `syn_comment` `syn_string` `syn_escape` `syn_constant` `syn_keyword` `syn_operator` `syn_type` `syn_function` `syn_variable` `syn_parameter` `syn_tag` `syn_attribute` |
 
 Mais os metadados: `variant` (dark/light), `nvim_colorscheme`, `zen_theme`,

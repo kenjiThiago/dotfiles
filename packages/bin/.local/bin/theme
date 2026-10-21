@@ -38,7 +38,7 @@ COLOR_KEYS=(
     black red green yellow blue magenta cyan white
     bright_black bright_red bright_green bright_yellow
     bright_blue bright_magenta bright_cyan bright_white
-    accent accent_alt success warning error info
+    accent accent_alt success warning error info match
     syn_comment syn_string syn_escape syn_constant syn_keyword syn_operator
     syn_type syn_function syn_variable syn_parameter syn_tag syn_attribute
 )
@@ -121,6 +121,9 @@ load_theme() {
     : "${syn_parameter:=$subtle}"
     : "${syn_tag:=$accent}"
     : "${syn_attribute:=$warning}"
+
+    # O luar pinta a busca com a cor de função; o padrão iguala o resto a ele.
+    : "${match:=$syn_function}"
 
     # `=` e não `:=`: um tema pode declarar o estilo vazio para desligá-lo.
     : "${syn_comment_style=italic}"

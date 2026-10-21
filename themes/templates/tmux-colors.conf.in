@@ -23,7 +23,7 @@ set-window-option -g mode-style bg="{{highlight_med}}",fg=default
 %endif
 
 %if "#{>=:#{version},3.2}"
-set-window-option -g copy-mode-match-style bg="{{overlay}}",fg="{{info}}"
+set-window-option -g copy-mode-match-style bg="{{overlay}}",fg="{{match}}"
 set-window-option -g copy-mode-current-match-style bg="{{accent}}",fg="{{base}}"
 set-window-option -g copy-mode-mark-style bg="{{highlight_high}}",fg="{{text}}"
 %endif
@@ -53,7 +53,7 @@ set -g menu-border-style fg="{{accent}}",bg="{{surface}}"
 %if "#{>=:#{version},3.8}"
 set-window-option -g tree-mode-border-style fg="{{muted}}"
 set-window-option -g tree-mode-preview-style "fg=#{?#{||:#{&&:#{pane_format},#{pane_active}},#{&&:#{window_format},#{window_active}}},{{accent}},{{subtle}}}"
-set-window-option -g switch-mode-match-style bg="{{overlay}}",fg="{{info}}"
+set-window-option -g switch-mode-match-style bg="{{overlay}}",fg="{{match}}"
 set-window-option -g pane-scrollbars-style bg="{{surface}}",fg="{{overlay}}",width=1,pad=0
 %endif
 

@@ -9,7 +9,7 @@ cwd = { fg = "{{cyan}}" }
 # O syntect só lê tmTheme por caminho absoluto (gerado de yazi-syntax.tmTheme.in).
 syntect_theme = "{{home}}/.config/yazi/theme.tmTheme"
 
-find_keyword  = { fg = "{{yellow}}", bold = true, italic = true, underline = true }
+find_keyword  = { fg = "{{match}}", bold = true, italic = true, underline = true }
 find_position = { fg = "{{magenta}}", bg = "reset", bold = true, italic = true }
 
 symlink_target = { fg = "{{subtle}}", italic = true }

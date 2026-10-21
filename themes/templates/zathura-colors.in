@@ -18,7 +18,7 @@ set notification-error-fg   "{{error}}"
 set notification-warning-bg "{{surface}}"
 set notification-warning-fg "{{warning}}"
 
-set highlight-color         "{{cyan}}80"
+set highlight-color         "{{match}}80"
 set highlight-active-color  "{{accent}}80"
 
 set completion-bg           "{{surface}}"
