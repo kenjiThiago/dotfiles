@@ -128,6 +128,13 @@ local function file_name(winid, bufnr)
 		return "%f"
 	end
 
+	if name:match("^oil://") then
+		local dir = require("oil").get_current_dir(bufnr)
+		if dir then
+			return (vim.fn.fnamemodify(dir, ":~"):gsub("%%", "%%%%"))
+		end
+	end
+
 	local cwd = vim.fn.getcwd(winid)
 	if name:sub(1, #cwd + 1) == cwd .. "/" then
 		name = name:sub(#cwd + 2)
