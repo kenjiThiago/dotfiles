@@ -2,8 +2,8 @@
 # Lido pelo FZF_DEFAULT_OPTS_FILE a cada execução: trocar o tema vale no próximo fzf.
 # Fundo -1 para herdar o do terminal ou do popup do tmux.
 
---color=fg:{{subtle}},bg:-1,hl:{{accent}}
---color=fg+:{{text}},bg+:{{overlay}},hl+:{{accent}},gutter:-1
+--color=fg:{{subtle}},bg:-1,hl:{{cyan}}
+--color=fg+:{{text}},bg+:{{overlay}},hl+:{{cyan}},gutter:-1
 --color=query:{{text}},prompt:{{accent_alt}},pointer:{{accent}},marker:{{success}}
 --color=info:{{info}},spinner:{{warning}},header:{{muted}}
---color=border:{{highlight_med}},label:{{subtle}},separator:{{overlay}},scrollbar:{{highlight_med}}
+--color=border:{{accent}},label:{{subtle}},separator:{{overlay}},scrollbar:{{highlight_med}}
