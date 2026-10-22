@@ -43,7 +43,7 @@ function M.setup()
         Whitespace = { fg = palette.overlay },
         SpecialKey = { fg = palette.success },
         WildMenu = { fg = palette.black, bg = palette.accent },
-        Search = { fg = palette.match, bg = palette.overlay },
+        Search = { fg = palette.base, bg = palette.match },
         IncSearch = { fg = palette.base, bg = palette.accent },
         CurSearch = { link = "IncSearch" },
         Substitute = { link = "IncSearch" },

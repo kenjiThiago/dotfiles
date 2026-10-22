@@ -40,6 +40,8 @@ success="#3e8fb0"    # pine
 warning="#f6c177"    # gold
 error="#eb6f92"      # love
 info="#9ccfd8"       # foam
+# Gold e não foam: o foam some no texto lavanda das listas.
+match="#f6c177"      # gold
 
 # Fonte do colorscheme luar, lida pelo lua/theme.lua gerado.
 syn_comment="#817c9c"   # a única tinta que não existe na paleta acima

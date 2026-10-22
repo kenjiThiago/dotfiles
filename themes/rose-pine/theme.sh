@@ -41,3 +41,5 @@ success="#31748f"    # pine
 warning="#f6c177"    # gold
 error="#eb6f92"      # love
 info="#9ccfd8"       # foam
+# Gold e não foam: o foam some no texto lavanda das listas.
+match="#f6c177"      # gold

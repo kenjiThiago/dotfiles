@@ -52,6 +52,8 @@ success="#205e3d"    # leaf
 warning="#795c0a"    # gold
 error="#7f2d44"      # love
 info="#174d77"       # pine
+# Gold e não pine: o pine some no texto das listas.
+match="#795c0a"      # gold
 
 # O luar distribui as tintas por papel. Em relação ao moon, syn_type vai para o
 # subtle e syn_string para o leaf, pelo contraste na projeção.

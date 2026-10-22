@@ -122,8 +122,7 @@ load_theme() {
     : "${syn_tag:=$accent}"
     : "${syn_attribute:=$warning}"
 
-    # O luar pinta a busca com a cor de função; o padrão iguala o resto a ele.
-    : "${match:=$syn_function}"
+    : "${match:=$info}"
 
     # `=` e não `:=`: um tema pode declarar o estilo vazio para desligá-lo.
     : "${syn_comment_style=italic}"

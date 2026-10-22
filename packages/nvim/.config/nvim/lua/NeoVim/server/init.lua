@@ -103,8 +103,9 @@ local function realcar_match()
 
 	local sel = vim.api.nvim_get_hl(0, { name = "PmenuSel", link = false })
 
-	vim.api.nvim_set_hl(0, "PmenuMatch", { fg = cores.warning, bold = true })
-	vim.api.nvim_set_hl(0, "PmenuMatchSel", { fg = cores.warning, bg = sel.bg, bold = true })
+	local match = cores.match or cores.warning
+	vim.api.nvim_set_hl(0, "PmenuMatch", { fg = match, bold = true })
+	vim.api.nvim_set_hl(0, "PmenuMatchSel", { fg = match, bg = sel.bg, bold = true })
 end
 
 vim.api.nvim_create_autocmd("ColorScheme", { callback = realcar_match })

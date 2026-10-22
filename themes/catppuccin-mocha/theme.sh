@@ -40,3 +40,5 @@ success="#a6e3a1"    # green
 warning="#fab387"    # peach
 error="#f38ba8"      # red
 info="#89dceb"       # sky
+# Yellow e não sky: o sky some no texto das listas.
+match="#f9e2af"      # yellow
