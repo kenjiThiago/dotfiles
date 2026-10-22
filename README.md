@@ -236,7 +236,8 @@ comentário) e lê estes valores pelo `lua/theme.lua` gerado. Então o bloco
 `syn_*` não é uma cópia do colorscheme, é a fonte dele, e é o mesmo bloco que
 faz o preview do yazi bater com o buffer ao lado. Os dois temas usam a mesma
 distribuição, com o dawn trocando duas tintas por medida de contraste (ver os
-comentários no `themes/rose-pine-dawn/theme.sh`).
+comentários no `themes/rose-pine-dawn/theme.sh`). A interface não sai da
+sintaxe: cursor, item selecionado e foco usam o `accent`, e a busca usa o `match`.
 
 `gtk_theme` e `cursor_theme` são nomes de diretório em `/usr/share/themes`,
 `/usr/share/icons`, `~/.local/share/icons` e `~/.themes`. Vazios, o `theme` não
