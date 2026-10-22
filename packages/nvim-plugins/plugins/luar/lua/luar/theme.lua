@@ -320,12 +320,13 @@ function M.setup()
         TelescopePromptBorder = { fg = palette.highlight_high, bg = palette.base },
         TelescopeResultsBorder = { fg = palette.highlight_high, bg = palette.base },
         TelescopePreviewBorder = { fg = palette.highlight_high, bg = palette.base },
-        TelescopePromptTitle = { fg = palette.base, bg = palette.accent, bold = true },
-        TelescopeResultsTitle = { fg = palette.base, bg = palette.comment, bold = true },
-        TelescopePreviewTitle = { fg = palette.base, bg = palette.comment, bold = true },
-        TelescopePromptPrefix = { fg = palette.accent, bold = true },
+        TelescopePromptTitle = { fg = palette.subtle, bg = palette.base },
+        TelescopeResultsTitle = { fg = palette.subtle, bg = palette.base },
+        TelescopePreviewTitle = { fg = palette.subtle, bg = palette.base },
+        TelescopePromptPrefix = { fg = palette.accent_alt, bold = true },
+        TelescopePromptCounter = { fg = palette.comment },
         -- Sem fg: valeria para a linha inteira e apagaria o TelescopeMatching.
-        TelescopeSelection = { bg = palette.overlay },
+        TelescopeSelection = { bg = palette.overlay, bold = true },
         TelescopeSelectionCaret = { fg = palette.accent, bg = palette.overlay },
         TelescopeMatching = { fg = palette.match, bold = true },
 

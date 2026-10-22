@@ -8,6 +8,7 @@ local fallback = {
     overlay = "#393552",
     highlight_med = "#44415a",
     highlight_high = "#56526e",
+    subtle = "#908caa",
     text = "#e0def4",
 
     comment = "#817c9c",
@@ -27,6 +28,7 @@ local fallback = {
     warning = "#f6c177",
     success = "#3e8fb0",
     accent = "#c4a7e7",
+    accent_alt = "#ea9a97",
     match = "#f6c177",
 }
 
@@ -54,6 +56,7 @@ M.colors = {
     overlay = pick(pal, "overlay"),
     highlight_med = pick(pal, "highlight_med"),
     highlight_high = pick(pal, "highlight_high"),
+    subtle = pick(pal, "subtle"),
     text = pick(pal, "text"),
 
     comment = pick(syn, "comment"),
@@ -73,6 +76,7 @@ M.colors = {
     warning = pick(pal, "warning"),
     success = pick(pal, "success"),
     accent = pick(pal, "accent"),
+    accent_alt = pick(pal, "accent_alt"),
     match = pick(pal, "match"),
 }
 
