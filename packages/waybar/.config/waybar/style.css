@@ -145,7 +145,7 @@ label:focus {
     color: @base;
 }
 
-#power-profiles-daemon.performance { color: @error; }
+#power-profiles-daemon.performance { color: @warning; }
 #power-profiles-daemon.balanced    { color: @blue; }
 #power-profiles-daemon.power-saver { color: @green; }
 

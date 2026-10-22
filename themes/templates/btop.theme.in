@@ -21,11 +21,11 @@ theme[proc_box]="{{accent}}"
 
 theme[temp_start]="{{cyan}}"
 theme[temp_mid]="{{yellow}}"
-theme[temp_end]="{{accent}}"
+theme[temp_end]="{{red}}"
 
 theme[cpu_start]="{{yellow}}"
 theme[cpu_mid]="{{cyan}}"
-theme[cpu_end]="{{accent}}"
+theme[cpu_end]="{{red}}"
 
 theme[free_start]="{{accent}}"
 theme[free_mid]="{{accent}}"

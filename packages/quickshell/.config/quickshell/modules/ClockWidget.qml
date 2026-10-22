@@ -443,7 +443,7 @@ Rectangle {
 
                     Text {
                         text: "󰍭"
-                        color: Theme.accent
+                        color: Theme.error
                         font.family: "Hack Nerd Font"
                         font.pixelSize: 15
 
@@ -469,7 +469,7 @@ Rectangle {
 
                     Text {
                         text: "󰈸"
-                        color: Theme.accent
+                        color: Theme.error
                         font.family: "Hack Nerd Font"
                         font.pixelSize: 15
 
@@ -483,7 +483,7 @@ Rectangle {
 
                     Text {
                         text: "󰂃"
-                        color: Theme.accent
+                        color: Theme.error
                         font.family: "Hack Nerd Font"
                         font.pixelSize: 15
 
