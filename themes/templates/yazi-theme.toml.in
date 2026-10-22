@@ -40,7 +40,7 @@ unset_alt   = { fg = "{{warning}}", bg = "{{surface}}" }
 # O yazi não tem mais `hovered` no [mgr]; o destaque do cursor mora aqui.
 [indicator]
 parent  = { fg = "{{text}}", bg = "{{highlight_med}}" }
-current = { fg = "{{base}}", bg = "{{accent_alt}}", bold = true }
+current = { fg = "{{base}}", bg = "{{accent}}", bold = true }
 preview = { underline = true }
 
 [status]

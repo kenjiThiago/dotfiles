@@ -46,7 +46,7 @@ set -g popup-border-style fg="{{highlight_high}}",bg="{{base}}"
 
 %if "#{>=:#{version},3.4}"
 set -g menu-style bg="{{surface}}",fg="{{text}}"
-set -g menu-selected-style bg="{{overlay}}",fg="{{accent_alt}}",bold
+set -g menu-selected-style bg="{{overlay}}",fg="{{accent}}",bold
 set -g menu-border-style fg="{{highlight_high}}",bg="{{surface}}"
 %endif
 
