@@ -69,7 +69,7 @@ require("rose-pine").setup({
 		-- "none" explícito: o rose-pine mescla com o padrão, e o fg original apagaria o
 		-- TelescopeMatching no item selecionado.
 		TelescopeSelection = { fg = "none", bg = "highlight_med" },
-		TelescopeSelectionCaret = { fg = "love", bg = "love" },
+		TelescopeSelectionCaret = { fg = "iris", bg = "iris" },
 
 		TelescopeTitle = { fg = "rose" },
 		TelescopePromptTitle = { fg = "iris", bold = true },
