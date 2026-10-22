@@ -427,7 +427,6 @@ Item {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     hostWindow: ccRoot.hostWindow
-                    onMenuClosed: ccRoot.requestClose()
                 }
             }
         }

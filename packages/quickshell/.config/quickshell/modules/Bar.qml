@@ -19,6 +19,8 @@ Scope {
     function expectMenu(): void {
         root.grabAlive = false;
         root.expectingMenu = true;
+        root.awaitingWindow = false;
+        windowWait.stop();
     }
 
     // Menu fechado sem escolha: a ilha continua aberta, com o grab de volta.
@@ -28,12 +30,46 @@ Scope {
             root.grabAlive = true;
     }
 
+    // Uma troca de foco depois da escolha é uma janela aberta por ela, e fecha a ilha.
+    // Conectar a uma rede não abre janela, e a ilha fica para a próxima escolha.
+    property bool awaitingWindow: false
+
+    // Chamado no triggered, não no fechamento: o Steam já tem o foco antes dos 200ms
+    // em que o tray espera o menu se reconstruir.
+    function menuEntryTriggered(): void {
+        root.awaitingWindow = true;
+        windowWait.restart();
+    }
+
+    function menuEntryChosen(): void {
+        root.expectingMenu = false;
+    }
+
+    Timer {
+        id: windowWait
+        interval: 1500
+        onTriggered: {
+            root.awaitingWindow = false;
+            if (root.islandState > 0 && !root.expectingMenu)
+                root.grabAlive = true;
+        }
+    }
+
+    function closeIsland(): void {
+        root.islandState = 0;
+        root.calendarExpanded = false;
+        root.grabAlive = true;
+        root.awaitingWindow = false;
+        windowWait.stop();
+    }
+
     // Repetir a tecla de um estado volta para 0. Fora do IpcHandler porque lá dentro
     // toda função vira comando do `qs ipc`.
     function toggleIsland(estado: int): void {
         root.islandState = root.islandState === estado ? 0 : estado;
         root.calendarExpanded = false;
         root.grabAlive = true;
+        root.awaitingWindow = false;
     }
 
     IpcHandler {
@@ -51,13 +87,14 @@ Scope {
     Connections {
         target: Hyprland
         function onActiveToplevelChanged() {
+            if (root.islandState > 0 && root.awaitingWindow) {
+                root.closeIsland();
+                return;
+            }
             if (root.expectingMenu)
                 return;
-            if (root.islandState > 0 && !root.grabAlive) {
-                root.islandState = 0;
-                root.calendarExpanded = false;
-                root.grabAlive = true;
-            }
+            if (root.islandState > 0 && !root.grabAlive)
+                root.closeIsland();
         }
     }
 
@@ -108,6 +145,7 @@ Scope {
                     root.calendarExpanded = false;
                     root.islandState = 0;
                     root.grabAlive = true;
+                    root.awaitingWindow = false;
                 }
 
                 Item {
@@ -193,12 +231,22 @@ Scope {
                     root.menuFinished();
                 }
 
+                function menuEntryTriggered() {
+                    root.menuEntryTriggered();
+                }
+
+                function menuEntryChosen() {
+                    root.menuEntryChosen();
+                }
+
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
                     acceptedButtons: Qt.NoButton // Só hover: o clique segue para quem está embaixo.
                     function rearm() {
-                        if (root.expectingMenu)
+                        // O ponteiro fica sobre a ilha depois da escolha, e o grab tomaria o
+                        // foco da janela que está abrindo.
+                        if (root.expectingMenu || root.awaitingWindow)
                             return;
                         if (root.islandState > 0 && !root.grabAlive) {
                             root.grabAlive = true;
@@ -242,6 +290,7 @@ Scope {
                         if (newState === 0) {
                             root.grabAlive = true;
                             root.expectingMenu = false;
+                            root.awaitingWindow = false;
                         }
                     }
 

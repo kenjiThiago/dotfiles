@@ -12,8 +12,6 @@ Row {
 
     readonly property int count: trayRepeater.count
 
-    signal menuClosed
-
     property bool entryChosen: false
 
     spacing: 10
@@ -31,7 +29,11 @@ Row {
 
     MenuWatcher {
         menu: menuAnchor.menu
-        onTriggered: trayRoot.entryChosen = true
+        onTriggered: {
+            trayRoot.entryChosen = true;
+            if (trayRoot.hostWindow)
+                trayRoot.hostWindow.menuEntryTriggered();
+        }
     }
 
     // Um menu que se reconstrói (a lista de redes do nm-applet) pode fechar e
@@ -41,10 +43,12 @@ Row {
         id: closeDebounce
         interval: 200
         onTriggered: {
-            if (trayRoot.hostWindow && trayRoot.hostWindow.menuFinished)
-                trayRoot.hostWindow.menuFinished();
-            if (trayRoot.entryChosen)
-                trayRoot.menuClosed();
+            if (trayRoot.hostWindow) {
+                if (trayRoot.entryChosen)
+                    trayRoot.hostWindow.menuEntryChosen();
+                else
+                    trayRoot.hostWindow.menuFinished();
+            }
             // Segurar o menu de um item que saiu do tray (o "Sair" do app) derruba o quickshell.
             menuAnchor.menu = null;
         }
