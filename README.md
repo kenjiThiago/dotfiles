@@ -169,7 +169,7 @@ existem.
 
 **Nos shells e no tmux** não há chave de perfil: cada ferramenta extra vem
 atrás de um teste. O `.bashrc` e o `.zshrc` usam o starship se ele existir e
-caem num prompt próprio se não, e o mesmo vale para eza, fzf, zoxide e nvm; o
+caem num prompt próprio se não, e o mesmo vale para fzf, zoxide e nvm; o
 `.tmux.conf` só define `wl-copy` como `copy-command`, só chama o tpm e só cria
 o popup de cores se o que eles precisam estiver instalado. Para o que for de
 uma máquina só, os três leem um arquivo não versionado no fim: `~/.bashrc.local`,

@@ -3,6 +3,7 @@
 bash
 bin
 btop
+dircolors
 git
 lazygit
 nvim

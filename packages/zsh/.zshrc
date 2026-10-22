@@ -20,21 +20,18 @@ bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey -s '^[^F' "tmux-sessionizer\n"
 
+[[ -r ~/.config/dircolors ]] && eval "$(dircolors -b ~/.config/dircolors)"
+
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
 alias nv="nvim"
 alias c="clear"
 
-if command -v eza >/dev/null; then
-    alias ls="eza --color=always --icons=auto"
-    alias ll="eza -lAF --color=always --icons=auto"
-    alias l="eza -AF --color=always --icons=auto"
-else
-    alias ls="ls --color=auto"
-    alias ll="ls -alFh --color=auto"
-    alias l="ls -CF --color=auto"
-fi
+alias ls="ls --color=auto"
+alias ll="ls -alFh --color=auto"
+alias l="ls -CF --color=auto"
+alias la="ls -A --color=auto"
 
 command -v fzf >/dev/null && source <(fzf --zsh)
 command -v zoxide >/dev/null && eval "$(zoxide init --cmd cd zsh)"

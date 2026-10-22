@@ -30,17 +30,12 @@ fi
 # Sem o arquivo, o fzf recusa abrir.
 [[ -f ~/.config/fzf/colors ]] && export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/colors"
 
-if command -v eza >/dev/null; then
-    alias ls="eza --color=always --icons=auto"
-    alias ll="eza -lAF --color=always --icons=auto"
-    alias l="eza -AF --color=always --icons=auto"
-    alias la="eza -A --color=always --icons=auto"
-else
-    alias ls='ls --color=auto'
-    alias ll='ls -alFh --color=auto'
-    alias l='ls -CF --color=auto'
-    alias la='ls -A --color=auto'
-fi
+[[ -r ~/.config/dircolors ]] && eval "$(dircolors -b ~/.config/dircolors)"
+
+alias ls='ls --color=auto'
+alias ll='ls -alFh --color=auto'
+alias l='ls -CF --color=auto'
+alias la='ls -A --color=auto'
 
 alias grep='grep --color=auto'
 alias c="clear"

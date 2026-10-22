@@ -69,7 +69,6 @@ starship
 fnm
 zoxide
 fzf
-eza
 bat
 fd
 ripgrep
