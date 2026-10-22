@@ -51,6 +51,11 @@ vim.keymap.set("n", "<leader>gs", "<cmd>silent !tmux-lazygit<CR>")
 
 vim.keymap.set("n", "<leader>nh", vim.cmd.nohlsearch)
 
+-- O <C-l>, que limpa os multicursores por padrão, ficou com o harpoon.
+vim.keymap.set("n", "<Esc>", function()
+	vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("nvim.multicursor"), 0, -1)
+end, { desc = "Limpar os multicursores" })
+
 vim.keymap.set("n", "<leader>gc", ":Comp")
 
 -- O :match e o matchadd valem por janela, então cada janela nova recebe o seu.
