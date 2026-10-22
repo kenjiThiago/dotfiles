@@ -2,12 +2,12 @@
 gui:
   theme:
     activeBorderColor:
-      - "{{cyan}}"
+      - "{{accent}}"
       - bold
     inactiveBorderColor:
       - "{{muted}}"
     searchingActiveBorderColor:
-      - "{{yellow}}"
+      - "{{match}}"
       - bold
     optionsTextColor:
       - "{{blue}}"
