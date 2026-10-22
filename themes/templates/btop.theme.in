@@ -27,9 +27,9 @@ theme[cpu_start]="{{yellow}}"
 theme[cpu_mid]="{{cyan}}"
 theme[cpu_end]="{{red}}"
 
-theme[free_start]="{{accent}}"
-theme[free_mid]="{{accent}}"
-theme[free_end]="{{accent}}"
+theme[free_start]="{{blue}}"
+theme[free_mid]="{{blue}}"
+theme[free_end]="{{blue}}"
 
 theme[cached_start]="{{magenta}}"
 theme[cached_mid]="{{magenta}}"

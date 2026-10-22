@@ -69,7 +69,7 @@ window#waybar.empty #window {
 }
 
 #custom-system:hover {
-    color: @accent;
+    color: @text;
 }
 
 #cpu {
