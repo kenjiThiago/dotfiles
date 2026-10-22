@@ -26,6 +26,8 @@ local fallback = {
     error = "#eb6f92",
     warning = "#f6c177",
     success = "#3e8fb0",
+    accent = "#c4a7e7",
+    match = "#f6c177",
 }
 
 local fallback_style = { comment = "", keyword = "bold", parameter = "", attribute = "" }
@@ -70,6 +72,8 @@ M.colors = {
     error = pick(pal, "error"),
     warning = pick(pal, "warning"),
     success = pick(pal, "success"),
+    accent = pick(pal, "accent"),
+    match = pick(pal, "match"),
 }
 
 -- `syn_*_style` ("bold", "italic" ou "") vira a tabela do nvim_set_hl.

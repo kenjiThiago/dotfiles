@@ -32,6 +32,7 @@ return {
         warning    = "{{warning}}",
         error      = "{{error}}",
         info       = "{{info}}",
+        match      = "{{match}}",
     },
 
     -- Papéis de sintaxe, consumidos pelo luar.
