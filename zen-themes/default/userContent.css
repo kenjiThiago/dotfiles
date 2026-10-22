@@ -6,8 +6,8 @@
 @media (prefers-color-scheme: dark), (prefers-color-scheme: light) {
 
   :root {
-    --accent: var(--dots-accent-alt);
-    --accent-hover: var(--dots-accent);
+    --accent: var(--dots-accent);
+    --accent-hover: var(--dots-accent-alt);
   }
 
   @-moz-document url-prefix("about:") {

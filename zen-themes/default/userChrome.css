@@ -5,8 +5,8 @@
 /* As duas condições: a variante clara/escura é decidida pela paleta, não pelo navegador. */
 @media (prefers-color-scheme: dark), (prefers-color-scheme: light) {
   :root {
-    --accent: var(--dots-accent-alt);
-    --accent-hover: var(--dots-accent);
+    --accent: var(--dots-accent);
+    --accent-hover: var(--dots-accent-alt);
     --accent-gradient: linear-gradient(115deg, var(--dots-accent), var(--dots-accent-alt));
 
     --zen-colors-primary: var(--dots-base) !important;
