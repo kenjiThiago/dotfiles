@@ -57,7 +57,7 @@ progress_normal = { fg = "{{accent}}", bg = "{{overlay}}" }
 progress_error  = { fg = "{{error}}",  bg = "{{overlay}}" }
 
 [which]
-border          = { fg = "{{accent}}" }
+border          = { fg = "{{highlight_high}}" }
 mask            = { bg = "{{surface}}" }
 cand            = { fg = "{{info}}" }
 rest            = { fg = "{{muted}}" }
@@ -65,14 +65,14 @@ desc            = { fg = "{{accent_alt}}" }
 separator_style = { fg = "{{highlight_med}}" }
 
 [confirm]
-border  = { fg = "{{accent}}" }
+border  = { fg = "{{highlight_high}}" }
 title   = { fg = "{{accent}}" }
 list    = { fg = "{{info}}" }
 btn_yes = { fg = "{{base}}", bg = "{{accent}}", bold = true }
 btn_no  = { fg = "{{text}}" }
 
 [spot]
-border   = { fg = "{{accent}}" }
+border   = { fg = "{{highlight_high}}" }
 title    = { fg = "{{accent}}" }
 tbl_col  = { fg = "{{info}}" }
 tbl_cell = { fg = "{{warning}}", reversed = true }
@@ -83,24 +83,24 @@ title_warn  = { fg = "{{warning}}" }
 title_error = { fg = "{{error}}" }
 
 [pick]
-border   = { fg = "{{accent}}" }
+border   = { fg = "{{highlight_high}}" }
 active   = { fg = "{{accent_alt}}", bold = true }
 inactive = {}
 
 [input]
-border   = { fg = "{{accent}}" }
+border   = { fg = "{{highlight_high}}" }
 selected = { reversed = true }
 
 [cmp]
-border   = { fg = "{{accent}}" }
+border   = { fg = "{{highlight_high}}" }
 active   = { fg = "{{base}}", bg = "{{accent_alt}}" }
 inactive = {}
 
 [tasks]
-border  = { fg = "{{accent}}" }
+border  = { fg = "{{highlight_high}}" }
 hovered = { fg = "{{accent_alt}}", bold = true }
 
 [help]
-border  = { fg = "{{accent}}" }
+border  = { fg = "{{highlight_high}}" }
 chord   = { fg = "{{info}}" }
 hovered = { fg = "{{base}}", bg = "{{highlight_high}}", bold = true }

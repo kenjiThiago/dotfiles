@@ -6,7 +6,7 @@
 --color=fg+:{{text}},bg+:{{overlay}},hl+:{{match}},gutter:-1
 --color=query:{{text}},prompt:{{accent_alt}},pointer:{{accent}},marker:{{success}}
 --color=info:{{info}},spinner:{{warning}},header:{{muted}}
---color=border:{{accent}},label:{{subtle}},separator:{{overlay}},scrollbar:{{highlight_med}}
+--color=border:{{highlight_high}},label:{{subtle}},separator:{{overlay}},scrollbar:{{highlight_med}}
 
 # Com gutter:-1, o ▌ das linhas não selecionadas sairia na cor do texto do terminal.
 --gutter=' '

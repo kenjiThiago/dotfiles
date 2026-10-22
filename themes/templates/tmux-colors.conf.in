@@ -37,16 +37,17 @@ set-window-option -g pane-border-style fg="{{overlay}}"
 set-window-option -g pane-active-border-style "#{?pane_in_mode,fg={{warning}},#{?synchronize-panes,fg={{error}},fg={{accent}}}}"
 
 # Opaco: a transparência é da janela inteira, e com bg=default o popup se
-# confundiria com o painel. A borda em accent marca a camada.
+# confundiria com o painel. A borda é neutra, mas visível: com o terminal opaco
+# ela é o único limite entre o popup e o painel de trás.
 %if "#{>=:#{version},3.3}"
 set -g popup-style bg="{{base}}",fg="{{text}}"
-set -g popup-border-style fg="{{accent}}",bg="{{base}}"
+set -g popup-border-style fg="{{highlight_high}}",bg="{{base}}"
 %endif
 
 %if "#{>=:#{version},3.4}"
 set -g menu-style bg="{{surface}}",fg="{{text}}"
 set -g menu-selected-style bg="{{overlay}}",fg="{{accent_alt}}",bold
-set -g menu-border-style fg="{{accent}}",bg="{{surface}}"
+set -g menu-border-style fg="{{highlight_high}}",bg="{{surface}}"
 %endif
 
 # Da 3.8 em diante o choose-tree e as barras de rolagem usam cores próprias do tmux.
