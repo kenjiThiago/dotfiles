@@ -44,8 +44,10 @@ bright_black="#645f72" # muted
 
 # Os demais bright_* caem no normal: num tema claro, mais claro é menos legível.
 
-accent="#7f2d44"     # love
-accent_alt="#634683" # iris
+# O love fica só no error: como accent, o foco e o perigo tinham a mesma cor.
+# Sem rose nesta paleta; gold e leaf já são warning e success.
+accent="#634683"     # iris
+accent_alt="#286a72" # foam
 success="#205e3d"    # leaf
 warning="#795c0a"    # gold
 error="#7f2d44"      # love

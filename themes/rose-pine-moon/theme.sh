@@ -33,8 +33,9 @@ white="#e0def4"   # text
 
 bright_black="#6e6a86" # muted
 
-accent="#eb6f92"     # love
-accent_alt="#c4a7e7" # iris
+# O love fica só no error: como accent, o foco e o perigo tinham a mesma cor.
+accent="#c4a7e7"     # iris
+accent_alt="#ea9a97" # rose
 success="#3e8fb0"    # pine
 warning="#f6c177"    # gold
 error="#eb6f92"      # love

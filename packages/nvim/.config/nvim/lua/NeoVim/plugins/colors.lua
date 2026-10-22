@@ -49,12 +49,12 @@ if theme.colorscheme:match("^rose%-pine") then
 		muted = c.muted,
 		subtle = c.subtle,
 		text = c.text,
-		love = c.accent,
+		love = c.red,
 		gold = c.warning,
 		rose = c.cyan,
 		pine = c.success,
 		foam = c.info,
-		iris = c.accent_alt,
+		iris = c.magenta,
 		leaf = c.green,
 	}
 end
