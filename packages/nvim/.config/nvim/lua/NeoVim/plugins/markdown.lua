@@ -34,3 +34,18 @@ vim.api.nvim_create_autocmd("FileType", {
 		})
 	end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "markdown",
+	callback = function(ev)
+		vim.keymap.set("n", "<leader>mr", function()
+			local apresentar = vim.wo.spell
+			vim.opt_local.spell = not apresentar
+			if apresentar then
+				require("render-markdown").buf_enable()
+			else
+				require("render-markdown").buf_disable()
+			end
+		end, { buffer = ev.buf })
+	end,
+})
