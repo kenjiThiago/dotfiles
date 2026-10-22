@@ -62,7 +62,7 @@ function M.setup()
         TabLine = { fg = palette.comment, bg = palette.surface },
         TabLineFill = { bg = palette.base },
         TabLineSel = { fg = palette.accent, bg = palette.base, bold = true },
-        FloatBorder = { fg = palette.highlight_med, bg = palette.surface },
+        FloatBorder = { fg = palette.highlight_high, bg = palette.surface },
         FloatTitle = { fg = palette.accent, bg = palette.surface, bold = true },
         YankHighlight = { fg = palette.base, bg = palette.accent },
 
@@ -316,10 +316,10 @@ function M.setup()
 
         TelescopeNormal = { fg = palette.text, bg = palette.base },
         TelescopePromptNormal = { fg = palette.text, bg = palette.base },
-        TelescopeBorder = { fg = palette.highlight_med, bg = palette.base },
-        TelescopePromptBorder = { fg = palette.accent, bg = palette.base },
-        TelescopeResultsBorder = { fg = palette.highlight_med, bg = palette.base },
-        TelescopePreviewBorder = { fg = palette.highlight_med, bg = palette.base },
+        TelescopeBorder = { fg = palette.highlight_high, bg = palette.base },
+        TelescopePromptBorder = { fg = palette.highlight_high, bg = palette.base },
+        TelescopeResultsBorder = { fg = palette.highlight_high, bg = palette.base },
+        TelescopePreviewBorder = { fg = palette.highlight_high, bg = palette.base },
         TelescopePromptTitle = { fg = palette.base, bg = palette.accent, bold = true },
         TelescopeResultsTitle = { fg = palette.base, bg = palette.comment, bold = true },
         TelescopePreviewTitle = { fg = palette.base, bg = palette.comment, bold = true },
@@ -350,7 +350,7 @@ function M.setup()
         PmenuSbar = { bg = palette.surface },
         PmenuThumb = { bg = palette.highlight_med },
         -- Borda do 'pumborder' do perfil servidor, no tom do FloatBorder.
-        PmenuBorder = { fg = palette.highlight_med, bg = palette.surface },
+        PmenuBorder = { fg = palette.highlight_high, bg = palette.surface },
         -- Pum e wildmenu nativos do perfil servidor.
         PmenuMatch = { fg = palette.match, bg = palette.surface, bold = true },
         PmenuMatchSel = { fg = palette.match, bg = palette.overlay, bold = true },
