@@ -20,6 +20,7 @@ $cyan    = {{cyan:rgb}}
 
 $accent    = {{accent:rgb}}
 $accentAlt = {{accent_alt:rgb}}
+$brand     = {{brand:rgb}}
 
 # Sombra para texto sobre o wallpaper, no tom do fundo do tema.
 $shadow = rgba({{base:hex}}b3)

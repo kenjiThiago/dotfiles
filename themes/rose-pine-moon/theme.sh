@@ -33,7 +33,7 @@ white="#e0def4"   # text
 
 bright_black="#6e6a86" # muted
 
-# O love fica só no error, para o foco não ter a cor do perigo.
+# O love fica no error e na marca, fora do foco, que não deve ter a cor do perigo.
 accent="#c4a7e7"     # iris
 accent_alt="#ea9a97" # rose
 success="#3e8fb0"    # pine
@@ -42,6 +42,8 @@ error="#eb6f92"      # love
 info="#9ccfd8"       # foam
 # Gold e não foam: o foam some no texto lavanda das listas.
 match="#f6c177"      # gold
+brand="#eb6f92"      # love
+brand_alt="#c4a7e7"  # iris
 
 # Fonte do colorscheme luar, lida pelo lua/theme.lua gerado.
 syn_comment="#817c9c"   # a única tinta que não existe na paleta acima

@@ -26,6 +26,8 @@
 
   --dots-accent: {{accent}};
   --dots-accent-alt: {{accent_alt}};
+  --dots-brand: {{brand}};
+  --dots-brand-alt: {{brand_alt}};
   --dots-success: {{success}};
   --dots-warning: {{warning}};
   --dots-error: {{error}};

@@ -17,7 +17,7 @@ theme[div_line]="{{muted}}"
 theme[cpu_box]="{{cyan}}"
 theme[mem_box]="{{green}}"
 theme[net_box]="{{magenta}}"
-theme[proc_box]="{{accent}}"
+theme[proc_box]="{{brand}}"
 
 theme[temp_start]="{{cyan}}"
 theme[temp_mid]="{{yellow}}"

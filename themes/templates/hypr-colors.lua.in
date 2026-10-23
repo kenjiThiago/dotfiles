@@ -25,6 +25,8 @@ M.cyan    = "{{cyan:argb}}"
 
 M.accent    = "{{accent:argb}}"
 M.accentAlt = "{{accent_alt:argb}}"
+M.brand     = "{{brand:argb}}"
+M.brandAlt  = "{{brand_alt:argb}}"
 M.success   = "{{success:argb}}"
 M.warning   = "{{warning:argb}}"
 M.error     = "{{error:argb}}"

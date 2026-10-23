@@ -7,7 +7,7 @@
   :root {
     --accent: var(--dots-accent);
     --accent-hover: var(--dots-accent-alt);
-    --accent-gradient: linear-gradient(115deg, var(--dots-accent), var(--dots-accent-alt));
+    --brand-gradient: linear-gradient(115deg, var(--dots-brand), var(--dots-brand-alt));
 
     --zen-colors-primary: var(--dots-base) !important;
     --zen-primary-color: var(--accent) !important;
@@ -126,7 +126,7 @@
   .urlbar-background {
     border: 2px solid transparent !important;
     background: linear-gradient(var(--dots-surface), var(--dots-surface)) padding-box,
-      var(--accent-gradient) border-box !important;
+      var(--brand-gradient) border-box !important;
   }
 
   #urlbar[open] .urlbar-background {
@@ -145,7 +145,7 @@
   .tab-background[selected=""] {
     border: 1.5px solid transparent !important;
     background: linear-gradient(var(--dots-overlay), var(--dots-overlay)) padding-box,
-      var(--accent-gradient) border-box !important;
+      var(--brand-gradient) border-box !important;
   }
 
   /* Inerte: o zen-compact-mode fica no <html>, ancestral do body. :root[...] o ativaria. */

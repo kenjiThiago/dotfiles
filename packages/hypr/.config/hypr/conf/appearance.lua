@@ -23,7 +23,7 @@ hl.config({
         border_size = 2,
 
         col = {
-            active_border = { colors = { M.accent, M.accentAlt }, angle = 115 },
+            active_border = { colors = { M.brand, M.brandAlt }, angle = 115 },
             inactive_border = M.muted,
         },
 

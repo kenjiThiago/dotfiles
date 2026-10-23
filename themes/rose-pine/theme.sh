@@ -34,7 +34,7 @@ white="#e0def4"   # text
 
 bright_black="#6e6a86" # muted
 
-# O love fica só no error, para o foco não ter a cor do perigo.
+# O love fica no error e na marca, fora do foco, que não deve ter a cor do perigo.
 accent="#c4a7e7"     # iris
 accent_alt="#ebbcba" # rose
 success="#31748f"    # pine
@@ -43,3 +43,5 @@ error="#eb6f92"      # love
 info="#9ccfd8"       # foam
 # Gold e não foam: o foam some no texto lavanda das listas.
 match="#f6c177"      # gold
+brand="#eb6f92"      # love
+brand_alt="#c4a7e7"  # iris

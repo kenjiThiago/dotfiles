@@ -44,7 +44,7 @@ bright_black="#645f72" # muted
 
 # Os demais bright_* caem no normal: num tema claro, mais claro é menos legível.
 
-# O love fica só no error, para o foco não ter a cor do perigo.
+# O love fica no error e na marca, fora do foco, que não deve ter a cor do perigo.
 # Sem rose nesta paleta; gold e leaf já são warning e success.
 accent="#634683"     # iris
 accent_alt="#286a72" # foam
@@ -54,6 +54,8 @@ error="#7f2d44"      # love
 info="#174d77"       # pine
 # Gold e não pine: o pine some no texto das listas.
 match="#795c0a"      # gold
+brand="#7f2d44"      # love
+brand_alt="#634683"  # iris
 
 # O luar distribui as tintas por papel. Em relação ao moon, syn_type vai para o
 # subtle e syn_string para o leaf, pelo contraste na projeção.
