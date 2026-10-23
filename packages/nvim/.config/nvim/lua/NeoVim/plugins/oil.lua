@@ -41,6 +41,23 @@ local colunas_completas = {
 	{ "icon" },
 }
 
+-- Com uma pasta o imv ordena por nome; com arquivos explícitos, mantém a ordem do oil.
+local function abrir_no_imv()
+	local oil = require("oil")
+	local dir, atual = oil.get_current_dir(), oil.get_cursor_entry()
+	if not dir or not atual then
+		return
+	end
+	local arquivos = {}
+	for lnum = 1, vim.api.nvim_buf_line_count(0) do
+		local entry = oil.get_entry_on_line(0, lnum)
+		if entry and entry.type == "file" then
+			table.insert(arquivos, dir .. entry.name)
+		end
+	end
+	vim.system({ "imv", "-n", dir .. atual.name, unpack(arquivos) }, { detach = true })
+end
+
 function _G.OilWinbar()
 	local bufnr = vim.api.nvim_win_get_buf(vim.g.statusline_winid)
 	local dir = require("oil").get_current_dir(bufnr) or vim.api.nvim_buf_get_name(bufnr)
@@ -75,6 +92,10 @@ require("oil").setup({
 					})
 				end
 			end,
+		},
+		["gi"] = {
+			callback = abrir_no_imv,
+			desc = "Abrir as imagens no imv na ordem do oil",
 		},
 		["gh"] = {
 			callback = function()
