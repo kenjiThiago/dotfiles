@@ -82,10 +82,10 @@ keep() {
 load_config
 exclude_stowed_config
 
-# --tiebreak=index: em busca curta o score empata, e decide a ordem da entrada.
+# O nome final da pasta vence o resto do caminho; no empate, decide a ordem da entrada.
 # O --tmux não pode se repetir: popup dentro de popup só modifica o existente e o
 # fzf sai na hora. Quem já é popup avisa pelo -e do display-popup.
-FZF_OPTS=(--layout reverse --tiebreak=index)
+FZF_OPTS=(--layout reverse --scheme=path --tiebreak=pathname,index)
 if [[ -z ${TMUX_SESSIONIZER_POPUP:-} ]]; then
     FZF_OPTS+=(--height 40% --tmux center)
 fi
