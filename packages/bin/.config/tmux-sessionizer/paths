@@ -30,3 +30,4 @@
 ~/dotfiles/packages:3
 -~/plugins/*
 -~/dotfiles/packages/*/.config
+-*/.git
