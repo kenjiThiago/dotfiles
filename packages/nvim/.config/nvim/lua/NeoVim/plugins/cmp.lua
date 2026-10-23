@@ -69,6 +69,23 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "BufNewFile" }, {
 						score_offset = 100,
 					},
 					lsp = { fallbacks = {} },
+					-- O blink consulta o cmdline sem a palavra digitada, e o :Man não completa sem prefixo.
+					cmdline = {
+						override = {
+							get_completions = function(self, context, callback)
+								return self:get_completions(context, function(resposta)
+									if resposta and #resposta.items == 0 then
+										local linha = context.line:sub(1, context.cursor[2])
+										for _, c in ipairs(vim.fn.getcompletion(linha, "cmdline")) do
+											table.insert(resposta.items, { label = c })
+										end
+										resposta.is_incomplete_forward = true
+									end
+									callback(resposta)
+								end)
+							end,
+						},
+					},
 					buffer = {
 						opts = {
 							get_bufnrs = vim.api.nvim_list_bufs,
