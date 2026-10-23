@@ -117,6 +117,15 @@ elif [[ $selected_name == "nvim" ]]; then
     selected_name="Nvim"
 fi
 
+# Pasta com o nome de uma sessão de outra pasta ganha o nome da mãe na frente.
+parent=$selected
+while tmux has-session -t="$selected_name" 2> /dev/null &&
+    [[ $(tmux display-message -p -t "=$selected_name:" '#{session_path}') != "${selected%/}" ]]; do
+    parent=$(dirname "$parent")
+    [[ $parent == / ]] && break
+    selected_name="$(basename "$parent" | tr ":,. " "____")/$selected_name"
+done
+
 switch_to() {
     if [[ -z "$TMUX" ]]; then
         tmux attach-session -t "$selected_name"
