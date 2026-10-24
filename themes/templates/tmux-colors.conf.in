@@ -4,6 +4,7 @@
 
 set -g status-style bg="{{surface}}",fg="{{text}}"
 set -g status-left "#[fg={{brand}},bold] #S  "
+set -g status-right "#[fg={{subtle}}]#{E:@popups}"
 
 set-window-option -g window-status-style fg="{{subtle}}"
 set-window-option -g window-status-current-style fg="{{brand_alt}}",bg="{{overlay}}",bold
