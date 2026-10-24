@@ -455,12 +455,18 @@ for um `#rrggbb`.
   ainda sobe — só sem tema. Antes do primeiro `theme set` o `colors.yml` não
   existe, e os dois lugares checam isso antes de montar a lista (arquivo
   faltando na lista impede o lazygit de iniciar).
-- **lazygit — onde ele roda**: sempre no popup do tmux, sobre a sessão
-  `scratch-lg`, por `prefix+g` no terminal ou `<leader>gs` de dentro do nvim.
-  Os dois chamam o mesmo `tmux-lazygit`. A sessão é o ponto: ela sobrevive ao
-  fechar do popup, então o lazygit volta com o mesmo scroll e o mesmo estado.
-  Em troca, só a primeira abertura define o diretório; depois disso o popup
-  apenas reata, mesmo que você tenha trocado de projeto.
+- **lazygit — onde ele roda**: sempre no popup do tmux, por `prefix+g` no
+  terminal ou `<leader>gs` de dentro do nvim. Os dois chamam o `tmux-lazygit`,
+  que passa pelo `tmux-popup`, o mesmo do python (`prefix+P`), das cores
+  (`prefix+H`) e do shell (`M-O`).
+- **Popups do tmux**: cada um roda sobre uma sessão escondida,
+  `scratch-<nome>-<sessão>`. A sessão é o ponto: ela sobrevive ao fechar do
+  popup, então o programa volta com o mesmo scroll e o mesmo estado, e o popup
+  tem copy mode. Cada sessão do tmux tem a sua, então o lazygit de um projeto
+  não aparece em outro. A mesma tecla, dentro do popup, só o fecha; sair do
+  programa mata a sessão. As `scratch-*` ficam fora do `prefix+s`, do `C-M-s` e
+  do `C-M-n`/`C-M-p` (`tmux-trocar-sessao`), e o `prefix+k` mata as da sessão
+  atual (ou, de dentro de um popup, só ele).
 - **lazygit — editar**: `os.editPreset: nvim` no `config.yml`. O arquivo abre
   dentro do próprio popup, tomando a tela do lazygit (`editInTerminal: true`
   vem junto do preset), e devolve para ele ao fechar o nvim. Sem RPC, sem
