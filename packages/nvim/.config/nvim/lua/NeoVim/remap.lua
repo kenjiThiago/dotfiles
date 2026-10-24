@@ -25,6 +25,11 @@ vim.keymap.set("x", "<leader>p", '"_dP')
 vim.keymap.set("n", "<leader>y", '"+y')
 vim.keymap.set("v", "<leader>y", '"+y')
 vim.keymap.set("n", "<leader>Y", '"+y$')
+-- Passa pelo "z para não ler o "+, que no OSC 52 do servidor trava esperando o terminal.
+vim.keymap.set("x", "<leader>Y", function()
+	vim.cmd('normal! "zy')
+	vim.fn.setreg("+", (vim.fn.getreg("z"):gsub("\n$", "")), "v")
+end)
 
 vim.keymap.set("n", "<leader>d", '"_d')
 vim.keymap.set("v", "<leader>d", '"_d')
