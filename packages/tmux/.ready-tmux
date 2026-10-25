@@ -3,4 +3,4 @@
 if [[ "$(pwd)" != $HOME && "$(pwd)" != $HOME/projetos ]] then
     tmux neww -dn "rascunho"
 fi
-tmux send-keys -t 1 "nv .; clear" ^M
+tmux send-keys -t 1 "tmux clear-history; nv .; clear" ^M
