@@ -15,6 +15,24 @@ vim.api.nvim_create_autocmd("PackChanged", {
 	end,
 })
 
+-- Guarda os servidores desligados para religar os mesmos, inclusive os do mason.
+local servidores_desligados
+
+vim.keymap.set("n", "<leader>c", function()
+	if servidores_desligados then
+		vim.lsp.enable(servidores_desligados)
+		servidores_desligados = nil
+	else
+		servidores_desligados = vim.iter(vim.lsp.get_configs({ enabled = true }))
+			:map(function(config)
+				return config.name
+			end)
+			:totable()
+		vim.lsp.enable(servidores_desligados, false)
+	end
+	vim.notify(servidores_desligados and "LSP e blink desligados" or "LSP e blink ligados")
+end, { desc = "Alternar o LSP e o blink" })
+
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "BufNewFile" }, {
 	once = true,
 	callback = function()
@@ -27,6 +45,9 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost", "BufNewFile" }, {
 		require("luasnip.loaders.from_vscode").lazy_load()
 
 		require("blink.cmp").setup({
+			enabled = function()
+				return servidores_desligados == nil
+			end,
 			signature = {
 				enabled = true,
 			},
