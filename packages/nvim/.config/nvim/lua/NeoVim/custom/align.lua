@@ -80,6 +80,15 @@ function M.alinhar(inicio, fim, delim, todas)
 		end
 	end
 
+	-- Linha que começa no delimitador, como `| a | b |`, não ganha espaço antes dele.
+	local sem_inicio = true
+	for _, partida in pairs(partidas) do
+		if vim.trim(partida.campos[1]) ~= "" then
+			sem_inicio = false
+			break
+		end
+	end
+
 	local mudou = false
 
 	for indice, linha in ipairs(linhas) do
@@ -91,9 +100,10 @@ function M.alinhar(inicio, fim, delim, todas)
 				local sep = partida.seps[i]
 				local texto = pedaco(partida.campos[i], sep)
 				local padding = string.rep(" ", larguras[i] - vim.fn.strdisplaywidth(texto))
+				local antes = (i == 1 and sem_inicio) and "" or " "
 
 				saida[#saida + 1] = COLADOS[sep] and (texto .. padding .. " ")
-					or (texto .. padding .. " " .. sep .. " ")
+					or (texto .. padding .. antes .. sep .. " ")
 			end
 
 			saida[#saida + 1] = partida.campos[#partida.campos]
