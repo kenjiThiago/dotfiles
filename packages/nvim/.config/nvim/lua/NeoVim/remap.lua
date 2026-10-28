@@ -115,6 +115,9 @@ vim.keymap.set("n", "<leader>nl", "<cmd>set list!<CR>", { desc = "Mostrar espaç
 vim.keymap.set("n", "<leader>n8", function()
 	vim.o.colorcolumn = vim.o.colorcolumn == "" and "80" or ""
 end, { desc = "Mostrar a coluna 80" })
+vim.keymap.set("n", "<leader>zs", function()
+	vim.o.laststatus = vim.o.laststatus == 0 and 2 or 0
+end, { desc = "Alternar a statusline" })
 vim.keymap.set("n", "<leader>nr", function()
 	local save_cursor = vim.fn.getpos(".")
 	vim.cmd([[%s/\s\+$//e]])
