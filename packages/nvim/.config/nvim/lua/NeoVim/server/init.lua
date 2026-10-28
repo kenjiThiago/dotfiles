@@ -7,7 +7,6 @@ end
 require("NeoVim.server.find")
 require("NeoVim.server.dirs")
 require("NeoVim.server.marcas")
-require("NeoVim.server.align")
 
 vim.opt.runtimepath:append(vim.fn.expand("~/plugins/luar"))
 
@@ -41,7 +40,7 @@ vim.keymap.set("n", "<leader>pv", vim.cmd.Ex, { desc = "Abrir o diretório do ar
 vim.keymap.set("n", "<leader>pr", vim.cmd.Rex, { desc = "Voltar do netrw" })
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "netrw", "nvim-undotree" },
+	pattern = "netrw",
 	callback = function()
 		vim.opt_local.cursorline = true
 		vim.opt_local.cursorlineopt = "line"
@@ -54,11 +53,6 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.opt_local.statuscolumn = ""
 	end,
 })
-
--- Embutido a partir do 0.12; antes disso o packadd erra.
-if pcall(vim.cmd.packadd, "nvim.undotree") then
-	vim.keymap.set("n", "<leader>u", "<cmd>Undotree<CR>")
-end
 
 vim.keymap.set("n", "<leader>ps", function()
 	vim.ui.input({ prompt = "Grep > " }, function(padrao)

@@ -99,7 +99,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "undotree",
+	pattern = "nvim-undotree",
 	callback = function()
 		vim.opt_local.cursorline = true
 		vim.opt_local.cursorlineopt = "line"

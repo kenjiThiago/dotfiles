@@ -1,5 +1,3 @@
--- Substitui o mini.align do desktop, com as mesmas teclas:
---
 --   ga=  ip           alinha o parágrafo pelo primeiro "="
 --   :'<,'>Align :     alinha a seleção pelo primeiro ":"
 --   :'<,'>Align! ,    alinha por todas as vírgulas, coluna a coluna

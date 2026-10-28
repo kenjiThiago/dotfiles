@@ -150,9 +150,10 @@ O que muda de fato em cada perfil:
 **No neovim** o `lua/NeoVim/profile.lua` decide entre o modo completo e o
 mínimo. No mínimo o `init.lua` sai cedo, sem tocar em `vim.pack`, e quem assume
 é o `lua/NeoVim/server/`. Lá está o que no completo vem de plugin — LSP nativo
-de pyright e ruff, netrw no lugar do oil, `nvim.undotree`, o wildmenu da cmdline
-e os keymaps de marca, que fazem as vezes do harpoon. O núcleo (`set.lua`,
-`remap.lua`, `autocmd.lua`, `custom/statusline.lua`) é o mesmo arquivo nos dois.
+de pyright e ruff, netrw no lugar do oil, o wildmenu da cmdline e os keymaps de
+marca, que fazem as vezes do harpoon. O núcleo (`set.lua`, `remap.lua`,
+`autocmd.lua`, `custom/statusline.lua`, `custom/align.lua`) é o mesmo arquivo
+nos dois, e o `nvim.undotree` também vale para os dois.
 
 O modo segue o perfil (o servidor fica no mínimo), mas a variável
 `DOTFILES_NVIM` sobrepõe, porque nem todo servidor dispensa os plugins e nem

@@ -12,6 +12,11 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 vim.keymap.set("n", "<M-i>", "<C-^>")
 
+-- Embutido a partir do 0.12; antes disso o packadd erra.
+if pcall(vim.cmd.packadd, "nvim.undotree") then
+	vim.keymap.set("n", "<leader>u", "<cmd>Undotree<CR>")
+end
+
 vim.keymap.set("n", "J", "mzJ`z")
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
