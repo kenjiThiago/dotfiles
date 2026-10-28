@@ -89,6 +89,21 @@ Item {
     property var sourceSink: Pipewire.defaultAudioSource
     property bool sourceIsMuted: (sourceSink && sourceSink.audio) ? sourceSink.audio.muted : true
 
+    // Sem o tracker o state dos grupos fica parado em Unlinked.
+    PwObjectTracker {
+        objects: Pipewire.linkGroups.values
+    }
+    readonly property var activeLinkGroups: Pipewire.linkGroups.values.filter(g => g.state === PwLinkState.Active && g.source && g.target)
+
+    // O rnnoise e os medidores de nível ficam ligados ao microfone o tempo todo,
+    // e não são um app gravando.
+    readonly property bool micInUse: activeLinkGroups.some(g => g.source.type === PwNodeType.AudioSource && g.target.type === PwNodeType.AudioInStream && !g.target.properties["node.link-group"] && !g.target.properties["stream.monitor"])
+    readonly property bool cameraInUse: activeLinkGroups.some(g => g.source.type === PwNodeType.VideoSource && g.source.properties["device.api"] !== undefined)
+
+    // Pelo Hyprland e não pelo Pipewire: pega também quem usa o screencopy direto,
+    // como o grim, sem passar pelo portal.
+    property bool screenCaptured: false
+
     function setVolume(pct) {
         if (sink && sink.audio)
             sink.audio.volume = Math.max(0.0, Math.min(1.0, pct / 100.0));
@@ -365,6 +380,8 @@ Item {
         function onRawEvent(event) {
             if (event.name === "activelayout" || event.name === "configreloaded")
                 keyboardSettle.restart();
+            else if (event.name === "screencast")
+                sys.screenCaptured = event.data.startsWith("1");
         }
     }
 

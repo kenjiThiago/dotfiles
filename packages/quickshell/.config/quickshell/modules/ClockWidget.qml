@@ -98,6 +98,9 @@ Rectangle {
     readonly property bool showBatt: SystemMonitor.pct <= 20 && !SystemMonitor.isCharging
     readonly property bool showLayout: !SystemMonitor.keyboardIsDefault && SystemMonitor.keyboardLayout !== ""
     readonly property bool showVpn: SystemMonitor.vpnActive
+    readonly property bool showScreen: SystemMonitor.screenCaptured
+    readonly property bool showMic: SystemMonitor.micInUse
+    readonly property bool showCamera: SystemMonitor.cameraInUse
 
     // Medição fora da CAMADA 1: um positionador não refaz o layout enquanto está
     // invisível, e a largura congelaria ao esvaziar a linha.
@@ -110,6 +113,24 @@ Rectangle {
             id: measureAlerts
             spacing: 8
 
+            Text {
+                text: "󰹑"
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 15
+                visible: island.showScreen
+            }
+            Text {
+                text: "󰍬"
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 15
+                visible: island.showMic
+            }
+            Text {
+                text: "󰄀"
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 15
+                visible: island.showCamera
+            }
             Text {
                 text: "󰖂"
                 font.family: "Hack Nerd Font"
@@ -413,6 +434,45 @@ Rectangle {
                     id: alertRow
                     anchors.centerIn: parent
                     spacing: 8
+
+                    Text {
+                        text: "󰹑"
+                        color: Theme.warning
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 15
+
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.verticalCenterOffset: -1
+
+                        visible: island.showScreen
+                    }
+
+                    Text {
+                        text: "󰍬"
+                        color: Theme.warning
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 15
+
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.verticalCenterOffset: -1
+
+                        visible: island.showMic
+                    }
+
+                    Text {
+                        text: "󰄀"
+                        color: Theme.warning
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 15
+
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.verticalCenterOffset: -1
+
+                        visible: island.showCamera
+                    }
 
                     Text {
                         text: "󰖂"
