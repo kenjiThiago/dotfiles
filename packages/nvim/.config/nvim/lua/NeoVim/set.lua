@@ -16,6 +16,9 @@ vim.opt.expandtab = true
 
 vim.opt.smartindent = true
 
+-- O indent/python.vim usa 2 * shiftwidth depois de ( [ { e alinha o fechamento pela linha anterior.
+vim.g.python_indent = { open_paren = "shiftwidth()", closed_paren_align_last_line = false }
+
 vim.opt.wrap = false
 
 vim.opt.swapfile = false
