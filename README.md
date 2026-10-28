@@ -147,14 +147,31 @@ O que muda de fato em cada perfil:
 | tpm e plugins do nvim | baixados | nada a baixar |
 | templates de tema | os 15 | só os que não precisam de desktop |
 
-**No neovim** o `lua/NeoVim/profile.lua` é a chave: no perfil servidor o
-`init.lua` sai cedo, sem tocar em `vim.pack`, e quem assume é o
-`lua/NeoVim/server/`. Lá está o que no desktop vem de plugin — LSP nativo de
-pyright e ruff, netrw no lugar do oil, `nvim.undotree`, o wildmenu da cmdline
+**No neovim** o `lua/NeoVim/profile.lua` decide entre o modo completo e o
+mínimo. No mínimo o `init.lua` sai cedo, sem tocar em `vim.pack`, e quem assume
+é o `lua/NeoVim/server/`. Lá está o que no completo vem de plugin — LSP nativo
+de pyright e ruff, netrw no lugar do oil, `nvim.undotree`, o wildmenu da cmdline
 e os keymaps de marca, que fazem as vezes do harpoon. O núcleo (`set.lua`,
 `remap.lua`, `autocmd.lua`, `custom/statusline.lua`) é o mesmo arquivo nos dois.
 
-O wildmenu nativo é só do servidor de propósito: no desktop quem completa a
+O modo segue o perfil (o servidor fica no mínimo), mas a variável
+`DOTFILES_NVIM` sobrepõe, porque nem todo servidor dispensa os plugins e nem
+toda máquina local os quer. Para fixar numa máquina, exporte no
+`~/.bashrc.local`; para uma vez só, prefixe o comando:
+
+```sh
+export DOTFILES_NVIM=full    # servidor com plugins, baixados na 1ª abertura
+DOTFILES_NVIM=minimal nvim   # sem plugins só desta vez
+```
+
+Numa máquina emprestada dá para usar o nvim mínimo direto do clone, sem linkar
+nada (sem o `~/plugins/luar` o colorscheme cai no habamax):
+
+```sh
+XDG_CONFIG_HOME=~/dotfiles/packages/nvim/.config DOTFILES_NVIM=minimal nvim
+```
+
+O wildmenu nativo é só do modo mínimo de propósito: no completo quem completa a
 cmdline é o `blink.cmp`, e os dois brigariam pelas mesmas teclas. É por ele que
 passa o `:Find` (`<leader>pf`), que faz as vezes do telescope: a lista de
 arquivos vem do rg, com cache por cwd, e quem filtra e realça é o próprio nvim,
@@ -374,8 +391,8 @@ Nos templates, cada chave tem quatro formas:
 Do hyprland ao zathura, e mais o gtk, o qt e o cursor, tudo é marcado como
 `desktop` na terceira coluna do `manifest` e não é gerado no perfil servidor. O
 `server-colors.conf` é o inverso: só sai no perfil servidor. O neovim
-consome o `theme.lua` por dois caminhos: `plugins/colors.lua` no desktop e
-`lua/NeoVim/server/init.lua` no servidor, que aplica o colorscheme sem plugin.
+consome o `theme.lua` por dois caminhos: `plugins/colors.lua` no modo completo e
+`lua/NeoVim/server/init.lua` no mínimo, que aplica o colorscheme sem plugin.
 
 O Zen é o único que não passa pelo `manifest`: o diretório do perfil tem nome
 sorteado, então quem escolhe o destino é o `apply_zen` do `theme`.

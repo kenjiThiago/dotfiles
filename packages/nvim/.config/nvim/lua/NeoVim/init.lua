@@ -55,8 +55,8 @@ _G.icons = {
 	},
 }
 
--- Daqui para baixo depende de plugin, então é só do desktop.
-if require("NeoVim.profile").server then
+-- Daqui para baixo depende de plugin, então fica fora do modo mínimo.
+if require("NeoVim.profile").minimal then
 	require("NeoVim.server")
 	return
 end

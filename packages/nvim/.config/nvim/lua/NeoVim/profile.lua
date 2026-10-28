@@ -30,7 +30,14 @@ local function detect()
 end
 
 M.name = detect()
-M.server = M.name == "server"
-M.desktop = not M.server
+
+-- Plugins são escolha de cada máquina, não do perfil: o DOTFILES_NVIM vence, e
+-- sem ele (ou com outro valor) o servidor fica sem plugins.
+local modo = vim.env.DOTFILES_NVIM
+if modo == "minimal" or modo == "full" then
+	M.minimal = modo == "minimal"
+else
+	M.minimal = M.name == "server"
+end
 
 return M

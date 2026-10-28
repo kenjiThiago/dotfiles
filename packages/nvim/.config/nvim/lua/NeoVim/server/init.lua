@@ -1,5 +1,5 @@
--- Perfil servidor: nvim sem plugins e do gerenciador da distro, então o que é
--- recente fica atrás de teste. Abaixo do 0.11 não há vim.lsp.config.
+-- Modo mínimo: nvim sem plugins e muitas vezes do gerenciador da distro, então o
+-- que é recente fica atrás de teste. Abaixo do 0.11 não há vim.lsp.config.
 if vim.fn.has("nvim-0.11") == 1 then
 	require("NeoVim.server.lsp")
 end

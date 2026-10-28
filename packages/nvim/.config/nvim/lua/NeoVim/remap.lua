@@ -1,6 +1,6 @@
 vim.g.mapleader = " "
 
-if require("NeoVim.profile").desktop then
+if not require("NeoVim.profile").minimal then
 	vim.keymap.set("n", "<leader>pv", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 	vim.keymap.set("n", "<leader>-", function()
 		require("NeoVim.custom.yazi").open()
