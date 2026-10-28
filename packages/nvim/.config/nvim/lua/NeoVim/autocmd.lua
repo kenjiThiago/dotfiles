@@ -172,3 +172,46 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPre" }, {
 		vim.keymap.set({ "n", "v" }, "<leader>y", "y", { buffer = args.buf })
 	end,
 })
+
+vim.api.nvim_create_autocmd("CmdwinEnter", {
+	group = vim.api.nvim_create_augroup("BuscaCmdwin", { clear = true }),
+	pattern = { "/", "?" },
+	callback = function(args)
+		local win = vim.fn.win_getid(vim.fn.winnr("#"))
+		local view = vim.api.nvim_win_call(win, vim.fn.winsaveview)
+		local registro, destaque = vim.fn.getreg("/"), vim.v.hlsearch
+
+		vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "CursorMoved" }, {
+			buffer = args.buf,
+			callback = function()
+				local padrao = vim.api.nvim_get_current_line()
+				local ok, achou = pcall(vim.api.nvim_win_call, win, function()
+					vim.fn.winrestview(view)
+					return vim.fn.search(padrao, args.match == "?" and "b" or "") > 0
+				end)
+				if ok and achou then
+					vim.fn.setreg("/", padrao)
+				end
+				-- O Nvim restaura o v:hlsearch ao sair do autocmd.
+				vim.schedule(function()
+					vim.v.hlsearch = ok and achou and 1 or 0
+				end)
+			end,
+		})
+
+		vim.api.nvim_create_autocmd("CmdwinLeave", {
+			once = true,
+			callback = function()
+				vim.api.nvim_win_call(win, function()
+					vim.fn.winrestview(view)
+				end)
+				vim.fn.setreg("/", registro)
+				vim.schedule(function()
+					if vim.fn.getreg("/") == registro then
+						vim.v.hlsearch = destaque
+					end
+				end)
+			end,
+		})
+	end,
+})
