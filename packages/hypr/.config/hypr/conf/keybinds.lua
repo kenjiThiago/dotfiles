@@ -93,7 +93,7 @@ hl.bind(mainMod .. "+ CTRL + K", hl.dsp.window.move({ into_or_create_group = "u"
 hl.bind(mainMod .. "+ CTRL + J", hl.dsp.window.move({ into_or_create_group = "d" }))
 
 -- Grupo travado não absorve a próxima janela aberta ao lado.
-hl.bind(mainMod .. "+ CTRL + W", hl.dsp.group.lock_active())
+hl.bind(mainMod .. "+ CTRL + W", hl.dsp.group.lock())
 
 hl.bind(mainMod .. " + SHIFT + I", hl.dsp.exec_cmd("window-info"))
 
