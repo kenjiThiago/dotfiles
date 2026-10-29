@@ -270,7 +270,7 @@ if [[ $PROFILE == server ]]; then
     cat <<EOF
   Ainda precisa da sua mão:
     - instale os pacotes pelo gerenciador da distro. O mínimo para esta
-      config: git stow tmux neovim fzf fd-find ripgrep bat zoxide lazygit yazi
+      config: git stow tmux neovim fzf fd-find ripgrep zoxide lazygit
     - o neovim precisa ser 0.11 ou mais novo, senão fica sem LSP; o
       autocompletar da cmdline e o nvim.undotree só entram no 0.12. Os
       repositórios de várias distros estão bem atrás disso.

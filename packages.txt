@@ -6,6 +6,9 @@ git                          # install.sh, tmux-sessionizer
 stow                         # dots link/migrate
 base-devel                   # makepkg, para compilar do AUR
 paru                         # AUR (o install.sh compila sozinho se faltar)
+xdg-user-dirs                # xdg-user-dirs-update no install.sh
+psmisc                       # killall no rofi-script e no keybinds.lua
+openssh                      # tmux-respawn
 
 # Hyprland e sessão
 hyprland
@@ -69,7 +72,6 @@ starship
 fnm
 zoxide
 fzf
-bat
 fd
 ripgrep
 jq                           # window-info, rofi-script
@@ -93,6 +95,7 @@ luarocks
 # Áudio
 pipewire
 pipewire-pulse               # sink padrão que o quickshell controla
+wireplumber                  # wpctl do volume no keybinds.lua
 playerctl                    # play-pause do XF86AudioPlay, no keybinds.lua
 wiremix                      # on-click do quickshell
 
