@@ -1,7 +1,8 @@
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("HighlightYank", {}),
 	callback = function()
-		vim.hl.hl_op({
+		-- O hl_op só existe a partir do 0.13, que marca o on_yank como obsoleto.
+		(vim.hl.hl_op or vim.hl.on_yank)({
 			higroup = "YankHighlight",
 			timeout = 50,
 		})
