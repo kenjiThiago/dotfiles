@@ -29,12 +29,12 @@ sof-firmware
 xf86-video-vesa
 
 # Pacman / AUR
-pacman-contrib               # paccache, checkupdates, rankmirrors
+pacman-contrib               # paccache (timer habilitado pelo install.sh), checkupdates, rankmirrors
 reflector
 downgrade                    # AUR
 
 # Bluetooth
-bluez
+bluez                        # habilitado pelo install.sh
 bluez-utils
 bluetui
 

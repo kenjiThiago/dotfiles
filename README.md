@@ -25,9 +25,12 @@ cd ~/dotfiles
 
 O que ele faz, em ordem: instala os pacotes de `packages.txt` com o paru
 (compilando o paru antes, se preciso), limpa symlinks de um layout antigo,
-linka os pacotes em `~`, aplica o tema, habilita `NetworkManager` e
-`power-profiles-daemon`, roda o `xdg-user-dirs-update`, troca seu shell para
-zsh e baixa os plugins do tmux e do neovim.
+linka os pacotes em `~`, aplica o tema, habilita os serviços (`NetworkManager`,
+`power-profiles-daemon`, `keyd`, `bluetooth`, `systemd-timesyncd` e os timers
+`fstrim` e `paccache`, além do `hyprpolkitagent` no systemd do usuário), roda o
+`xdg-user-dirs-update`, troca seu shell para zsh e baixa os plugins do tmux e
+do neovim. Serviço de pacote que não está instalado é pulado, então o
+`bluetooth` e o `paccache` só entram com `--extra`.
 
 Cada etapa é pulável — `--skip-packages`, `--skip-services`, `--skip-plugins`
 — e tudo é idempotente: rodar de novo não quebra nada.

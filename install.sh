@@ -27,7 +27,11 @@ SKIP_PLUGINS=0
 
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
 
-SERVICES=(NetworkManager power-profiles-daemon)
+SERVICES=(
+    NetworkManager.service power-profiles-daemon.service keyd.service
+    bluetooth.service systemd-timesyncd.service fstrim.timer paccache.timer
+)
+USER_SERVICES=(hyprpolkitagent.service)
 
 msg()  { printf '\n\033[1;34m::\033[0m \033[1m%s\033[0m\n' "$*"; }
 ok()   { printf '\033[1;32m ✔\033[0m %s\n' "$*"; }
@@ -165,23 +169,31 @@ if [[ $DRY == 1 ]]; then theme_args+=(--dry); fi
 DOTFILES_PROFILE="$PROFILE" \
     "$DOTFILES/packages/bin/.local/bin/theme" set "$THEME_NAME" "${theme_args[@]}"
 
+# Com --user só enable, sem --now: o graphical-session.target ainda não subiu.
 enable_service() {
-    local unit=$1
-    if ! systemctl cat "$unit.service" >/dev/null 2>&1; then
+    local unit=$1; shift
+    if ! systemctl "$@" cat "$unit" >/dev/null 2>&1; then
         warn "$unit não está instalado, pulando"
         return 0
     fi
-    if systemctl is-enabled --quiet "$unit.service" 2>/dev/null; then
+    if systemctl "$@" is-enabled --quiet "$unit" 2>/dev/null; then
         ok "$unit já habilitado"
         return 0
     fi
-    run sudo systemctl enable --now "$unit.service"
+    if [[ $* == --user ]]; then
+        run systemctl --user enable "$unit"
+    else
+        run sudo systemctl enable --now "$unit"
+    fi
 }
 
 if [[ $SKIP_SERVICES == 0 ]] && command -v systemctl >/dev/null; then
     msg "Habilitando serviços"
     for unit in "${SERVICES[@]}"; do
         enable_service "$unit"
+    done
+    for unit in "${USER_SERVICES[@]}"; do
+        enable_service "$unit" --user
     done
 elif [[ $SKIP_SERVICES == 1 ]]; then
     msg "Pulando serviços (--skip-services)"

@@ -40,7 +40,7 @@ satty
 wl-clipboard                 # wl-copy/wl-paste (cliphist, window-info)
 cliphist
 wev
-keyd
+keyd                         # habilitado pelo install.sh
 brightnessctl
 
 # Aparência
