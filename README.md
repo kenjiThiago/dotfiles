@@ -25,7 +25,8 @@ cd ~/dotfiles
 
 O que ele faz, em ordem: instala os pacotes de `packages.txt` com o paru
 (compilando o paru antes, se preciso), limpa symlinks de um layout antigo,
-linka os pacotes em `~`, aplica o tema, habilita os serviços (`NetworkManager`,
+linka os pacotes em `~`, aplica o tema, copia os arquivos de `system/` para a
+raiz, habilita os serviços (`NetworkManager`,
 `power-profiles-daemon`, `keyd`, `bluetooth`, `systemd-timesyncd` e os timers
 `fstrim` e `paccache`, além do `hyprpolkitagent` no systemd do usuário), roda o
 `xdg-user-dirs-update`, troca seu shell para zsh e baixa os plugins do tmux e
@@ -118,6 +119,24 @@ arquivo de `~` e rode `dots link`.
 gerado ali dentro sujaria o git. Com `--no-folding`, `~/.config/waybar` é um
 diretório de verdade, com symlinks dos arquivos versionados **e** os arquivos
 de cor gerados convivendo lado a lado.
+
+### Fora da home
+
+O stow só escreve em `~`. O que vive em `/etc` fica em `system/`, com o mesmo
+caminho a partir da raiz (`system/etc/keyd/default.conf` -> `/etc/keyd/default.conf`),
+e o `install.sh` copia com `sudo` em vez de linkar. Hoje é só a config do keyd.
+O perfil `server` pula essa etapa.
+
+Por ser cópia, editar o arquivo do repositório não muda nada até você rodar
+`./install.sh` de novo, ou copiar e recarregar na mão:
+
+```sh
+sudo install -Dm644 system/etc/keyd/default.conf /etc/keyd/default.conf
+sudo keyd reload
+```
+
+Editar direto em `/etc` também não volta para o repositório: copie de volta
+antes de commitar.
 
 ## Perfis
 

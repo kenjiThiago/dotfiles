@@ -187,6 +187,25 @@ enable_service() {
     fi
 }
 
+# Cópia em vez de symlink: um /etc apontando para dentro de ~ quebra se a home
+# não estiver montada ou legível pelo root.
+install_system_file() {
+    local src=$DOTFILES/system/$1 dest=/$1
+    if cmp -s "$src" "$dest"; then
+        ok "$dest já atualizado"
+        return 1
+    fi
+    run sudo install -Dm644 "$src" "$dest"
+}
+
+if [[ $PROFILE != server ]]; then
+    msg "Copiando os arquivos de sistema"
+    if install_system_file etc/keyd/default.conf \
+        && systemctl is-active --quiet keyd.service; then
+        run sudo keyd reload
+    fi
+fi
+
 if [[ $SKIP_SERVICES == 0 ]] && command -v systemctl >/dev/null; then
     msg "Habilitando serviços"
     for unit in "${SERVICES[@]}"; do
