@@ -13,7 +13,7 @@ atual=$3
 
 mapfile -t sessoes < <(tmux list-sessions -F '#S' | grep -v '^scratch-')
 total=${#sessoes[@]}
-((total > 1)) || exit
+((total > 1)) || exit 0
 
 for i in "${!sessoes[@]}"; do
     [[ ${sessoes[i]} == "$atual" ]] && break
