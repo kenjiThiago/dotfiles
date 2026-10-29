@@ -502,6 +502,14 @@ for um `#rrggbb`.
 - **btop**: ele reescreve o `btop.conf` ao sair quando você muda alguma opção,
   e como o arquivo é um symlink, isso suja o repositório. Rode `git status`
   depois de mexer nas configurações dele.
+- **mimeapps**: o "abrir sempre com" de um app GTK reescreve o
+  `~/.config/mimeapps.list` trocando o arquivo inteiro, e o symlink vira um
+  arquivo comum. A mudança não aparece no `git status`, e o próximo `dots link`
+  recusa o arquivo; traga o que quiser manter com `dots adopt mimeapps`.
+- **rbw**: o `~/.config/rbw/config.json` fica fora do repositório porque leva o
+  e-mail da conta, e o JSON não tem include. Numa máquina nova:
+  `rbw config set email <e-mail>` e
+  `rbw config set pinentry ~/.local/bin/pinentry-wayland`.
 - **Clipboard** (`SUPER+Y`, ou Setup → Clipboard): `Enter` copia, `alt+p` fixa
   ou solta, `alt+d` apaga a entrada, `alt+w` limpa o histórico. Os fixados vão
   para `~/.local/share/clipboard-pins`, um arquivo por entrada, e sobrevivem ao
