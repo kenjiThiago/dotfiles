@@ -3,7 +3,6 @@ gui:
   language: "en"
   border: "rounded"
   scrollHeight: 8
-  screenMode: "half"
 
 promptToReturnFromSubprocess: false
 
