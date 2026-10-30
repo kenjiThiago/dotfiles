@@ -25,7 +25,6 @@ xorg-xwayland                # apps X sob o Hyprland
 
 # Barra / shell gráfico
 quickshell                   # AUR — 'qs ipc call bar cycle'
-waybar                       # fallback desligado: a barra ativa é o quickshell
 libnotify                    # notify-send no window-info e rofi-script
 
 # Menu
@@ -64,7 +63,6 @@ woff2-font-awesome
 
 # Terminal
 ghostty                      # terminal dos on-click do quickshell
-alacritty                    # config e tema próprios em packages/alacritty
 
 # Shell e utilitários de linha de comando
 zsh
@@ -75,7 +73,6 @@ fzf
 fd
 ripgrep
 jq                           # window-info, rofi-script
-yazi                         # y() do .zshrc, <leader>- do nvim, tema e config próprios
 tmux
 viu                          # preview de wallpaper no rofi-script
 pastel                       # testar-cor

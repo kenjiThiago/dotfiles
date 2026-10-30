@@ -46,7 +46,6 @@ noise-suppression-for-voice
 nmap
 ufw
 rsync
-sshfs
 
 # Linha de comando
 bc
@@ -74,7 +73,6 @@ gcc-fortran
 gdb
 make
 go
-deno
 rustup
 uv
 jdk21-openjdk
@@ -94,7 +92,6 @@ typst
 tectonic
 ghostscript
 libreoffice-fresh
-obsidian
 
 # Mídia
 mpv
@@ -108,7 +105,4 @@ goverlay
 wine-mono
 winetricks
 curseforge                   # AUR
-
-# Trabalho
-omnissa-horizon-client       # AUR
 
