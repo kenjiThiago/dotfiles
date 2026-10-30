@@ -1,40 +1,47 @@
 #!/usr/bin/env bash
 # tmux-nvim-edit: Um "controle remoto" inteligente para abrir arquivos no Neovim via Tmux.
 
+if [[ -z "$1" ]]; then
+    echo "uso: tmux-nvim-edit ARQUIVO [LINHA]" >&2
+    exit 1
+fi
+
 ARQUIVO=$(realpath "$1")
-LINHA=${2:-} # Pega a linha como segundo argumento (se existir)
+LINHA=${2:-}
 SESSAO=$(tmux display-message -p '#S')
 
-# Monta os comandos dependendo se a linha foi passada ou não
-if [[ -n "$LINHA" ]]; then
-    # Comando para quando o Neovim não está aberto (inicia do zero)
-    CMD_SHELL="nvim +$LINHA \"$ARQUIVO\""
+ARQUIVO_SHELL=$(printf '%q' "$ARQUIVO")
 
-    # MÁGICA: Abre o arquivo via Lua, escapa espaços e deleta a si mesmo do histórico
-    CMD_VIM=":lua vim.cmd('e +$LINHA ' .. vim.fn.fnameescape([[$ARQUIVO]])); vim.fn.histdel('cmd', -1)"
+# Monta os comandos dependendo se a linha foi passada ou não.
+# O espaço inicial em CMD_SHELL evita o histórico do shell quando
+# HISTCONTROL=ignorespace (bash) ou HIST_IGNORE_SPACE (zsh) estão ativos.
+# Em CMD_VIM, o histdel vem antes do :e para que um erro no :e não deixe a linha no histórico.
+if [[ -n "$LINHA" ]]; then
+    CMD_SHELL=" nvim +$LINHA $ARQUIVO_SHELL"
+    CMD_VIM=":lua vim.fn.histdel('cmd', -1); vim.cmd('e +$LINHA ' .. vim.fn.fnameescape([=[$ARQUIVO]=]))"
 else
-    CMD_SHELL="nvim \"$ARQUIVO\""
-    CMD_VIM=":lua vim.cmd('e ' .. vim.fn.fnameescape([[$ARQUIVO]])); vim.fn.histdel('cmd', -1)"
+    CMD_SHELL=" nvim $ARQUIVO_SHELL"
+    CMD_VIM=":lua vim.fn.histdel('cmd', -1); vim.cmd('e ' .. vim.fn.fnameescape([=[$ARQUIVO]=]))"
 fi
 
 # REGRA 1: Procura se o Neovim já está aberto em algum lugar (ignora o _scratch_)
 ALVO=$(tmux list-panes -s -F '#{window_index}.#{pane_index} #{pane_current_command} #{window_name}' | grep -v "_scratch_" | awk '$2=="nvim" {print $1}' | head -n 1)
 
 if [[ -n "$ALVO" ]]; then
-    # Achou o Neovim! Força o modo normal e manda abrir o arquivo na linha certa.
     tmux send-keys -t "$SESSAO:$ALVO" 'C-\' 'C-n' Escape Escape "$CMD_VIM" 'C-m'
     tmux select-window -t "$SESSAO:${ALVO%.*}"
+    tmux select-pane -t "$SESSAO:$ALVO"
     exit 0
 fi
 
-# REGRA 2: Não tem Neovim. Então procura QUALQUER painel rodando só um shell livre (zsh/bash/fish)
+# REGRA 2: Não tem Neovim.
 LIVRE=$(tmux list-panes -s -F '#{window_index}.#{pane_index} #{pane_current_command} #{window_name}' | grep -v "_scratch_" | awk '$2~/^(zsh|bash|fish)$/ {print $1}' | head -n 1)
 
 if [[ -n "$LIVRE" ]]; then
-    # Achou um terminal livre! Inicia o Neovim lá dentro.
     tmux send-keys -t "$SESSAO:$LIVRE" "$CMD_SHELL" 'C-m'
     tmux select-window -t "$SESSAO:${LIVRE%.*}"
+    tmux select-pane -t "$SESSAO:$LIVRE"
 else
-    # REGRA 3: Tudo está ocupado. Cria uma janela nova só para ele.
-    tmux new-window -c "$PWD" "$CMD_SHELL"
+    # REGRA 3: Tudo está ocupado.
+    tmux new-window -t "$SESSAO:" -c "$PWD" "$CMD_SHELL"
 fi

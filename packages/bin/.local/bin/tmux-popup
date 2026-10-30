@@ -31,15 +31,11 @@ shift $((OPTIND - 1))
 
 # Função que varre a sessão e empurra todas as janelas _scratch_ para o fim (99, 98, 97...)
 reordenar_scratches() {
-    local slot=99
-    # Lista apenas os nomes das janelas que começam com _scratch_
-    for w in $(tmux list-windows -t "$sessao" -F '#W' 2>/dev/null | grep '^_scratch_'); do
-        local idx_atual=$(tmux list-windows -t "$sessao" -F '#{window_index} #W' | awk -v nome="$w" '$2 == nome {print $1}')
-        if [[ "$idx_atual" != "$slot" ]]; then
-            tmux move-window -d -s "$sessao:$w" -t "$sessao:$slot" 2>/dev/null
-        fi
+    local slot=99 idx name
+    while read -r idx name; do
+        [[ $idx != "$slot" ]] && tmux move-window -d -s "$sessao:$idx" -t "$sessao:$slot"
         ((slot--))
-    done
+    done < <(tmux list-windows -t "$sessao" -F '#{window_index} #{window_name}' | grep -E '^[0-9]+ _scratch_' | sort -rn)
 }
 
 # Se chamado apenas com a flag -R, organiza as janelas e morre
@@ -64,7 +60,7 @@ janela_atual=$(tmux display-message -p '#W')
 
 if [[ "$janela_atual" == "$alvo_nome" ]]; then
     # Estamos nela. Vamos sair e DEPOIS reordenar.
-    tmux last-window ${cliente:+-c "$cliente"}
+    tmux last-window -t "$sessao"
     reordenar_scratches
     exit 0
 fi
