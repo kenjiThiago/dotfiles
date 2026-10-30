@@ -43,6 +43,11 @@ vim.keymap.set("n", "<M-j>", "<cmd>cnext<CR>zz")
 vim.keymap.set("n", "<M-k>", "<cmd>cprev<CR>zz")
 vim.keymap.set("n", "<leader>j", "<cmd>lnext<CR>zz")
 vim.keymap.set("n", "<leader>k", "<cmd>lprev<CR>zz")
+vim.keymap.set('n', '<leader>tw', function()
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  vim.cmd([[silent! keeppatterns s/\(\w*\%#\w*\)\(\W\+\)\(\w\+\)/\3\2\1/e]])
+  pcall(vim.api.nvim_win_set_cursor, 0, cursor_pos)
+end, { desc = 'Swap word (a = b -> b = a)' })
 
 -- Entre listas da quickfix, não dentro de uma.
 vim.keymap.set("n", "<leader>qo", "<cmd>colder<CR>")
