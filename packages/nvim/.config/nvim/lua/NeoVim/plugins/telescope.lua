@@ -36,6 +36,9 @@ require("telescope").setup({
 		help_tags = {
 			theme = "ivy",
 		},
+        buffers = {
+			theme = "dropdown",
+        },
 	},
 	defaults = {
 		-- Padrões Lua sobre o caminho inteiro: sem as barras, "%.git" esconderia o .github.
