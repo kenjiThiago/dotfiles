@@ -3,5 +3,10 @@ gui:
   language: "en"
   border: "rounded"
 
+promptToReturnFromSubprocess: false
+
 os:
-  editPreset: nvim
+  editPreset: 'custom'
+  edit: 'tmux-nvim-edit {{filename}}'
+  editAtLine: 'tmux-nvim-edit {{filename}} {{line}}'
+  editAtLineAndWait: 'tmux-nvim-edit {{filename}} {{line}}'

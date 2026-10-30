@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
-# tmux-popup: abre o comando num popup sobre a sessão escondida scratch-<nome>-<sessão>.
-# A sessão guarda o estado e dá copy mode ao popup; cada sessão do tmux tem a sua.
-# Chamado de dentro do próprio popup, só o fecha, e o estado fica para a próxima.
-#
-#   tmux-popup [-c cliente] [-s sessão] [-d dir] [-w largura] [-h altura]
-#              [-T título] [-e VAR=valor]... <nome> [comando]
-#   tmux-popup -k [-s sessão]   mata os popups da sessão (ou o popup em que está)
-#
-# O nome não leva hífen: é o que separa as partes do nome da sessão escondida.
+# tmux-popup: gerencia janelas ocultas de "scratch" na sessão atual.
 
 cliente=""
 sessao=""
@@ -16,9 +8,10 @@ largura=75%
 altura=75%
 titulo=""
 matar=0
+reordenar=0
 ambiente=()
 
-while getopts "c:s:d:w:h:T:e:k" opt; do
+while getopts "c:s:d:w:h:T:e:kR" opt; do
     case $opt in
         c) cliente=$OPTARG ;;
         s) sessao=$OPTARG ;;
@@ -28,50 +21,63 @@ while getopts "c:s:d:w:h:T:e:k" opt; do
         T) titulo=$OPTARG ;;
         e) ambiente+=(-e "$OPTARG") ;;
         k) matar=1 ;;
+        R) reordenar=1 ;;
         *) exit 2 ;;
     esac
 done
 shift $((OPTIND - 1))
 
 [[ -n $sessao ]] || sessao=$(tmux display-message -p '#S')
-# O -t lê . e : como separadores de janela e pane; o tmux-sessionizer faz o mesmo.
-base=${sessao//[.:]/_}
+
+# Função que varre a sessão e empurra todas as janelas _scratch_ para o fim (99, 98, 97...)
+reordenar_scratches() {
+    local slot=99
+    # Lista apenas os nomes das janelas que começam com _scratch_
+    for w in $(tmux list-windows -t "$sessao" -F '#W' 2>/dev/null | grep '^_scratch_'); do
+        local idx_atual=$(tmux list-windows -t "$sessao" -F '#{window_index} #W' | awk -v nome="$w" '$2 == nome {print $1}')
+        if [[ "$idx_atual" != "$slot" ]]; then
+            tmux move-window -d -s "$sessao:$w" -t "$sessao:$slot" 2>/dev/null
+        fi
+        ((slot--))
+    done
+}
+
+# Se chamado apenas com a flag -R, organiza as janelas e morre
+if ((reordenar)); then
+    reordenar_scratches
+    exit 0
+fi
 
 if ((matar)); then
-    if [[ $sessao == scratch-* ]]; then
-        tmux kill-session -t "=$sessao"
-        exit
-    fi
-    while read -r s; do
-        resto=${s#scratch-}
-        [[ $s == scratch-* && ${resto#*-} == "$base" ]] && tmux kill-session -t "=$s"
-    done < <(tmux list-sessions -F '#S')
-    exit
+    while read -r w; do
+        [[ $w == _scratch_* ]] && tmux kill-window -t "$sessao:$w"
+    done < <(tmux list-windows -t "$sessao" -F '#W' 2>/dev/null)
+    exit 0
 fi
 
 nome=${1:?uso: tmux-popup [opções] <nome> [comando]}
 comando=${2:-}
 
-if [[ $sessao == scratch-* ]]; then
-    resto=${sessao#scratch-}
-    if [[ ${resto%%-*} == "$nome" ]]; then
-        tmux detach-client ${cliente:+-t "$cliente"}
-    else
-        tmux display-message ${cliente:+-c "$cliente"} "Feche este popup antes de abrir outro"
-    fi
-    exit
+alvo_nome="_scratch_${nome}_"
+janela_alvo="$sessao:$alvo_nome"
+janela_atual=$(tmux display-message -p '#W')
+
+if [[ "$janela_atual" == "$alvo_nome" ]]; then
+    # Estamos nela. Vamos sair e DEPOIS reordenar.
+    tmux last-window ${cliente:+-c "$cliente"}
+    reordenar_scratches
+    exit 0
 fi
 
-alvo="scratch-$nome-$base"
-
-if ! tmux has-session -t "=$alvo" 2>/dev/null; then
-    tmux new-session -d -s "$alvo" -c "$dir" "${ambiente[@]}" ${comando:+"$comando"}
-    # O -t do set-option é de pane: sem o ":", o tmux não acha a sessão.
-    tmux set-option -t "=$alvo:" status off
-    tmux set-option -t "=$alvo:" detach-on-destroy on
+if tmux list-windows -t "$sessao" -F '#W' 2>/dev/null | grep -q "^${alvo_nome}$"; then
+    # A janela existe, mas não estamos nela.
+    # REORDENA PRIMEIRO, FOCA DEPOIS.
+    reordenar_scratches
+    tmux select-window -t "$janela_alvo"
+else
+    # Cria a janela em background (-d)
+    tmux new-window -d -n "$alvo_nome" -t "$sessao:" -c "$dir" "${ambiente[@]}" ${comando:+"$comando"}
+    # REORDENA PRIMEIRO, FOCA DEPOIS.
+    reordenar_scratches
+    tmux select-window -t "$janela_alvo"
 fi
-
-popup=(display-popup -w "$largura" -h "$altura")
-[[ -n $cliente ]] && popup+=(-c "$cliente")
-[[ -n $titulo ]] && popup+=(-T "$titulo")
-tmux "${popup[@]}" -E "tmux attach-session -t '=$alvo'"
