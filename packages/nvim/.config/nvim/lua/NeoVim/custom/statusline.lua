@@ -109,15 +109,20 @@ local SEVERITIES = {
 }
 
 local function diagnostics(bufnr)
-	local counts = vim.diagnostic.count(bufnr)
-	local out = {}
-	for _, sev in ipairs(SEVERITIES) do
-		local n = counts[sev[1]]
-		if n and n > 0 then
-			out[#out + 1] = sev[2] .. " " .. sev[3] .. " " .. n .. " "
-		end
-	end
-	return table.concat(out)
+    local counts = vim.diagnostic.count(bufnr)
+    local out = {}
+    for _, sev in ipairs(SEVERITIES) do
+        local n = counts[sev[1]]
+        if n and n > 0 then
+            out[#out + 1] = sev[2] .. " " .. sev[3] .. " " .. n
+        end
+    end
+
+    if #out > 0 then
+        return table.concat(out, " ")
+    end
+
+    return ""
 end
 
 -- O oil abre os arquivos pelo caminho absoluto, e o %f mostra o nome como o buffer
@@ -155,7 +160,7 @@ _G.BuildStatusLine = function()
 			"%#StatusLineNCBody#",
 			" %<" .. file_name(winid, bufnr) .. " %m%r",
 			"%=",
-			" %3p%% ",
+			" %p%% ",
 		})
 	end
 
@@ -168,9 +173,9 @@ _G.BuildStatusLine = function()
 		"%=",
 		diagnostics(bufnr),
 		"%#StatusLineBody# %y ",
-		"%#StatusLineInfo# %3p%% ",
+		"%#StatusLineInfo# %p%% ",
 		mode_hl,
-		" %3l:%-2c ",
+		" %l:%-c ",
 	})
 end
 
