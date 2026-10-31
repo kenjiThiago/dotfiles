@@ -10,10 +10,10 @@ local FALLBACK = {
 }
 
 local ICONS = {
-	error = "󰅚",
-	warn = "󰀪",
-	info = "󰋽",
-	hint = "󰌵",
+    error = " ",
+    warn  = " ",
+    info  = " ",
+    hint  = "󰌵 ",
 }
 
 local function get_hl(name)
