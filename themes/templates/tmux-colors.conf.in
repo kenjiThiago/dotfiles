@@ -4,7 +4,12 @@
 
 set -g status-style bg="{{surface}}",fg="{{text}}"
 set -g status-left "#[fg={{brand}},bold] #S  "
-set -g status-right "#[fg={{subtle}}]#{E:@popups}"
+
+set -g @scratch_inativo '#{?#{m/r:^_scratch_.*_$,#{window_name}},#[fg={{text}}]#[bg={{overlay}}] #{s/^_scratch_([^_]+)_$/\1/:window_name} #[default],}'
+set -g @scratch_ativo '#{?#{m/r:^_scratch_.*_$,#{window_name}},#[fg={{surface}}]#[bg={{info}}]#[bold] #{s/^_scratch_([^_]+)_$/\1/:window_name} #[default],}'
+
+set -g @popups '#{W:#{E:@scratch_inativo},#{E:@scratch_ativo}} '
+set -g status-right "#{E:@popups}"
 
 set-window-option -g window-status-style fg="{{subtle}}"
 set-window-option -g window-status-current-style fg="{{brand_alt}}",bg="{{overlay}}",bold
