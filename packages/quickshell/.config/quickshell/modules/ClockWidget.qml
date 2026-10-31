@@ -515,6 +515,19 @@ Rectangle {
                     }
 
                     Text {
+                        text: "󰝟"
+                        color: Theme.error
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 15
+
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.verticalCenterOffset: -1
+
+                        visible: SystemMonitor.isMuted
+                    }
+
+                    Text {
                         text: island.bellText
                         color: Notifications.dnd ? Theme.muted : Theme.cyan
                         font.family: "Hack Nerd Font"
