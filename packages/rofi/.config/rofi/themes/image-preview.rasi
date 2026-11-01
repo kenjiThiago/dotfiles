@@ -17,8 +17,8 @@ inputbar {
 preview-body {
     expand: true;
     orientation: horizontal;
-    spacing: 20px;
-    margin: 15px 0px 0px;
+    spacing: 16px;
+    margin: 16px 0px 0px;
     children: [ "listview", "icon-current-entry" ];
     background-color: transparent;
 }
@@ -28,6 +28,7 @@ listview {
     expand: true;
     margin: 0px;
     dynamic: false;
+    fixed-height: true;
 }
 
 element {
@@ -41,13 +42,19 @@ icon-current-entry {
     horizontal-align: 0.5;
     vertical-align: 0.5;
     background-color: @surface;
-    border-radius: 12px;
+    border: 1px solid;
+    border-color: @overlay;
+    border-radius: 10px;
     padding: 12px;
 }
 
 textbox-preview-help {
     expand: false;
-    text-color: @muted;
+    font: "Hack Nerd Font 9";
+    text-color: @subtle;
     background-color: transparent;
-    margin: 15px 0px 0px;
+    margin: 16px 0px 0px;
+    padding: 12px 2px 0px;
+    border: 1px 0px 0px;
+    border-color: @overlay;
 }

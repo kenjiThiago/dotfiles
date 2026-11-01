@@ -1,7 +1,7 @@
 configuration {
     modi:                       "drun";
     show-icons:                 true;
-    display-drun:               "";
+    display-drun:               "Aplicativos";
     drun-display-format:        "{name}";
     font:                       "Hack Nerd Font 10";
 }
@@ -14,7 +14,7 @@ window {
     location:                    center;
     anchor:                      center;
     fullscreen:                  false;
-    width:                       500px;
+    width:                       calc(540px min 90%);
     x-offset:                    0px;
     y-offset:                    0px;
     enabled:                     true;
@@ -22,7 +22,7 @@ window {
     padding:                     0px;
     border:                      1px solid;
     border-radius:               16px;
-    border-color:                @overlay;
+    border-color:                @highlight-med;
     background-color:            @base;
     cursor:                      "default";
 }
@@ -34,25 +34,36 @@ mainbox {
     padding:                     20px;
     border:                      0px solid;
     background-color:            transparent;
-    children:                    [ "inputbar", "listview" ];
+    children:                    [ "inputbar", "listview", "textbox-help" ];
 }
 
 inputbar {
     enabled:                     true;
-    spacing:                     10px;
+    expand:                      false;
+    spacing:                     12px;
     margin:                      0px;
-    padding:                     12px 16px;
-    border:                      0px solid;
-    border-radius:               12px;
+    padding:                     12px 14px;
+    border:                      1px solid;
+    border-color:                @overlay;
+    border-radius:               10px;
     background-color:            @surface;
     text-color:                  @text;
-    children:                    [ "prompt", "entry" ];
+    children:                    [ "textbox-search", "prompt", "entry", "num-filtered-rows" ];
+}
+
+textbox-search {
+    expand:                      false;
+    width:                       18px;
+    content:                     "";
+    background-color:            transparent;
+    text-color:                  @subtle;
+    vertical-align:              0.5;
 }
 
 prompt {
     enabled:                     true;
     background-color:            transparent;
-    text-color:                  @info;
+    text-color:                  @accent;
 }
 
 textbox-prompt-colon {
@@ -64,12 +75,21 @@ entry {
     background-color:            transparent;
     text-color:                  @text;
     cursor:                      text;
-    placeholder:                 "";
-    placeholder-color:           @muted;
+    placeholder:                 "Pesquisar…";
+    placeholder-color:           @subtle;
+}
+
+num-filtered-rows {
+    expand:                      false;
+    background-color:            transparent;
+    text-color:                  @subtle;
+    vertical-align:              0.5;
+    horizontal-align:            1.0;
 }
 
 listview {
     enabled:                     true;
+    expand:                      true;
     columns:                     1;
     lines:                       8;
     cycle:                       true;
@@ -79,8 +99,8 @@ listview {
     reverse:                     false;
     fixed-height:                true;
     fixed-columns:               true;
-    spacing:                     5px;
-    margin:                      15px 0px 0px 0px;
+    spacing:                     4px;
+    margin:                      16px 0px 0px;
     padding:                     0px;
     border:                      0px solid;
     background-color:            transparent;
@@ -92,9 +112,10 @@ element {
     enabled:                     true;
     spacing:                     10px;
     margin:                      0px;
-    padding:                     10px 14px;
-    border:                      0px solid;
-    border-radius:               12px;
+    padding:                     10px 12px;
+    border:                      0px 0px 0px 2px;
+    border-color:                transparent;
+    border-radius:               8px;
     background-color:            transparent;
     text-color:                  @text;
     cursor:                      pointer;
@@ -105,9 +126,47 @@ element normal.normal {
     text-color:                  @text;
 }
 
+element alternate.normal {
+    background-color:            transparent;
+    text-color:                  @text;
+}
+
 element selected.normal {
     background-color:            @overlay;
+    border-color:                @accent;
     text-color:                  @text;
+}
+
+element normal.active {
+    background-color:            transparent;
+    text-color:                  @accent;
+}
+
+element alternate.active {
+    background-color:            transparent;
+    text-color:                  @accent;
+}
+
+element selected.active {
+    background-color:            @overlay;
+    border-color:                @accent;
+    text-color:                  @text;
+}
+
+element normal.urgent {
+    background-color:            transparent;
+    text-color:                  @error;
+}
+
+element alternate.urgent {
+    background-color:            transparent;
+    text-color:                  @error;
+}
+
+element selected.urgent {
+    background-color:            @overlay;
+    border-color:                @error;
+    text-color:                  @error;
 }
 
 element-icon {
@@ -120,8 +179,20 @@ element-icon {
 element-text {
     background-color:            transparent;
     text-color:                  inherit;
-    highlight:                   inherit;
+    highlight:                   bold;
     cursor:                      inherit;
     vertical-align:              0.5;
     horizontal-align:            0.0;
+}
+
+textbox-help {
+    expand:                      false;
+    content:                     "↑↓ navegar · Enter selecionar · Esc fechar";
+    font:                        "Hack Nerd Font 9";
+    text-color:                  @subtle;
+    background-color:            transparent;
+    margin:                      16px 0px 0px;
+    padding:                     12px 2px 0px;
+    border:                      1px 0px 0px;
+    border-color:                @overlay;
 }
