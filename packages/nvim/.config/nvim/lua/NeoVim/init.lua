@@ -5,6 +5,7 @@ require("NeoVim.custom.statusline")
 require("NeoVim.custom.restart")
 require("NeoVim.custom.funcao")
 require("NeoVim.custom.align")
+require("NeoVim.custom.transpose")
 
 -- Módulo privado e instável (já foi `vim._extui`): sem o pcall, um erro aqui
 -- impediria o desvio para o NeoVim.server.
