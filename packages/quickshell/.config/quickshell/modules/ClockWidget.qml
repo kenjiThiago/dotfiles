@@ -93,7 +93,7 @@ Rectangle {
         id: measureS1Date
         text: Time.dateString
         font.family: "Hack Nerd Font"
-        font.pixelSize: 11
+        font.pixelSize: 12
         visible: false
     }
 
@@ -404,7 +404,7 @@ Rectangle {
                             text: Time.dateString
                             color: Theme.text
                             font.family: "Hack Nerd Font"
-                            font.pixelSize: 11
+                            font.pixelSize: 12
                         }
                     }
                 }
