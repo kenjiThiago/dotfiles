@@ -131,15 +131,6 @@ fi
 # Sem o arquivo, o fzf recusa abrir.
 [[ -f ~/.config/fzf/colors ]] && export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/colors"
 
-function y() {
-    export YAZI_START_DIR="$PWD"
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	command yazi "$@" --cwd-file="$tmp"
-	IFS= read -r -d '' cwd < "$tmp"
-	[ "$cwd" != "$PWD" ] && [ -d "$cwd" ] && builtin cd -- "$cwd"
-	command rm -f -- "$tmp"
-}
-
 if [[ -z $TMUX ]]; then
     path+=("$HOME/go/bin")
     path+=("$HOME/.local/bin")

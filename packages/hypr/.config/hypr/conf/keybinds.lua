@@ -71,7 +71,6 @@ hl.bind(mainMod .. "+ SHIFT + DOWN",
         "qs ipc call brightness down 2>/dev/null || brightnessctl --min-value=$(($(brightnessctl m) / 20)) set 5%-"),
     { locked = true, repeating = true })
 hl.bind(mainMod .. "+ F", hl.dsp.window.fullscreen())
-hl.bind(mainMod .. "+ SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
 
 hl.bind(mainMod .. "+ SHIFT + V", hl.dsp.exec_cmd("uwsm app -- rofi-script clipboard"))
 

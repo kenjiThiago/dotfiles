@@ -12,7 +12,7 @@ require("conform").setup({
 		javascript = { "biome-check" },
 		typescript = { "biome-check" },
 		typescriptreact = { "biome-check" },
-        lua = { "stylua" },
+		lua = { "stylua" },
 	},
 	format_on_save = function()
 		if formatar_ao_salvar then

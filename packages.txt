@@ -58,7 +58,7 @@ noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
 ttf-dejavu
-otf-font-awesome             # ícones do waybar e do quickshell
+otf-font-awesome             # ícones do quickshell
 woff2-font-awesome
 
 # Terminal
@@ -85,6 +85,7 @@ lazygit                      # tmux-lazygit
 
 # Editor
 neovim
+stylua
 tree-sitter-cli
 lua51                        # dependência do luarocks
 luarocks
@@ -108,5 +109,5 @@ power-profiles-daemon        # perfil de energia do quickshell, habilitado pelo 
 # Aplicativos usados pelas configs
 zen-browser-bin              # AUR — keybind e exec-once
 zathura-pdf-mupdf            # puxa o zathura, que tem config em packages/
-xdg-utils                    # xdg-open, usado pelo gx do oil e do yazi
+xdg-utils                    # xdg-open, usado pelo gx do oil
 gimp                         # printAndEdit

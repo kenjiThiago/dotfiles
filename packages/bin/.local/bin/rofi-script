@@ -306,18 +306,17 @@ toggle_vpn() {
 [[ "$1" == "--screenshot" ]] && { take_screenshot "$2"; exit 0; }
 
 show_trigger_menu() {
-    case $(menu "Trigger" "  Screenshot (Região)\n  Screenshot (Tela Cheia)\n󰃉  Color Picker\n󰍜  Toggle Waybar\n  Toggle Gaps (Hyprland)") in
+    case $(menu "Trigger" "  Screenshot (Região)\n  Screenshot (Tela Cheia)\n󰃉  Color Picker\n  Toggle Gaps (Hyprland)") in
         *Região*)       take_screenshot "region" ;;
         *"Tela Cheia"*) take_screenshot "fullscreen" ;;
         *Color*)        sleep 0.25 && hyprpicker -a && notify-send -t 2000 "Color Picker" "Cor copiada" ;;
-        *Waybar*)       killall -SIGUSR1 waybar ;;
         *Gaps*)         hyprctl dispatch workspaceopt allfloat ;;
         *)              back_to show_main_menu ;;
     esac
 }
 
 show_setup_menu() {
-    case $(menu "Setup" "  Clipboard\n  Tema\n  Wallpaper\n󰌌  Teclado\n  Wi-Fi\n󰖂  VPN USP\n  Áudio\n  Hyprland Config\n󰍜  Waybar Config\n  Neovim Config\n  Ghostty Config") in
+    case $(menu "Setup" "  Clipboard\n  Tema\n  Wallpaper\n󰌌  Teclado\n  Wi-Fi\n󰖂  VPN USP\n  Áudio\n  Hyprland Config\n  Neovim Config\n  Ghostty Config") in
         *Clipboard*) show_clipboard ;;
         *Tema*)      theme pick ;;
         *Wallpaper*) change_wallpaper ;;
@@ -326,7 +325,6 @@ show_setup_menu() {
         *VPN*)       toggle_vpn ;;
         *Áudio*)     uwsm app -- ghostty --class=com.example.wiremix --command=wiremix ;;
         *Hyprland*)  open_in_editor ~/.config/hypr/hyprland.lua ;;
-        *Waybar*)    open_in_editor ~/.config/waybar/config.jsonc ;;
         *Neovim*)    open_in_editor ~/.config/nvim/init.lua ;;
         *Ghostty*)   open_in_editor ~/.config/ghostty/config ;;
         *)           back_to show_main_menu ;;

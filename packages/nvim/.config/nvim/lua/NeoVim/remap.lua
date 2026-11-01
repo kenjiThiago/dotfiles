@@ -2,9 +2,6 @@ vim.g.mapleader = " "
 
 if not require("NeoVim.profile").minimal then
 	vim.keymap.set("n", "<leader>pv", "<CMD>Oil<CR>", { desc = "Open parent directory" })
-	vim.keymap.set("n", "<leader>-", function()
-		require("NeoVim.custom.yazi").open()
-	end, { desc = "Abrir o yazi no diretório do arquivo" })
 end
 
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
@@ -122,8 +119,8 @@ vim.keymap.set("n", "<leader>n8", function()
 end, { desc = "Mostrar a coluna 80" })
 vim.keymap.set("n", "<leader>zs", function()
 	vim.o.laststatus = vim.o.laststatus == 0 and 2 or 0
-    vim.o.cmdheight = vim.o.cmdheight == 0 and 1 or 0
-end, { desc = "Alternar a statusline" })
+	vim.o.cmdheight = vim.o.cmdheight == 0 and 1 or 0
+end, { desc = "Alternar statusline e linha de comandos" })
 vim.keymap.set("n", "<leader>nr", function()
 	local save_cursor = vim.fn.getpos(".")
 	vim.cmd([[%s/\s\+$//e]])
