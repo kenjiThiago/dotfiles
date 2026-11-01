@@ -37,7 +37,7 @@ local function setup_colors()
 
 	local bg_body = sl.bg or normal.bg or FALLBACK.bg
 	local fg_body = sl.fg or normal.fg or FALLBACK.fg
-	local bg_info = get_hl("CursorLine").bg or bg_body
+	local fg_mode = vim.o.background == "light" and fg_body or (normal.bg or FALLBACK.bg)
 	local fg_info = get_hl("Comment").fg or fg_body
 	local accent = get_hl("ModeMsg").fg or func.fg or fg_body
 
@@ -45,12 +45,12 @@ local function setup_colors()
 		vim.api.nvim_set_hl(0, name, opts)
 	end
 
-	set("StatusLineModeN", { bg = bg_info, fg = accent, bold = true })
-	set("StatusLineModeI", { bg = bg_info, fg = str.fg or FALLBACK.green, bold = true })
-	set("StatusLineModeV", { bg = bg_info, fg = warn.fg or FALLBACK.brown, bold = true })
-	set("StatusLineModeR", { bg = bg_info, fg = err.fg or FALLBACK.red, bold = true })
-	set("StatusLineModeC", { bg = bg_info, fg = info.fg or FALLBACK.niagara, bold = true })
-	set("StatusLineMode", { bg = bg_info, fg = accent, bold = true })
+	set("StatusLineModeN", { bg = accent, fg = fg_mode, bold = true })
+	set("StatusLineModeI", { bg = str.fg or FALLBACK.green, fg = fg_mode, bold = true })
+	set("StatusLineModeV", { bg = warn.fg or FALLBACK.brown, fg = fg_mode, bold = true })
+	set("StatusLineModeR", { bg = err.fg or FALLBACK.red, fg = fg_mode, bold = true })
+	set("StatusLineModeC", { bg = info.fg or FALLBACK.niagara, fg = fg_mode, bold = true })
+	set("StatusLineMode", { bg = accent, fg = fg_mode, bold = true })
 
 	set("StatusLineInfo", { bg = bg_body, fg = fg_info })
 	set("StatusLineFile", { bg = bg_body, fg = fg_body, bold = true })
@@ -172,7 +172,8 @@ _G.BuildStatusLine = function()
 		"%#StatusLineFile# %<" .. file_name(winid, bufnr) .. " %m%r ",
 		"%=",
 		diagnostics(bufnr),
-		"%#StatusLineInfo# %y  %p%% │ ",
+		"%#StatusLineBody# %{&filetype}  %p%% ",
+		"%#StatusLineInfo#│ ",
 		"%#StatusLineBody#%l:%c ",
 	})
 end
