@@ -495,8 +495,8 @@ for um `#rrggbb`.
   ainda sobe — só sem tema. Antes do primeiro `theme set` o `colors.yml` não
   existe, e os dois lugares checam isso antes de montar a lista (arquivo
   faltando na lista impede o lazygit de iniciar).
-- **lazygit — onde ele roda**: numa janela scratch do tmux, por `prefix+g`
-  no terminal ou `<leader>gs` no nvim. Ambos chamam `tmux-lazygit`, que usa
+- **lazygit — onde ele roda**: numa janela scratch do tmux, por `Alt+Shift+I`
+  ou `prefix+g` no terminal ou `<leader>gs` no nvim. Os atalhos chamam `tmux-lazygit`, que usa
   `tmux-popup`, assim como python (`prefix+P`), cores (`prefix+H`) e shell (`M-O`).
 - **Janelas scratch do tmux**: cada sessão tem suas janelas `_scratch_<nome>_`,
   com índices a partir de 100 e indicadores à direita da barra. Repetir o
