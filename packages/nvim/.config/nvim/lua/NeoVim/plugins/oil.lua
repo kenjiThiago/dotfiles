@@ -36,8 +36,8 @@ local colunas_completas = {
 		highlight = destacar_permissoes,
 	},
 	{ "permissions", highlight = destacar_permissoes },
-	{ "size", highlight = "LineNr" },
-	{ "mtime", highlight = "LineNr" },
+	{ "size", highlight = "Comment" },
+	{ "mtime", highlight = "Comment" },
 	{ "icon" },
 }
 
