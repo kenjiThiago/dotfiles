@@ -46,8 +46,8 @@ brand="#eb6f92"      # love
 brand_alt="#c4a7e7"  # iris
 
 # Fonte do colorscheme luar, lida pelo lua/theme.lua gerado.
-syn_comment="#817c9c"   # a única tinta que não existe na paleta acima
-syn_type="#817c9c"      # tipo divide a tinta do comentário, é a des-ênfase pretendida
+syn_comment="#8b86a3"
+syn_type="$subtle"
 syn_string="$cyan"      # rose
 syn_escape="$magenta"   # iris
 syn_constant="$magenta" # iris

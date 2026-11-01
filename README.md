@@ -271,11 +271,11 @@ diante), que é o que os temas de colorscheme externo usam.
 
 Quem declara o grupo inteiro é o `rose-pine-moon` e o `rose-pine-dawn`, os dois
 que rodam o `luar`. O `luar` não traz paleta: ele é uma distribuição de papéis
-(poucas cores com função, identificador e operador sem tinta, tipo ao lado do
-comentário) e lê estes valores pelo `lua/theme.lua` gerado. Então o bloco
+(poucas cores com função, identificador e operador sem tinta, tipos discretos)
+e lê estes valores pelo `lua/theme.lua` gerado. Então o bloco
 `syn_*` não é uma cópia do colorscheme, é a fonte dele, e é o mesmo bloco que
 faz o preview do yazi bater com o buffer ao lado. Os dois temas usam a mesma
-distribuição, com o dawn trocando duas tintas por medida de contraste (ver os
+distribuição, com o dawn trocando a tinta das strings por medida de contraste (ver os
 comentários no `themes/rose-pine-dawn/theme.sh`). A interface não sai da
 sintaxe: cursor, item selecionado e foco usam o `accent`, e a busca usa o `match`.
 

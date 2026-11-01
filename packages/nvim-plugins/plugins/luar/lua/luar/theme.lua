@@ -20,6 +20,16 @@ function M.setup()
         return hl
     end
 
+    local function tint(color, amount)
+        local channels = {}
+        for i = 2, 6, 2 do
+            local base = tonumber(palette.base:sub(i, i + 1), 16)
+            local target = tonumber(color:sub(i, i + 1), 16)
+            channels[#channels + 1] = ("%02x"):format(math.floor(base + (target - base) * amount + 0.5))
+        end
+        return "#" .. table.concat(channels)
+    end
+
     local groups = {
         Normal = { fg = palette.text, bg = palette.base },
         NormalFloat = { fg = palette.text, bg = palette.surface },
@@ -59,6 +69,7 @@ function M.setup()
         WinBar = { fg = palette.text, bg = palette.surface, bold = true },
         WinBarNC = { fg = palette.comment, bg = palette.surface },
         QuickFixLine = { bg = palette.overlay },
+        qfLineNr = { fg = palette.subtle },
         TabLine = { fg = palette.comment, bg = palette.surface },
         TabLineFill = { bg = palette.base },
         TabLineSel = { fg = palette.accent, bg = palette.base, bold = true },
@@ -71,13 +82,13 @@ function M.setup()
         SpellLocal = { sp = palette.func, undercurl = true },
         SpellRare = { sp = palette.constant, undercurl = true },
 
-        DiffAdd = { fg = palette.success, bg = palette.overlay },
-        DiffChange = { fg = palette.warning, bg = palette.overlay },
-        DiffDelete = { fg = palette.error, bg = palette.overlay },
-        DiffText = { fg = palette.func, bg = palette.highlight_med },
+        DiffAdd = { bg = tint(palette.success, 0.16) },
+        DiffChange = { bg = tint(palette.warning, 0.10) },
+        DiffDelete = { fg = palette.error, bg = tint(palette.error, 0.12) },
+        DiffText = { fg = palette.text, bg = tint(palette.warning, 0.25), bold = true },
         -- Trecho inline sem correspondente (inline:char, padrão do 0.12): por padrão
         -- liga ao DiffText e os dois se confundem.
-        DiffTextAdd = { fg = palette.success, bg = palette.highlight_med },
+        DiffTextAdd = { fg = palette.text, bg = tint(palette.success, 0.30), bold = true },
 
         -- O syntax/diff.vim liga diffAdded/Changed/Removed a estes; sem eles sobram os
         -- pastéis padrão do nvim.
@@ -124,6 +135,8 @@ function M.setup()
         htmlEndTag = { fg = palette.constant },
         htmlTagName = { fg = palette.keyword },
         htmlArg = { fg = palette.func },
+
+        javaScriptBraces = { fg = palette.text },
 
         -- O padrão manda markdownH1..H6 para Title e achata a hierarquia.
         htmlH1 = { fg = palette.keyword, bold = true },

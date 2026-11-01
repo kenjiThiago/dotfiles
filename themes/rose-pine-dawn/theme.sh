@@ -57,8 +57,7 @@ match="#795c0a"      # gold
 brand="#7f2d44"      # love
 brand_alt="#634683"  # iris
 
-# O luar distribui as tintas por papel. Em relação ao moon, syn_type vai para o
-# subtle e syn_string para o leaf, pelo contraste na projeção.
+# Em relação ao Moon, strings usam leaf pelo contraste na projeção.
 syn_comment="$bright_black" # muted, 4.51
 syn_type="$subtle"          # subtle, 5.51
 syn_string="$green"         # leaf, 5.65
