@@ -175,34 +175,76 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPre" }, {
 })
 
 vim.api.nvim_create_autocmd("CmdwinEnter", {
-    group = vim.api.nvim_create_augroup("BuscaCmdwin", { clear = true }),
-    pattern = { "/", "?" },
-    callback = function(args)
-        local tipo = vim.fn.getcmdwintype()
-        if tipo ~= "/" and tipo ~= "?" then return end
+	group = vim.api.nvim_create_augroup("BuscaCmdwin", { clear = true }),
+	pattern = { "/", "?" },
+	callback = function(args)
+		local tipo = vim.fn.getcmdwintype()
+		if tipo ~= "/" and tipo ~= "?" then
+			return
+		end
 
-        local win = vim.fn.win_getid(vim.fn.winnr("#"))
-        local view = vim.api.nvim_win_call(win, vim.fn.winsaveview)
+		local win = vim.fn.win_getid(vim.fn.winnr("#"))
+		local view = vim.api.nvim_win_call(win, vim.fn.winsaveview)
+		local registro, destaque = vim.fn.getreg("/"), vim.v.hlsearch
+		local ativa, concluiu = true, false
+		local cmdline_leave
+		cmdline_leave = vim.api.nvim_create_autocmd("CmdlineLeave", {
+			pattern = { "/", "?" },
+			callback = function()
+				if ativa then
+					return
+				end
+				concluiu = true
+				vim.api.nvim_del_autocmd(cmdline_leave)
+				if vim.v.event.abort then
+					vim.schedule(function()
+						vim.fn.setreg("/", registro)
+						vim.v.hlsearch = destaque
+					end)
+				end
+			end,
+		})
 
-        vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "CursorMoved" }, {
-            buffer = args.buf,
-            callback = function()
-                local padrao = vim.api.nvim_get_current_line()
-                local ok, achou = pcall(vim.api.nvim_win_call, win, function()
-                    vim.fn.winrestview(view)
-                    return vim.fn.search(padrao, tipo == "?" and "b" or "") > 0
-                end)
-                if ok and achou then vim.fn.setreg("/", padrao) end
-                vim.schedule(function() vim.v.hlsearch = ok and achou and 1 or 0 end)
-            end,
-        })
+		local preview = vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "CursorMoved" }, {
+			buffer = args.buf,
+			callback = function()
+				local padrao = vim.api.nvim_get_current_line()
+				local ok, achou = pcall(vim.api.nvim_win_call, win, function()
+					vim.fn.winrestview(view)
+					return padrao ~= "" and vim.fn.search(padrao, tipo == "?" and "b" or "") > 0
+				end)
+				if ok and achou then
+					vim.fn.setreg("/", padrao)
+				end
+				-- O Nvim restaura v:hlsearch ao sair do autocmd.
+				vim.schedule(function()
+					if ativa then
+						vim.v.hlsearch = ok and achou and 1 or 0
+					end
+				end)
+			end,
+		})
 
-        vim.api.nvim_create_autocmd("CmdwinLeave", {
-            once = true,
-            callback = function()
-                vim.api.nvim_win_call(win, function() vim.fn.winrestview(view) end)
-                vim.schedule(function() vim.v.hlsearch = 1 end)
-            end,
-        })
-    end,
+		vim.api.nvim_create_autocmd("CmdwinLeave", {
+			buffer = args.buf,
+			once = true,
+			callback = function()
+				ativa = false
+				vim.api.nvim_del_autocmd(preview)
+				if vim.api.nvim_win_is_valid(win) then
+					vim.api.nvim_win_call(win, function()
+						vim.fn.winrestview(view)
+					end)
+				end
+				vim.fn.setreg("/", registro)
+				vim.schedule(function()
+					if not concluiu and vim.fn.getcmdtype() ~= "/" and vim.fn.getcmdtype() ~= "?" then
+						vim.api.nvim_del_autocmd(cmdline_leave)
+						vim.fn.setreg("/", registro)
+						vim.v.hlsearch = destaque
+					end
+				end)
+			end,
+		})
+	end,
 })
