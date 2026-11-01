@@ -3,23 +3,24 @@
 # Os %if poupam erro em tmux mais velho.
 
 set -g status-style bg="{{surface}}",fg="{{text}}"
-set -g status-left "#[fg={{brand}},bold] #S  "
+set -g status-left "#[fg={{brand}},bold] #{=/24/…:session_name} #[default]#[fg={{overlay}}]│#[default] "
 
-set -g @scratch_inativo '#{?#{m/r:^_scratch_.*_$,#{window_name}},#[fg={{text}}]#[bg={{overlay}}] #{s/^_scratch_([^_]+)_$/\1/:window_name} #[default],}'
-set -g @scratch_ativo '#{?#{m/r:^_scratch_.*_$,#{window_name}},#[fg={{surface}}]#[bg={{info}}]#[bold] #{s/^_scratch_([^_]+)_$/\1/:window_name} #[default],}'
+# Dentro de condicionais, vírgulas de estilos também seriam separadores dos ramos.
+set -g @scratch_inativo '#{?#{m/r:^_scratch_.*_$,#{window_name}},#[fg={{subtle}}] #{s/^_scratch_([^_]+)_$/\1/:window_name} #[default],}'
+set -g @scratch_ativo '#{?#{m/r:^_scratch_.*_$,#{window_name}},#[fg={{accent}}]#[bg={{overlay}}]#[bold] #{s/^_scratch_([^_]+)_$/\1/:window_name} #[default],}'
 
-set -g @popups '#{W:#{E:@scratch_inativo},#{E:@scratch_ativo}} '
-set -g status-right "#{E:@popups}"
+set -g @popups '#{W:#{E:@scratch_inativo},#{E:@scratch_ativo}}'
+set -g status-right '#{?client_prefix,#[fg={{accent}}]#[bold] prefix #[default],}#{?#{E:@popups},#[fg={{overlay}}]│#[default] #{E:@popups},} '
 
 set-window-option -g window-status-style fg="{{subtle}}"
-set-window-option -g window-status-current-style fg="{{brand_alt}}",bg="{{overlay}}",bold
+set-window-option -g window-status-current-style fg="{{accent}}",bg="{{overlay}}",bold
 set-window-option -g window-status-last-style fg="{{text}}"
 set-window-option -g window-status-activity-style fg="{{warning}}"
 set-window-option -g window-status-bell-style fg="{{error}}",bold
 
 # fill= para a mensagem cobrir a linha toda, e não só os caracteres escritos.
-set -g message-style bg="{{overlay}}",fg="{{warning}}",fill="{{overlay}}"
-set -g message-command-style bg="{{overlay}}",fg="{{info}}",fill="{{overlay}}"
+set -g message-style bg="{{overlay}}",fg="{{text}}",fill="{{overlay}}"
+set -g message-command-style bg="{{overlay}}",fg="{{accent}}",fill="{{overlay}}"
 
 # noattr (3.6+): sem ele a seleção herda negrito e sublinhado do texto.
 %if "#{>=:#{version},3.6}"
@@ -47,19 +48,19 @@ set-window-option -g pane-active-border-style "#{?pane_in_mode,fg={{warning}},#{
 # ela é o único limite entre o popup e o painel de trás.
 %if "#{>=:#{version},3.3}"
 set -g popup-style bg="{{base}}",fg="{{text}}"
-set -g popup-border-style fg="{{highlight_high}}",bg="{{base}}"
+set -g popup-border-style fg="{{highlight_med}}",bg="{{base}}"
 %endif
 
 %if "#{>=:#{version},3.4}"
 set -g menu-style bg="{{surface}}",fg="{{text}}"
 set -g menu-selected-style bg="{{overlay}}",fg="{{accent}}",bold
-set -g menu-border-style fg="{{highlight_high}}",bg="{{surface}}"
+set -g menu-border-style fg="{{highlight_med}}",bg="{{surface}}"
 %endif
 
 # Da 3.8 em diante o choose-tree e as barras de rolagem usam cores próprias do tmux.
 %if "#{>=:#{version},3.8}"
-set-window-option -g tree-mode-border-style fg="{{muted}}"
-set-window-option -g tree-mode-preview-style "fg=#{?#{||:#{&&:#{pane_format},#{pane_active}},#{&&:#{window_format},#{window_active}}},{{accent}},{{subtle}}}"
+set-window-option -g tree-mode-border-style fg="{{subtle}}"
+set-window-option -g tree-mode-preview-style "fg=#{?#{||:#{&&:#{pane_format},#{pane_active}},#{&&:#{window_format},#{window_active}}},{{accent}},{{text}}},#{?#{||:#{&&:#{pane_format},#{pane_active}},#{&&:#{window_format},#{window_active}}},bold,nobold}"
 set-window-option -g switch-mode-match-style bg="{{overlay}}",fg="{{match}}"
 set-window-option -g pane-scrollbars-style bg="{{surface}}",fg="{{overlay}}",width=1,pad=0
 %endif

@@ -495,6 +495,12 @@ for um `#rrggbb`.
   `source-file -q` no fim do arquivo; o `-q` é o que deixa o tmux subir antes
   do primeiro `theme set`, quando o arquivo ainda não existe, só com as cores
   padrão. Sessão já aberta não pega o tema novo sozinha: `prefix + r`.
+  Após editar os templates de cores, `theme reload` regenera os arquivos e
+  recarrega o tmux.
+  A barra mantém a sessão à esquerda, janelas comuns no centro e scratches
+  à direita. A janela ativa e o scratch ativo usam a mesma cor de destaque;
+  `prefix` aparece enquanto o tmux aguarda a segunda tecla do atalho.
+  Nomes longos são abreviados apenas na barra, preservando os nomes reais.
 - **lazygit — cores**: o `config.yml` versionado tem só comportamento; o tema
   sai do `theme set` em `~/.config/lazygit/colors.yml`. Como o lazygit não tem
   include, quem junta os dois é o `LG_CONFIG_FILE`, definido em dois lugares: no

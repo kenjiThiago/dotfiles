@@ -1,4 +1,4 @@
 # ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
 
 # O bloco no host é o que distingue esta barra da local, que fica empilhada acima no ssh.
-set -g status-left "#[fg={{base}},bg={{info}},bold] #h #[default] #[fg={{brand}},bold]#S  "
+set -g status-left "#[fg={{base}},bg={{info}},bold] #{=/12/…:host_short} #[default] #[fg={{brand}},bold]#{=/16/…:session_name} #[default]#[fg={{overlay}}]│#[default] "
