@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls
 import "."
 
 Column {
@@ -10,7 +11,7 @@ Column {
     property int maxListHeight: 150
 
     // O que a lista gasta acima da área rolável, para quem calcula o teto.
-    readonly property int headerHeight: 1 + listRoot.spacing + 20 + listRoot.spacing
+    readonly property int headerHeight: 1 + listRoot.spacing + 32 + listRoot.spacing
 
     spacing: 8
 
@@ -22,7 +23,7 @@ Column {
 
     Item {
         width: parent.width
-        height: 20
+        height: 32
 
         Text {
             anchors.left: parent.left
@@ -40,7 +41,7 @@ Column {
             anchors.rightMargin: clearBtn.visible ? 12 : 0
             anchors.verticalCenter: parent.verticalCenter
             text: Notifications.dnd ? "󰂛" : "󰂚"
-            color: Notifications.dnd ? Theme.accent : (dndMouse.containsMouse ? Theme.text : Theme.muted)
+            color: Notifications.dnd ? Theme.accent : (dndMouse.containsMouse ? Theme.text : Theme.subtle)
             font.family: "Hack Nerd Font"
             font.pixelSize: 14
 
@@ -68,7 +69,7 @@ Column {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             text: "Limpar tudo"
-            color: clearMouse.containsMouse ? Theme.accent : Theme.muted
+            color: clearMouse.containsMouse ? Theme.accent : Theme.subtle
             font.family: "Hack Nerd Font"
             font.pixelSize: 11
             visible: Notifications.count > 0
@@ -95,7 +96,7 @@ Column {
 
     Item {
         width: parent.width
-        height: Notifications.count === 0 ? 32 : Math.min(view.contentHeight, listRoot.maxListHeight)
+        height: Math.min(Notifications.count === 0 ? 72 : view.contentHeight, listRoot.maxListHeight)
 
         // A contentHeight se mede pela largura do delegate, não por esta altura,
         // então não há laço de binding aqui.
@@ -106,35 +107,58 @@ Column {
             }
         }
 
-        Text {
+        Column {
             anchors.centerIn: parent
-            text: "Nada por aqui"
-            color: Theme.muted
-            font.family: "Hack Nerd Font"
-            font.pixelSize: 12
+            spacing: 6
             visible: Notifications.count === 0
+
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                color: Notifications.dnd ? Theme.accent : Theme.subtle
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 18
+                text: Notifications.dnd ? "󰂛" : "󰂚"
+            }
+            Text {
+                color: Theme.subtle
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 12
+                text: Notifications.dnd ? "Não perturbe ativado" : "Nenhuma notificação"
+            }
         }
 
         ListView {
             id: view
             anchors.fill: parent
             clip: true
-            spacing: 6
+            spacing: 8
             model: Notifications.list
             boundsBehavior: Flickable.StopAtBounds
+
+            ScrollBar.vertical: ScrollBar {
+                width: 3
+                padding: 0
+                policy: view.contentHeight > view.height ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+                background: null
+                contentItem: Rectangle {
+                    implicitWidth: 3
+                    radius: 1.5
+                    color: Theme.highlightHigh
+                }
+            }
 
             delegate: Rectangle {
                 id: entry
                 required property var modelData
 
-                width: view.width
-                implicitHeight: entryLayout.implicitHeight + 16
-                radius: 12
+                width: view.width - 8
+                implicitHeight: entryLayout.implicitHeight + 24
+                radius: 10
                 color: entryMouse.containsMouse ? Theme.overlay : Theme.surface
 
                 readonly property color urgencyColor: Notifications.urgencyColor(entry.modelData)
-                border.color: entry.urgencyColor
-                border.width: entry.urgencyColor.a > 0 ? 1 : 0
+                border.color: entry.urgencyColor.a > 0 ? entry.urgencyColor : (entryMouse.containsMouse ? Theme.highlightMed : Theme.overlay)
+                border.width: 1
 
                 readonly property var defaultAction: Notifications.defaultAction(entry.modelData)
 
@@ -161,8 +185,8 @@ Column {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.leftMargin: 10
-                    anchors.rightMargin: 10
+                    anchors.leftMargin: 12
+                    anchors.rightMargin: 12
                     spacing: 10
 
                     NotificationIcon {
@@ -176,6 +200,16 @@ Column {
                         width: parent.width - 38
                         spacing: 2
                         anchors.verticalCenter: parent.verticalCenter
+
+                        Text {
+                            color: Theme.subtle
+                            elide: Text.ElideRight
+                            font.family: "Hack Nerd Font"
+                            font.pixelSize: 10
+                            text: entry.modelData.appName
+                            visible: text !== ""
+                            width: parent.width
+                        }
 
                         Row {
                             width: parent.width
@@ -196,7 +230,7 @@ Column {
                             Text {
                                 id: timeLabel
                                 text: Notifications.relativeTime(entry.modelData, Time.now)
-                                color: Theme.muted
+                                color: Theme.subtle
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 10
                                 anchors.top: parent.top
@@ -207,7 +241,7 @@ Column {
                             Text {
                                 id: dismissBtn
                                 text: "󰅖"
-                                color: dismissMouse.containsMouse ? Theme.error : Theme.muted
+                                color: dismissMouse.containsMouse ? Theme.error : Theme.subtle
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 12
                                 anchors.top: parent.top

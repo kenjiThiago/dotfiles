@@ -31,7 +31,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: 10
+        radius: Math.min(8, root.size / 4)
         color: Theme.surface
         visible: icon.status !== Image.Ready
 
@@ -41,7 +41,7 @@ Item {
                 const name = root.notification ? root.notification.appName : "";
                 return name !== "" ? name.charAt(0).toUpperCase() : "󰂚";
             }
-            color: Theme.cyan
+            color: Theme.accent
             font.family: "Hack Nerd Font"
             font.pixelSize: Math.round(root.size * 0.45)
             font.weight: Font.Bold

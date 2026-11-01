@@ -35,7 +35,7 @@ Rectangle {
 
     readonly property color urgencyColor: Notifications.urgencyColor(card.notification)
 
-    border.color: card.urgencyColor.a > 0 ? card.urgencyColor : Theme.overlay
+    border.color: card.urgencyColor.a > 0 ? card.urgencyColor : Theme.highlightMed
     border.width: 1
 
     // O Timer do QML não pausa: religá-lo recomeça o intervalo inteiro, então o
@@ -51,7 +51,7 @@ Rectangle {
     }
 
     function startCountdown(): void {
-        if (card.timeoutMs <= 0 || card.expiring)
+        if (card.timeoutMs <= 0 || card.expiring || cardHover.hovered)
             return;
 
         expireTimer.interval = Math.max(card.remainingMs, 1);
@@ -66,7 +66,7 @@ Rectangle {
 
         expireTimer.stop();
         card.remainingMs = card.timeoutMs;
-        if (!hoverArea.containsMouse)
+        if (!cardHover.hovered)
             card.startCountdown();
     }
 
@@ -134,18 +134,19 @@ Rectangle {
         expireAnim.start();
     }
 
-    MouseArea {
-        id: hoverArea
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-
-        onContainsMouseChanged: {
-            if (hoverArea.containsMouse)
+    HoverHandler {
+        id: cardHover
+        onHoveredChanged: {
+            if (hovered)
                 card.pauseCountdown();
             else
                 card.startCountdown();
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
 
         onClicked: function (m) {
             m.accepted = true;
@@ -155,66 +156,114 @@ Rectangle {
 
     Row {
         id: layout
+
         anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
         anchors.leftMargin: 14
+        anchors.right: parent.right
         anchors.rightMargin: 14
+        anchors.verticalCenter: parent.verticalCenter
         spacing: 12
 
         NotificationIcon {
+            anchors.verticalCenter: parent.verticalCenter
             notification: card.notification
             size: 36
-            anchors.verticalCenter: parent.verticalCenter
         }
-
         Column {
-            width: parent.width - 48
-            spacing: 4
             anchors.verticalCenter: parent.verticalCenter
-
-            Text {
-                width: parent.width
-                text: card.notification ? card.notification.summary : ""
-                color: card.isCritical ? Theme.error : Theme.text
-                font.family: "Hack Nerd Font"
-                font.pixelSize: 13
-                font.weight: Font.Bold
-                // Título numa linha até o mouse entrar; o hover já segura o timeout.
-                wrapMode: Text.WordWrap
-                maximumLineCount: hoverArea.containsMouse ? 5 : 1
-                elide: Text.ElideRight
-            }
-
-            Text {
-                width: parent.width
-                text: Notifications.bodyText(card.notification)
-                color: Theme.subtle
-                font.family: "Hack Nerd Font"
-                font.pixelSize: 12
-                textFormat: Text.StyledText
-                wrapMode: Text.WordWrap
-                maximumLineCount: 3
-                elide: Text.ElideRight
-                visible: text !== ""
-            }
+            spacing: 4
+            width: parent.width - 48
 
             Row {
                 spacing: 8
+                width: parent.width
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: Theme.subtle
+                    elide: Text.ElideRight
+                    font.family: "Hack Nerd Font"
+                    font.pixelSize: 10
+                    text: card.notification && card.notification.appName !== "" ? card.notification.appName : "Notificação"
+                    width: parent.width - closeButton.width - parent.spacing
+                }
+                Rectangle {
+                    id: closeButton
+
+                    color: closeMouse.containsMouse ? Theme.overlay : "transparent"
+                    height: 24
+                    radius: 6
+                    width: 24
+
+                    Text {
+                        anchors.centerIn: parent
+                        color: closeMouse.containsMouse ? Theme.error : Theme.subtle
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 12
+                        text: "󰅖"
+                    }
+                    MouseArea {
+                        id: closeMouse
+
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+
+                        onClicked: function (m) {
+                            m.accepted = true;
+                            if (card.notification)
+                                card.notification.dismiss();
+                        }
+                    }
+                }
+            }
+            Text {
+                color: card.isCritical ? Theme.error : Theme.text
+                elide: Text.ElideRight
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 13
+                font.weight: Font.Bold
+                maximumLineCount: cardHover.hovered ? 5 : 1
+                text: card.notification ? card.notification.summary : ""
+                width: parent.width
+                // Título numa linha até o mouse entrar; o hover já segura o timeout.
+                wrapMode: Text.WordWrap
+            }
+            Text {
+                color: Theme.subtle
+                elide: Text.ElideRight
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 12
+                maximumLineCount: 3
+                text: Notifications.bodyText(card.notification)
+                textFormat: Text.StyledText
+                visible: text !== ""
+                width: parent.width
+                wrapMode: Text.WordWrap
+            }
+            Flow {
+                id: actions
+
+                spacing: 8
                 visible: actionRepeater.count > 0
+                width: parent.width
 
                 Repeater {
                     id: actionRepeater
+
                     model: Notifications.buttonActions(card.notification)
 
                     delegate: Rectangle {
                         id: actionBtn
+
                         required property var modelData
 
-                        width: actionLabel.implicitWidth + 20
-                        height: 24
-                        radius: 12
-                        color: actionMouse.containsMouse ? Theme.overlay : Theme.surface
+                        border.color: actionMouse.containsMouse ? Theme.accent : Theme.overlay
+                        border.width: 1
+                        color: actionMouse.pressed ? Theme.overlay : Theme.surface
+                        height: 28
+                        radius: 8
+                        width: Math.min(actionLabel.implicitWidth + 20, actions.width)
 
                         Behavior on color {
                             ColorAnimation {
@@ -224,19 +273,24 @@ Rectangle {
 
                         Text {
                             id: actionLabel
+
                             anchors.centerIn: parent
-                            text: actionBtn.modelData.text
-                            color: Theme.cyan
+                            color: Theme.accent
+                            elide: Text.ElideRight
                             font.family: "Hack Nerd Font"
                             font.pixelSize: 11
                             font.weight: Font.Bold
+                            horizontalAlignment: Text.AlignHCenter
+                            text: actionBtn.modelData.text
+                            width: parent.width - 20
                         }
-
                         MouseArea {
                             id: actionMouse
+
                             anchors.fill: parent
-                            hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
+                            hoverEnabled: true
+
                             onClicked: function (m) {
                                 m.accepted = true;
                                 Notifications.invokeAction(card.notification, actionBtn.modelData);

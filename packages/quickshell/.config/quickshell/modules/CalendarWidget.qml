@@ -6,11 +6,11 @@ import "."
 
 Rectangle {
     id: calRoot
-    width: 280
-    height: 320
-    radius: 20
+    width: 304
+    height: calendarContent.implicitHeight + 32
+    radius: 16
     color: Theme.base
-    border.color: Theme.overlay
+    border.color: Theme.highlightMed
     border.width: 1
 
     readonly property var today: Time.now
@@ -67,140 +67,159 @@ Rectangle {
     }
 
     Column {
+        id: calendarContent
+
         anchors.fill: parent
         anchors.margins: 16
-        spacing: 16
+        spacing: 12
 
         RowLayout {
             width: parent.width
 
-            Text {
-                text: ""
-                font.family: "Hack Nerd Font"
-                font.pixelSize: 14
-                color: Theme.subtle
-                TapHandler {
-                    onTapped: calRoot.prevMonth()
+            Rectangle {
+                color: previousMouse.pressed ? Theme.overlay : (previousMouse.containsMouse ? Theme.surface : "transparent")
+                implicitHeight: 32
+                implicitWidth: 32
+                radius: 8
+
+                Text {
+                    anchors.centerIn: parent
+                    color: previousMouse.containsMouse ? Theme.accent : Theme.subtle
+                    font.family: "Hack Nerd Font"
+                    font.pixelSize: 12
+                    text: ""
                 }
-                HoverHandler {
+                MouseArea {
+                    id: previousMouse
+
+                    anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
+
+                    onClicked: calRoot.prevMonth()
                 }
             }
-
             Text {
                 Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                text: calRoot.monthNames[calRoot.currentMonth] + " " + calRoot.currentYear
                 color: Theme.text
                 font.family: "Hack Nerd Font"
-                font.pixelSize: 15
+                font.pixelSize: 13
                 font.weight: Font.Bold
+                horizontalAlignment: Text.AlignHCenter
+                text: calRoot.monthNames[calRoot.currentMonth] + " " + calRoot.currentYear
             }
+            Rectangle {
+                color: nextMouse.pressed ? Theme.overlay : (nextMouse.containsMouse ? Theme.surface : "transparent")
+                implicitHeight: 32
+                implicitWidth: 32
+                radius: 8
 
-            Text {
-                text: ""
-                font.family: "Hack Nerd Font"
-                font.pixelSize: 14
-                color: Theme.subtle
-                TapHandler {
-                    onTapped: calRoot.nextMonth()
+                Text {
+                    anchors.centerIn: parent
+                    color: nextMouse.containsMouse ? Theme.accent : Theme.subtle
+                    font.family: "Hack Nerd Font"
+                    font.pixelSize: 12
+                    text: ""
                 }
-                HoverHandler {
+                MouseArea {
+                    id: nextMouse
+
+                    anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
+
+                    onClicked: calRoot.nextMonth()
                 }
             }
         }
-
         Column {
-            spacing: 12
+            spacing: 8
             width: parent.width
 
             Row {
                 spacing: 0
+                width: parent.width
+
                 Repeater {
                     model: calRoot.dayNames
+
                     delegate: Text {
                         required property string modelData
-                        width: 35
-                        horizontalAlignment: Text.AlignHCenter
-                        text: modelData
-                        color: Theme.accent
+
+                        color: Theme.subtle
                         font.family: "Hack Nerd Font"
                         font.pixelSize: 12
                         font.weight: Font.Bold
+                        horizontalAlignment: Text.AlignHCenter
+                        text: modelData
+                        width: parent.width / 7
                     }
                 }
             }
-
-            GridLayout {
-                columns: 7
+            Grid {
                 columnSpacing: 0
+                columns: 7
                 rowSpacing: 4
+                width: parent.width
 
                 Repeater {
                     model: calRoot.gridDays
+
                     delegate: Rectangle {
                         id: dayCell
-                        required property var modelData
-                        readonly property bool isToday: modelData.isCurrentMonth && modelData.day === calRoot.today.getDate() && calRoot.currentMonth === calRoot.today.getMonth() && calRoot.currentYear === calRoot.today.getFullYear()
 
-                        width: 35
+                        readonly property bool isToday: modelData.isCurrentMonth && modelData.day === calRoot.today.getDate() && calRoot.currentMonth === calRoot.today.getMonth() && calRoot.currentYear === calRoot.today.getFullYear()
+                        required property var modelData
+
+                        color: dayCell.isToday ? Theme.accent : "transparent"
                         height: 30
                         radius: 8
-                        color: dayCell.isToday ? Theme.accent : "transparent"
+                        width: parent.width / 7
 
                         Text {
                             anchors.centerIn: parent
-
-                            text: dayCell.modelData.day
-
-                            color: dayCell.isToday ? Theme.surface : (dayCell.modelData.isCurrentMonth ? Theme.text : Theme.muted)
-
+                            color: dayCell.isToday ? Theme.base : (dayCell.modelData.isCurrentMonth ? Theme.text : Theme.muted)
                             font.family: "Hack Nerd Font"
                             font.pixelSize: 13
                             font.weight: dayCell.isToday ? Font.Bold : Font.Normal
+                            text: dayCell.modelData.day
                         }
                     }
                 }
             }
-
             Column {
-                width: parent.width
                 spacing: 8
+                width: parent.width
 
                 Rectangle {
-                    width: parent.width
-                    height: 1
                     color: Theme.overlay
+                    height: 1
+                    width: parent.width
                 }
+                Rectangle {
+                    color: todayMouse.pressed ? Theme.overlay : (todayMouse.containsMouse ? Theme.surface : "transparent")
+                    height: 32
+                    radius: 8
+                    width: parent.width
 
-                Text {
-                    id: todayBtn
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Ir para Hoje"
-
-                    color: btnHover.hovered ? Theme.text : Theme.subtle
-
-                    font.family: "Hack Nerd Font"
-                    font.pixelSize: 12
-                    font.weight: Font.Bold
-
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 150
-                        }
+                    Text {
+                        anchors.centerIn: parent
+                        color: todayMouse.containsMouse ? Theme.accent : Theme.subtle
+                        font.family: "Hack Nerd Font"
+                        font.pixelSize: 12
+                        text: "Ir para hoje"
                     }
+                    MouseArea {
+                        id: todayMouse
 
-                    TapHandler {
-                        onTapped: {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+
+                        onClicked: {
                             calRoot.currentMonth = calRoot.today.getMonth();
                             calRoot.currentYear = calRoot.today.getFullYear();
                         }
-                    }
-
-                    HoverHandler {
-                        id: btnHover
-                        cursorShape: Qt.PointingHandCursor
                     }
                 }
             }

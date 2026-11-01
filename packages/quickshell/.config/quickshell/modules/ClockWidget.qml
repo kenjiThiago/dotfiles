@@ -30,10 +30,17 @@ Rectangle {
     readonly property bool osdActive: island.activeMode !== "clock"
     readonly property bool osdIsVolume: island.activeMode === "volume"
 
+    onIslandStateChanged: {
+        if (island.islandState > 0 && island.osdActive) {
+            island.activeMode = "clock";
+            resetTimer.stop();
+        }
+    }
+
     // Brilho e volume são a mesma barra: o modo escolhe o que ela lê e escreve.
     readonly property int osdValue: island.osdIsVolume ? SystemMonitor.volumePct : Math.max(0, SystemMonitor.currentBrightness)
     readonly property string osdIcon: island.osdIsVolume ? (SystemMonitor.isMuted ? "󰝟" : "󰕾") : "󰃠"
-    readonly property color osdColor: island.osdIsVolume ? (SystemMonitor.isMuted ? Theme.error : Theme.blue) : Theme.yellow
+    readonly property color osdColor: island.osdIsVolume && SystemMonitor.isMuted ? Theme.error : Theme.accent
 
     function showOsd(mode: string): void {
         if (island.islandState === 2)
@@ -95,7 +102,7 @@ Rectangle {
     readonly property bool showBell: Notifications.unreadCount > 0 || Notifications.dnd
     readonly property bool showMultedMicrofone: SystemMonitor.sourceIsMuted
     readonly property bool showTemp: SystemMonitor.tempC >= 80
-    readonly property bool showBatt: SystemMonitor.pct <= 20 && !SystemMonitor.isCharging
+    readonly property bool showBatt: SystemMonitor.isValid && SystemMonitor.pct <= 20 && !SystemMonitor.isCharging
     readonly property bool showLayout: !SystemMonitor.keyboardIsDefault && SystemMonitor.keyboardLayout !== ""
     readonly property bool showVpn: SystemMonitor.vpnActive
     readonly property bool showScreen: SystemMonitor.screenCaptured
@@ -214,36 +221,30 @@ Rectangle {
         return island.expandedHeight;
     }
 
-    radius: {
-        if (island.islandState === 0)
-            return 19;
-        if (island.islandState === 1)
-            return 32;
-        return 24;
-    }
+    radius: island.islandState === 0 ? 18 : 16
 
     color: Theme.base
-    border.color: Theme.overlay
+    border.color: Theme.highlightMed
     border.width: 1
 
     Behavior on implicitWidth {
         enabled: island.isLoaded
         NumberAnimation {
-            duration: 400
+            duration: 240
             easing.type: Easing.OutCubic
         }
     }
     Behavior on implicitHeight {
         enabled: island.isLoaded
         NumberAnimation {
-            duration: 400
+            duration: 240
             easing.type: Easing.OutCubic
         }
     }
     Behavior on radius {
         enabled: island.isLoaded
         NumberAnimation {
-            duration: 400
+            duration: 240
             easing.type: Easing.OutCubic
         }
     }
@@ -274,7 +275,7 @@ Rectangle {
 
             Behavior on spacing {
                 NumberAnimation {
-                    duration: 400
+                    duration: 240
                     easing.type: Easing.OutCubic
                 }
             }
@@ -286,7 +287,7 @@ Rectangle {
                 opacity: 1
                 Behavior on width {
                     NumberAnimation {
-                        duration: 400
+                        duration: 240
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -304,10 +305,10 @@ Rectangle {
                             width: isActive ? 36 : 24
                             height: 24
                             radius: 12
-                            color: isActive ? Theme.cyan : "transparent"
+                            color: isActive ? Theme.accent : (workspaceMouse.containsMouse ? Theme.surface : "transparent")
                             Behavior on width {
                                 NumberAnimation {
-                                    duration: 300
+                                    duration: 200
                                     easing.type: Easing.OutCubic
                                 }
                             }
@@ -318,7 +319,7 @@ Rectangle {
                             }
                             Text {
                                 anchors.centerIn: parent
-                                color: wsDelegate.isActive ? Theme.base : Theme.muted
+                                color: wsDelegate.isActive ? Theme.base : Theme.subtle
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 13
                                 font.weight: Font.Bold
@@ -331,7 +332,9 @@ Rectangle {
                                 }
                             }
                             MouseArea {
+                                id: workspaceMouse
                                 anchors.fill: parent
+                                hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: function (m) {
                                     m.accepted = true;
@@ -353,13 +356,13 @@ Rectangle {
 
                 Behavior on width {
                     NumberAnimation {
-                        duration: 400
+                        duration: 240
                         easing.type: Easing.OutCubic
                     }
                 }
                 Behavior on height {
                     NumberAnimation {
-                        duration: 400
+                        duration: 240
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -376,7 +379,7 @@ Rectangle {
                     Text {
                         anchors.centerIn: parent
                         text: Time.timeString
-                        color: Theme.cyan
+                        color: Theme.text
                         font.family: "Hack Nerd Font"
                         font.pixelSize: 14
                         font.weight: Font.Bold
@@ -391,7 +394,7 @@ Rectangle {
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: Time.timeString
-                            color: Theme.cyan
+                            color: Theme.text
                             font.family: "Hack Nerd Font"
                             font.pixelSize: 24
                             font.weight: Font.Bold
@@ -431,7 +434,7 @@ Rectangle {
 
                 Behavior on width {
                     NumberAnimation {
-                        duration: 300
+                        duration: 200
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -535,7 +538,7 @@ Rectangle {
 
                     Text {
                         text: island.bellText
-                        color: Notifications.dnd ? Theme.muted : Theme.cyan
+                        color: Notifications.dnd ? Theme.subtle : Theme.accent
                         font.family: "Hack Nerd Font"
                         font.pixelSize: 15
 
@@ -583,7 +586,7 @@ Rectangle {
                 visible: opacity > 0
                 Behavior on width {
                     NumberAnimation {
-                        duration: 400
+                        duration: 240
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -611,7 +614,7 @@ Rectangle {
                             anchors.verticalCenter: parent.verticalCenter
                             Text {
                                 text: SystemMonitor.isMuted ? "󰝟" : "󰕾"
-                                color: Theme.blue
+                                color: Theme.subtle
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 16
                             }
@@ -626,6 +629,7 @@ Rectangle {
                         }
 
                         Row {
+                            visible: SystemMonitor.isValid
                             spacing: 6
                             anchors.verticalCenter: parent.verticalCenter
                             Text {

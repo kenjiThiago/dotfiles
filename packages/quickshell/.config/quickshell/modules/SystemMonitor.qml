@@ -48,11 +48,11 @@ Item {
     property string ppLabel: {
         switch (PowerProfiles.profile) {
         case PowerProfile.Performance:
-            return "Performance";
+            return "Desempenho";
         case PowerProfile.PowerSaver:
-            return "Power Saver";
+            return "Economia";
         default:
-            return "Balanced";
+            return "Equilibrado";
         }
     }
     property color ppColor: {

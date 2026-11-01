@@ -64,9 +64,11 @@ Row {
 
             width: 32
             height: 32
-            radius: 16
+            radius: 8
 
-            color: appMouseArea.containsMouse ? Theme.overlay : Theme.surface
+            color: appMouseArea.pressed ? Theme.overlay : Theme.surface
+            border.width: 1
+            border.color: appMouseArea.containsMouse ? Theme.accent : Theme.overlay
             Behavior on color {
                 ColorAnimation {
                     duration: 150

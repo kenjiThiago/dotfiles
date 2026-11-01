@@ -8,8 +8,9 @@ Item {
     id: ccRoot
 
     property var hostWindow: null
-    signal requestClose
+
     signal requestCalendar
+    signal requestClose
 
     onVisibleChanged: {
         if (!visible)
@@ -22,134 +23,86 @@ Item {
 
     MouseArea {
         anchors.fill: parent
+
         onClicked: function (m) {
             m.accepted = true;
         }
     }
-
     Column {
         id: ccColumn
+
         anchors.fill: parent
         anchors.margins: 20
         spacing: 20
 
         Grid {
             id: statsGrid
+
             columns: 2
             spacing: 12
             width: parent.width
+
             Rectangle {
-                width: 240
-                height: 90
-                radius: 16
-                color: Theme.surface
+                id: systemCard
+
+                border.color: systemMouse.containsMouse ? Theme.accent : Theme.overlay
+                border.width: 1
+                color: systemMouse.pressed ? Theme.overlay : Theme.surface
+                height: 88
+                radius: 10
+                width: Math.round((statsGrid.width - statsGrid.spacing) * 0.58)
+
                 MouseArea {
+                    id: systemMouse
+
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
+
                     onClicked: function (mouse) {
                         mouse.accepted = true;
                         SystemMonitor.openBtop();
                         ccRoot.requestClose();
                     }
                 }
-                Row {
+                Column {
                     anchors.centerIn: parent
                     spacing: 10
+                    width: parent.width - 32
+
                     Text {
-                        text: ""
+                        color: Theme.subtle
                         font.family: "Hack Nerd Font"
-                        font.pixelSize: 22
-                        color: Theme.blue
-                        anchors.verticalCenter: parent.verticalCenter
+                        font.pixelSize: 12
+                        text: "Sistema"
                     }
-                    Item {
-                        width: sysTexts.implicitWidth
-                        height: sysTexts.implicitHeight
-                        anchors.verticalCenter: parent.verticalCenter
+                    Row {
+                        spacing: 10
 
-                        Behavior on width {
-                            NumberAnimation {
-                                duration: 300
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-                        Behavior on opacity {
-                            NumberAnimation {
-                                duration: 250
-                            }
-                        }
+                        Repeater {
+                            model: ["", "", ""]
 
-                        Column {
-                            id: sysTexts
-                            Text {
-                                text: "Sistema"
-                                color: Theme.text
-                                font.family: "Hack Nerd Font"
-                                font.pixelSize: 13
-                                font.weight: Font.Bold
-                            }
-                            Row {
-                                id: internalStatsRow
-                                spacing: 12
+                            delegate: Row {
+                                id: stat
 
-                                Row {
-                                    spacing: 6
-                                    Text {
-                                        text: ""
-                                        color: Theme.yellow
-                                        font.family: "Hack Nerd Font"
-                                        font.pixelSize: 15
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-                                    Text {
-                                        text: SystemMonitor.cpuPct + "%"
-                                        color: Theme.text
-                                        font.family: "Hack Nerd Font"
-                                        font.pixelSize: 12
-                                        font.weight: Font.Bold
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        width: 28
-                                    }
+                                required property int index
+                                required property string modelData
+
+                                spacing: 4
+
+                                Text {
+                                    color: Theme.subtle
+                                    font.family: "Hack Nerd Font"
+                                    font.pixelSize: 14
+                                    text: stat.modelData
+                                    width: 14
                                 }
-
-                                Row {
-                                    spacing: 6
-                                    Text {
-                                        text: ""
-                                        color: Theme.magenta
-                                        font.family: "Hack Nerd Font"
-                                        font.pixelSize: 15
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-                                    Text {
-                                        text: SystemMonitor.ramPct + "%"
-                                        color: Theme.text
-                                        font.family: "Hack Nerd Font"
-                                        font.pixelSize: 12
-                                        font.weight: Font.Bold
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        width: 28
-                                    }
-                                }
-
-                                Row {
-                                    spacing: 6
-                                    Text {
-                                        text: ""
-                                        color: Theme.cyan
-                                        font.family: "Hack Nerd Font"
-                                        font.pixelSize: 14
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-                                    Text {
-                                        text: SystemMonitor.tempC + "°C"
-                                        color: Theme.text
-                                        font.family: "Hack Nerd Font"
-                                        font.pixelSize: 12
-                                        font.weight: Font.Bold
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        width: 32
-                                    }
+                                Text {
+                                    color: Theme.text
+                                    font.family: "Hack Nerd Font"
+                                    font.pixelSize: 12
+                                    text: stat.index === 0 ? SystemMonitor.cpuPct + "%" : (stat.index === 1 ? SystemMonitor.ramPct + "%" : SystemMonitor.tempC + "°C")
+                                    width: stat.index === 2 ? 38 : 32
                                 }
                             }
                         }
@@ -157,290 +110,259 @@ Item {
                 }
             }
             Rectangle {
-                width: 160
-                height: 90
-                radius: 16
-                color: Theme.surface
+                border.color: powerMouse.containsMouse ? Theme.accent : Theme.overlay
+                border.width: 1
+                color: powerMouse.pressed ? Theme.overlay : Theme.surface
+                height: 88
+                radius: 10
+                width: statsGrid.width - systemCard.width - statsGrid.spacing
+
                 MouseArea {
+                    id: powerMouse
+
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
+
                     onClicked: function (mouse) {
                         mouse.accepted = true;
                         SystemMonitor.cycleProfile();
                     }
                 }
-                Row {
+                Column {
                     anchors.centerIn: parent
-                    spacing: 12
+                    spacing: 10
+                    width: parent.width - 32
+
                     Text {
-                        text: SystemMonitor.ppIcon
+                        color: Theme.subtle
                         font.family: "Hack Nerd Font"
-                        font.pixelSize: 22
-                        color: SystemMonitor.ppColor
-                        anchors.verticalCenter: parent.verticalCenter
+                        font.pixelSize: 12
+                        text: "Energia"
                     }
-                    Item {
-                        width: powerTexts.implicitWidth
-                        height: powerTexts.implicitHeight
-                        anchors.verticalCenter: parent.verticalCenter
-                        Column {
-                            id: powerTexts
-                            Text {
-                                text: "Energia"
-                                color: Theme.text
-                                font.family: "Hack Nerd Font"
-                                font.pixelSize: 13
-                                font.weight: Font.Bold
-                            }
-                            Text {
-                                text: SystemMonitor.ppLabel
-                                color: Theme.muted
-                                font.family: "Hack Nerd Font"
-                                font.pixelSize: 13
-                            }
+                    Row {
+                        spacing: 8
+
+                        Text {
+                            color: SystemMonitor.ppColor
+                            font.family: "Hack Nerd Font"
+                            font.pixelSize: 15
+                            text: SystemMonitor.ppIcon
+                        }
+                        Text {
+                            color: Theme.text
+                            font.family: "Hack Nerd Font"
+                            font.pixelSize: 12
+                            text: SystemMonitor.ppLabel
                         }
                     }
                 }
             }
         }
-
         Column {
             id: slidersSection
+
+            spacing: 12
             width: parent.width
-            spacing: 16
 
             Rectangle {
-                width: parent.width
-                height: 1
                 color: Theme.overlay
-            }
-            RowLayout {
+                height: 1
                 width: parent.width
-                spacing: 12
-                Rectangle {
-                    width: 32
-                    height: 32
-                    radius: 16
-                    color: Theme.surface
-                    Text {
-                        anchors.centerIn: parent
-                        text: SystemMonitor.isMuted ? "󰝟" : "󰕾"
-                        color: Theme.text
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 16
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        acceptedButtons: Qt.LeftButton | Qt.RightButton
-                        onClicked: function (m) {
-                            m.accepted = true;
-                            if (m.button === Qt.RightButton) {
-                                SystemMonitor.openWiremix();
-                                ccRoot.requestClose();
-                            } else {
-                                SystemMonitor.toggleMute();
-                            }
-                        }
-                    }
-                }
-                Rectangle {
-                    id: volumeTrack
-                    Layout.fillWidth: true
-                    height: 8
-                    radius: 4
-                    color: Theme.overlay
-                    WheelHandler {
-                        onWheel: function (e) {
-                            SystemMonitor.setVolume(SystemMonitor.volumePct + (e.angleDelta.y > 0 ? 5 : -5));
-                        }
-                    }
-                    Rectangle {
-                        width: parent.width * (SystemMonitor.volumePct / 100)
-                        height: parent.height
-                        radius: 4
-                        color: SystemMonitor.isMuted ? Theme.error : Theme.blue
-                    }
-                    Rectangle {
-                        width: 14
-                        height: 14
-                        radius: 7
-                        color: SystemMonitor.isMuted ? Theme.error : Theme.blue
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: Math.max(0, Math.min(parent.width - 14, (parent.width * (SystemMonitor.volumePct / 100)) - 7))
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        anchors.margins: -10
-                        cursorShape: Qt.PointingHandCursor
-                        // As margens negativas ampliam a área de clique, então
-                        // m.x não é a posição na trilha.
-                        function applyAt(m) {
-                            SystemMonitor.setVolume(100 * mapToItem(volumeTrack, m.x, 0).x / volumeTrack.width);
-                        }
-                        onPressed: function (m) {
-                            m.accepted = true;
-                            applyAt(m);
-                        }
-                        onPositionChanged: function (m) {
-                            if (pressed)
-                                applyAt(m);
-                        }
-                    }
-                }
-                Text {
-                    text: SystemMonitor.volumePct + "%"
-                    color: Theme.text
-                    font.family: "Hack Nerd Font"
-                    font.pixelSize: 12
-                    font.weight: Font.Bold
-                    Layout.preferredWidth: 35
-                    horizontalAlignment: Text.AlignRight
-                }
             }
+            LevelControl {
+                adjustable: true
+                available: SystemMonitor.sink !== null && SystemMonitor.sink.audio !== null
+                icon: SystemMonitor.isMuted ? "󰝟" : "󰕾"
+                iconInteractive: true
+                indicator: SystemMonitor.isMuted ? Theme.error : Theme.accent
+                label: "Volume"
+                value: SystemMonitor.volumePct
 
-            RowLayout {
-                width: parent.width
-                spacing: 12
-                Rectangle {
-                    width: 32
-                    height: 32
-                    radius: 16
-                    color: Theme.surface
-                    Text {
-                        anchors.centerIn: parent
-                        text: "󰃠"
-                        color: Theme.text
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 16
+                onAdjust: value => SystemMonitor.setVolume(value)
+                onIconActivated: button => {
+                    if (button === Qt.RightButton) {
+                        SystemMonitor.openWiremix();
+                        ccRoot.requestClose();
+                    } else {
+                        SystemMonitor.toggleMute();
                     }
-                }
-                Rectangle {
-                    id: brightnessTrack
-                    Layout.fillWidth: true
-                    height: 8
-                    radius: 4
-                    color: Theme.overlay
-                    WheelHandler {
-                        onWheel: function (e) {
-                            SystemMonitor.setBrightness(SystemMonitor.currentBrightness + (e.angleDelta.y > 0 ? 5 : -5));
-                        }
-                    }
-                    Rectangle {
-                        width: parent.width * (SystemMonitor.currentBrightness / 100)
-                        height: parent.height
-                        radius: 4
-                        color: Theme.yellow
-                    }
-                    Rectangle {
-                        width: 14
-                        height: 14
-                        radius: 7
-                        color: Theme.yellow
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: Math.max(0, Math.min(parent.width - 14, (parent.width * (SystemMonitor.currentBrightness / 100)) - 7))
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        anchors.margins: -10
-                        cursorShape: Qt.PointingHandCursor
-                        function applyAt(m) {
-                            SystemMonitor.setBrightness(100 * mapToItem(brightnessTrack, m.x, 0).x / brightnessTrack.width);
-                        }
-                        onPressed: function (m) {
-                            m.accepted = true;
-                            applyAt(m);
-                        }
-                        onPositionChanged: function (m) {
-                            if (pressed)
-                                applyAt(m);
-                        }
-                    }
-                }
-                Text {
-                    text: Math.round(SystemMonitor.currentBrightness) + "%"
-                    color: Theme.text
-                    font.family: "Hack Nerd Font"
-                    font.pixelSize: 12
-                    font.weight: Font.Bold
-                    Layout.preferredWidth: 35
-                    horizontalAlignment: Text.AlignRight
                 }
             }
+            LevelControl {
+                adjustable: true
+                available: value >= 0
+                icon: "󰃠"
+                label: "Brilho"
+                value: SystemMonitor.currentBrightness
 
-            RowLayout {
-                width: parent.width
-                spacing: 12
-                Rectangle {
-                    width: 32
-                    height: 32
-                    radius: 16
-                    color: Theme.surface
-                    Text {
-                        anchors.centerIn: parent
-                        text: SystemMonitor.battIcon
-                        color: SystemMonitor.isCharging ? Theme.success : Theme.text
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 16
-                    }
-                }
-                Rectangle {
-                    Layout.fillWidth: true
-                    height: 8
-                    radius: 4
-                    color: Theme.overlay
-                    Rectangle {
-                        width: parent.width * (SystemMonitor.pct / 100)
-                        height: parent.height
-                        radius: 4
-                        color: SystemMonitor.isCharging ? Theme.success : (SystemMonitor.pct <= 20 ? Theme.error : Theme.magenta)
-                    }
-                }
-                Text {
-                    text: SystemMonitor.pct + "%"
-                    color: Theme.text
-                    font.family: "Hack Nerd Font"
-                    font.pixelSize: 12
-                    font.weight: Font.Bold
-                    Layout.preferredWidth: 35
-                    horizontalAlignment: Text.AlignRight
-                }
+                onAdjust: value => SystemMonitor.setBrightness(value)
+            }
+            LevelControl {
+                icon: SystemMonitor.battIcon
+                indicator: SystemMonitor.isCharging ? Theme.success : (value <= 20 ? Theme.error : Theme.accent)
+                label: SystemMonitor.isCharging ? "Bateria · carregando" : "Bateria"
+                value: SystemMonitor.pct
+                visible: SystemMonitor.isValid
             }
         }
-
         Column {
             id: traySection
-            width: parent.width
+
             spacing: 8
             visible: sysTray.count > 0
+            width: parent.width
+
             Rectangle {
-                width: parent.width
-                height: 1
                 color: Theme.overlay
+                height: 1
+                width: parent.width
             }
             Item {
-                width: parent.width
                 height: 36
+                width: parent.width
 
                 TrayWidget {
                     id: sysTray
+
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     hostWindow: ccRoot.hostWindow
                 }
             }
         }
-
         NotificationList {
             id: notifList
+
+            // O teto vem da altura fixa da central, não da altura da própria lista.
+            maxListHeight: {
+                const sections = statsGrid.height + slidersSection.height + 2 * ccColumn.spacing;
+                const tray = traySection.visible ? traySection.height + ccColumn.spacing : 0;
+                return Math.max(0, ccColumn.height - sections - tray - notifList.headerHeight);
+            }
+            width: parent.width
+        }
+    }
+
+    component LevelControl: Column {
+        id: control
+
+        property bool adjustable: false
+        property bool available: true
+        required property string icon
+        property bool iconInteractive: false
+        property color indicator: Theme.accent
+        required property string label
+        required property real value
+
+        signal adjust(real value)
+        signal iconActivated(int button)
+
+        spacing: 8
+        width: parent.width
+
+        RowLayout {
+            spacing: 10
             width: parent.width
 
-            // O teto é o que sobra das outras seções; a altura da ccColumn vem do
-            // anchors.fill, então não há laço de binding.
-            maxListHeight: {
-                const secoes = statsGrid.height + slidersSection.height + 2 * ccColumn.spacing;
-                const tray = traySection.visible ? traySection.height + ccColumn.spacing : 0;
-                return Math.max(120, ccColumn.height - secoes - tray - notifList.headerHeight);
+            Rectangle {
+                border.color: iconMouse.containsMouse ? Theme.accent : Theme.overlay
+                border.width: 1
+                color: iconMouse.pressed ? Theme.overlay : Theme.surface
+                implicitHeight: 28
+                implicitWidth: 28
+                radius: 8
+
+                Text {
+                    anchors.centerIn: parent
+                    color: control.available ? control.indicator : Theme.muted
+                    font.family: "Hack Nerd Font"
+                    font.pixelSize: 15
+                    text: control.icon
+                }
+                MouseArea {
+                    id: iconMouse
+
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: control.iconInteractive && control.available
+                    hoverEnabled: true
+
+                    onClicked: function (m) {
+                        m.accepted = true;
+                        control.iconActivated(m.button);
+                    }
+                }
+            }
+            Text {
+                Layout.fillWidth: true
+                color: Theme.subtle
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 12
+                text: control.label
+            }
+            Text {
+                color: Theme.text
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 12
+                horizontalAlignment: Text.AlignRight
+                text: control.available ? Math.round(control.value) + "%" : "—"
+            }
+        }
+        Rectangle {
+            id: track
+
+            color: Theme.overlay
+            height: 6
+            opacity: control.available ? 1 : 0.4
+            radius: 3
+            width: parent.width
+
+            Rectangle {
+                color: control.indicator
+                height: parent.height
+                radius: 3
+                width: control.available ? parent.width * Math.max(0, Math.min(1, control.value / 100)) : 0
+            }
+            Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
+                color: control.indicator
+                height: 12
+                radius: 6
+                visible: control.adjustable && control.available && (trackMouse.containsMouse || trackMouse.pressed)
+                width: 12
+                x: Math.max(0, Math.min(track.width - width, track.width * control.value / 100 - width / 2))
+            }
+            WheelHandler {
+                enabled: control.adjustable && control.available
+
+                onWheel: function (e) {
+                    control.adjust(control.value + (e.angleDelta.y > 0 ? 5 : -5));
+                }
+            }
+            MouseArea {
+                id: trackMouse
+
+                // A margem amplia o alvo; a posição precisa ser relativa à trilha.
+                function applyAt(m) {
+                    control.adjust(100 * mapToItem(track, m.x, 0).x / track.width);
+                }
+
+                anchors.fill: parent
+                anchors.margins: -8
+                cursorShape: Qt.PointingHandCursor
+                enabled: control.adjustable && control.available
+                hoverEnabled: true
+
+                onPositionChanged: function (m) {
+                    if (pressed)
+                        applyAt(m);
+                }
+                onPressed: function (m) {
+                    m.accepted = true;
+                    applyAt(m);
+                }
             }
         }
     }

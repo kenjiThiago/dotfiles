@@ -449,6 +449,12 @@ for um `#rrggbb`.
   `zen-logo.svg` no mesmo diretório. O perfil vem do `Default=` da seção
   `[Install...]` do `profiles.ini`, que é o que o navegador abre de fato.
   Precisa reiniciar o navegador.
+- **Quickshell — central**: o card Sistema abre o btop e Energia alterna o
+  perfil de energia. No ícone de volume, o clique esquerdo alterna o mudo e
+  o direito abre o mixer; as trilhas aceitam arrasto e scroll. Controles
+  indisponíveis mostram “—” e a bateria só aparece quando detectada.
+  As notificações identificam o aplicativo e têm um botão de fechar;
+  a expiração pausa enquanto o ponteiro está sobre o card ou seus botões.
 - **quickshell e o systray**: os ícones da barra são glifos de Nerd Font e
   trocam de cor na recarga, como o resto. Os do systray e os das notificações
   não: são imagens resolvidas pelo tema de ícones do Qt, que o Qt fixa uma vez,
