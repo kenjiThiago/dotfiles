@@ -47,7 +47,7 @@ brand_alt="#c4a7e7"  # iris
 
 # Fonte do colorscheme luar, lida pelo lua/theme.lua gerado.
 syn_comment="#8b86a3"
-syn_type="$subtle"
+syn_type="#9b97b3"
 syn_string="$cyan"      # rose
 syn_escape="$magenta"   # iris
 syn_constant="$magenta" # iris

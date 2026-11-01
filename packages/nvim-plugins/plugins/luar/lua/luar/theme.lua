@@ -40,7 +40,7 @@ function M.setup()
         CursorLine = { bg = palette.surface },
         CursorColumn = { bg = palette.surface },
         CursorLineNr = { fg = palette.accent, bold = true },
-        LineNr = { fg = palette.highlight_high },
+        LineNr = { fg = tint(palette.subtle, 0.65) },
         SignColumn = { bg = palette.base },
         Directory = { fg = palette.func, bold = true },
         ErrorMsg = { fg = palette.error, bold = true },
