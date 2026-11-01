@@ -26,6 +26,7 @@ local fallback = {
 
     error = "#eb6f92",
     warning = "#f6c177",
+    info = "#9ccfd8",
     success = "#3e8fb0",
     accent = "#c4a7e7",
     accent_alt = "#ea9a97",
@@ -74,6 +75,7 @@ M.colors = {
 
     error = pick(pal, "error"),
     warning = pick(pal, "warning"),
+    info = pick(pal, "info"),
     success = pick(pal, "success"),
     accent = pick(pal, "accent"),
     accent_alt = pick(pal, "accent_alt"),

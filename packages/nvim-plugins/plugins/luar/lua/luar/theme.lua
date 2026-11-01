@@ -293,16 +293,16 @@ function M.setup()
 
         DiagnosticError = { fg = palette.error },
         DiagnosticWarn = { fg = palette.warning },
-        DiagnosticInfo = { fg = palette.func },
+        DiagnosticInfo = { fg = palette.info },
         DiagnosticHint = { fg = palette.constant },
         DiagnosticOk = { fg = palette.success },
         DiagnosticUnderlineError = { sp = palette.error, undercurl = true },
         DiagnosticUnderlineWarn = { sp = palette.warning, undercurl = true },
-        DiagnosticUnderlineInfo = { sp = palette.func, undercurl = true },
+        DiagnosticUnderlineInfo = { sp = palette.info, undercurl = true },
         DiagnosticUnderlineHint = { sp = palette.constant, undercurl = true },
         DiagnosticVirtualTextError = { fg = palette.error, bg = palette.surface },
         DiagnosticVirtualTextWarn = { fg = palette.warning, bg = palette.surface },
-        DiagnosticVirtualTextInfo = { fg = palette.func, bg = palette.surface },
+        DiagnosticVirtualTextInfo = { fg = palette.info, bg = palette.surface },
         DiagnosticVirtualTextHint = { fg = palette.constant, bg = palette.surface },
 
         -- Espelho da query gitcommit do nvim-treesitter, para o buffer sair igual com e
