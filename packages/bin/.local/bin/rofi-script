@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+run_paru() {
+    local status=0
+    paru "$@" || status=$?
+    if ((status == 0)); then
+        printf '\n✔ Concluído!\n'
+    else
+        printf '\nOperação não concluída (código %s).\n' "$status" >&2
+    fi
+    read -r -p $'\nENTER para sair...'
+    return "$status"
+}
+
 if [[ "$1" == "--paru-install" ]]; then
     pkg_names=$(pacman -Slq | fzf \
         --multi \
@@ -16,10 +28,9 @@ if [[ "$1" == "--paru-install" ]]; then
         readarray -t pkgs <<< "$pkg_names"
         clear
         echo -e "\033[1;34m➤ Instalando:\033[0m ${pkgs[*]}\n"
-        paru -S "${pkgs[@]}"
-        echo -e "\n\033[1;32m✔ Concluído!\033[0m"
+        run_paru -S "${pkgs[@]}"
+        exit $?
     fi
-    read -p $'\nENTER para sair...'
     exit 0
 fi
 
@@ -30,18 +41,15 @@ if [[ "$1" == "--paru-remove" ]]; then
         readarray -t pkgs <<< "$pkg_names"
         clear
         echo -e "\033[1;31m➤ Removendo:\033[0m ${pkgs[*]}\n"
-        paru -Rns "${pkgs[@]}"
-        echo -e "\n\033[1;32m✔ Concluído!\033[0m"
+        run_paru -Rns "${pkgs[@]}"
+        exit $?
     fi
-    read -p $'\nENTER para sair...'
     exit 0
 fi
 
 if [[ "$1" == "--paru-update" ]]; then
-    paru -Syu
-    echo -e "\n\033[1;32m✔ Concluído!\033[0m"
-    read -p $'\nENTER para sair...'
-    exit 0
+    run_paru -Syu
+    exit $?
 fi
 
 BACK_TO_EXIT=false
@@ -203,6 +211,7 @@ clipboard_rows() {
 clipboard_mode() {
     [[ -d ${ROFI_CLIPBOARD_DIR:-} ]] || return
     local kind=${ROFI_INFO%%:*} value=${ROFI_INFO#*:} pinned=""
+    local decoded="$ROFI_CLIPBOARD_DIR/decoded"
     if [[ $kind == pin && -n $value && $value != */* && $value != . && $value != .. ]]; then
         pinned="$CLIP_PINS/$value"
     elif [[ $kind != history || ! $value =~ ^[0-9]+$ ]]; then
@@ -222,19 +231,28 @@ clipboard_mode() {
         0) ;;
         1)
             if [[ -n $pinned ]]; then
-                wl-copy < "$pinned" >/dev/null 2>&1
+                if wl-copy < "$pinned" >/dev/null 2>&1; then return; fi
             elif [[ $kind == history ]]; then
-                printf '%s\t' "$value" | cliphist decode | wl-copy >/dev/null 2>&1
+                if printf '%s\t' "$value" | cliphist decode > "$decoded" && wl-copy < "$decoded" >/dev/null 2>&1; then
+                    return
+                fi
             else
                 clipboard_rows
+                return
             fi
+            notify-send -u critical "Clipboard" "Não foi possível copiar a entrada."
+            clipboard_rows
             return
             ;;
         10)
             if [[ -n $pinned ]]; then
                 rm -f -- "$pinned"
             elif [[ $kind == history ]]; then
-                printf '%s\t' "$value" | cliphist decode > "$CLIP_PINS/$(date +%s%N)"
+                if printf '%s\t' "$value" | cliphist decode > "$decoded"; then
+                    mv -- "$decoded" "$CLIP_PINS/$(date +%s%N)" || notify-send -u critical "Clipboard" "Não foi possível fixar a entrada."
+                else
+                    notify-send -u critical "Clipboard" "Não foi possível decodificar a entrada."
+                fi
             fi
             ;;
         11)
@@ -268,16 +286,21 @@ show_clipboard() (
 # Troca só a linha do path nos arquivos gerados pelo `theme set`. O colors.conf
 # entra porque o hyprlock tira o fundo do $wallpaper de lá, não do hyprpaper.conf.
 save_wallpaper_path() {
-    local CAMINHO="$1"
+    local CAMINHO="$1" escaped
+    escaped=${CAMINHO//\\/\\\\}
+    escaped=${escaped//&/\\&}
+    escaped=${escaped//|/\\|}
 
     if [[ -f $WALLPAPER_CONF ]]; then
-        sed -i "s|^\( *path *= *\).*|\1$CAMINHO|" "$WALLPAPER_CONF"
+        sed -i "s|^\( *path *= *\).*|\1$escaped|" "$WALLPAPER_CONF" || return
     else
         printf 'splash = false\nipc = true\n\nwallpaper {\n    monitor =\n    path = %s\n    fit_mode = cover\n}\n' \
-            "$CAMINHO" > "$WALLPAPER_CONF"
+            "$CAMINHO" > "$WALLPAPER_CONF" || return
     fi
 
-    [[ -f $HYPR_COLORS ]] && sed -i "s|^\(\$wallpaper *= *\).*|\1$CAMINHO|" "$HYPR_COLORS"
+    if [[ -f $HYPR_COLORS ]]; then
+        sed -i "s|^\(\$wallpaper *= *\).*|\1$escaped|" "$HYPR_COLORS"
+    fi
 }
 
 # O hyprpaper 0.8 não tem IPC de unload: sem wallpaper é ele não rodar. O marcador
@@ -345,13 +368,22 @@ change_wallpaper() (
 
     CAMINHO=${paths[selected]}
     rm -f "$NO_WALLPAPER"
-    save_wallpaper_path "$CAMINHO"
+    if ! save_wallpaper_path "$CAMINHO"; then
+        notify-send -u critical "Hyprpaper" "Não foi possível salvar o wallpaper."
+        return 1
+    fi
 
+    local status=0
     if pgrep -x hyprpaper >/dev/null; then
-        hyprctl hyprpaper wallpaper ",$CAMINHO,cover"
+        hyprctl hyprpaper wallpaper ",$CAMINHO,cover" || status=$?
     else
         # Ele sobe já com o path novo; o IPC ainda não estaria de pé para o comando acima.
-        uwsm app -- hyprpaper
+        uwsm app -- hyprpaper || status=$?
+    fi
+
+    if ((status != 0)); then
+        notify-send -u critical "Hyprpaper" "Wallpaper salvo, mas não foi possível aplicar. Consulte os logs do Hyprpaper."
+        return "$status"
     fi
 
     notify-send -a "Hyprpaper" -i "$CAMINHO" "Wallpaper Atualizado" "Salvo para o próximo boot!"
@@ -394,11 +426,11 @@ toggle_vpn() {
 }
 
 show_trigger_menu() {
-    case $(menu "Trigger" "  Screenshot (Região)\n  Screenshot (Tela Cheia)\n󰃉  Color Picker\n  Toggle Gaps (Hyprland)") in
+    case $(menu "Trigger" "  Screenshot (Região)\n  Screenshot (Tela Cheia)\n󰃉  Color Picker\n  Alternar flutuantes (Hyprland)") in
         *Região*)       take_screenshot "region" ;;
         *"Tela Cheia"*) take_screenshot "fullscreen" ;;
         *Color*)        sleep 0.25 && hyprpicker -a && notify-send -t 2000 "Color Picker" "Cor copiada" ;;
-        *Gaps*)         hyprctl dispatch workspaceopt allfloat ;;
+        *flutuantes*)   hyprctl dispatch workspaceopt allfloat ;;
         *)              back_to show_main_menu ;;
     esac
 }
