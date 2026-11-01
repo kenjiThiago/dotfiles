@@ -151,6 +151,12 @@ Rectangle {
                 visible: island.showMultedMicrofone
             }
             Text {
+                text: "󰝟"
+                font.family: "Hack Nerd Font"
+                font.pixelSize: 15
+                visible: SystemMonitor.isMuted
+            }
+            Text {
                 text: island.bellText
                 font.family: "Hack Nerd Font"
                 font.pixelSize: 15
