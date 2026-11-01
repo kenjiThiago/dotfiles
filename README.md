@@ -489,38 +489,28 @@ for um `#rrggbb`.
   padrão. Sessão já aberta não pega o tema novo sozinha: `prefix + r`.
 - **lazygit — cores**: o `config.yml` versionado tem só comportamento; o tema
   sai do `theme set` em `~/.config/lazygit/colors.yml`. Como o lazygit não tem
-  include, quem junta os dois é o `LG_CONFIG_FILE`, definido em três lugares: no
+  include, quem junta os dois é o `LG_CONFIG_FILE`, definido em dois lugares: no
   `.zshrc`, para quando você roda `lazygit` na mão, e no `tmux-lazygit`, porque
-  a sessão do popup não herda o ambiente do seu shell. Sem a variável o lazygit
+  a janela pode ser aberta por um atalho do tmux. Sem a variável o lazygit
   ainda sobe — só sem tema. Antes do primeiro `theme set` o `colors.yml` não
   existe, e os dois lugares checam isso antes de montar a lista (arquivo
   faltando na lista impede o lazygit de iniciar).
-- **lazygit — onde ele roda**: sempre no popup do tmux, por `prefix+g` no
-  terminal ou `<leader>gs` de dentro do nvim. Os dois chamam o `tmux-lazygit`,
-  que passa pelo `tmux-popup`, o mesmo do python (`prefix+P`), das cores
-  (`prefix+H`) e do shell (`M-O`).
-- **Popups do tmux**: cada um roda sobre uma sessão escondida,
-  `scratch-<nome>-<sessão>`. A sessão é o ponto: ela sobrevive ao fechar do
-  popup, então o programa volta com o mesmo scroll e o mesmo estado, e o popup
-  tem copy mode. Cada sessão do tmux tem a sua, então o lazygit de um projeto
-  não aparece em outro. A mesma tecla, dentro do popup, só o fecha; sair do
-  programa mata a sessão. As `scratch-*` ficam fora do `prefix+s`, do `C-M-s` e
-  do `C-M-n`/`C-M-p` (`tmux-trocar-sessao`), e o `prefix+k` mata as da sessão
-  atual (ou, de dentro de um popup, só ele).
-- **lazygit — editar**: `os.editPreset: nvim` no `config.yml`. O arquivo abre
-  dentro do próprio popup, tomando a tela do lazygit (`editInTerminal: true`
-  vem junto do preset), e devolve para ele ao fechar o nvim. Sem RPC, sem
-  socket, sem escapar para outro pane.
-- **yazi** (`<leader>pf`): mesma ideia, float nativo com `--chooser-file`. O
-  `<C-v>`, `<C-x>` e `<C-t>` escolhem split, split horizontal ou aba. O
-  `--chooser-file` desliga os openers do yazi, então imagem e PDF voltariam como
-  binário para um buffer; o float checa o mime antes e manda imagem, vídeo,
-  áudio, PDF e epub para o `xdg-open`. O `gx` faz o mesmo por tecla, sem fechar
-  o yazi, igual ao `gx` do oil. Preview de
-  imagem não funciona dentro do float, e isso não tem conserto pela config: o
-  terminal embutido do nvim é libvterm puro, sem kitty nem sixel, então o yazi
-  não tem como desenhar. Preview de texto funciona normal. Para imagem, use o
-  `y()` no shell, que roda no ghostty e mostra em resolução real.
+- **lazygit — onde ele roda**: numa janela scratch do tmux, por `prefix+g`
+  no terminal ou `<leader>gs` no nvim. Ambos chamam `tmux-lazygit`, que usa
+  `tmux-popup`, assim como python (`prefix+P`), cores (`prefix+H`) e shell (`M-O`).
+- **Janelas scratch do tmux**: cada sessão tem suas janelas `_scratch_<nome>_`,
+  mantidas nos índices altos e representadas à direita da barra. Repetir o
+  atalho volta à janela anterior sem encerrar o programa. `prefix+k` encerra
+  todas as janelas scratch da sessão atual.
+- **lazygit — editar**: `tmux-nvim-edit` abre o arquivo em um Neovim existente
+  na mesma sessão, fora das janelas scratch, e seleciona seu painel. Se não
+  houver Neovim, cria uma janela nova. O número da linha é opcional; caminhos
+  com espaços, acentos e caracteres especiais são preservados.
+- **Navegação no Neovim**: `<leader>pv` abre o Oil e `<leader>pf` abre o picker
+  de arquivos do Telescope no modo completo. As integrações com Yazi foram
+  removidas; suas configurações antigas permanecem disponíveis no repositório.
+- **Formatação Lua**: o Conform usa StyLua, declarado em `packages.txt`.
+  `<leader>f` formata manualmente e `:FormatToggle` alterna a formatação ao salvar.
 - **btop**: ele reescreve o `btop.conf` ao sair quando você muda alguma opção,
   e como o arquivo é um symlink, isso suja o repositório. Rode `git status`
   depois de mexer nas configurações dele.
