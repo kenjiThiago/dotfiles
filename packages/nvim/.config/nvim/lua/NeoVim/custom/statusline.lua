@@ -1,7 +1,6 @@
 local FALLBACK = {
 	bg = 0x181818,
 	fg = 0xe4e4ef,
-	yellow = 0xffdd33,
 	red = 0xf43841,
 	green = 0x73d936,
 	quartz = 0x95a99f,
@@ -39,21 +38,22 @@ local function setup_colors()
 	local bg_body = sl.bg or normal.bg or FALLBACK.bg
 	local fg_body = sl.fg or normal.fg or FALLBACK.fg
 	local bg_info = get_hl("CursorLine").bg or bg_body
-	local fg_info = sl.fg or normal.fg or FALLBACK.fg
-	local fg_mode = normal.bg or bg_body
+	local fg_info = get_hl("Comment").fg or fg_body
+	local accent = get_hl("ModeMsg").fg or func.fg or fg_body
 
 	local set = function(name, opts)
 		vim.api.nvim_set_hl(0, name, opts)
 	end
 
-	set("StatusLineModeN", { bg = func.fg or FALLBACK.yellow, fg = fg_mode, bold = true })
-	set("StatusLineModeI", { bg = str.fg or FALLBACK.green, fg = fg_mode, bold = true })
-	set("StatusLineModeV", { bg = warn.fg or FALLBACK.brown, fg = fg_mode, bold = true })
-	set("StatusLineModeR", { bg = err.fg or FALLBACK.red, fg = fg_mode, bold = true })
-	set("StatusLineModeC", { bg = info.fg or FALLBACK.niagara, fg = fg_mode, bold = true })
-	set("StatusLineMode", { bg = func.fg or FALLBACK.yellow, fg = fg_mode, bold = true })
+	set("StatusLineModeN", { bg = bg_info, fg = accent, bold = true })
+	set("StatusLineModeI", { bg = bg_info, fg = str.fg or FALLBACK.green, bold = true })
+	set("StatusLineModeV", { bg = bg_info, fg = warn.fg or FALLBACK.brown, bold = true })
+	set("StatusLineModeR", { bg = bg_info, fg = err.fg or FALLBACK.red, bold = true })
+	set("StatusLineModeC", { bg = bg_info, fg = info.fg or FALLBACK.niagara, bold = true })
+	set("StatusLineMode", { bg = bg_info, fg = accent, bold = true })
 
-	set("StatusLineInfo", { bg = bg_info, fg = fg_info })
+	set("StatusLineInfo", { bg = bg_body, fg = fg_info })
+	set("StatusLineFile", { bg = bg_body, fg = fg_body, bold = true })
 	set("StatusLineBody", { bg = bg_body, fg = fg_body })
 
 	set("StatusLineErr", { bg = bg_body, fg = err.fg or FALLBACK.red })
@@ -169,13 +169,11 @@ _G.BuildStatusLine = function()
 	return table.concat({
 		mode_hl,
 		mode_name,
-		"%#StatusLineInfo# %<" .. file_name(winid, bufnr) .. " %m %r ",
+		"%#StatusLineFile# %<" .. file_name(winid, bufnr) .. " %m%r ",
 		"%=",
 		diagnostics(bufnr),
-		"%#StatusLineBody# %y ",
-		"%#StatusLineInfo# %p%% ",
-		mode_hl,
-		" %l:%-c ",
+		"%#StatusLineInfo# %y  %p%% │ ",
+		"%#StatusLineBody#%l:%c ",
 	})
 end
 
