@@ -466,7 +466,8 @@ for um `#rrggbb`.
   da máquina em `~/.local/state/dotfiles/profile`, ao lado.
 - **Wallpaper**: cada tema declara o seu, e o `rofi-script wallpaper` troca só
   a imagem, sem trocar de tema. O seletor mostra um preview à direita ao
-  navegar pela lista e só aplica a escolha com `Enter`.
+  navegar pela lista e só aplica a escolha com `Enter`. Os previews ficam em
+  `~/.cache/rofi/wallpapers` e são refeitos quando a imagem muda.
   A primeira entrada, "Sem wallpaper", encerra o hyprpaper e deixa à mostra o `misc:background_color` do
   Hyprland, no `base` do tema. É assim porque o hyprpaper 0.8 perdeu o IPC de
   `unload`: não há como pedir que ele apague o fundo sem sair. A escolha fica

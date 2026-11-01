@@ -276,9 +276,11 @@ turn_wallpaper_off() {
 
 change_wallpaper() (
     local SEM_WALLPAPER="󰸉  Sem wallpaper"
-    local tmp_dir f name icon selected code index=0 initial=0 CAMINHO
+    local tmp_dir cache_dir f name icon metadata key selected code index=0 initial=0 CAMINHO
     local -a paths=("")
-    tmp_dir=$(mktemp -d "${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/rofi-wallpaper.XXXXXX") || return
+    cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/rofi/wallpapers/440x350"
+    mkdir -p "$cache_dir" || return
+    tmp_dir=$(mktemp -d "$cache_dir/.build.XXXXXX") || return
     trap 'rm -rf -- "$tmp_dir"' EXIT
 
     printf '%s\n' "$SEM_WALLPAPER" > "$tmp_dir/rows"
@@ -291,8 +293,16 @@ change_wallpaper() (
         paths+=("$f")
         ((index += 1))
         icon=""
-        if rofi_image_preview "$f" "$tmp_dir/$index.png"; then
-            icon="$tmp_dir/$index.png"
+        if metadata=$(stat -Lc '%s:%y:%z' -- "$f"); then
+            key=$(printf '%s\0%s' "$f" "$metadata" | sha256sum)
+            key=${key%% *}
+            if [[ -s $cache_dir/$key.png ]]; then
+                icon="$cache_dir/$key.png"
+            elif rofi_image_preview "$f" "$tmp_dir/$index.png"; then
+                if mv -f -- "$tmp_dir/$index.png" "$cache_dir/$key.png"; then
+                    icon="$cache_dir/$key.png"
+                fi
+            fi
         fi
         name=${f##*/}
         printf '%s\0icon\x1f%s\n' "${name//$'\n'/ }" "$icon" >> "$tmp_dir/rows"
