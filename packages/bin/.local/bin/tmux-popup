@@ -1,79 +1,178 @@
 #!/usr/bin/env bash
-# tmux-popup: gerencia janelas ocultas de "scratch" na sessão atual.
+# tmux-popup: abre e alterna janelas scratch da sessão.
+#   tmux-popup [-s sessão] [-d diretório] [-e VAR=valor]... <nome> [comando...]
+#   tmux-popup [-s sessão] -k|-K|-n|-p|-l|-R
+#   -k encerra o scratch atual; -K encerra todos os scratches da sessão.
+#   -n/-p navegam pelas janelas comuns; -l volta à última janela comum.
+#   -R migra scratches para índices altos.
 
-cliente=""
 sessao=""
 dir=$PWD
-largura=75%
-altura=75%
-titulo=""
-matar=0
-reordenar=0
+acao=abrir
 ambiente=()
 
-while getopts "c:s:d:w:h:T:e:kR" opt; do
+while getopts "s:d:e:kKnplR" opt; do
     case $opt in
-        c) cliente=$OPTARG ;;
         s) sessao=$OPTARG ;;
         d) dir=$OPTARG ;;
-        w) largura=$OPTARG ;;
-        h) altura=$OPTARG ;;
-        T) titulo=$OPTARG ;;
         e) ambiente+=(-e "$OPTARG") ;;
-        k) matar=1 ;;
-        R) reordenar=1 ;;
+        k) acao=fechar ;;
+        K) acao=fechar_todos ;;
+        n) acao=proxima ;;
+        p) acao=anterior ;;
+        l) acao=voltar ;;
+        R) acao=organizar ;;
         *) exit 2 ;;
     esac
 done
 shift $((OPTIND - 1))
 
-[[ -n $sessao ]] || sessao=$(tmux display-message -p '#S')
+contexto=()
+[[ -n $sessao ]] && contexto=(-t "$sessao:")
+sessao=$(tmux display-message "${contexto[@]}" -p '#{session_id}') || exit 1
+atual=$(tmux display-message -t "$sessao:" -p '#{window_id}') || exit 1
+normais=()
+indices=()
+scratches=()
+scratch_atual=0
 
-# Função que varre a sessão e empurra todas as janelas _scratch_ para o fim (99, 98, 97...)
-reordenar_scratches() {
-    local slot=99 idx name
-    while read -r idx name; do
-        [[ $idx != "$slot" ]] && tmux move-window -d -s "$sessao:$idx" -t "$sessao:$slot"
-        ((slot--))
-    done < <(tmux list-windows -t "$sessao" -F '#{window_index} #{window_name}' | grep -E '^[0-9]+ _scratch_' | sort -rn)
+while read -r idx id nome; do
+    if [[ $nome == _scratch_* ]]; then
+        scratches+=("$id")
+        [[ $id == "$atual" ]] && scratch_atual=1
+    else
+        normais+=("$id")
+        indices+=("$idx")
+    fi
+done < <(tmux list-windows -t "$sessao" -F '#{window_index} #{window_id} #{window_name}')
+
+registrar() {
+    ((scratch_atual)) && return 0
+    local anterior
+    anterior=$(tmux show-option -qv -t "$sessao" @scratch_return)
+    if [[ $anterior != "$atual" ]]; then
+        tmux set-option -t "$sessao" @scratch_previous "$anterior"
+        tmux set-option -t "$sessao" @scratch_return "$atual"
+    fi
 }
 
-# Se chamado apenas com a flag -R, organiza as janelas e morre
-if ((reordenar)); then
-    reordenar_scratches
-    exit 0
-fi
+voltar() {
+    local destino id
+    if ((scratch_atual)); then
+        destino=$(tmux show-option -qv -t "$sessao" @scratch_return)
+    else
+        destino=$(tmux show-option -qv -t "$sessao" @scratch_previous)
+    fi
+    for id in "${normais[@]}"; do
+        if [[ $id == "$destino" ]]; then
+            tmux select-window -t "$sessao:$id"
+            return
+        fi
+    done
+    for id in "${normais[@]}"; do
+        if [[ $id != "$atual" ]]; then
+            tmux select-window -t "$sessao:$id"
+            return
+        fi
+    done
+    # Mantém uma saída quando a janela de origem foi encerrada.
+    if ((scratch_atual)); then
+        tmux new-window -t "$sessao:" -c "$dir"
+        return
+    fi
+    return 0
+}
 
-if ((matar)); then
-    while read -r w; do
-        [[ $w == _scratch_* ]] && tmux kill-window -t "$sessao:$w"
-    done < <(tmux list-windows -t "$sessao" -F '#W' 2>/dev/null)
-    exit 0
-fi
+slot_livre() {
+    local slot=100 idx
+    local -A ocupados=()
+    while read -r idx; do
+        ocupados[$idx]=1
+    done < <(tmux list-windows -t "$sessao" -F '#{window_index}')
+    while [[ -n ${ocupados[$slot]:-} ]]; do
+        ((slot++))
+    done
+    printf '%s\n' "$slot"
+}
 
-nome=${1:?uso: tmux-popup [opções] <nome> [comando]}
-comando=${2:-}
+case $acao in
+    organizar)
+        tmux set-option -t "$sessao" renumber-windows off
+        for id in "${scratches[@]}"; do
+            idx=$(tmux display-message -p -t "$sessao:$id" '#{window_index}')
+            if ((idx < 100)); then
+                mover=(-d)
+                [[ $id == "$atual" ]] && mover=()
+                tmux move-window "${mover[@]}" -s "$sessao:$id" -t "$sessao:$(slot_livre)" || exit 1
+            fi
+        done
+        tmux select-window -t "$sessao:$atual"
+        registrar
+        exit
+        ;;
+    voltar)
+        voltar
+        exit
+        ;;
+    proxima|anterior)
+        ((${#normais[@]})) || { voltar; exit; }
+        idx=$(tmux display-message -p -t "$sessao:$atual" '#{window_index}')
+        if [[ $acao == proxima ]]; then
+            destino=${normais[0]}
+            for i in "${!normais[@]}"; do
+                if ((indices[i] > idx)); then
+                    destino=${normais[i]}
+                    break
+                fi
+            done
+        else
+            destino=${normais[${#normais[@]}-1]}
+            for ((i=${#normais[@]}-1; i>=0; i--)); do
+                if ((indices[i] < idx)); then
+                    destino=${normais[i]}
+                    break
+                fi
+            done
+        fi
+        tmux select-window -t "$sessao:$destino"
+        exit
+        ;;
+    fechar)
+        ((scratch_atual)) || exit 0
+        voltar || exit 1
+        tmux kill-window -t "$sessao:$atual"
+        exit
+        ;;
+    fechar_todos)
+        if ((scratch_atual)); then
+            voltar || exit 1
+        fi
+        for id in "${scratches[@]}"; do
+            tmux kill-window -t "$sessao:$id"
+        done
+        exit 0
+        ;;
+esac
 
+nome=${1:?uso: tmux-popup [opções] <nome> [comando...]}
+[[ $nome =~ ^[[:alnum:]-]+$ ]] || exit 2
+shift
 alvo_nome="_scratch_${nome}_"
-janela_alvo="$sessao:$alvo_nome"
-janela_atual=$(tmux display-message -p '#W')
+alvo=""
+while read -r id janela; do
+    [[ $janela == "$alvo_nome" ]] && alvo=$id
+done < <(tmux list-windows -t "$sessao" -F '#{window_id} #{window_name}')
 
-if [[ "$janela_atual" == "$alvo_nome" ]]; then
-    # Estamos nela. Vamos sair e DEPOIS reordenar.
-    tmux last-window -t "$sessao"
-    reordenar_scratches
-    exit 0
+if [[ $alvo == "$atual" ]]; then
+    voltar
+    exit
 fi
 
-if tmux list-windows -t "$sessao" -F '#W' 2>/dev/null | grep -q "^${alvo_nome}$"; then
-    # A janela existe, mas não estamos nela.
-    # REORDENA PRIMEIRO, FOCA DEPOIS.
-    reordenar_scratches
-    tmux select-window -t "$janela_alvo"
-else
-    # Cria a janela em background (-d)
-    tmux new-window -d -n "$alvo_nome" -t "$sessao:" -c "$dir" "${ambiente[@]}" ${comando:+"$comando"}
-    # REORDENA PRIMEIRO, FOCA DEPOIS.
-    reordenar_scratches
-    tmux select-window -t "$janela_alvo"
+registrar
+tmux set-option -t "$sessao" renumber-windows off
+if [[ -z $alvo ]]; then
+    alvo=$(tmux new-window -d -P -F '#{window_id}' -n "$alvo_nome" \
+        -t "$sessao:$(slot_livre)" -c "$dir" "${ambiente[@]}" "$@") || exit 1
+    tmux set-option -w -t "$sessao:$alvo" allow-rename off
 fi
+tmux select-window -t "$sessao:$alvo"

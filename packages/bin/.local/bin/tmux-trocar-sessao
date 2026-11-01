@@ -1,17 +1,12 @@
 #!/usr/bin/env bash
-# tmux-trocar-sessao: o switch-client -n/-p, mas pulando as sessões escondidas
-# dos popups (scratch-*), que o tmux não deixa filtrar.
-#
+# tmux-trocar-sessao: alterna entre as sessões do cliente.
 #   tmux-trocar-sessao -n|-p <cliente> <sessão atual>
 
 direcao=$1
 cliente=$2
 atual=$3
 
-# Dentro de um popup, trocar levaria outra sessão para dentro dele.
-[[ $atual == scratch-* ]] && exit
-
-mapfile -t sessoes < <(tmux list-sessions -F '#S' | grep -v '^scratch-')
+mapfile -t sessoes < <(tmux list-sessions -F '#S')
 total=${#sessoes[@]}
 ((total > 1)) || exit 0
 

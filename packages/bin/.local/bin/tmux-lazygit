@@ -8,5 +8,4 @@ if [[ -f $LG_DIR/colors.yml ]]; then
     LG_CONFIG_FILE="$LG_CONFIG_FILE,$LG_DIR/colors.yml"
 fi
 
-# Chamamos o tmux-popup (que agora gerencia janelas em tela cheia)
 exec tmux-popup -e "LG_CONFIG_FILE=$LG_CONFIG_FILE" -e LANGUAGE=en_US.UTF-8 "$@" lg lazygit

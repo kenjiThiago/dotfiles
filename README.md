@@ -499,9 +499,18 @@ for um `#rrggbb`.
   no terminal ou `<leader>gs` no nvim. Ambos chamam `tmux-lazygit`, que usa
   `tmux-popup`, assim como python (`prefix+P`), cores (`prefix+H`) e shell (`M-O`).
 - **Janelas scratch do tmux**: cada sessão tem suas janelas `_scratch_<nome>_`,
-  mantidas nos índices altos e representadas à direita da barra. Repetir o
-  atalho volta à janela anterior sem encerrar o programa. `prefix+k` encerra
-  todas as janelas scratch da sessão atual.
+  com índices a partir de 100 e indicadores à direita da barra. Repetir o
+  atalho volta à última janela comum, mesmo depois de alternar entre ferramentas.
+  Se essa janela foi fechada, o retorno escolhe outra comum; se não houver
+  nenhuma, abre uma nova. O programa do scratch continua aberto.
+  `prefix+n`/`prefix+p` percorrem somente as janelas comuns, `prefix+l` volta à
+  anterior e os seletores `prefix+s`/`prefix+w` filtram os scratches.
+  `prefix+k` encerra apenas o scratch atual e não faz nada numa janela comum;
+  `prefix+X` encerra todos os scratches da sessão. No perfil server, `n`/`p`
+  continuam trocando sessões e `k`/`l` continuam selecionando os índices 3/4.
+  A renumeração automática fica desligada: fechar uma janela mantém os números
+  das demais, e uma nova reutiliza a primeira vaga disponível. Recarregar a
+  configuração migra os scratches antigos para os índices altos sem perder o foco.
 - **lazygit — editar**: `tmux-nvim-edit` abre o arquivo em um Neovim existente
   na mesma sessão, fora das janelas scratch, e seleciona seu painel. Se não
   houver Neovim, cria uma janela nova. O número da linha é opcional; caminhos
