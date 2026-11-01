@@ -142,49 +142,88 @@ take_screenshot() {
 
 # O cliphist não tem pin: os fixados ficam num diretório à parte, um arquivo por entrada.
 CLIP_PINS="${XDG_DATA_HOME:-$HOME/.local/share}/clipboard-pins"
-PIN_MARK="  "
-
 pin_preview() { tr '\n' ' ' < "$1" | cut -c1-120 | sed 's/[[:space:]]*$//'; }
 
-pin_file_for() {
-    local wanted="$1" f
-    for f in "$CLIP_PINS"/*; do
-        [[ -f $f ]] || continue
-        [[ "$(pin_preview "$f")" == "$wanted" ]] && { printf '%s\n' "$f"; return 0; }
-    done
-    return 1
+clipboard_image_label() {
+    magick identify -ping -format 'Imagem · %m · %w×%h' "$1[0]" 2>/dev/null
 }
 
-show_clipboard() {
+rofi_image_preview() {
+    [[ -s $2 ]] && return
+    # O Rofi escala pelo maior lado; o espaço transparente evita cortar imagens verticais.
+    magick "$1[0]" -auto-orient -thumbnail '440x350' -background none \
+        -gravity center -extent 440x440 "$2" 2>/dev/null
+}
+
+show_clipboard() (
     mkdir -p "$CLIP_PINS"
 
-    local list f entry code pinned
+    local tmp_dir f entry code selected pinned mime label icon id image
+    local -a entries pins
+    tmp_dir=$(mktemp -d "${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/rofi-clipboard.XXXXXX") || return
+    trap 'rm -rf -- "$tmp_dir"' EXIT
 
-    # Fixar e apagar reabrem o menu; só copiar ou cancelar encerram.
     while true; do
-        list=""
+        entries=()
+        pins=()
+        : > "$tmp_dir/rows"
         for f in "$CLIP_PINS"/*; do
             [[ -f $f ]] || continue
-            list+="$PIN_MARK$(pin_preview "$f")"$'\n'
+            mime=$(file --brief --mime-type -- "$f")
+            icon=""
+            if [[ $mime == image/* ]]; then
+                label=$(clipboard_image_label "$f") || label="Imagem ($mime)"
+                image="$tmp_dir/pin-${f##*/}.png"
+                if rofi_image_preview "$f" "$image"; then
+                    icon=$image
+                fi
+            else
+                label=$(pin_preview "$f")
+            fi
+            entries+=("$f")
+            pins+=("$f")
+            printf '[fixado] %s\0icon\x1f%s\n' "$label" "$icon" >> "$tmp_dir/rows"
         done
-        list+=$(cliphist list)
 
-        list=$(grep -v '^[[:space:]]*$' <<< "$list")
+        while IFS= read -r entry; do
+            [[ -n $entry ]] || continue
+            id=${entry%%$'\t'*}
+            [[ $id =~ ^[0-9]+$ ]] || continue
+            label=${entry#*$'\t'}
+            icon=""
+            if [[ $label == "[[ binary data "* || $label == "binary data "* ]]; then
+                image="$tmp_dir/image-$id"
+                if [[ ! -f $image ]]; then
+                    cliphist decode <<< "$entry" > "$image" || { rm -f -- "$image"; image=""; }
+                fi
+                if [[ -n $image ]]; then
+                    mime=$(file --brief --mime-type -- "$image")
+                    if [[ $mime == image/* ]]; then
+                        label=$(clipboard_image_label "$image") || label="Imagem ($mime)"
+                        if rofi_image_preview "$image" "$image.png"; then
+                            icon="$image.png"
+                        fi
+                    fi
+                fi
+            fi
+            entries+=("$entry")
+            pins+=("")
+            printf '%s\0icon\x1f%s\n' "$label" "$icon" >> "$tmp_dir/rows"
+        done < <(cliphist list)
 
-        if [[ -z $list ]]; then
+        if ((${#entries[@]} == 0)); then
             notify-send -u low -a "Clipboard" "Histórico vazio"
             return
         fi
 
-        entry=$(rofi -dmenu -i -p "  Clipboard" \
-            -kb-custom-1 "alt+p" -kb-custom-2 "alt+d" -kb-custom-3 "alt+w" <<< "$list")
+        selected=$(rofi -dmenu -i -p "  Clipboard" -format i \
+            -theme "$DOTFILES/packages/rofi/.config/rofi/themes/clipboard.rasi" \
+            -kb-custom-1 "alt+p" -kb-custom-2 "alt+d" -kb-custom-3 "alt+w" < "$tmp_dir/rows")
         code=$?
-        [[ -z $entry ]] && return
-
-        pinned=""
-        if [[ $entry == "$PIN_MARK"* ]]; then
-            pinned=$(pin_file_for "${entry#"$PIN_MARK"}") || return
-        fi
+        [[ $selected =~ ^[0-9]+$ ]] || return
+        ((selected < ${#entries[@]})) || return
+        entry=${entries[selected]}
+        pinned=${pins[selected]}
 
         case $code in
             0)
@@ -207,7 +246,7 @@ show_clipboard() {
             *) return ;;
         esac
     done
-}
+)
 
 # Troca só a linha do path nos arquivos gerados pelo `theme set`. O colors.conf
 # entra porque o hyprlock tira o fundo do $wallpaper de lá, não do hyprpaper.conf.
@@ -235,25 +274,49 @@ turn_wallpaper_off() {
     notify-send -a "Hyprpaper" "Wallpaper Removido" "Fundo sólido no tom do tema."
 }
 
-change_wallpaper() {
+change_wallpaper() (
     local SEM_WALLPAPER="󰸉  Sem wallpaper"
-    local SELECAO
-    SELECAO=$({
-        printf '%s\n' "$SEM_WALLPAPER"
-        ls -1 "$WALLPAPER_DIR" | grep -iE '\.(jpg|jpeg|png|webp|jxl)$'
-    } | rofi -dmenu -i -p "  Wallpaper:")
+    local tmp_dir f name icon selected code index=0 initial=0 CAMINHO
+    local -a paths=("")
+    tmp_dir=$(mktemp -d "${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/rofi-wallpaper.XXXXXX") || return
+    trap 'rm -rf -- "$tmp_dir"' EXIT
 
-    if [[ -z "$SELECAO" ]]; then
+    printf '%s\n' "$SEM_WALLPAPER" > "$tmp_dir/rows"
+    for f in "$WALLPAPER_DIR"/*; do
+        [[ -f $f ]] || continue
+        case ${f,,} in
+            *.jpg|*.jpeg|*.png|*.webp|*.jxl) ;;
+            *) continue ;;
+        esac
+        paths+=("$f")
+        ((index += 1))
+        icon=""
+        if rofi_image_preview "$f" "$tmp_dir/$index.png"; then
+            icon="$tmp_dir/$index.png"
+        fi
+        name=${f##*/}
+        printf '%s\0icon\x1f%s\n' "${name//$'\n'/ }" "$icon" >> "$tmp_dir/rows"
+    done
+    if ((index > 0)) && [[ ! -e $NO_WALLPAPER ]]; then
+        initial=1
+    fi
+
+    selected=$(rofi -dmenu -i -no-custom -p "  Wallpaper" -format i \
+        -selected-row "$initial" \
+        -theme "$DOTFILES/packages/rofi/.config/rofi/themes/wallpaper.rasi" < "$tmp_dir/rows")
+    code=$?
+    if ((code != 0)) || [[ ! $selected =~ ^[0-9]+$ ]]; then
         back_to show_setup_menu
         return
     fi
+    ((selected < ${#paths[@]})) || return
 
-    if [[ "$SELECAO" == "$SEM_WALLPAPER" ]]; then
+    if ((selected == 0)); then
         turn_wallpaper_off
         return
     fi
 
-    local CAMINHO="$WALLPAPER_DIR/$SELECAO"
+    CAMINHO=${paths[selected]}
     rm -f "$NO_WALLPAPER"
     save_wallpaper_path "$CAMINHO"
 
@@ -265,7 +328,7 @@ change_wallpaper() {
     fi
 
     notify-send -a "Hyprpaper" -i "$CAMINHO" "Wallpaper Atualizado" "Salvo para o próximo boot!"
-}
+)
 
 change_keyboard_layout() {
     local kb layouts current choice index

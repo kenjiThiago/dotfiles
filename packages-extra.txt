@@ -96,7 +96,6 @@ libreoffice-fresh
 # Mídia
 mpv
 imv
-imagemagick
 obs-studio
 
 # Jogos e Wine

@@ -465,8 +465,9 @@ for um `#rrggbb`.
 - **Tema atual**: fica em `~/.local/state/dotfiles/current-theme`, e o perfil
   da máquina em `~/.local/state/dotfiles/profile`, ao lado.
 - **Wallpaper**: cada tema declara o seu, e o `rofi-script wallpaper` troca só
-  a imagem, sem trocar de tema. A primeira entrada da lista é "Sem wallpaper",
-  que encerra o hyprpaper e deixa à mostra o `misc:background_color` do
+  a imagem, sem trocar de tema. O seletor mostra um preview à direita ao
+  navegar pela lista e só aplica a escolha com `Enter`.
+  A primeira entrada, "Sem wallpaper", encerra o hyprpaper e deixa à mostra o `misc:background_color` do
   Hyprland, no `base` do tema. É assim porque o hyprpaper 0.8 perdeu o IPC de
   `unload`: não há como pedir que ele apague o fundo sem sair. A escolha fica
   em `~/.local/state/dotfiles/no-wallpaper`, o marcador que faz o
@@ -536,6 +537,10 @@ for um `#rrggbb`.
   para `~/.local/share/clipboard-pins`, um arquivo por entrada, e sobrevivem ao
   `alt+w` — o cliphist não tem pin, isso é do `rofi-script`. Fixar e apagar
   reabrem o menu, para você encadear várias ações; só copiar ou cancelar fecham.
+  Imagens, inclusive fixadas, aparecem num painel de preview à direita que
+  acompanha a seleção, com rótulos de formato e dimensões. O ImageMagick
+  ajusta os previews ao painel sem recortar a imagem. Eles são gerados em um
+  diretório temporário por abertura do menu e removidos ao fechar.
 - **Git**: o pacote `git` versiona `~/.config/git/config`. Sua identidade fica
   fora do repositório, em `~/.config/git/config.local` (o include é ignorado se
   o arquivo não existir). Atenção: o git lê `~/.gitconfig` **depois** do arquivo

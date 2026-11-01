@@ -1,0 +1,5 @@
+@import "image-preview.rasi"
+
+textbox-preview-help {
+    content: "Enter: aplicar · Esc: voltar · Sem wallpaper: fundo sólido do tema";
+}

@@ -41,6 +41,8 @@ slurp
 satty
 wl-clipboard                 # wl-copy/wl-paste (cliphist, window-info)
 cliphist
+file                         # identifica imagens fixadas no clipboard do rofi-script
+imagemagick                  # previews de imagens no clipboard do rofi-script
 wev
 keyd                         # habilitado pelo install.sh
 brightnessctl

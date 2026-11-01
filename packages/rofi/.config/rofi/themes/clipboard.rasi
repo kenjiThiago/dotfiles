@@ -1,0 +1,5 @@
+@import "image-preview.rasi"
+
+textbox-preview-help {
+    content: "Enter: copiar · Alt+P: fixar/soltar · Alt+D: apagar · Alt+W: limpar";
+}

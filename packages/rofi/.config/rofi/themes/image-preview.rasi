@@ -1,0 +1,53 @@
+@import "~/.config/rofi/themes/center.rasi"
+
+window {
+    width: calc(1000px min 95%);
+    height: calc(520px min 90%);
+}
+
+mainbox {
+    orientation: vertical;
+    children: [ "inputbar", "preview-body", "textbox-preview-help" ];
+}
+
+inputbar {
+    expand: false;
+}
+
+preview-body {
+    expand: true;
+    orientation: horizontal;
+    spacing: 20px;
+    margin: 15px 0px 0px;
+    children: [ "listview", "icon-current-entry" ];
+    background-color: transparent;
+}
+
+listview {
+    /* Sem expansão, a lista não calcula largura própria nessa caixa horizontal. */
+    expand: true;
+    margin: 0px;
+    dynamic: false;
+}
+
+element {
+    children: [ "element-text" ];
+}
+
+icon-current-entry {
+    expand: true;
+    squared: true;
+    size: 440px;
+    horizontal-align: 0.5;
+    vertical-align: 0.5;
+    background-color: @surface;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+textbox-preview-help {
+    expand: false;
+    text-color: @muted;
+    background-color: transparent;
+    margin: 15px 0px 0px;
+}
