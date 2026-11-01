@@ -537,7 +537,8 @@ for um `#rrggbb`.
   ou solta, `alt+d` apaga a entrada, `alt+w` limpa o histórico. Os fixados vão
   para `~/.local/share/clipboard-pins`, um arquivo por entrada, e sobrevivem ao
   `alt+w` — o cliphist não tem pin, isso é do `rofi-script`. Fixar e apagar
-  reabrem o menu, para você encadear várias ações; só copiar ou cancelar fecham.
+  atualizam a lista na mesma janela, preservando a busca. A confirmação de
+  limpeza também aparece na mesma janela; copiar ou cancelar encerram o menu.
   Imagens, inclusive fixadas, aparecem num painel de preview à direita que
   acompanha a seleção, com rótulos de formato e dimensões. O ImageMagick
   ajusta os previews ao painel sem recortar a imagem. Eles são gerados em um

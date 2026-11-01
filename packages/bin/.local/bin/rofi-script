@@ -55,8 +55,6 @@ WALLPAPER_CONF="$HOME/.config/hypr/hyprpaper.conf"
 HYPR_COLORS="$HOME/.config/hypr/conf/colors.conf"
 NO_WALLPAPER="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/no-wallpaper"
 
-mkdir -p "$SCREENSHOT_DIR" "$WALLPAPER_DIR"
-
 toggle_existing_menu() {
     pgrep -x "rofi" >/dev/null && { killall rofi; exit 0; }
 }
@@ -144,10 +142,6 @@ take_screenshot() {
 CLIP_PINS="${XDG_DATA_HOME:-$HOME/.local/share}/clipboard-pins"
 pin_preview() { tr '\n' ' ' < "$1" | cut -c1-120 | sed 's/[[:space:]]*$//'; }
 
-clipboard_image_label() {
-    magick identify -ping -format 'Imagem · %m · %w×%h' "$1[0]" 2>/dev/null
-}
-
 rofi_image_preview() {
     [[ -s $2 ]] && return
     # O Rofi escala pelo maior lado; o espaço transparente evita cortar imagens verticais.
@@ -155,97 +149,120 @@ rofi_image_preview() {
         -gravity center -extent 440x440 "$2" 2>/dev/null
 }
 
+clipboard_row() {
+    local source=$1 label=$2 info=$3 mime icon="" image
+    if [[ -n $source ]]; then
+        mime=$(file --brief --mime-type -- "$source")
+        if [[ $mime == image/* ]]; then
+            label=$(magick identify -ping -format 'Imagem · %m · %w×%h' "$source[0]" 2>/dev/null) || label="Imagem ($mime)"
+            image="$ROFI_CLIPBOARD_DIR/${info/:/-}.png"
+            if rofi_image_preview "$source" "$image"; then
+                icon=$image
+            fi
+        elif [[ $info == pin:* ]]; then
+            label=$(pin_preview "$source")
+        fi
+    fi
+    [[ $info == pin:* ]] && label="[fixado] $label"
+    printf '%s\0icon\x1f%s\x1finfo\x1f%s\n' "$label" "$icon" "$info"
+}
+
+clipboard_rows() {
+    local f entry label id image
+    local count=0
+    printf '\0prompt\x1fClipboard\n\0use-hot-keys\x1ftrue\n\0no-custom\x1ftrue\n'
+    printf '\0keep-selection\x1ftrue\n\0keep-filter\x1ftrue\n\0data\x1f\n'
+
+    for f in "$CLIP_PINS"/*; do
+        [[ -f $f ]] || continue
+        clipboard_row "$f" "" "pin:${f##*/}"
+        ((count += 1))
+    done
+
+    while IFS= read -r entry; do
+        [[ -n $entry ]] || continue
+        id=${entry%%$'\t'*}
+        [[ $id =~ ^[0-9]+$ ]] || continue
+        label=${entry#*$'\t'}
+        image=""
+        if [[ $label == "[[ binary data "* || $label == "binary data "* ]]; then
+            image="$ROFI_CLIPBOARD_DIR/image-$id"
+            if [[ ! -f $image ]]; then
+                printf '%s\t' "$id" | cliphist decode > "$image" || { rm -f -- "$image"; image=""; }
+            fi
+        fi
+        clipboard_row "$image" "$label" "history:$id"
+        ((count += 1))
+    done < <(cliphist list)
+
+    if ((count == 0)); then
+        printf 'Histórico vazio\0nonselectable\x1ftrue\x1fpermanent\x1ftrue\n'
+    fi
+}
+
+clipboard_mode() {
+    [[ -d ${ROFI_CLIPBOARD_DIR:-} ]] || return
+    local kind=${ROFI_INFO%%:*} value=${ROFI_INFO#*:} pinned=""
+    if [[ $kind == pin && -n $value && $value != */* && $value != . && $value != .. ]]; then
+        pinned="$CLIP_PINS/$value"
+    elif [[ $kind != history || ! $value =~ ^[0-9]+$ ]]; then
+        kind=""
+    fi
+
+    if [[ ${ROFI_DATA:-} == confirm-wipe ]]; then
+        if [[ $ROFI_RETV == 1 && $ROFI_INFO == wipe ]]; then
+            cliphist wipe
+        fi
+        clipboard_rows
+        printf '\0keep-filter\x1ffalse\n'
+        return
+    fi
+
+    case $ROFI_RETV in
+        0) ;;
+        1)
+            if [[ -n $pinned ]]; then
+                wl-copy < "$pinned" >/dev/null 2>&1
+            elif [[ $kind == history ]]; then
+                printf '%s\t' "$value" | cliphist decode | wl-copy >/dev/null 2>&1
+            else
+                clipboard_rows
+            fi
+            return
+            ;;
+        10)
+            if [[ -n $pinned ]]; then
+                rm -f -- "$pinned"
+            elif [[ $kind == history ]]; then
+                printf '%s\t' "$value" | cliphist decode > "$CLIP_PINS/$(date +%s%N)"
+            fi
+            ;;
+        11)
+            if [[ -n $pinned ]]; then
+                rm -f -- "$pinned"
+            elif [[ $kind == history ]]; then
+                printf '%s\t' "$value" | cliphist delete
+            fi
+            ;;
+        12)
+            printf '\0prompt\x1fLimpar o histórico?\n\0data\x1fconfirm-wipe\n'
+            printf '\0keep-filter\x1ffalse\n\0keep-selection\x1ffalse\n'
+            printf 'Não\0info\x1fcancel\nSim\0info\x1fwipe\n'
+            return
+            ;;
+    esac
+    clipboard_rows
+}
+
 show_clipboard() (
     mkdir -p "$CLIP_PINS"
-
-    local tmp_dir f entry code selected pinned mime label icon id image
-    local -a entries pins
+    local tmp_dir mode
     tmp_dir=$(mktemp -d "${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/rofi-clipboard.XXXXXX") || return
     trap 'rm -rf -- "$tmp_dir"' EXIT
-
-    while true; do
-        entries=()
-        pins=()
-        : > "$tmp_dir/rows"
-        for f in "$CLIP_PINS"/*; do
-            [[ -f $f ]] || continue
-            mime=$(file --brief --mime-type -- "$f")
-            icon=""
-            if [[ $mime == image/* ]]; then
-                label=$(clipboard_image_label "$f") || label="Imagem ($mime)"
-                image="$tmp_dir/pin-${f##*/}.png"
-                if rofi_image_preview "$f" "$image"; then
-                    icon=$image
-                fi
-            else
-                label=$(pin_preview "$f")
-            fi
-            entries+=("$f")
-            pins+=("$f")
-            printf '[fixado] %s\0icon\x1f%s\n' "$label" "$icon" >> "$tmp_dir/rows"
-        done
-
-        while IFS= read -r entry; do
-            [[ -n $entry ]] || continue
-            id=${entry%%$'\t'*}
-            [[ $id =~ ^[0-9]+$ ]] || continue
-            label=${entry#*$'\t'}
-            icon=""
-            if [[ $label == "[[ binary data "* || $label == "binary data "* ]]; then
-                image="$tmp_dir/image-$id"
-                if [[ ! -f $image ]]; then
-                    cliphist decode <<< "$entry" > "$image" || { rm -f -- "$image"; image=""; }
-                fi
-                if [[ -n $image ]]; then
-                    mime=$(file --brief --mime-type -- "$image")
-                    if [[ $mime == image/* ]]; then
-                        label=$(clipboard_image_label "$image") || label="Imagem ($mime)"
-                        if rofi_image_preview "$image" "$image.png"; then
-                            icon="$image.png"
-                        fi
-                    fi
-                fi
-            fi
-            entries+=("$entry")
-            pins+=("")
-            printf '%s\0icon\x1f%s\n' "$label" "$icon" >> "$tmp_dir/rows"
-        done < <(cliphist list)
-
-        if ((${#entries[@]} == 0)); then
-            notify-send -u low -a "Clipboard" "Histórico vazio"
-            return
-        fi
-
-        selected=$(rofi -dmenu -i -p "  Clipboard" -format i \
-            -theme "$DOTFILES/packages/rofi/.config/rofi/themes/clipboard.rasi" \
-            -kb-custom-1 "alt+p" -kb-custom-2 "alt+d" -kb-custom-3 "alt+w" < "$tmp_dir/rows")
-        code=$?
-        [[ $selected =~ ^[0-9]+$ ]] || return
-        ((selected < ${#entries[@]})) || return
-        entry=${entries[selected]}
-        pinned=${pins[selected]}
-
-        case $code in
-            0)
-                if [[ -n $pinned ]]; then wl-copy < "$pinned"
-                else cliphist decode <<< "$entry" | wl-copy; fi
-                return
-                ;;
-            10)
-                if [[ -n $pinned ]]; then rm -f "$pinned"
-                else cliphist decode <<< "$entry" > "$CLIP_PINS/$(date +%s%N)"; fi
-                ;;
-            11)
-                if [[ -n $pinned ]]; then rm -f "$pinned"
-                else cliphist delete <<< "$entry"; fi
-                ;;
-            12)
-                [[ $(printf 'não\nsim' | rofi -dmenu -i -p "Limpar o histórico?") == "sim" ]] &&
-                    cliphist wipe
-                ;;
-            *) return ;;
-        esac
-    done
+    mode=${SCRIPT_PATH//\'/\'\\\'\'}
+    ROFI_CLIPBOARD_DIR="$tmp_dir" rofi -show clipboard -modi "clipboard:bash '$mode' --clipboard-mode" \
+        -theme "$DOTFILES/packages/rofi/.config/rofi/themes/clipboard.rasi" \
+        -kb-custom-1 "alt+p" -kb-custom-2 "alt+d" -kb-custom-3 "alt+w"
 )
 
 # Troca só a linha do path nos arquivos gerados pelo `theme set`. O colors.conf
@@ -376,8 +393,6 @@ toggle_vpn() {
     fi
 }
 
-[[ "$1" == "--screenshot" ]] && { take_screenshot "$2"; exit 0; }
-
 show_trigger_menu() {
     case $(menu "Trigger" "  Screenshot (Região)\n  Screenshot (Tela Cheia)\n󰃉  Color Picker\n  Toggle Gaps (Hyprland)") in
         *Região*)       take_screenshot "region" ;;
@@ -442,6 +457,14 @@ go_to_menu() {
 show_main_menu() {
     go_to_menu "$(menu "Menu" "󰀻  Apps\n󱓞  Trigger\n  Setup\n󰏔  Pacotes\n  System")"
 }
+
+if [[ $1 == --clipboard-mode ]]; then
+    clipboard_mode
+    exit
+fi
+
+mkdir -p "$SCREENSHOT_DIR" "$WALLPAPER_DIR"
+[[ "$1" == "--screenshot" ]] && { take_screenshot "$2"; exit 0; }
 
 toggle_existing_menu
 
