@@ -455,6 +455,12 @@ for um `#rrggbb`.
   indisponíveis mostram “—” e a bateria só aparece quando detectada.
   As notificações identificam o aplicativo e têm um botão de fechar;
   a expiração pausa enquanto o ponteiro está sobre o card ou seus botões.
+  Os valores de CPU e memória usam atenção a partir de 80% e crítico a
+  partir de 95%; a temperatura usa 80 °C e 90 °C. As cores vêm de `warning`
+  e `error` do tema. Para sair de cada estado, o valor precisa cair abaixo
+  de cinco pontos do limite, evitando oscilações. A consulta ocorre a cada
+  dois segundos. Os limites de temperatura são referências visuais, não
+  limites de segurança do hardware; o sensor usado é `thermal_zone0`.
 - **quickshell e o systray**: os ícones da barra são glifos de Nerd Font e
   trocam de cor na recarga, como o resto. Os do systray e os das notificações
   não: são imagens resolvidas pelo tema de ícones do Qt, que o Qt fixa uma vez,

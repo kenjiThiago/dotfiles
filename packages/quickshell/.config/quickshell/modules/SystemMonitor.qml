@@ -153,6 +153,22 @@ Item {
     property int ramPct: 0
     property int tempC: 0
 
+    property int cpuAlert: 0
+    property int ramAlert: 0
+    property int tempAlert: 0
+
+    onCpuPctChanged: cpuAlert = alertLevel(cpuPct, cpuAlert, 80, 95)
+    onRamPctChanged: ramAlert = alertLevel(ramPct, ramAlert, 80, 95)
+    onTempCChanged: tempAlert = alertLevel(tempC, tempAlert, 80, 90)
+
+    function alertLevel(value, previous, warning, critical) {
+        if (value >= critical || (previous === 2 && value >= critical - 5))
+            return 2;
+        if (value >= warning || (previous >= 1 && value >= warning - 5))
+            return 1;
+        return 0;
+    }
+
     property real prevCpuTotal: -1
     property real prevCpuIdle: 0
 

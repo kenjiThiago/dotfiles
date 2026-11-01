@@ -88,6 +88,8 @@ Item {
                                 required property int index
                                 required property string modelData
 
+                                readonly property int alert: stat.index === 0 ? SystemMonitor.cpuAlert : (stat.index === 1 ? SystemMonitor.ramAlert : SystemMonitor.tempAlert)
+
                                 spacing: 4
 
                                 Text {
@@ -98,7 +100,7 @@ Item {
                                     width: 14
                                 }
                                 Text {
-                                    color: Theme.text
+                                    color: stat.alert === 2 ? Theme.error : (stat.alert === 1 ? Theme.warning : Theme.text)
                                     font.family: "Hack Nerd Font"
                                     font.pixelSize: 12
                                     text: stat.index === 0 ? SystemMonitor.cpuPct + "%" : (stat.index === 1 ? SystemMonitor.ramPct + "%" : SystemMonitor.tempC + "°C")
