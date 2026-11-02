@@ -63,7 +63,7 @@ vim.keymap.set("n", "<Esc>", function()
 	vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("nvim.multicursor"), 0, -1)
 end, { desc = "Limpar os multicursores" })
 
-vim.keymap.set("n", "<leader>gc", ":Comp")
+vim.keymap.set("n", "<leader>gc", ":Comp ")
 
 -- O :match e o matchadd valem por janela, então cada janela nova recebe o seu.
 -- As flutuantes ficam de fora para não marcar o que se digita no telescope.
