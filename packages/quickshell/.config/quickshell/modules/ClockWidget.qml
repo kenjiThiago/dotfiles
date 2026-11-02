@@ -19,6 +19,8 @@ Rectangle {
     anchors.topMargin: 6
     clip: true
 
+    property int previousState: 0
+    property int geometryDuration: 240
     property bool isLoaded: false
     Component.onCompleted: Qt.callLater(function () {
         island.isLoaded = true;
@@ -32,6 +34,8 @@ Rectangle {
     readonly property string clockMarkup: Time.timeString.replace(":", '<font color="' + Theme.brand + '">:</font>')
 
     onIslandStateChanged: {
+        island.geometryDuration = island.previousState === 2 && island.islandState < 2 ? 300 : 240;
+        island.previousState = island.islandState;
         if (island.islandState > 0 && island.osdActive) {
             island.activeMode = "clock";
             resetTimer.stop();
@@ -231,21 +235,21 @@ Rectangle {
     Behavior on implicitWidth {
         enabled: island.isLoaded
         NumberAnimation {
-            duration: 240
+            duration: island.islandState === 2 ? 220 : island.geometryDuration
             easing.type: Easing.OutCubic
         }
     }
     Behavior on implicitHeight {
         enabled: island.isLoaded
         NumberAnimation {
-            duration: 240
+            duration: island.islandState === 2 ? 280 : island.geometryDuration
             easing.type: Easing.OutCubic
         }
     }
     Behavior on radius {
         enabled: island.isLoaded
         NumberAnimation {
-            duration: 240
+            duration: island.geometryDuration
             easing.type: Easing.OutCubic
         }
     }
@@ -265,14 +269,30 @@ Rectangle {
 
     // Camada 1: a pílula (estados 0 e 1).
     Item {
-        anchors.fill: parent
-        opacity: (island.islandState < 2 && !island.osdActive) ? 1 : 0
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width
+        height: island.islandState === 1 ? 64 : 36
+        opacity: (island.islandState < 2 && !island.osdActive && controlCenter.opacity < 0.15) ? 1 : 0
         visible: opacity > 0
+        enabled: island.islandState < 2 && !island.osdActive
 
-        Row {
+        // A pílula não acompanha a altura da central ao entrar ou sair do estado 2.
+        Behavior on height {
+            enabled: island.isLoaded
+            NumberAnimation {
+                duration: 240
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        // Um Row exclui itens invisíveis e desloca o relógio quando os indicadores aparecem.
+        Item {
+            id: pillLayout
             anchors.centerIn: parent
+            width: workspaceGroup.width + clockBtn.width + state0Alerts.width + state1Status.width + 2 * spacing
             height: parent.height
-            spacing: island.islandState === 1 ? 16 : 0
+            property real spacing: island.islandState === 1 ? 16 : 0
 
             Behavior on spacing {
                 NumberAnimation {
@@ -282,6 +302,7 @@ Rectangle {
             }
 
             Item {
+                id: workspaceGroup
                 width: island.wsW
                 height: parent.height
                 clip: true
@@ -349,6 +370,8 @@ Rectangle {
 
             Rectangle {
                 id: clockBtn
+                x: workspaceGroup.width + pillLayout.spacing
+                readonly property real expansion: Math.max(0, Math.min(1, (height - 32) / 14))
                 width: island.islandState === 1 ? island.clockS1W : island.clockS0W
                 height: island.islandState === 1 ? 46 : 32
                 anchors.verticalCenter: parent.verticalCenter
@@ -373,37 +396,27 @@ Rectangle {
                     }
                 }
 
-                Item {
+                Column {
                     anchors.centerIn: parent
-                    width: parent.width
-                    height: parent.height
+                    spacing: clockBtn.expansion
+
                     Text {
-                        anchors.centerIn: parent
+                        anchors.horizontalCenter: parent.horizontalCenter
                         text: island.clockMarkup
                         textFormat: Text.RichText
                         color: Theme.text
                         font.family: "Hack Nerd Font"
-                        font.pixelSize: 14
+                        font.pixelSize: 14 + 10 * clockBtn.expansion
                         font.weight: Font.Bold
-                        opacity: island.islandState === 0 ? 1 : 0
-                        visible: opacity > 0
                     }
-                    Column {
-                        anchors.centerIn: parent
-                        spacing: 1
-                        opacity: island.islandState === 1 ? 1 : 0
-                        visible: opacity > 0
+                    Item {
+                        width: dateText.implicitWidth
+                        height: dateText.implicitHeight * clockBtn.expansion
+                        opacity: Math.pow(clockBtn.expansion, 3)
+                        anchors.horizontalCenter: parent.horizontalCenter
+
                         Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: island.clockMarkup
-                            textFormat: Text.RichText
-                            color: Theme.text
-                            font.family: "Hack Nerd Font"
-                            font.pixelSize: 24
-                            font.weight: Font.Bold
-                        }
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
+                            id: dateText
                             text: Time.dateString
                             color: Theme.text
                             font.family: "Hack Nerd Font"
@@ -428,6 +441,7 @@ Rectangle {
 
             Item {
                 id: state0Alerts
+                x: clockBtn.x + clockBtn.width + pillLayout.spacing
 
                 width: island.alertW
                 height: parent.height
@@ -582,11 +596,14 @@ Rectangle {
             }
 
             Item {
+                id: state1Status
+                x: state0Alerts.x + state0Alerts.width
                 width: island.islandState === 1 ? island.statusW : 0
                 height: parent.height
                 clip: true
-                opacity: island.islandState === 1 ? 1 : 0
+                opacity: Math.pow(clockBtn.expansion, 3)
                 visible: opacity > 0
+                enabled: island.islandState === 1
                 Behavior on width {
                     NumberAnimation {
                         duration: 240
@@ -599,6 +616,7 @@ Rectangle {
                     anchors.centerIn: parent
                     width: island.statusW
                     height: 38
+                    scale: Math.min(1, state1Status.width / width)
                     radius: 19
                     color: statusMouse.pressed ? Theme.overlay : (statusMouse.containsMouse ? Theme.surface : "transparent")
                     Behavior on color {
@@ -673,6 +691,7 @@ Rectangle {
         spacing: 12
         opacity: island.osdActive ? 1 : 0
         visible: opacity > 0
+        enabled: island.osdActive
 
         Text {
             text: island.osdIcon
@@ -756,7 +775,10 @@ Rectangle {
 
     // Camada 2: control center.
     ControlCenter {
-        width: parent.width
+        id: controlCenter
+        // Largura estável evita reorganizar os controles durante a expansão.
+        width: 450
+        anchors.horizontalCenter: parent.horizontalCenter
         y: 0
 
         // Altura fixa: sem ela o MouseArea nasce com zero e o clique em área vazia fecha
@@ -766,6 +788,14 @@ Rectangle {
         hostWindow: island.hostWindow
         opacity: island.islandState === 2 ? 1 : 0
         visible: opacity > 0
+        enabled: island.islandState === 2
+        Behavior on opacity {
+            enabled: island.isLoaded
+            NumberAnimation {
+                duration: island.islandState === 2 ? 120 : island.geometryDuration
+                easing.type: island.islandState === 2 ? Easing.OutQuad : Easing.InQuad
+            }
+        }
 
         onRequestClose: island.requestState(0)
         onRequestCalendar: island.calendarRequested()

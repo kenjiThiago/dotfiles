@@ -336,6 +336,7 @@ Scope {
                     anchors.horizontalCenter: parent.horizontalCenter
                     opacity: root.calendarExpanded ? 1 : 0
                     visible: opacity > 0
+                    enabled: root.calendarExpanded
                     Behavior on opacity {
                         NumberAnimation {
                             duration: 150
@@ -404,17 +405,17 @@ Scope {
                     property: "x"
                     from: 40
                     to: 0
-                    duration: 300
+                    duration: 200
                     easing.type: Easing.OutCubic
                 }
             }
 
             // Depende da altura fixa da janela: se ela voltar a sair do conteúdo,
-            // estes 250ms deixam a superfície e o desenho em desacordo.
+            // a transição deixa a superfície e o desenho em desacordo.
             move: Transition {
                 NumberAnimation {
                     properties: "y"
-                    duration: 250
+                    duration: 200
                     easing.type: Easing.OutCubic
                 }
             }

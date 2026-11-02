@@ -99,6 +99,7 @@ Rectangle {
         property: "opacity"
         to: 1
         duration: 200
+        easing.type: Easing.OutCubic
     }
 
     // Um positionador não tem `remove:`, mas opacity e scale são do card. Só
@@ -110,14 +111,14 @@ Rectangle {
             target: card
             property: "opacity"
             to: 0
-            duration: 200
+            duration: 150
             easing.type: Easing.OutCubic
         }
         NumberAnimation {
             target: card
             property: "scale"
-            to: 0.94
-            duration: 200
+            to: 0.98
+            duration: 150
             easing.type: Easing.OutCubic
         }
 
