@@ -148,6 +148,7 @@ take_screenshot() {
 
 # O cliphist não tem pin: os fixados ficam num diretório à parte, um arquivo por entrada.
 CLIP_PINS="${XDG_DATA_HOME:-$HOME/.local/share}/clipboard-pins"
+CLIP_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi/clipboard/440x440-v1"
 pin_preview() { tr '\n' ' ' < "$1" | cut -c1-120 | sed 's/[[:space:]]*$//'; }
 
 rofi_image_preview() {
@@ -174,25 +175,40 @@ clipboard_placeholder() {
 }
 
 clipboard_row() {
-    local source=$1 label=$2 info=$3 mime icon="" image placeholder=text
+    local source=$1 label=$2 info=$3 mime icon="" image placeholder=text key cache build
     if [[ $label == "[[ binary data "* || $label == "binary data "* ]]; then
         placeholder=unavailable
     fi
     if [[ -n $source ]]; then
-        mime=$(file --brief --mime-type -- "$source")
-        case $mime in
-            image/*) placeholder=unavailable ;;
-            text/*) placeholder=text ;;
-            *) placeholder=other ;;
-        esac
-        if [[ $mime == image/* ]]; then
-            label=$(magick identify -ping -format 'Imagem · %m · %w×%h' "$source[0]" 2>/dev/null) || label="Imagem ($mime)"
-            image="$ROFI_CLIPBOARD_DIR/${info/:/-}.png"
-            if rofi_image_preview "$source" "$image"; then
-                icon=$image
+        key=$(sha256sum < "$source") && key=${key%% *}
+        cache="$CLIP_CACHE/$key"
+        [[ -n $key ]] && printf '%s\n' "$key" >> "$ROFI_CLIPBOARD_DIR/cache-keys"
+        if [[ -n $key && -s $cache.png && -s $cache.label ]] && IFS= read -r label < "$cache.label"; then
+            icon="$cache.png"
+        else
+            mime=$(file --brief --mime-type -- "$source")
+            case $mime in
+                image/*) placeholder=unavailable ;;
+                text/*) placeholder=text ;;
+                *) placeholder=other ;;
+            esac
+            if [[ $mime == image/* ]]; then
+                label=$(magick identify -ping -format 'Imagem · %m · %w×%h' "$source[0]" 2>/dev/null) || label="Imagem ($mime)"
+                image="$ROFI_CLIPBOARD_DIR/${key:-${info/:/-}}.png"
+                if rofi_image_preview "$source" "$image"; then
+                    icon=$image
+                    if [[ -n $key ]]; then
+                        build="$CLIP_CACHE/.build-$key-$$"
+                        if cp -- "$image" "$build.png" && printf '%s\n' "$label" > "$build.label" \
+                            && mv -f -- "$build.png" "$cache.png" && mv -f -- "$build.label" "$cache.label"; then
+                            icon="$cache.png"
+                        fi
+                        rm -f -- "$build.png" "$build.label"
+                    fi
+                fi
+            elif [[ $info == pin:* ]]; then
+                label=$(pin_preview "$source")
             fi
-        elif [[ $info == pin:* ]]; then
-            label=$(pin_preview "$source")
         fi
     fi
     if [[ -z $icon ]]; then
@@ -206,6 +222,7 @@ clipboard_row() {
 clipboard_rows() {
     local f entry label id image
     local count=0
+    : > "$ROFI_CLIPBOARD_DIR/cache-keys"
     printf '\0prompt\x1fClipboard\n\0use-hot-keys\x1ftrue\n\0no-custom\x1ftrue\n'
     printf '\0keep-selection\x1ftrue\n\0keep-filter\x1ftrue\n\0data\x1f\n'
 
@@ -234,6 +251,28 @@ clipboard_rows() {
     if ((count == 0)); then
         printf 'Histórico vazio\0nonselectable\x1ftrue\x1fpermanent\x1ftrue\n'
     fi
+    printf 'complete\n' >> "$ROFI_CLIPBOARD_DIR/cache-keys"
+}
+
+clipboard_cache_cleanup() {
+    local dir=$1 key f complete=false
+    [[ -f $dir/cache-keys ]] || return 0
+    local -A used=()
+    local -a stale=()
+    while IFS= read -r key; do
+        [[ $key =~ ^[a-f0-9]{64}$ ]] && used[$key]=1
+        [[ $key == complete ]] && complete=true
+    done < "$dir/cache-keys"
+    [[ $complete == true ]] || return 0
+    for f in "$CLIP_CACHE"/*.png "$CLIP_CACHE"/*.label; do
+        key=${f##*/}
+        key=${key%.*}
+        if [[ -f $f && $key =~ ^[a-f0-9]{64}$ && ! ${used[$key]+yes} ]]; then
+            stale+=("$f")
+        fi
+    done
+    ((${#stale[@]})) && rm -f -- "${stale[@]}"
+    find "$CLIP_CACHE" -maxdepth 1 -type f -name '.build-*' -mtime +1 -delete
 }
 
 clipboard_mode() {
@@ -248,7 +287,9 @@ clipboard_mode() {
 
     if [[ ${ROFI_DATA:-} == confirm-wipe ]]; then
         if [[ $ROFI_RETV == 1 && $ROFI_INFO == wipe ]]; then
-            cliphist wipe
+            if cliphist wipe; then
+                rm -f -- "$ROFI_CLIPBOARD_DIR"/image-*
+            fi
         fi
         clipboard_rows
         printf '\0keep-filter\x1ffalse\n'
@@ -301,10 +342,11 @@ clipboard_mode() {
 }
 
 show_clipboard() (
-    mkdir -p "$CLIP_PINS"
+    umask 077
+    mkdir -p "$CLIP_PINS" "$CLIP_CACHE"
     local tmp_dir mode
     tmp_dir=$(mktemp -d "${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/rofi-clipboard.XXXXXX") || return
-    trap 'rm -rf -- "$tmp_dir"' EXIT
+    trap 'clipboard_cache_cleanup "$tmp_dir"; rm -rf -- "$tmp_dir"' EXIT
     mode=${SCRIPT_PATH//\'/\'\\\'\'}
     ROFI_CLIPBOARD_DIR="$tmp_dir" rofi -show clipboard -modi "clipboard:bash '$mode' --clipboard-mode" \
         -theme "$DOTFILES/packages/rofi/.config/rofi/themes/clipboard.rasi" \

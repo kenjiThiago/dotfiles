@@ -583,8 +583,15 @@ for um `#rrggbb`.
   limpeza também aparece na mesma janela; copiar ou cancelar encerram o menu.
   Imagens, inclusive fixadas, aparecem num painel de preview à direita que
   acompanha a seleção, com rótulos de formato e dimensões. O ImageMagick
-  ajusta os previews ao painel sem recortar a imagem. Eles são gerados em um
-  diretório temporário por abertura do menu e removidos ao fechar.
+  ajusta os previews ao painel sem recortar a imagem. As miniaturas e seus
+  metadados ficam em `${XDG_CACHE_HOME:-$HOME/.cache}/rofi/clipboard/440x440-v1`,
+  identificados pelo hash do conteúdo, e são reutilizados entre aberturas.
+  Ao fechar o menu, são removidos os itens do cache sem referência na última
+  listagem do histórico ou dos fixados. As imagens originais decodificadas
+  ficam apenas em um diretório temporário por abertura, removido ao fechar.
+  O diretório de cache e os arquivos novos são privados ao usuário. Imagens
+  novas ainda precisam da primeira geração; a decodificação e o cálculo do
+  hash continuam necessários para validar o conteúdo nas aberturas seguintes.
   Entradas de texto mostram um ícone de documento e “Conteúdo de texto”;
   outros conteúdos sem prévia e imagens que não carregaram têm mensagens
   próprias. Os placeholders usam a cor `subtle` e são reutilizados durante
