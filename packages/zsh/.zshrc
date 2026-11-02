@@ -1,3 +1,9 @@
+# A sessão existente já tem seu ambiente; o override local continua sendo lido no fim.
+if [[ -z $TMUX && $XDG_CURRENT_DESKTOP == Hyprland && ! -f ~/.zshrc.local ]] \
+    && command -v tmux >/dev/null && tmux has-session -t '=main' 2>/dev/null; then
+    exec tmux new-session -A -s main
+fi
+
 autoload -Uz compinit && compinit
 
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -164,6 +170,6 @@ export PATH
 # Vem antes do exec: depois dele nada mais roda.
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
-if [[ -z "$TMUX" && "$XDG_CURRENT_DESKTOP" == "Hyprland" ]]; then
+if [[ -z "$TMUX" && "$XDG_CURRENT_DESKTOP" == "Hyprland" ]] && command -v tmux >/dev/null; then
     exec tmux new-session -A -s main
 fi

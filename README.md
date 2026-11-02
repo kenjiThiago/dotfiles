@@ -209,12 +209,17 @@ existem.
 
 **Nos shells e no tmux** não há chave de perfil: cada ferramenta extra vem
 atrás de um teste. O `.bashrc` e o `.zshrc` usam o starship se ele existir e
-caem num prompt próprio se não, e o mesmo vale para fzf, zoxide e nvm; o
+caem num prompt próprio se não, e o mesmo vale para fzf, zoxide e fnm; o
 `.tmux.conf` só define `wl-copy` como `copy-command` e só cria o popup de cores
 se o que eles precisam estiver instalado. O tmux não usa gerenciador de plugins.
 Para o que for de uma máquina só, os três leem um arquivo não versionado no fim:
 `~/.bashrc.local`,
 `~/.zshrc.local` e `~/.tmux.conf.local`.
+
+No Hyprland, o zsh reconecta à sessão `main` existente antes de carregar
+plugins e o prompt. A primeira criação da sessão mantém a inicialização
+completa para preparar o ambiente. Se houver `~/.zshrc.local`, a entrada no
+tmux continua no fim, depois dos ajustes locais.
 
 ## Temas
 
