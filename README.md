@@ -452,6 +452,15 @@ for um `#rrggbb`.
 
 ## Detalhes
 
+- **Zoom do Hyprland**: `Super+Z` alterna entre 1× e 1,5×; quando já há
+  ampliação, volta para 1×. `Super+Shift+=` e `Super+-` ajustam em passos de
+  0,1× e repetem enquanto a tecla estiver pressionada. `Super+Ctrl+roda`
+  ajusta em passos de 0,2×: para cima aumenta, para baixo diminui. O intervalo
+  é de 1× a 3×; `Super+roda` continua trocando workspaces. O atraso global
+  dos atalhos de scroll é zero para evitar que eventos intermediários cheguem
+  ao aplicativo; a troca de workspaces pela roda também fica imediata.
+  O zoom amplia a imagem já renderizada e não substitui o ajuste de fonte
+  da aplicação.
 - **Zen Browser**: `zen_theme` escolhe só o *estilo* (`default` ou `nebula`), que
   é CSS escrito à mão; as cores saem do `theme.sh` como em qualquer outro
   programa. `theme set` aponta `~/.zen/<perfil>/chrome/{themes,userChrome.css,

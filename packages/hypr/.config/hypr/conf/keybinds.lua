@@ -5,6 +5,9 @@ local M = require("conf.programs")
 
 local mainMod = "SUPER"
 
+-- Durante o intervalo global de scroll, o Hyprland repassa eventos ao aplicativo.
+hl.config({ binds = { scroll_event_delay = 0, pass_mouse_when_bound = false } })
+
 hl.bind(mainMod .. "+ Q", hl.dsp.exec_cmd("uwsm app -- " .. M.terminal))
 hl.bind(mainMod .. "+ SHIFT + Q", hl.dsp.exec_cmd("uwsm app -- zen-browser"))
 hl.bind(mainMod .. "+ C", hl.dsp.window.close())
@@ -117,6 +120,8 @@ end)
 local MAX_ZOOM = 3
 local MIN_ZOOM = 1
 local ZOOM_TOGGLE_FACTOR = 1.5
+local ZOOM_STEP = 0.1
+local ZOOM_SCROLL_STEP = 0.2
 
 ---@param offset number
 ---@return nil
@@ -129,16 +134,23 @@ local function zoom(offset)
     else
         current = ZOOM_TOGGLE_FACTOR
     end
+    current = math.floor(current / ZOOM_STEP + 0.5) * ZOOM_STEP
     current = math.max(MIN_ZOOM, math.min(MAX_ZOOM, current))
     hl.config({ cursor = { zoom_factor = current } })
 end
 
 hl.bind(mainMod .. "+ Z", zoom)
 hl.bind(mainMod .. "+ SHIFT + EQUAL", function()
-    zoom(0.5)
-end)
+    zoom(ZOOM_STEP)
+end, { repeating = true })
 hl.bind(mainMod .. "+ MINUS", function()
-    zoom(-0.5)
+    zoom(-ZOOM_STEP)
+end, { repeating = true })
+hl.bind(mainMod .. "+ CTRL + mouse_up", function()
+    zoom(ZOOM_SCROLL_STEP)
+end)
+hl.bind(mainMod .. "+ CTRL + mouse_down", function()
+    zoom(-ZOOM_SCROLL_STEP)
 end)
 
 hl.bind(mainMod .. "+ H", hl.dsp.focus({ direction = "l" }))
