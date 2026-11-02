@@ -166,7 +166,7 @@ O que muda de fato em cada perfil:
 | pacotes do sistema | `packages.txt` via paru | na mão, com o gerenciador da distro |
 | serviços do systemd | habilitados | pulados |
 | shell padrão | trocado para zsh | fica como está |
-| tpm e plugins do nvim | baixados | nada a baixar |
+| plugins do nvim | baixados | nada a baixar |
 | templates de tema | os 15 | só os que não precisam de desktop |
 
 **No neovim** o `lua/NeoVim/profile.lua` decide entre o modo completo e o
@@ -210,9 +210,10 @@ existem.
 **Nos shells e no tmux** não há chave de perfil: cada ferramenta extra vem
 atrás de um teste. O `.bashrc` e o `.zshrc` usam o starship se ele existir e
 caem num prompt próprio se não, e o mesmo vale para fzf, zoxide e nvm; o
-`.tmux.conf` só define `wl-copy` como `copy-command`, só chama o tpm e só cria
-o popup de cores se o que eles precisam estiver instalado. Para o que for de
-uma máquina só, os três leem um arquivo não versionado no fim: `~/.bashrc.local`,
+`.tmux.conf` só define `wl-copy` como `copy-command` e só cria o popup de cores
+se o que eles precisam estiver instalado. O tmux não usa gerenciador de plugins.
+Para o que for de uma máquina só, os três leem um arquivo não versionado no fim:
+`~/.bashrc.local`,
 `~/.zshrc.local` e `~/.tmux.conf.local`.
 
 ## Temas

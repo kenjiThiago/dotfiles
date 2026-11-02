@@ -8,7 +8,7 @@
 #   ./install.sh --profile <nome> desktop (padrão) ou server
 #   ./install.sh --skip-packages  pula a instalação de pacotes
 #   ./install.sh --skip-services  pula habilitar serviços do systemd
-#   ./install.sh --skip-plugins   pula baixar plugins de nvim/tmux
+#   ./install.sh --skip-plugins   pula baixar plugins do nvim
 #   ./install.sh --theme <nome>   usa outro tema (padrão: rose-pine-moon)
 
 set -euo pipefail
@@ -238,24 +238,11 @@ else
     run chsh -s "$(command -v zsh)" || warn "chsh falhou; troque à mão depois"
 fi
 
-# O nvim do server não usa vim.pack e o .tmux.conf só chama o tpm se ele existir.
 if [[ $PROFILE == server ]]; then
-    msg "Perfil server: sem tpm e sem plugins do neovim"
+    msg "Perfil server: sem plugins do neovim"
 elif [[ $SKIP_PLUGINS == 1 ]]; then
     msg "Pulando plugins (--skip-plugins)"
 else
-    TPM_DIR="$HOME/.tmux/plugins/tpm"
-    if [[ ! -d $TPM_DIR ]]; then
-        run git clone --depth 1 https://github.com/tmux-plugins/tpm "$TPM_DIR"
-        ok "tpm instalado"
-    else
-        ok "tpm já presente"
-    fi
-
-    if [[ -x $TPM_DIR/bin/install_plugins ]]; then
-        run "$TPM_DIR/bin/install_plugins" || warn "install_plugins falhou; rode prefix+I no tmux"
-    fi
-
     # O mason instala os LSPs em background: algum pode faltar na primeira sessão.
     if command -v nvim >/dev/null; then
         msg "Baixando plugins do neovim (pode demorar)"
