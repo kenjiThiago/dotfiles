@@ -9,10 +9,10 @@ local FALLBACK = {
 }
 
 local ICONS = {
-    error = " ",
-    warn = " ",
-    info = " ",
-    hint = "󰌵 ",
+    error = "",
+    warn = "",
+    info = "",
+    hint = "󰌵",
 }
 
 local function get_hl(name)
@@ -114,12 +114,12 @@ local function diagnostics(bufnr)
     for _, sev in ipairs(SEVERITIES) do
         local n = counts[sev[1]]
         if n and n > 0 then
-            out[#out + 1] = sev[2] .. " " .. sev[3] .. " " .. n
+            out[#out + 1] = sev[2] .. sev[3] .. " " .. n
         end
     end
 
     if #out > 0 then
-        return table.concat(out, " ")
+        return table.concat(out, "  ") .. "%#StatusLineInfo#  │ "
     end
 
     return ""
@@ -172,8 +172,8 @@ _G.BuildStatusLine = function()
         "%#StatusLineFile# %<" .. file_name(winid, bufnr) .. " %m%r ",
         "%=",
         diagnostics(bufnr),
-        "%#StatusLineBody# %{&filetype}  %p%% ",
-        "%#StatusLineInfo#│ ",
+        "%#StatusLineBody# %y  %p%%  ",
+        "%#StatusLineInfo#│  ",
         "%#StatusLineBody#%l:%c ",
     })
 end
