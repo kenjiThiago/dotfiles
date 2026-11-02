@@ -157,10 +157,34 @@ rofi_image_preview() {
         -gravity center -extent 440x440 "$2" 2>/dev/null
 }
 
+clipboard_placeholder() {
+    local kind=$1 target=$2 label color
+    [[ -s $target ]] && return
+    case $kind in
+        text) label="Conteúdo de texto" ;;
+        other) label="Conteúdo sem prévia" ;;
+        *) label="Prévia indisponível" ;;
+    esac
+    color=$(sed -nE 's/^[[:space:]]*subtle:[[:space:]]*(#[[:xdigit:]]{6});.*/\1/p' \
+        "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/colors.rasi" 2>/dev/null)
+    magick -size 440x440 xc:none -stroke "${color:-#908caa}" -strokewidth 1.5 -fill none \
+        -draw "path 'M 204,166 L 226,166 L 238,178 L 238,210 L 204,210 Z M 226,166 L 226,178 L 238,178 M 211,188 L 231,188 M 211,197 L 227,197'" \
+        -stroke none -fill "${color:-#908caa}" -font Hack-Nerd-Font-Regular -pointsize 16 \
+        -gravity center -annotate +0+24 "$label" "$target" 2>/dev/null
+}
+
 clipboard_row() {
-    local source=$1 label=$2 info=$3 mime icon="" image
+    local source=$1 label=$2 info=$3 mime icon="" image placeholder=text
+    if [[ $label == "[[ binary data "* || $label == "binary data "* ]]; then
+        placeholder=unavailable
+    fi
     if [[ -n $source ]]; then
         mime=$(file --brief --mime-type -- "$source")
+        case $mime in
+            image/*) placeholder=unavailable ;;
+            text/*) placeholder=text ;;
+            *) placeholder=other ;;
+        esac
         if [[ $mime == image/* ]]; then
             label=$(magick identify -ping -format 'Imagem · %m · %w×%h' "$source[0]" 2>/dev/null) || label="Imagem ($mime)"
             image="$ROFI_CLIPBOARD_DIR/${info/:/-}.png"
@@ -170,6 +194,10 @@ clipboard_row() {
         elif [[ $info == pin:* ]]; then
             label=$(pin_preview "$source")
         fi
+    fi
+    if [[ -z $icon ]]; then
+        image="$ROFI_CLIPBOARD_DIR/placeholder-$placeholder.png"
+        clipboard_placeholder "$placeholder" "$image" && icon=$image
     fi
     [[ $info == pin:* ]] && label="[fixado] $label"
     printf '%s\0icon\x1f%s\x1finfo\x1f%s\n' "$label" "$icon" "$info"

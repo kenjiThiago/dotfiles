@@ -575,6 +575,10 @@ for um `#rrggbb`.
   acompanha a seleção, com rótulos de formato e dimensões. O ImageMagick
   ajusta os previews ao painel sem recortar a imagem. Eles são gerados em um
   diretório temporário por abertura do menu e removidos ao fechar.
+  Entradas de texto mostram um ícone de documento e “Conteúdo de texto”;
+  outros conteúdos sem prévia e imagens que não carregaram têm mensagens
+  próprias. Os placeholders usam a cor `subtle` e são reutilizados durante
+  a abertura do menu.
 - **Git**: o pacote `git` versiona `~/.config/git/config`. Sua identidade fica
   fora do repositório, em `~/.config/git/config.local` (o include é ignorado se
   o arquivo não existir). Atenção: o git lê `~/.gitconfig` **depois** do arquivo
