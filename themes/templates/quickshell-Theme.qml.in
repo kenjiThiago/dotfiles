@@ -28,6 +28,8 @@ QtObject {
 
     property color accent: "{{accent}}"
     property color accentAlt: "{{accent_alt}}"
+    property color brand: "{{brand}}"
+    property color brandAlt: "{{brand_alt}}"
     property color success: "{{success}}"
     property color warning: "{{warning}}"
     property color error: "{{error}}"

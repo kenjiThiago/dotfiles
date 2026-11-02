@@ -177,7 +177,7 @@ Item {
                 available: SystemMonitor.sink !== null && SystemMonitor.sink.audio !== null
                 icon: SystemMonitor.isMuted ? "󰝟" : "󰕾"
                 iconInteractive: true
-                indicator: SystemMonitor.isMuted ? Theme.error : Theme.accent
+                indicator: SystemMonitor.isMuted ? Theme.error : Theme.blue
                 label: "Volume"
                 value: SystemMonitor.volumePct
 
@@ -195,6 +195,7 @@ Item {
                 adjustable: true
                 available: value >= 0
                 icon: "󰃠"
+                indicator: Theme.yellow
                 label: "Brilho"
                 value: SystemMonitor.currentBrightness
 
@@ -202,7 +203,7 @@ Item {
             }
             LevelControl {
                 icon: SystemMonitor.battIcon
-                indicator: SystemMonitor.isCharging ? Theme.success : (value <= 20 ? Theme.error : Theme.accent)
+                indicator: SystemMonitor.isCharging ? Theme.success : (value <= 20 ? Theme.error : Theme.subtle)
                 label: SystemMonitor.isCharging ? "Bateria · carregando" : "Bateria"
                 value: SystemMonitor.pct
                 visible: SystemMonitor.isValid
@@ -253,7 +254,7 @@ Item {
         property bool available: true
         required property string icon
         property bool iconInteractive: false
-        property color indicator: Theme.accent
+        property color indicator: Theme.subtle
         required property string label
         required property real value
 

@@ -259,6 +259,15 @@ tema. Os nomes são genéricos de propósito — o "yellow" do Rosé Pine é o g
 | papéis | `accent` `accent_alt` `success` `warning` `error` `info` `match` (trecho que casou com a busca; cai em `info` se não for definido) `brand` `brand_alt` (identidade: borda do Hyprland, hyprlock, logo e gradientes do Zen, sessão do tmux e caixa de processos do btop; caem no `accent` e no `accent_alt`) |
 | sintaxe | `syn_comment` `syn_string` `syn_escape` `syn_constant` `syn_keyword` `syn_operator` `syn_type` `syn_function` `syn_variable` `syn_parameter` `syn_tag` `syn_attribute` |
 
+As cores básicas também podem identificar controles: no Quickshell, o volume
+usa `blue` e o brilho usa `yellow` (gold no Rosé Pine). Os papéis descrevem
+estados ou funções: um aviso usa `warning`, mesmo que hoje tenha a mesma cor
+de `yellow`. Compartilhar uma cor não reserva seu uso a um único significado.
+Escolha a chave pela intenção: mudar `warning` deve alterar os avisos sem
+recolorir o brilho. Para foco e seleção, use `accent`; para identidade visual,
+`brand` e `brand_alt`. Não crie um papel por componente quando uma cor básica
+já expressa a escolha.
+
 Mais os metadados: `variant` (dark/light), `nvim_colorscheme`, `zen_theme`,
 `wallpaper`, `gtk_theme`, `cursor_theme`, e os estilos de sintaxe
 `syn_comment_style`, `syn_keyword_style`, `syn_parameter_style` e
@@ -455,12 +464,17 @@ for um `#rrggbb`.
   indisponíveis mostram “—” e a bateria só aparece quando detectada.
   As notificações identificam o aplicativo e têm um botão de fechar;
   a expiração pausa enquanto o ponteiro está sobre o card ou seus botões.
+  Os dois-pontos do relógio usam `brand` como detalhe de identidade; os
+  números mantêm a cor de texto e os controles preservam suas próprias cores.
   Os valores de CPU e memória usam atenção a partir de 80% e crítico a
   partir de 95%; a temperatura usa 80 °C e 90 °C. As cores vêm de `warning`
   e `error` do tema. Para sair de cada estado, o valor precisa cair abaixo
   de cinco pontos do limite, evitando oscilações. A consulta ocorre a cada
   dois segundos. Os limites de temperatura são referências visuais, não
   limites de segurança do hardware; o sensor usado é `thermal_zone0`.
+  O ícone de temperatura acompanha o mesmo nível e a mesma margem de retorno
+  do valor exibido na central. O perfil Desempenho usa `yellow` como
+  identificação visual, sem depender da cor de aviso.
 - **quickshell e o systray**: os ícones da barra são glifos de Nerd Font e
   trocam de cor na recarga, como o resto. Os do systray e os das notificações
   não: são imagens resolvidas pelo tema de ícones do Qt, que o Qt fixa uma vez,

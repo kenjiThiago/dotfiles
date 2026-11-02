@@ -41,7 +41,7 @@ Item {
                 const name = root.notification ? root.notification.appName : "";
                 return name !== "" ? name.charAt(0).toUpperCase() : "󰂚";
             }
-            color: Theme.accent
+            color: Theme.subtle
             font.family: "Hack Nerd Font"
             font.pixelSize: Math.round(root.size * 0.45)
             font.weight: Font.Bold

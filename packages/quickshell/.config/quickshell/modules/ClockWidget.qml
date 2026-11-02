@@ -29,6 +29,7 @@ Rectangle {
     property string activeMode: "clock"
     readonly property bool osdActive: island.activeMode !== "clock"
     readonly property bool osdIsVolume: island.activeMode === "volume"
+    readonly property string clockMarkup: Time.timeString.replace(":", '<font color="' + Theme.brand + '">:</font>')
 
     onIslandStateChanged: {
         if (island.islandState > 0 && island.osdActive) {
@@ -40,7 +41,7 @@ Rectangle {
     // Brilho e volume são a mesma barra: o modo escolhe o que ela lê e escreve.
     readonly property int osdValue: island.osdIsVolume ? SystemMonitor.volumePct : Math.max(0, SystemMonitor.currentBrightness)
     readonly property string osdIcon: island.osdIsVolume ? (SystemMonitor.isMuted ? "󰝟" : "󰕾") : "󰃠"
-    readonly property color osdColor: island.osdIsVolume && SystemMonitor.isMuted ? Theme.error : Theme.accent
+    readonly property color osdColor: island.osdIsVolume ? (SystemMonitor.isMuted ? Theme.error : Theme.blue) : Theme.yellow
 
     function showOsd(mode: string): void {
         if (island.islandState === 2)
@@ -101,7 +102,7 @@ Rectangle {
 
     readonly property bool showBell: Notifications.unreadCount > 0 || Notifications.dnd
     readonly property bool showMultedMicrofone: SystemMonitor.sourceIsMuted
-    readonly property bool showTemp: SystemMonitor.tempC >= 80
+    readonly property bool showTemp: SystemMonitor.tempAlert > 0
     readonly property bool showBatt: SystemMonitor.isValid && SystemMonitor.pct <= 20 && !SystemMonitor.isCharging
     readonly property bool showLayout: !SystemMonitor.keyboardIsDefault && SystemMonitor.keyboardLayout !== ""
     readonly property bool showVpn: SystemMonitor.vpnActive
@@ -378,7 +379,8 @@ Rectangle {
                     height: parent.height
                     Text {
                         anchors.centerIn: parent
-                        text: Time.timeString
+                        text: island.clockMarkup
+                        textFormat: Text.RichText
                         color: Theme.text
                         font.family: "Hack Nerd Font"
                         font.pixelSize: 14
@@ -393,7 +395,8 @@ Rectangle {
                         visible: opacity > 0
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            text: Time.timeString
+                            text: island.clockMarkup
+                            textFormat: Text.RichText
                             color: Theme.text
                             font.family: "Hack Nerd Font"
                             font.pixelSize: 24
@@ -551,7 +554,7 @@ Rectangle {
 
                     Text {
                         text: "󰈸"
-                        color: Theme.error
+                        color: SystemMonitor.tempAlert === 2 ? Theme.error : Theme.warning
                         font.family: "Hack Nerd Font"
                         font.pixelSize: 15
 

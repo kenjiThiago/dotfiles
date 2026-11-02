@@ -275,7 +275,7 @@ Rectangle {
                             id: actionLabel
 
                             anchors.centerIn: parent
-                            color: Theme.accent
+                            color: actionMouse.containsMouse ? Theme.accent : Theme.text
                             elide: Text.ElideRight
                             font.family: "Hack Nerd Font"
                             font.pixelSize: 11
