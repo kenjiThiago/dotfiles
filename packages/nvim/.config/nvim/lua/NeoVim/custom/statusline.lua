@@ -37,7 +37,7 @@ local function setup_colors()
 
 	local bg_body = sl.bg or normal.bg or FALLBACK.bg
 	local fg_body = sl.fg or normal.fg or FALLBACK.fg
-	local fg_mode = vim.o.background == "light" and fg_body or (normal.bg or FALLBACK.bg)
+	local fg_mode = normal.bg or bg_body
 	local fg_info = get_hl("Comment").fg or fg_body
 	local accent = get_hl("ModeMsg").fg or func.fg or fg_body
 
