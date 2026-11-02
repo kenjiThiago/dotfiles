@@ -46,7 +46,7 @@ vim.opt.pumheight = 10
 
 -- Carrega nos dois perfis: opção desconhecida derrubaria a config. winborder é do 0.11.
 if vim.fn.exists("+winborder") == 1 then
-	vim.opt.winborder = "rounded"
+    vim.opt.winborder = "rounded"
 end
 
 vim.opt.colorcolumn = ""
@@ -54,19 +54,19 @@ vim.opt.colorcolumn = ""
 vim.api.nvim_command("autocmd TermOpen * setlocal nonumber norelativenumber")
 
 vim.filetype.add({
-	pattern = {
-		[".*/%.config/git/config%.local"] = "gitconfig",
-	},
+    pattern = {
+        [".*/%.config/git/config%.local"] = "gitconfig",
+    },
 })
 
 vim.opt.list = false
 
 vim.opt.listchars = {
-	tab = "» ",
-	space = "·",
-	trail = "•",
-	extends = "›",
-	precedes = "‹",
-	nbsp = "␣",
-	eol = "↲",
+    tab = "» ",
+    space = "·",
+    trail = "•",
+    extends = "›",
+    precedes = "‹",
+    nbsp = "␣",
+    eol = "↲",
 }

@@ -1,5 +1,5 @@
 local gh = function(x)
-	return "https://github.com/" .. x
+    return "https://github.com/" .. x
 end
 
 vim.pack.add({ gh("stevearc/conform.nvim") })
@@ -7,32 +7,32 @@ vim.pack.add({ gh("stevearc/conform.nvim") })
 local formatar_ao_salvar = false
 
 require("conform").setup({
-	formatters_by_ft = {
-		python = { "ruff_format", "ruff_organize_imports" },
-		javascript = { "biome-check" },
-		typescript = { "biome-check" },
-		typescriptreact = { "biome-check" },
-		lua = { "stylua" },
-	},
-	format_on_save = function()
-		if formatar_ao_salvar then
-			return { lsp_format = "fallback", timeout_ms = 500 }
-		end
-	end,
+    formatters_by_ft = {
+        python = { "ruff_format", "ruff_organize_imports" },
+        javascript = { "biome-check" },
+        typescript = { "biome-check" },
+        typescriptreact = { "biome-check" },
+        lua = { "stylua" },
+    },
+    format_on_save = function()
+        if formatar_ao_salvar then
+            return { lsp_format = "fallback", timeout_ms = 500 }
+        end
+    end,
 })
 
 vim.api.nvim_create_user_command("FormatToggle", function()
-	formatar_ao_salvar = not formatar_ao_salvar
-	vim.notify("Formatar ao salvar: " .. (formatar_ao_salvar and "ligado" or "desligado"))
+    formatar_ao_salvar = not formatar_ao_salvar
+    vim.notify("Formatar ao salvar: " .. (formatar_ao_salvar and "ligado" or "desligado"))
 end, { desc = "Liga e desliga o format on save" })
 
 vim.keymap.set("", "<leader>f", function()
-	require("conform").format({ async = true, lsp_format = "fallback" }, function(err)
-		if not err then
-			local mode = vim.api.nvim_get_mode().mode
-			if vim.startswith(string.lower(mode), "v") then
-				vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
-			end
-		end
-	end)
+    require("conform").format({ async = true, lsp_format = "fallback" }, function(err)
+        if not err then
+            local mode = vim.api.nvim_get_mode().mode
+            if vim.startswith(string.lower(mode), "v") then
+                vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
+            end
+        end
+    end)
 end, { desc = "Format code" })

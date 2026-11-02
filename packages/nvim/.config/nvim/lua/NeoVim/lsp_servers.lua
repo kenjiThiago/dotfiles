@@ -6,17 +6,17 @@ local M = {}
 
 -- Quem aponta erro é o pyright; o ruff só formata e organiza import.
 M.ruff = {
-	init_options = {
-		settings = {
-			lint = { enable = false },
-		},
-	},
+    init_options = {
+        settings = {
+            lint = { enable = false },
+        },
+    },
 }
 
 M.ruff_base = {
-	cmd = { "ruff", "server" },
-	filetypes = { "python" },
-	root_markers = { "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" },
+    cmd = { "ruff", "server" },
+    filetypes = { "python" },
+    root_markers = { "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" },
 }
 
 return M
