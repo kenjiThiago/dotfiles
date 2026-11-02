@@ -2,6 +2,7 @@
 
 vec4 TRAIL_COLOR = vec4(iCurrentCursorColor.rgb, 0.4);
 const float DURATION = 0.12;
+const float STARTUP_DELAY = 0.5;
 // 0.0 move todos os cantos juntos; 1.0 faz os da frente saltarem e os de trás arrastarem.
 const float TRAIL_SIZE = 0.8;
 // Em alturas de cursor: saltos menores (digitar, w, b) não animam.
@@ -68,8 +69,18 @@ float getDurationFromDot(float dot_val, float DURATION_LEAD, float DURATION_SIDE
     return duration;
 }
 
+bool validCursor(vec4 cursor) {
+    return all(greaterThan(cursor.zw, vec2(0.)))
+        && cursor.x >= 0. && cursor.x + cursor.z <= iResolution.x
+        && cursor.y >= cursor.w && cursor.y <= iResolution.y;
+}
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor = texture(iChannel0, fragCoord.xy / iResolution.xy);
+
+    // A posição anterior pode ser provisória enquanto o terminal e o prompt iniciam.
+    if (iTimeCursorChange < STARTUP_DELAY || !validCursor(iCurrentCursor) || !validCursor(iPreviousCursor))
+        return;
 
     vec2 vu = normalize(fragCoord, 1.);
     vec2 offsetFactor = vec2(-.5, 0.5);
