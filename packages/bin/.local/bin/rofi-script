@@ -87,7 +87,7 @@ menu() {
         [[ -n $index ]] && args+=("-selected-row" "$((index - 1))")
     fi
 
-    echo -e "$options" | rofi -dmenu -i -p "$prompt" "${args[@]}" 2>/dev/null
+    echo -e "$options" | rofi -dmenu -sync -i -p "$prompt" "${args[@]}" 2>/dev/null
 }
 
 terminal()       { uwsm app -- ghostty -e "$@"; }
@@ -158,6 +158,28 @@ rofi_image_preview() {
         -gravity center -extent 440x440 "$2" 2>/dev/null
 }
 
+rofi_preview_preload() {
+    local row icon escaped widgets="" rules="" count=0
+    local -A seen=()
+    while IFS= read -r row; do
+        [[ $row == *$'icon\x1f'* ]] || continue
+        icon=${row#*$'icon\x1f'}
+        icon=${icon%%$'\x1f'*}
+        [[ -f $icon && ! ${seen[$icon]+yes} ]] || continue
+        seen[$icon]=1
+        escaped=${icon//\\/\\\\}
+        escaped=${escaped//\"/\\\"}
+        widgets+="${widgets:+, }\"icon-preload-$count\""
+        printf -v row 'icon-preload-%s {\n filename: "%s";\n size: 440px;\n}\n' "$count" "$escaped"
+        rules+=$row
+        ((count += 1))
+        ((count == 16)) && break
+    done < "$1"
+    ((count > 0)) || return 0
+    printf 'mainbox { children: [ "inputbar", "preview-body", "textbox-preview-help", "preview-cache" ]; }\n'
+    printf 'preview-cache { enabled: false; children: [ %s ]; }\n%s' "$widgets" "$rules"
+}
+
 clipboard_placeholder() {
     local kind=$1 target=$2 label color
     [[ -s $target ]] && return
@@ -167,7 +189,7 @@ clipboard_placeholder() {
         *) label="Prévia indisponível" ;;
     esac
     color=$(sed -nE 's/^[[:space:]]*subtle:[[:space:]]*(#[[:xdigit:]]{6});.*/\1/p' \
-        "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/colors.rasi" 2>/dev/null)
+        "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/themes/colors.rasi" 2>/dev/null)
     magick -size 440x440 xc:none -stroke "${color:-#908caa}" -strokewidth 1.5 -fill none \
         -draw "path 'M 204,166 L 226,166 L 238,178 L 238,210 L 204,210 Z M 226,166 L 226,178 L 238,178 M 211,188 L 231,188 M 211,197 L 227,197'" \
         -stroke none -fill "${color:-#908caa}" -font Hack-Nerd-Font-Regular -pointsize 16 \
@@ -297,7 +319,13 @@ clipboard_mode() {
     fi
 
     case $ROFI_RETV in
-        0) ;;
+        0)
+            if [[ -f $ROFI_CLIPBOARD_DIR/initial-rows ]]; then
+                cat -- "$ROFI_CLIPBOARD_DIR/initial-rows"
+                rm -f -- "$ROFI_CLIPBOARD_DIR/initial-rows"
+                return
+            fi
+            ;;
         1)
             if [[ -n $pinned ]]; then
                 if wl-copy < "$pinned" >/dev/null 2>&1; then return; fi
@@ -348,8 +376,10 @@ show_clipboard() (
     tmp_dir=$(mktemp -d "${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/rofi-clipboard.XXXXXX") || return
     trap 'clipboard_cache_cleanup "$tmp_dir"; rm -rf -- "$tmp_dir"' EXIT
     mode=${SCRIPT_PATH//\'/\'\\\'\'}
+    ROFI_CLIPBOARD_DIR="$tmp_dir" clipboard_rows > "$tmp_dir/initial-rows"
     ROFI_CLIPBOARD_DIR="$tmp_dir" rofi -show clipboard -modi "clipboard:bash '$mode' --clipboard-mode" \
         -theme "$DOTFILES/packages/rofi/.config/rofi/themes/clipboard.rasi" \
+        -theme-str "$(rofi_preview_preload "$tmp_dir/initial-rows")" \
         -kb-custom-1 "alt+p" -kb-custom-2 "alt+d" -kb-custom-3 "alt+w"
 )
 
@@ -421,9 +451,10 @@ change_wallpaper() (
         initial=1
     fi
 
-    selected=$(rofi -dmenu -i -no-custom -p "  Wallpaper" -format i \
+    selected=$(rofi -dmenu -sync -i -no-custom -p "  Wallpaper" -format i \
         -selected-row "$initial" \
-        -theme "$DOTFILES/packages/rofi/.config/rofi/themes/wallpaper.rasi" < "$tmp_dir/rows")
+        -theme "$DOTFILES/packages/rofi/.config/rofi/themes/wallpaper.rasi" \
+        -theme-str "$(rofi_preview_preload "$tmp_dir/rows")" < "$tmp_dir/rows")
     code=$?
     if ((code != 0)) || [[ ! $selected =~ ^[0-9]+$ ]]; then
         back_to show_setup_menu

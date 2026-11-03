@@ -19,7 +19,7 @@ preview-body {
     orientation: horizontal;
     spacing: 16px;
     margin: 16px 0px 0px;
-    children: [ "listview", "icon-current-entry" ];
+    children: [ "listview", "preview-panel" ];
     background-color: transparent;
 }
 
@@ -35,17 +35,26 @@ element {
     children: [ "element-text" ];
 }
 
+preview-panel {
+    expand: true;
+    children: [ "icon-current-entry" ];
+    background-color: @surface;
+    border: 1px solid;
+    border-color: @overlay;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+/* Padding no ícone entra no tamanho de leitura e provoca uma dupla escala. */
 icon-current-entry {
     expand: true;
     squared: true;
     size: 440px;
     horizontal-align: 0.5;
     vertical-align: 0.5;
-    background-color: @surface;
-    border: 1px solid;
-    border-color: @overlay;
-    border-radius: 10px;
-    padding: 12px;
+    background-color: transparent;
+    border: 0px;
+    padding: 0px;
 }
 
 textbox-preview-help {
