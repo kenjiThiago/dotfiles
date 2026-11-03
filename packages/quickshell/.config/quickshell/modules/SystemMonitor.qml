@@ -93,16 +93,61 @@ Item {
     PwObjectTracker {
         objects: Pipewire.linkGroups.values
     }
+    PwObjectTracker {
+        objects: {
+            const nodes = [];
+            for (const group of Pipewire.linkGroups.values)
+                nodes.push(group.source, group.target);
+            return nodes;
+        }
+    }
     readonly property var activeLinkGroups: Pipewire.linkGroups.values.filter(g => g.state === PwLinkState.Active && g.source && g.target)
 
     // O rnnoise e os medidores de nível ficam ligados ao microfone o tempo todo,
     // e não são um app gravando.
-    readonly property bool micInUse: activeLinkGroups.some(g => g.source.type === PwNodeType.AudioSource && g.target.type === PwNodeType.AudioInStream && !g.target.properties["node.link-group"] && !g.target.properties["stream.monitor"])
-    readonly property bool cameraInUse: activeLinkGroups.some(g => g.source.type === PwNodeType.VideoSource && g.source.properties["device.api"] !== undefined)
-
-    // Pelo Hyprland e não pelo Pipewire: pega também quem usa o screencopy direto,
-    // como o grim, sem passar pelo portal.
+    readonly property bool micInUse: activeLinkGroups.some(g => g.source.ready && g.target.ready && g.source.type === PwNodeType.AudioSource && g.target.type === PwNodeType.AudioInStream && !g.target.properties["node.link-group"] && !g.target.properties["stream.monitor"])
+    readonly property bool cameraInUse: activeLinkGroups.some(g => g.source.ready && g.target.ready && g.source.type === PwNodeType.VideoSource && !sys.isScreenLink(g))
+    readonly property bool pipewireScreenCaptured: activeLinkGroups.some(g => sys.isScreenLink(g))
+    property var screenSessions: ({})
+    readonly property bool screenCaptureActive: pipewireScreenCaptured || Object.values(screenSessions).some(count => count > 0)
     property bool screenCaptured: false
+
+    function isScreenLink(group) {
+        return group.source.ready && group.target.ready && group.source.type === PwNodeType.VideoSource
+            && (group.target.properties["media.role"] === "Screen"
+                || group.source.properties["node.name"] === "xdg-desktop-portal-hyprland");
+    }
+
+    function updateScreenSession(data) {
+        const separator = data.indexOf(",");
+        const state = data.slice(0, separator);
+        if (separator < 0 || (state !== "0" && state !== "1"))
+            return;
+        const key = data.slice(separator + 1);
+        const sessions = Object.assign({}, sys.screenSessions);
+        const count = Math.max(0, (sessions[key] || 0) + (state === "1" ? 1 : -1));
+        if (count > 0)
+            sessions[key] = count;
+        else
+            delete sessions[key];
+        sys.screenSessions = sessions;
+    }
+
+    onScreenCaptureActiveChanged: {
+        if (sys.screenCaptureActive) {
+            screenCaptureRelease.stop();
+            sys.screenCaptured = true;
+        } else {
+            screenCaptureRelease.restart();
+        }
+    }
+
+    // O Hyprland emite parada após 500 ms sem quadros, mesmo com a sessão aberta.
+    Timer {
+        id: screenCaptureRelease
+        interval: 1000
+        onTriggered: sys.screenCaptured = sys.screenCaptureActive
+    }
 
     function setVolume(pct) {
         if (sink && sink.audio)
@@ -397,7 +442,7 @@ Item {
             if (event.name === "activelayout" || event.name === "configreloaded")
                 keyboardSettle.restart();
             else if (event.name === "screencast")
-                sys.screenCaptured = event.data.startsWith("1");
+                sys.updateScreenSession(event.data);
         }
     }
 
