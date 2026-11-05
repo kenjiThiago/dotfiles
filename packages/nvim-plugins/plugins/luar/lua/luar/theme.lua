@@ -76,6 +76,8 @@ function M.setup()
         FloatBorder = { fg = palette.highlight_high, bg = palette.surface },
         FloatTitle = { fg = palette.accent, bg = palette.surface, bold = true },
         YankHighlight = { fg = palette.base, bg = palette.accent },
+        CmdwinPrefix = { fg = palette.subtle },
+        CmdwinPrefixCurrent = { fg = palette.text, bold = true },
 
         SpellBad = { sp = palette.error, undercurl = true },
         SpellCap = { sp = palette.warning, undercurl = true },

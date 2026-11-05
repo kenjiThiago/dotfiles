@@ -248,3 +248,10 @@ vim.api.nvim_create_autocmd("CmdwinEnter", {
         })
     end,
 })
+
+vim.api.nvim_create_autocmd("CmdwinEnter", {
+    callback = function()
+        vim.wo.statuscolumn = "%{%v:lnum == line('.') ? '%#CmdwinPrefixCurrent#' : '%#CmdwinPrefix#'%}"
+            .. vim.fn.getcmdwintype()
+    end,
+})
