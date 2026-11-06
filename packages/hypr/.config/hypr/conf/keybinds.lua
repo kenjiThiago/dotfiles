@@ -122,6 +122,8 @@ local MIN_ZOOM = 1
 local ZOOM_TOGGLE_FACTOR = 1.5
 local ZOOM_STEP = 0.1
 local ZOOM_SCROLL_STEP = 0.2
+local zoomMouse = require("conf.input")
+local zoomSensitivity
 
 ---@param offset number
 ---@return nil
@@ -136,7 +138,19 @@ local function zoom(offset)
     end
     current = math.floor(current / ZOOM_STEP + 0.5) * ZOOM_STEP
     current = math.max(MIN_ZOOM, math.min(MAX_ZOOM, current))
-    hl.config({ cursor = { zoom_factor = current } })
+    zoomSensitivity = zoomSensitivity or hl.get_config("input.sensitivity")
+    local reduction = 0.3 * math.log(current) / math.log(2)
+    hl.config({
+        cursor = { zoom_factor = current },
+        input = { sensitivity = math.max(-1, zoomSensitivity - reduction) },
+    })
+    hl.device({
+        name = zoomMouse.name,
+        sensitivity = math.max(-1, zoomMouse.sensitivity - reduction),
+    })
+    if current == MIN_ZOOM then
+        zoomSensitivity = nil
+    end
 end
 
 hl.bind(mainMod .. "+ Z", zoom)

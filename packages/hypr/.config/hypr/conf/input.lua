@@ -28,7 +28,11 @@ hl.gesture({
     action = "workspace"
 })
 
-hl.device({
+local mouse = {
     name        = "epic-mouse-v1",
     sensitivity = -0.5,
-})
+}
+
+hl.device(mouse)
+
+return mouse
