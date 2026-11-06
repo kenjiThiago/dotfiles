@@ -405,6 +405,7 @@ Nos templates, cada chave tem quatro formas:
 | hyprland | `~/.config/hypr/conf/colors.lua` | `require("conf.colors")` em `appearance.lua` |
 | hyprlock | `~/.config/hypr/conf/colors.conf` | `source =` no topo do `hyprlock.conf` |
 | hyprpaper | `~/.config/hypr/hyprpaper.conf` | arquivo inteiro (vem do `wallpaper=` do tema) |
+| hyprtoolkit | `~/.config/hypr/hyprtoolkit.conf` | paleta, fontes e ícones do seletor de compartilhamento e demais apps do toolkit |
 | waybar | `~/.config/waybar/colors.css` | `@import` no `style.css` |
 | rofi | `~/.config/rofi/themes/colors.rasi` | `@import` no `center.rasi` |
 | quickshell | `~/.config/quickshell/modules/Theme.qml` | singleton `Theme` |
@@ -434,6 +435,13 @@ consome o `theme.lua` por dois caminhos: `plugins/colors.lua` no modo completo e
 
 O Zen é o único que não passa pelo `manifest`: o diretório do perfil tem nome
 sorteado, então quem escolhe o destino é o `apply_zen` do `theme`.
+
+O seletor de compartilhamento do portal usa hyprtoolkit e tem configuração
+própria, independente do Qt/GTK. O `theme reload` gera sua paleta com fundos
+neutros, seleção em `accent` e as mesmas fontes e ícones do Qt. Feche o
+seletor e abra uma nova solicitação de compartilhamento para conferir.
+Essa configuração também vale para os demais aplicativos do hyprtoolkit;
+o layout do seletor é definido pelo programa.
 
 ### Criando um tema novo
 

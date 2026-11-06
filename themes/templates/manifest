@@ -6,6 +6,7 @@
 hypr-colors.lua.in        ~/.config/hypr/conf/colors.lua              desktop
 hypr-colors.conf.in       ~/.config/hypr/conf/colors.conf             desktop
 hyprpaper.conf.in         ~/.config/hypr/hyprpaper.conf               desktop
+hyprtoolkit.conf.in       ~/.config/hypr/hyprtoolkit.conf             desktop
 waybar-colors.css.in      ~/.config/waybar/colors.css                 desktop
 rofi-colors.rasi.in       ~/.config/rofi/themes/colors.rasi           desktop
 quickshell-Theme.qml.in   ~/.config/quickshell/modules/Theme.qml      desktop

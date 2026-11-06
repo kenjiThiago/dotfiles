@@ -1,0 +1,15 @@
+# ARQUIVO GERADO POR `theme set {{theme}}` — NÃO EDITE.
+# Fonte: themes/templates/hyprtoolkit.conf.in
+
+background = {{base:argb}}
+base = {{surface:argb}}
+alternate_base = {{overlay:argb}}
+text = {{text:argb}}
+bright_text = {{text:argb}}
+link_text = {{info:argb}}
+accent = {{accent:argb}}
+accent_secondary = {{accent_alt:argb}}
+
+font_family = Noto Sans
+font_family_monospace = Noto Sans Mono
+icon_theme = {{qt_icon_theme}}
