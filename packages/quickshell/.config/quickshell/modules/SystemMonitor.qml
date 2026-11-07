@@ -58,7 +58,7 @@ Item {
     property color ppColor: {
         switch (PowerProfiles.profile) {
         case PowerProfile.Performance:
-            return Theme.yellow;
+            return Theme.brand;
         case PowerProfile.PowerSaver:
             return Theme.green;
         default:

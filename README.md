@@ -262,7 +262,7 @@ tema. Os nomes são genéricos de propósito — o "yellow" do Rosé Pine é o g
 | realces | `highlight_low` `highlight_med` `highlight_high` |
 | texto | `text` `subtle` `muted` |
 | ANSI | `black` `red` `green` `yellow` `blue` `magenta` `cyan` `white` (+ `bright_*`, que caem no normal se não forem definidos) |
-| papéis | `accent` `accent_alt` `success` `warning` `error` `info` `match` (trecho que casou com a busca; cai em `info` se não for definido) `brand` `brand_alt` (identidade: borda do Hyprland, hyprlock, logo e gradientes do Zen, sessão do tmux e caixa de processos do btop; caem no `accent` e no `accent_alt`) |
+| papéis | `accent` `accent_alt` `success` `warning` `error` `info` `match` (trecho que casou com a busca; cai em `info` se não for definido) `brand` `brand_alt` (identidade: relógio e perfil Desempenho do Quickshell, indicador de grupo travado do Hyprland, logo e gradientes do Zen, sessão do tmux e caixa de processos do btop; caem no `accent` e no `accent_alt`) |
 | sintaxe | `syn_comment` `syn_string` `syn_escape` `syn_constant` `syn_keyword` `syn_operator` `syn_type` `syn_function` `syn_variable` `syn_parameter` `syn_tag` `syn_attribute` |
 
 As cores básicas também podem identificar controles: no Quickshell, o volume
@@ -465,6 +465,17 @@ for um `#rrggbb`.
 
 ## Detalhes
 
+- **Hierarquia de cores**: contornos estruturais usam neutros; foco e seleção
+  usam `accent`, e a identidade fica em detalhes como o relógio, o nome da
+  sessão do tmux e o gradiente suavizado da aba selecionada do Zen. No Hyprland,
+  o foco se distingue pela borda `muted`, contra `overlay` nas inativas.
+  Grupos têm uma faixa superior segmentada de 3 px, sem títulos: o segmento
+  ativo usa `accent`, ou `brand` quando travado (`brand_alt` se `brand` e
+  `accent` coincidirem). No btop, as caixas preservam
+  as cores por categoria e a seleção usa texto neutro para manter o contraste.
+  No tmux, a borda ativa usa `accent`, com exceções de cor para modo de cópia
+  e painéis sincronizados. Os ícones da barra do Zen também usam `accent`.
+
 - **Zoom do Hyprland**: `Super+Z` alterna entre 1× e 1,5×; quando já há
   ampliação, volta para 1×. `Super+Shift+=` e `Super+-` ajustam em passos de
   0,1× e repetem enquanto a tecla estiver pressionada. `Super+Ctrl+roda`
@@ -496,7 +507,7 @@ for um `#rrggbb`.
   dois segundos. Os limites de temperatura são referências visuais, não
   limites de segurança do hardware; o sensor usado é `thermal_zone0`.
   O ícone de temperatura acompanha o mesmo nível e a mesma margem de retorno
-  do valor exibido na central. O perfil Desempenho usa `yellow` como
+  do valor exibido na central. O perfil Desempenho usa `brand` como
   identificação visual, sem depender da cor de aviso.
 - **quickshell e o systray**: os ícones da barra são glifos de Nerd Font e
   trocam de cor na recarga, como o resto. Os do systray e os das notificações

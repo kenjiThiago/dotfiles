@@ -7,14 +7,16 @@
   :root {
     --accent: var(--dots-accent);
     --accent-hover: var(--dots-accent-alt);
-    --brand-gradient: linear-gradient(115deg, var(--dots-brand), var(--dots-brand-alt));
+    --brand-gradient: linear-gradient(115deg,
+      color-mix(in srgb, var(--dots-brand) 30%, var(--dots-muted)),
+      color-mix(in srgb, var(--dots-brand-alt) 30%, var(--dots-muted)));
 
     --zen-colors-primary: var(--dots-base) !important;
     --zen-primary-color: var(--accent) !important;
     --zen-colors-secondary: var(--dots-surface) !important;
     --zen-colors-tertiary: var(--dots-surface) !important;
     --zen-main-browser-background-toolbar: var(--dots-base) !important;
-    --zen-colors-border: var(--accent) !important;
+    --zen-colors-border: var(--dots-highlight-med) !important;
     --toolbarbutton-icon-fill: var(--accent) !important;
     --lwt-text-color: var(--dots-text) !important;
     --toolbar-field-color: var(--dots-text) !important;
@@ -124,13 +126,13 @@
 
   /* O id sumiu do browser.xhtml; o elemento é a classe .urlbar-background. */
   .urlbar-background {
-    border: 2px solid transparent !important;
-    background: linear-gradient(var(--dots-surface), var(--dots-surface)) padding-box,
-      var(--brand-gradient) border-box !important;
+    border: 1px solid var(--dots-highlight-med) !important;
+    outline: none !important;
+    background: var(--dots-surface) !important;
   }
 
-  #urlbar[open] .urlbar-background {
-    background-color: var(--dots-surface) !important;
+  #urlbar[focused] .urlbar-background {
+    border-color: var(--accent) !important;
   }
 
   #urlbar[open] #urlbar-results {

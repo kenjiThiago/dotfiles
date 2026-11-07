@@ -6,7 +6,7 @@ theme[title]="{{subtle}}"
 theme[hi_fg]="{{text}}"
 
 theme[selected_bg]="{{highlight_high}}"
-theme[selected_fg]="{{yellow}}"
+theme[selected_fg]="{{text}}"
 theme[inactive_fg]="{{highlight_med}}"
 
 theme[graph_text]="{{blue}}"

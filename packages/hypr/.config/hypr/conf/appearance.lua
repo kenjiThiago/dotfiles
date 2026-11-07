@@ -36,8 +36,8 @@ hl.config({
         border_size = 2,
 
         col = {
-            active_border = { colors = { M.brand, M.brandAlt }, angle = 115 },
-            inactive_border = M.muted,
+            active_border = M.muted,
+            inactive_border = M.overlay,
         },
 
         resize_on_border = false,
@@ -76,17 +76,27 @@ hl.config({
 
     group = {
         col = {
-            border_active = { colors = { M.green, M.yellow }, angle = 115 },
-            border_inactive = M.muted,
-
-            -- O travado se distingue pela forma (sólido em vez de gradiente), e não pelo
-            -- matiz, que colidiria com o foco em algum tema.
-            border_locked_active = M.red,
-            border_locked_inactive = (M.red:gsub("^0x%x%x", "0x66")),
+            border_active = M.muted,
+            border_inactive = M.overlay,
+            border_locked_active = M.muted,
+            border_locked_inactive = M.overlay,
         },
 
         groupbar = {
-            enabled = false,
+            enabled = true,
+            render_titles = false,
+            height = 1,
+            indicator_height = 3,
+            gradients = false,
+            gaps_in = 3,
+            gaps_out = 2,
+            keep_upper_gap = false,
+            col = {
+                active = M.accent,
+                inactive = M.highlightMed,
+                locked_active = M.brand == M.accent and M.brandAlt or M.brand,
+                locked_inactive = M.muted,
+            },
         }
     },
 
