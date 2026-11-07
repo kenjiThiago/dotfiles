@@ -82,7 +82,7 @@ Item {
                         Repeater {
                             model: ["", "", ""]
 
-                            delegate: Row {
+                            delegate: RowLayout {
                                 id: stat
 
                                 required property int index
@@ -93,18 +93,20 @@ Item {
                                 spacing: 4
 
                                 Text {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.preferredWidth: 14
                                     color: Theme.subtle
                                     font.family: "Hack Nerd Font"
                                     font.pixelSize: 14
                                     text: stat.modelData
-                                    width: 14
                                 }
                                 Text {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.preferredWidth: stat.index === 2 ? 38 : 32
                                     color: stat.alert === 2 ? Theme.error : (stat.alert === 1 ? Theme.warning : Theme.text)
                                     font.family: "Hack Nerd Font"
                                     font.pixelSize: 12
                                     text: stat.index === 0 ? SystemMonitor.cpuPct + "%" : (stat.index === 1 ? SystemMonitor.ramPct + "%" : SystemMonitor.tempC + "°C")
-                                    width: stat.index === 2 ? 38 : 32
                                 }
                             }
                         }
@@ -142,16 +144,18 @@ Item {
                         font.pixelSize: 12
                         text: "Energia"
                     }
-                    Row {
+                    RowLayout {
                         spacing: 8
 
                         Text {
+                            Layout.alignment: Qt.AlignVCenter
                             color: SystemMonitor.ppColor
                             font.family: "Hack Nerd Font"
                             font.pixelSize: 15
                             text: SystemMonitor.ppIcon
                         }
                         Text {
+                            Layout.alignment: Qt.AlignVCenter
                             color: Theme.text
                             font.family: "Hack Nerd Font"
                             font.pixelSize: 12
