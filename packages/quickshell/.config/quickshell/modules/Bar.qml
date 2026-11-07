@@ -9,6 +9,7 @@ Scope {
     id: root
 
     property int islandState: 0
+    property bool hidden: false
     property bool calendarExpanded: false
     property bool grabAlive: true
 
@@ -82,6 +83,12 @@ Scope {
         function center(): void {
             root.toggleIsland(2);
         }
+
+        function toggle(): void {
+            root.closeIsland();
+            root.expectingMenu = false;
+            root.hidden = !root.hidden;
+        }
     }
 
     Connections {
@@ -101,26 +108,22 @@ Scope {
     Variants {
         model: Quickshell.screens
 
-        PanelWindow {
-            required property var modelData
-            screen: modelData
-            anchors {
-                top: true
-                left: true
-                right: true
-            }
-            color: "transparent"
-            implicitHeight: 40
-            exclusiveZone: 40
-        }
-    }
-
-    Variants {
-        model: Quickshell.screens
-
         Scope {
             id: screenScope
             required property var modelData
+
+            PanelWindow {
+                screen: screenScope.modelData
+                anchors {
+                    top: true
+                    left: true
+                    right: true
+                }
+                color: "transparent"
+                implicitHeight: 40
+                exclusiveZone: 40
+                visible: !root.hidden || island.needsAttention
+            }
 
             // Escudo em U: cobre todos os lados exceto a ilha.
             PanelWindow {
@@ -256,8 +259,14 @@ Scope {
                     onPositionChanged: rearm()
                 }
 
+                Item {
+                    id: hiddenRegion
+                    width: 0
+                    height: 0
+                }
+
                 mask: Region {
-                    item: island
+                    item: island.visible ? island : hiddenRegion
                 }
 
                 HyprlandFocusGrab {
@@ -282,6 +291,7 @@ Scope {
                     id: island
                     islandState: root.islandState
                     hostWindow: islandWindow
+                    visible: !root.hidden || root.islandState > 0 || osdActive || needsAttention
 
                     onRequestState: function (newState) {
                         root.islandState = newState;

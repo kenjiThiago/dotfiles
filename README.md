@@ -509,6 +509,13 @@ for um `#rrggbb`.
   O ícone de temperatura acompanha o mesmo nível e a mesma margem de retorno
   do valor exibido na central. O perfil Desempenho usa `brand` como
   identificação visual, sem depender da cor de aviso.
+- **Quickshell — ocultar**: `Super+B` alterna a exibição da island e libera
+  os 40 px reservados no topo. `Super+D` abre a central e `Super+Shift+E`
+  abre o relógio mesmo no modo oculto; ao fechar, a island volta a se ocultar.
+  Volume e brilho aparecem temporariamente, e as notificações continuam
+  funcionando. Captura de tela, uso do microfone ou câmera, alerta de
+  temperatura e bateria baixa mantêm a island visível e o espaço reservado
+  enquanto o estado durar. O Quickshell inicia com a island visível.
 - **quickshell e o systray**: os ícones da barra são glifos de Nerd Font e
   trocam de cor na recarga, como o resto. Os do systray e os das notificações
   não: são imagens resolvidas pelo tema de ícones do Qt, que o Qt fixa uma vez,

@@ -113,6 +113,7 @@ Rectangle {
     readonly property bool showScreen: SystemMonitor.screenCaptured
     readonly property bool showMic: SystemMonitor.micInUse
     readonly property bool showCamera: SystemMonitor.cameraInUse
+    readonly property bool needsAttention: showScreen || showMic || showCamera || showTemp || showBatt
 
     // Medição fora da CAMADA 1: um positionador não refaz o layout enquanto está
     // invisível, e a largura congelaria ao esvaziar a linha.
