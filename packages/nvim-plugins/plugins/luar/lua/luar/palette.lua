@@ -11,8 +11,8 @@ local fallback = {
     subtle = "#908caa",
     text = "#e0def4",
 
-    comment = "#8b86a3",
-    type = "#908caa",
+    comment = "#918da3",
+    type = "#3e8fb0",
     string = "#ea9a97",
     escape = "#c4a7e7",
     constant = "#c4a7e7",

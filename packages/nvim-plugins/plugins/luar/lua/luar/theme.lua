@@ -234,6 +234,7 @@ function M.setup()
         ["@function.method"] = { link = "Function" },
         ["@function.method.call"] = { fg = palette.func },
         ["@constructor"] = { fg = palette.type },
+        ["@constructor.lua"] = { link = "@punctuation.bracket" },
         ["@operator"] = { fg = palette.operator },
         ["@keyword"] = { link = "Keyword" },
         ["@keyword.operator"] = styled(palette.keyword, "keyword"),
