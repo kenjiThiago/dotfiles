@@ -106,7 +106,7 @@ function M.setup()
         String = { fg = palette.string },
         Character = { fg = palette.string },
         Number = { fg = palette.constant },
-        Boolean = styled(palette.keyword, "keyword"),
+        Boolean = styled(palette.accent_alt, "keyword"),
         Float = { fg = palette.constant },
         Identifier = { fg = palette.variable },
         Function = { fg = palette.func },
