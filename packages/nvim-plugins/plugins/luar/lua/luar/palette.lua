@@ -13,6 +13,7 @@ local fallback = {
 
     comment = "#918da3",
     type = "#3e8fb0",
+    type_lavanda = "#9b93b6",
     string = "#ea9a97",
     escape = "#c4a7e7",
     constant = "#c4a7e7",
@@ -81,6 +82,13 @@ M.colors = {
     accent_alt = pick(pal, "accent_alt"),
     match = pick(pal, "match"),
 }
+
+local type_lavanda = pick(syn, "type_lavanda")
+if loaded and syn.type_lavanda == nil then
+    type_lavanda = M.colors.type
+end
+
+M.types = { pine = M.colors.type, lavanda = type_lavanda }
 
 -- `syn_*_style` ("bold", "italic" ou "") vira a tabela do nvim_set_hl.
 function M.style(role)

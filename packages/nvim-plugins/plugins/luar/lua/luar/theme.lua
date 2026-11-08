@@ -5,13 +5,18 @@ local palette = luar.colors
 
 local M = {}
 
-function M.setup()
+function M.setup(variant)
+    local type_color = luar.types[variant or "pine"]
+    if not type_color then
+        error("Variante do Luar inválida: " .. tostring(variant))
+    end
+    palette.type = type_color
     vim.cmd("hi clear")
     if vim.fn.exists("syntax_on") then
         vim.cmd("syntax reset")
     end
     vim.o.termguicolors = true
-    vim.g.colors_name = "luar"
+    vim.g.colors_name = variant and "luar-" .. variant or "luar"
 
     -- Os papéis estilizáveis no theme.sh trazem o atributo de lá.
     local function styled(color, role)

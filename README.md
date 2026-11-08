@@ -294,6 +294,23 @@ distribuição, com o dawn trocando a tinta das strings por medida de contraste 
 comentários no `themes/rose-pine-dawn/theme.sh`). A interface não sai da
 sintaxe: cursor, item selecionado e foco usam o `accent`, e a busca usa o `match`.
 
+No Moon, o Luar oferece duas variantes de sintaxe: `luar-pine` usa `syn_type`
+para os tipos e `luar-lavanda` usa `syn_type_lavanda`. Comentários, strings,
+booleanos e interface são compartilhados. `luar` continua como alias da Pine.
+Nos temas que não definem `syn_type_lavanda`, as duas usam a mesma cor de tipos.
+
+Para comparar na sessão do Neovim:
+
+```vim
+:colorscheme luar-pine
+:colorscheme luar-lavanda
+```
+
+Para escolher a variante padrão, altere `nvim_colorscheme` no `theme.sh` do
+tema, rode `theme reload` e reabra o Neovim. A troca por `:colorscheme` afeta
+apenas o editor; as prévias de código do Yazi e do Glow continuam usando
+`syn_type`.
+
 `gtk_theme` e `cursor_theme` são nomes de diretório em `/usr/share/themes`,
 `/usr/share/icons`, `~/.local/share/icons` e `~/.themes`. Vazios, o `theme` não
 escreve a chave correspondente no gsettings. É o nome do diretório mesmo, e não

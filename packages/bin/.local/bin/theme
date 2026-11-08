@@ -40,7 +40,7 @@ COLOR_KEYS=(
     bright_blue bright_magenta bright_cyan bright_white
     accent accent_alt success warning error info match brand brand_alt
     syn_comment syn_string syn_escape syn_constant syn_keyword syn_operator
-    syn_type syn_function syn_variable syn_parameter syn_tag syn_attribute
+    syn_type syn_type_lavanda syn_function syn_variable syn_parameter syn_tag syn_attribute
 )
 META_KEYS=(
     variant nvim_colorscheme zen_theme wallpaper gtk_theme cursor_theme
@@ -116,6 +116,7 @@ load_theme() {
     : "${syn_keyword:=$accent_alt}"
     : "${syn_operator:=$subtle}"
     : "${syn_type:=$success}"
+    : "${syn_type_lavanda:=$syn_type}"
     : "${syn_function:=$info}"
     : "${syn_variable:=$text}"
     : "${syn_parameter:=$subtle}"

@@ -44,6 +44,7 @@ return {
         keyword   = "{{syn_keyword}}",
         operator  = "{{syn_operator}}",
         type      = "{{syn_type}}",
+        type_lavanda = "{{syn_type_lavanda}}",
         func      = "{{syn_function}}",
         variable  = "{{syn_variable}}",
         parameter = "{{syn_parameter}}",
