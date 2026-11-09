@@ -67,10 +67,12 @@ Scope {
     // Repetir a tecla de um estado volta para 0. Fora do IpcHandler porque lá dentro
     // toda função vira comando do `qs ipc`.
     function toggleIsland(estado: int): void {
+        root.awaitingWindow = false;
+        windowWait.stop();
+        // O menu nativo precisa terminar de fechar antes de devolver o foco à ilha.
+        root.grabAlive = !root.expectingMenu;
         root.islandState = root.islandState === estado ? 0 : estado;
         root.calendarExpanded = false;
-        root.grabAlive = true;
-        root.awaitingWindow = false;
     }
 
     IpcHandler {

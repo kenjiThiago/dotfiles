@@ -16,6 +16,11 @@ Row {
 
     spacing: 10
 
+    onEnabledChanged: {
+        if (!enabled && menuAnchor.visible)
+            menuAnchor.close();
+    }
+
     // O display() não avisa quando o menu fecha; o anchor sim.
     QsMenuAnchor {
         id: menuAnchor
