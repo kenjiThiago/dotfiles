@@ -647,6 +647,14 @@ for um `#rrggbb`.
   atalhos usam o navegador nativo (ou netrw) e o `:Find`, respectivamente.
   As integrações com Yazi foram removidas; suas configurações antigas
   permanecem disponíveis no repositório.
+- **Resultados no Neovim**: nos modos completo (local/desktop) e mínimo
+  (server), `:grep` (`:gr`), `:vimgrep` e `:make` digitados na linha de comandos
+  abrem e focam o quickfix sem saltar para o primeiro resultado. Os equivalentes
+  `:lgrep`, `:lvimgrep` e `:lmake` usam a location list da janela. Sem resultados
+  válidos, a lista é fechada e aparece um aviso. `:Compile` segue a mesma regra;
+  `-l` escolhe a location list. Em scripts e chamadas Lua, use `:Grep`,
+  `:Vimgrep`, `:Make` ou seus equivalentes com prefixo `L` para esse fluxo.
+  O Telescope no modo completo e a navegação do LSP mantêm seus comportamentos.
 - **Formatação Lua**: o Conform usa StyLua, declarado em `packages.txt`.
   `<leader>f` formata manualmente e `:FormatToggle` alterna a formatação ao salvar.
 - **btop**: ele reescreve o `btop.conf` ao sair quando você muda alguma opção,

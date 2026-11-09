@@ -58,8 +58,7 @@ vim.keymap.set("n", "<leader>ps", function()
             return
         end
 
-        vim.cmd("silent grep! " .. vim.fn.fnameescape(padrao))
-        vim.cmd("copen")
+        vim.cmd("Grep " .. vim.fn.fnameescape(padrao))
     end)
 end, { desc = "Grep no projeto" })
 

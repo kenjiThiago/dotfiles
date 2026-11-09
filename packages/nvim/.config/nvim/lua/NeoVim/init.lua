@@ -6,6 +6,7 @@ require("NeoVim.custom.restart")
 require("NeoVim.custom.funcao")
 require("NeoVim.custom.align")
 require("NeoVim.custom.search")
+require("NeoVim.custom.quickfix")
 require("NeoVim.custom.find")
 require("NeoVim.custom.transpose")
 

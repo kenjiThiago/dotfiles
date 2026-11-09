@@ -131,7 +131,7 @@ vim.api.nvim_create_user_command("Compile", function(opts)
     local nome = vim.fn.expand("%:t")
     local extensao = vim.fn.expand("%:e")
 
-    local command = "make "
+    local command = "Make "
 
     if extensao == "c" or extensao == "cpp" then
         command = command .. vim.fn.expand("%:t:r")
@@ -141,7 +141,7 @@ vim.api.nvim_create_user_command("Compile", function(opts)
 
     for _, arg in ipairs(opts.fargs) do
         if arg == "-l" then
-            command = "l" .. command
+            command = "Lmake " .. command:sub(6)
         elseif arg:find("^-c") then
             local compiler = vim.split(arg, "-c=")[2]
             vim.cmd("compiler " .. compiler)
