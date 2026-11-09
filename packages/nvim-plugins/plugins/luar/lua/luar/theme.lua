@@ -6,7 +6,8 @@ local palette = luar.colors
 local M = {}
 
 function M.setup(variant)
-    local type_color = luar.types[variant or "pine"]
+    local name = variant or "eclipse"
+    local type_color = luar.types[name]
     if not type_color then
         error("Variante do Luar inválida: " .. tostring(variant))
     end
@@ -241,7 +242,7 @@ function M.setup(variant)
         ["@function.call"] = { fg = palette.func },
         ["@function.method"] = { link = "Function" },
         ["@function.method.call"] = { fg = palette.func },
-        ["@constructor"] = { fg = palette.type },
+        ["@constructor"] = { fg = name == "eclipse" and luar.types.aurora or palette.type },
         ["@constructor.lua"] = { link = "@punctuation.bracket" },
         ["@operator"] = { fg = palette.operator },
         ["@keyword"] = { link = "Keyword" },

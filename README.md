@@ -317,16 +317,18 @@ distribuição, com o dawn trocando a tinta das strings por medida de contraste 
 comentários no `themes/rose-pine-dawn/theme.sh`). A interface não sai da
 sintaxe: cursor, item selecionado e foco usam o `accent`, e a busca usa o `match`.
 
-No Moon, o Luar oferece duas variantes de sintaxe: `luar-pine` usa `syn_type`
-para os tipos e `luar-lavanda` usa `syn_type_lavanda`. Comentários, strings,
-booleanos e interface são compartilhados. `luar` continua como alias da Pine.
-Nos temas que não definem `syn_type_lavanda`, as duas usam a mesma cor de tipos.
+No Moon, o Luar oferece três variantes de sintaxe: `luar-aurora` usa `syn_type`
+para tipos e construtores; `luar-bruma` usa `syn_type_lavanda` nos dois;
+`luar-eclipse` usa tipos lavanda e construtores pine. Comentários, strings,
+booleanos e interface são compartilhados. `luar` usa Eclipse por padrão.
+Nos temas que não definem `syn_type_lavanda`, todas usam a mesma cor de tipos.
 
 Para comparar na sessão do Neovim:
 
 ```vim
-:colorscheme luar-pine
-:colorscheme luar-lavanda
+:colorscheme luar-aurora
+:colorscheme luar-bruma
+:colorscheme luar-eclipse
 ```
 
 Para escolher a variante padrão, altere `nvim_colorscheme` no `theme.sh` do

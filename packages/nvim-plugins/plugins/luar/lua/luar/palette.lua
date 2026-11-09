@@ -88,7 +88,7 @@ if loaded and syn.type_lavanda == nil then
     type_lavanda = M.colors.type
 end
 
-M.types = { pine = M.colors.type, lavanda = type_lavanda }
+M.types = { aurora = M.colors.type, bruma = type_lavanda, eclipse = type_lavanda }
 
 -- `syn_*_style` ("bold", "italic" ou "") vira a tabela do nvim_set_hl.
 function M.style(role)
