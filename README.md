@@ -536,6 +536,10 @@ for um `#rrggbb`.
   perfil de energia. No ícone de volume, o clique esquerdo alterna o mudo e
   o direito abre o mixer; as trilhas aceitam arrasto e scroll. Controles
   indisponíveis mostram “—” e a bateria só aparece quando detectada.
+  Captura de tela, microfone/câmera em uso e alertas de temperatura e bateria
+  permanecem visíveis nos três estados, inclusive durante o OSD de volume e
+  brilho. Na central, esse grupo aparece acima dos cards apenas quando ativo.
+  No estado 1, a bateria baixa mantém o ícone e o percentual na cor de erro.
   As notificações identificam o aplicativo e têm um botão de fechar;
   a expiração pausa enquanto o ponteiro está sobre o card ou seus botões.
   Os dois-pontos do relógio usam `brand` como detalhe de identidade; os

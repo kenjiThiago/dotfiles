@@ -35,6 +35,10 @@ Item {
         anchors.margins: 20
         spacing: 20
 
+        AttentionIndicators {
+            id: attentionIndicators
+            visible: count > 0
+        }
         Grid {
             id: statsGrid
 
@@ -244,8 +248,9 @@ Item {
             // O teto vem da altura fixa da central, não da altura da própria lista.
             maxListHeight: {
                 const sections = statsGrid.height + slidersSection.height + 2 * ccColumn.spacing;
+                const attention = attentionIndicators.visible ? attentionIndicators.height + ccColumn.spacing : 0;
                 const tray = traySection.visible ? traySection.height + ccColumn.spacing : 0;
-                return Math.max(0, ccColumn.height - sections - tray - notifList.headerHeight);
+                return Math.max(0, ccColumn.height - sections - attention - tray - notifList.headerHeight);
             }
             width: parent.width
         }

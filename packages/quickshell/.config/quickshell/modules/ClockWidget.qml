@@ -127,24 +127,6 @@ Rectangle {
             spacing: 8
 
             Text {
-                text: "󰹑"
-                font.family: "Hack Nerd Font"
-                font.pixelSize: 15
-                visible: island.showScreen
-            }
-            Text {
-                text: "󰍬"
-                font.family: "Hack Nerd Font"
-                font.pixelSize: 15
-                visible: island.showMic
-            }
-            Text {
-                text: "󰄀"
-                font.family: "Hack Nerd Font"
-                font.pixelSize: 15
-                visible: island.showCamera
-            }
-            Text {
                 text: "󰖂"
                 font.family: "Hack Nerd Font"
                 font.pixelSize: 15
@@ -175,18 +157,6 @@ Rectangle {
                 font.pixelSize: 15
                 visible: island.showBell
             }
-            Text {
-                text: "󰈸"
-                font.family: "Hack Nerd Font"
-                font.pixelSize: 15
-                visible: island.showTemp
-            }
-            Text {
-                text: "󰂃"
-                font.family: "Hack Nerd Font"
-                font.pixelSize: 15
-                visible: island.showBatt
-            }
         }
     }
 
@@ -200,8 +170,9 @@ Rectangle {
     // O alvo, não a largura já animada: valor em movimento faz o Behavior do
     // implicitWidth se re-mirar a cada quadro e arrastar a transição.
     readonly property real alertW: island.islandState === 0 && measureAlerts.implicitWidth > 0 ? measureAlerts.implicitWidth + 28 : 0
-    property real state0Width: island.clockS0W + 34 + island.wsW + island.alertW
-    property real state1Width: 64 + island.wsW + island.clockS1W + island.statusW
+    readonly property real attentionW: attentionIndicators.count > 0 ? attentionIndicators.width + 12 : 0
+    property real state0Width: island.clockS0W + 34 + island.wsW + island.alertW + island.attentionW
+    property real state1Width: 64 + island.wsW + island.clockS1W + island.statusW + island.attentionW
 
     // A altura do estado 2, que o ControlCenter também precisa saber: ele é quem
     // se mede por ela, e a ilha recorta o que passar.
@@ -209,7 +180,7 @@ Rectangle {
 
     implicitWidth: {
         if (island.osdActive)
-            return 290;
+            return 290 + island.attentionW;
         if (island.islandState === 0)
             return island.state0Width;
         if (island.islandState === 1)
@@ -291,6 +262,7 @@ Rectangle {
         Item {
             id: pillLayout
             anchors.centerIn: parent
+            anchors.horizontalCenterOffset: -island.attentionW / 2
             width: workspaceGroup.width + clockBtn.width + state0Alerts.width + state1Status.width + 2 * spacing
             height: parent.height
             property real spacing: island.islandState === 1 ? 16 : 0
@@ -463,45 +435,6 @@ Rectangle {
                     spacing: 8
 
                     Text {
-                        text: "󰹑"
-                        color: Theme.warning
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 15
-
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.verticalCenterOffset: -1
-
-                        visible: island.showScreen
-                    }
-
-                    Text {
-                        text: "󰍬"
-                        color: Theme.warning
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 15
-
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.verticalCenterOffset: -1
-
-                        visible: island.showMic
-                    }
-
-                    Text {
-                        text: "󰄀"
-                        color: Theme.warning
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 15
-
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.verticalCenterOffset: -1
-
-                        visible: island.showCamera
-                    }
-
-                    Text {
                         text: "󰖂"
                         color: Theme.green
                         font.family: "Hack Nerd Font"
@@ -566,33 +499,6 @@ Rectangle {
 
                         visible: island.showBell
                     }
-
-                    Text {
-                        text: "󰈸"
-                        color: SystemMonitor.tempAlert === 2 ? Theme.error : Theme.warning
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 15
-
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        anchors.verticalCenterOffset: -1
-
-                        visible: island.showTemp
-                    }
-
-                    Text {
-                        text: "󰂃"
-                        color: Theme.error
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 15
-
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.verticalCenterOffset: -1
-
-                        visible: island.showBatt
-                    }
                 }
             }
 
@@ -656,14 +562,14 @@ Rectangle {
                             anchors.verticalCenter: parent.verticalCenter
                             Text {
                                 text: SystemMonitor.battIcon
-                                color: SystemMonitor.isCharging ? Theme.success : Theme.text
+                                color: island.showBatt ? Theme.error : (SystemMonitor.isCharging ? Theme.success : Theme.text)
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 15
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                             Text {
                                 text: SystemMonitor.pct + "%"
-                                color: Theme.text
+                                color: island.showBatt ? Theme.error : Theme.text
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 12
                                 font.weight: Font.Bold
@@ -686,9 +592,18 @@ Rectangle {
         }
     }
 
+    AttentionIndicators {
+        id: attentionIndicators
+        anchors.right: parent.right
+        anchors.rightMargin: 14
+        anchors.verticalCenter: parent.verticalCenter
+        visible: count > 0 && island.islandState !== 2
+    }
+
     // Camada OSD: brilho e volume.
     RowLayout {
         anchors.centerIn: parent
+        anchors.horizontalCenterOffset: -island.attentionW / 2
         spacing: 12
         opacity: island.osdActive ? 1 : 0
         visible: opacity > 0

@@ -5,6 +5,7 @@ singleton Time 1.0 Time.qml
 singleton SystemMonitor 1.0 SystemMonitor.qml
 singleton Notifications 1.0 Notifications.qml
 
+AttentionIndicators 1.0 AttentionIndicators.qml
 Bar 1.0 Bar.qml
 CalendarWidget 1.0 CalendarWidget.qml
 ClockWidget 1.0 ClockWidget.qml
