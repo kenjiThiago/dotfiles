@@ -386,6 +386,7 @@ Item {
                 x: Math.max(0, Math.min(track.width - width, track.width * control.value / 100 - width / 2))
             }
             WheelHandler {
+                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
                 enabled: control.adjustable && control.available
 
                 onWheel: function (e) {

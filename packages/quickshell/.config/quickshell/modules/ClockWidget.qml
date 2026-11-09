@@ -557,6 +557,7 @@ Rectangle {
                                 id: volumeHover
                             }
                             WheelHandler {
+                                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
                                 enabled: volumeStatus.available
                                 onWheel: function (e) {
                                     if (e.angleDelta.y === 0)
