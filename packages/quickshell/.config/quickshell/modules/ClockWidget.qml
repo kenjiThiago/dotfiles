@@ -32,6 +32,8 @@ Rectangle {
     readonly property bool osdActive: island.activeMode !== "clock"
     readonly property bool osdIsVolume: island.activeMode === "volume"
     readonly property string clockMarkup: Time.timeString.replace(":", '<font color="' + Theme.brand + '">:</font>')
+    // O RGB de transparent é preto e escurece o fundo durante a interpolação.
+    readonly property color transparentSurface: Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0)
 
     onIslandStateChanged: {
         island.geometryDuration = island.previousState === 2 && island.islandState < 2 ? 300 : 240;
@@ -300,7 +302,7 @@ Rectangle {
                             width: isActive ? 36 : 24
                             height: 24
                             radius: 12
-                            color: isActive ? Theme.accent : (workspaceMouse.containsMouse ? Theme.surface : "transparent")
+                            color: isActive ? Theme.accent : (workspaceMouse.containsMouse ? Theme.surface : island.transparentSurface)
                             Behavior on width {
                                 NumberAnimation {
                                     duration: 200
@@ -309,7 +311,7 @@ Rectangle {
                             }
                             Behavior on color {
                                 ColorAnimation {
-                                    duration: 200
+                                    duration: 150
                                 }
                             }
                             Text {
@@ -349,7 +351,7 @@ Rectangle {
                 height: island.islandState === 1 ? 46 : 32
                 anchors.verticalCenter: parent.verticalCenter
                 radius: height / 2
-                color: clockMouse.pressed ? Theme.overlay : (clockMouse.containsMouse && island.islandState === 1 ? Theme.surface : "transparent")
+                color: clockMouse.pressed ? Theme.overlay : (clockMouse.containsMouse && island.islandState === 1 ? Theme.surface : island.transparentSurface)
 
                 Behavior on width {
                     NumberAnimation {
@@ -525,7 +527,7 @@ Rectangle {
                     height: 38
                     scale: Math.min(1, state1Status.width / width)
                     radius: 19
-                    color: statusMouse.pressed ? Theme.overlay : (statusMouse.containsMouse ? Theme.surface : "transparent")
+                    color: statusMouse.pressed ? Theme.overlay : (statusMouse.containsMouse ? Theme.surface : island.transparentSurface)
                     Behavior on color {
                         ColorAnimation {
                             duration: 150
@@ -570,7 +572,12 @@ Rectangle {
                                 width: 24
                                 height: 28
                                 radius: 6
-                                color: volumeIconMouse.pressed ? Theme.overlay : (volumeIconMouse.containsMouse ? Theme.surface : "transparent")
+                                color: volumeIconMouse.pressed ? Theme.overlay : (volumeIconMouse.containsMouse ? Theme.surface : island.transparentSurface)
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 150
+                                    }
+                                }
 
                                 Text {
                                     anchors.centerIn: parent
