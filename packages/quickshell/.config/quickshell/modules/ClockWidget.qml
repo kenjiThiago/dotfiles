@@ -176,7 +176,7 @@ Rectangle {
 
     // A altura do estado 2, que o ControlCenter também precisa saber: ele é quem
     // se mede por ela, e a ilha recorta o que passar.
-    readonly property int expandedHeight: 580
+    readonly property int expandedHeight: 632
 
     implicitWidth: {
         if (island.osdActive)

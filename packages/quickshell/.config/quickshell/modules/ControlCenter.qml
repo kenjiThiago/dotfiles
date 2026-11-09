@@ -35,6 +35,45 @@ Item {
         anchors.margins: 20
         spacing: 20
 
+        Rectangle {
+            id: calendarHeader
+
+            width: parent.width
+            height: 32
+            radius: 8
+            color: calendarMouse.pressed ? Theme.overlay : (calendarMouse.containsMouse ? Theme.surface : "transparent")
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 8
+                anchors.rightMargin: 8
+                spacing: 12
+
+                Text {
+                    Layout.fillWidth: true
+                    text: Time.dateString
+                    color: Theme.text
+                    font.family: "Hack Nerd Font"
+                    font.pixelSize: 13
+                }
+                Text {
+                    text: ""
+                    color: calendarMouse.containsMouse ? Theme.accent : Theme.subtle
+                    font.family: "Hack Nerd Font"
+                    font.pixelSize: 14
+                }
+            }
+            MouseArea {
+                id: calendarMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: function (m) {
+                    m.accepted = true;
+                    ccRoot.requestCalendar();
+                }
+            }
+        }
         AttentionIndicators {
             id: attentionIndicators
             visible: count > 0
@@ -247,7 +286,7 @@ Item {
 
             // O teto vem da altura fixa da central, não da altura da própria lista.
             maxListHeight: {
-                const sections = statsGrid.height + slidersSection.height + 2 * ccColumn.spacing;
+                const sections = calendarHeader.height + statsGrid.height + slidersSection.height + 3 * ccColumn.spacing;
                 const attention = attentionIndicators.visible ? attentionIndicators.height + ccColumn.spacing : 0;
                 const tray = traySection.visible ? traySection.height + ccColumn.spacing : 0;
                 return Math.max(0, ccColumn.height - sections - attention - tray - notifList.headerHeight);

@@ -533,7 +533,8 @@ for um `#rrggbb`.
   `[Install...]` do `profiles.ini`, que é o que o navegador abre de fato.
   Precisa reiniciar o navegador.
 - **Quickshell — central**: o card Sistema abre o btop e Energia alterna o
-  perfil de energia. No ícone de volume, o clique esquerdo alterna o mudo e
+  perfil de energia. A data no topo leva ao estado 1 com o calendário aberto.
+  No ícone de volume, o clique esquerdo alterna o mudo e
   o direito abre o mixer; as trilhas aceitam arrasto e scroll. Controles
   indisponíveis mostram “—” e a bateria só aparece quando detectada.
   Captura de tela, microfone/câmera em uso e alertas de temperatura e bateria
