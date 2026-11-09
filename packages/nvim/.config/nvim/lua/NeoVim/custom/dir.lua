@@ -49,21 +49,48 @@ local function tamanho(bytes)
     return bytes < 10 and string.format("%.1f%s", bytes, unidades[i]) or math.floor(bytes) .. unidades[i]
 end
 
-local function colunas(buf)
+local function por_data(dir)
+    return vim.iter(POR_DATA):any(function(alvo)
+        return dir == alvo or vim.startswith(dir, alvo .. "/")
+    end)
+end
+
+local function data_entrada(stat, ordenar_por_data)
+    local criacao = stat.birthtime and stat.birthtime.sec or 0
+    return ordenar_por_data and criacao > 0 and criacao or stat.mtime.sec
+end
+
+local function decorar(buf, stats)
+    vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
     vim.api.nvim_buf_clear_namespace(buf, ns_colunas, 0, -1)
-    if not detalhes then
-        return
-    end
     local dir = vim.api.nvim_buf_get_name(buf)
+    local ordenar_por_data = por_data(dir)
     for row, nome in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, true)) do
-        local stat = nome ~= "" and vim.uv.fs_lstat(caminho(dir, nome))
+        local path = nome ~= "" and caminho(dir, nome)
+        local stat = path and (stats and stats[nome] or vim.uv.fs_lstat(path))
         if stat then
-            local virt = destacar_permissoes(TIPOS[stat.type] or "?")
-            virt[#virt + 1] = { " " }
-            vim.list_extend(virt, destacar_permissoes(permissoes(stat.mode)))
-            local data = os.date("%b %d %H:%M", stat.mtime.sec)
-            virt[#virt + 1] = { string.format(" %5s %s ", tamanho(stat.size), data), "LineNr" }
-            vim.api.nvim_buf_set_extmark(buf, ns_colunas, row - 1, 0, { virt_text = virt, virt_text_pos = "inline" })
+            if stat.type == "link" then
+                vim.api.nvim_buf_set_extmark(buf, ns, row - 1, 0, {
+                    virt_text = { { "-> " .. (vim.uv.fs_readlink(path) or "?"), "Comment" } },
+                    virt_text_pos = "eol",
+                })
+            elseif stat.type == "file" and bit.band(stat.mode, EXECUCAO) ~= 0 then
+                vim.api.nvim_buf_set_extmark(buf, ns, row - 1, 0, { end_col = #nome, hl_group = "DiagnosticOk" })
+            end
+            if detalhes then
+                local virt = destacar_permissoes(TIPOS[stat.type] or "?")
+                virt[#virt + 1] = { " " }
+                vim.list_extend(virt, destacar_permissoes(permissoes(stat.mode)))
+                local data = os.date("%b %d %H:%M", data_entrada(stat, ordenar_por_data))
+                virt[#virt + 1] = { string.format(" %5s %s ", tamanho(stat.size), data), "LineNr" }
+                vim.api.nvim_buf_set_extmark(
+                    buf,
+                    ns_colunas,
+                    row - 1,
+                    0,
+                    { virt_text = virt, virt_text_pos = "inline" }
+                )
+            end
         end
     end
 end
@@ -75,8 +102,11 @@ local function recarregar(buf)
 end
 
 local function destino(input, dir)
-    local path = vim.fs.normalize(input)
-    return path:sub(1, 1) == "/" and path or vim.fs.normalize(vim.fs.joinpath(dir, path))
+    if input == "~" or input:sub(1, 2) == "~/" then
+        input = vim.env.HOME .. input:sub(2)
+    end
+    local path = vim.fs.normalize(input, { plain = true })
+    return path:sub(1, 1) == "/" and path or vim.fs.normalize(vim.fs.joinpath(dir, path), { plain = true })
 end
 
 local function renomear(mover)
@@ -86,17 +116,29 @@ local function renomear(mover)
     end
     local buf = vim.api.nvim_get_current_buf()
     local dir = vim.api.nvim_buf_get_name(buf)
+    local nome = vim.fs.basename(origem)
     vim.ui.input({
-        prompt = mover and "Mover para: " or "Renomear: ",
-        default = mover and dir .. "/" or origem,
-        completion = "file",
+        prompt = mover and ("Mover " .. nome .. " para a pasta: ") or "Novo nome: ",
+        default = mover and (dir:sub(-1) == "/" and dir or dir .. "/") or nome,
+        completion = mover and "dir" or nil,
     }, function(input)
         if not input or input == "" then
             return
         end
-        local alvo = destino(input, dir)
-        if mover and vim.fn.isdirectory(alvo) == 1 then
-            alvo = vim.fs.joinpath(alvo, vim.fs.basename(origem))
+        local alvo
+        if mover then
+            local pasta = destino(input, dir)
+            if vim.fn.isdirectory(pasta) == 0 then
+                vim.notify("A pasta de destino não existe: " .. pasta, vim.log.levels.ERROR)
+                return
+            end
+            alvo = vim.fs.joinpath(pasta, nome)
+        else
+            if input == "." or input == ".." or input:find("/", 1, true) then
+                vim.notify("Informe apenas o nome; use M para mover", vim.log.levels.WARN)
+                return
+            end
+            alvo = vim.fs.joinpath(dir, input)
         end
         if alvo == origem then
             return
@@ -172,12 +214,21 @@ realces()
 vim.api.nvim_create_autocmd("ColorScheme", { group = grupo, callback = realces })
 vim.keymap.set("n", "<leader>pv", "<Plug>(nvim-dir-up)", { desc = "Abrir o diretório do arquivo" })
 vim.keymap.set("n", "<leader>pr", function()
-    if ultimo_dir and vim.api.nvim_buf_is_valid(ultimo_dir) then
+    if ultimo_dir and vim.api.nvim_buf_is_valid(ultimo_dir) and vim.bo[ultimo_dir].filetype == "directory" then
         vim.cmd.buffer(ultimo_dir)
     else
         vim.cmd.edit(vim.fn.fnameescape(vim.fn.getcwd(0)))
     end
 end, { desc = "Voltar ao navegador de diretórios" })
+
+vim.api.nvim_create_autocmd({ "BufEnter", "FileType" }, {
+    group = grupo,
+    callback = function(args)
+        if vim.bo[args.buf].filetype == "directory" then
+            ultimo_dir = args.buf
+        end
+    end,
+})
 
 vim.api.nvim_create_autocmd("FileType", {
     group = grupo,
@@ -195,7 +246,7 @@ vim.api.nvim_create_autocmd("FileType", {
             detalhes = not detalhes
             for _, buf in ipairs(vim.api.nvim_list_bufs()) do
                 if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].filetype == "directory" then
-                    colunas(buf)
+                    decorar(buf)
                 end
             end
         end, "Alternar as colunas de detalhe")
@@ -211,7 +262,11 @@ vim.api.nvim_create_autocmd("FileType", {
         end, "Ir para a raiz do projeto")
         map("+", function()
             local dir = vim.api.nvim_buf_get_name(args.buf)
-            vim.ui.input({ prompt = "Criar diretório: ", default = dir .. "/", completion = "file" }, function(input)
+            vim.ui.input({
+                prompt = "Criar diretório: ",
+                default = dir:sub(-1) == "/" and dir or dir .. "/",
+                completion = "dir",
+            }, function(input)
                 if input and input ~= "" then
                     local ok, err = pcall(vim.fn.mkdir, destino(input, dir), "p")
                     if ok then
@@ -248,52 +303,22 @@ vim.api.nvim_create_autocmd("User", {
     group = grupo,
     pattern = "DirReadPost",
     callback = function(args)
-        ultimo_dir = args.buf
         local dir = vim.api.nvim_buf_get_name(args.buf)
-        local ordenar = vim.iter(POR_DATA):any(function(alvo)
-            return dir == alvo or vim.startswith(dir, alvo .. "/")
-        end)
-        if ordenar then
-            local nomes, datas = vim.api.nvim_buf_get_lines(args.buf, 0, -1, true), {}
+        local nomes = vim.api.nvim_buf_get_lines(args.buf, 0, -1, true)
+        local stats
+        if por_data(dir) then
+            stats = {}
+            local datas = {}
             for _, nome in ipairs(nomes) do
-                local stat = vim.uv.fs_stat(caminho(dir, nome))
-                datas[nome] = stat and (stat.birthtime.sec > 0 and stat.birthtime.sec or stat.mtime.sec) or 0
+                local stat = vim.uv.fs_lstat(caminho(dir, nome))
+                stats[nome] = stat
+                datas[nome] = stat and data_entrada(stat, true) or 0
             end
             table.sort(nomes, function(a, b)
                 return datas[a] == datas[b] and a < b or datas[a] > datas[b]
             end)
             vim.api.nvim_buf_set_lines(args.buf, 0, -1, true, nomes)
         end
-        colunas(args.buf)
-    end,
-})
-
-vim.api.nvim_set_decoration_provider(ns, {
-    on_win = function(_, _, buf)
-        return vim.bo[buf].filetype == "directory"
-    end,
-    on_line = function(_, _, buf, row)
-        local nome = vim.api.nvim_buf_get_lines(buf, row, row + 1, true)[1]
-        local stat = nome and nome ~= "" and vim.uv.fs_lstat(caminho(vim.api.nvim_buf_get_name(buf), nome))
-        if not stat then
-            return
-        end
-        if stat.type == "link" then
-            vim.api.nvim_buf_set_extmark(buf, ns, row, 0, {
-                virt_text = {
-                    { "-> " .. (vim.uv.fs_readlink(caminho(vim.api.nvim_buf_get_name(buf), nome)) or "?"), "Comment" },
-                },
-                virt_text_pos = "eol",
-                ephemeral = true,
-            })
-        elseif stat.type == "file" and bit.band(stat.mode, EXECUCAO) ~= 0 then
-            vim.api.nvim_buf_set_extmark(
-                buf,
-                ns,
-                row,
-                0,
-                { end_col = #nome, hl_group = "DiagnosticOk", ephemeral = true }
-            )
-        end
+        decorar(args.buf, stats)
     end,
 })

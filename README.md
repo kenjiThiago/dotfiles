@@ -211,15 +211,19 @@ no desktop, o Oil continua responsável pelos diretórios.
 
 No navegador nativo do servidor, `<leader>pv` e `-` abrem o diretório pai,
 e `<leader>pr` retorna ao último diretório visitado;
-`<C-b>` abre a entrada em split horizontal e `<C-s>` recarrega. `<leader>i`
+`<C-b>` abre a entrada em split horizontal e `<C-s>` recarrega a lista e os
+metadados. `<leader>i`
 alterna permissões, tamanho e data; links mostram o destino e executáveis
 recebem destaque. Downloads e Imagens usam os arquivos mais recentes primeiro,
-pela data de criação quando disponível ou pela modificação.
+pela data de criação quando disponível ou pela modificação. A coluna de data
+mostra o mesmo valor usado na ordenação; nas outras pastas, mostra a modificação.
 
 Os atalhos `_`, `gh` e `gd` levam à raiz do projeto, Home e Downloads. `+` cria
-pastas, `R` renomeia, `M` move e `d` apaga com confirmação. Renomear ou mover
-recusa destinos existentes. `gi` abre as imagens na ordem da listagem se o
-imv estiver instalado.
+pastas, `R` pede apenas o novo nome, `M` pede a pasta de destino com completação
+de diretórios e `d` apaga com confirmação. `M` mantém o nome do arquivo. Renomear
+ou mover recusa destinos existentes. Nomes com `$` são tratados literalmente;
+`~` e `~/` no início do destino de `M` ou `+` apontam para Home. `gi` abre as
+imagens na ordem da listagem se o imv estiver instalado.
 
 Nos dois modos, `<leader>pw` preenche `:edit` com o diretório do buffer atual,
 inclusive dentro do Oil, do navegador nativo e do netrw. No servidor,
