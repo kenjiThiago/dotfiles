@@ -544,6 +544,9 @@ for um `#rrggbb`.
   clique esquerdo alterna o mudo e direito abre o mixer. O percentual e o
   restante do bloco abrem a central. Enquanto o ponteiro estiver sobre o
   volume, seus ajustes não substituem o controle pelo OSD.
+  O sino também aparece no estado 1 quando há notificações não lidas ou DND
+  ativo, em um único indicador com contagem. Clicar nele abre a central;
+  abrir o estado 1 não marca as notificações como lidas.
   As notificações identificam o aplicativo e têm um botão de fechar;
   a expiração pausa enquanto o ponteiro está sobre o card ou seus botões.
   Os dois-pontos do relógio usam `brand` como detalhe de identidade; os

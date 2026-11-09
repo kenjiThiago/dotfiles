@@ -626,6 +626,14 @@ Rectangle {
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
+                        Text {
+                            text: island.bellText
+                            color: Notifications.dnd ? Theme.subtle : Theme.accent
+                            font.family: "Hack Nerd Font"
+                            font.pixelSize: 15
+                            anchors.verticalCenter: parent.verticalCenter
+                            visible: island.showBell
+                        }
                     }
                 }
             }
