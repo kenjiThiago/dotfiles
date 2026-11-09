@@ -36,6 +36,7 @@ function M.setup(variant)
         return "#" .. table.concat(channels)
     end
 
+    local line_nr = tint(palette.subtle, 0.65)
     local groups = {
         Normal = { fg = palette.text, bg = palette.base },
         NormalFloat = { fg = palette.text, bg = palette.surface },
@@ -46,7 +47,7 @@ function M.setup(variant)
         CursorLine = { bg = palette.surface },
         CursorColumn = { bg = palette.surface },
         CursorLineNr = { fg = palette.accent, bold = true },
-        LineNr = { fg = tint(palette.subtle, 0.65) },
+        LineNr = { fg = line_nr },
         SignColumn = { bg = palette.base },
         Directory = { fg = palette.func, bold = true },
         ErrorMsg = { fg = palette.error, bold = true },
@@ -74,8 +75,8 @@ function M.setup(variant)
         StatusLineNC = { fg = palette.comment, bg = palette.surface },
         WinBar = { fg = palette.text, bg = palette.surface, bold = true },
         WinBarNC = { fg = palette.comment, bg = palette.surface },
-        DirWinbar = { fg = palette.text, bg = palette.base },
-        DirWinbarPai = { fg = palette.subtle, bg = palette.base },
+        DirWinbar = { fg = palette.text, bg = palette.base, bold = false },
+        DirWinbarPai = { fg = line_nr, bg = palette.base, bold = false },
         DirWinbarAtual = { fg = palette.func, bg = palette.base, bold = true },
         QuickFixLine = { bg = palette.overlay },
         qfLineNr = { fg = palette.subtle },
@@ -244,6 +245,7 @@ function M.setup(variant)
         ["@function.method.call"] = { fg = palette.func },
         ["@constructor"] = { fg = name == "eclipse" and luar.types.aurora or palette.type },
         ["@constructor.lua"] = { link = "@punctuation.bracket" },
+        ["@constructor.python"] = { link = "String" },
         ["@operator"] = { fg = palette.operator },
         ["@keyword"] = { link = "Keyword" },
         ["@keyword.operator"] = styled(palette.keyword, "keyword"),
