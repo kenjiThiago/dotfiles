@@ -540,6 +540,10 @@ for um `#rrggbb`.
   permanecem visíveis nos três estados, inclusive durante o OSD de volume e
   brilho. Na central, esse grupo aparece acima dos cards apenas quando ativo.
   No estado 1, a bateria baixa mantém o ícone e o percentual na cor de erro.
+  Nesse estado, scroll sobre o volume ajusta de 5 em 5 pontos; no ícone,
+  clique esquerdo alterna o mudo e direito abre o mixer. O percentual e o
+  restante do bloco abrem a central. Enquanto o ponteiro estiver sobre o
+  volume, seus ajustes não substituem o controle pelo OSD.
   As notificações identificam o aplicativo e têm um botão de fechar;
   a expiração pausa enquanto o ponteiro está sobre o card ou seus botões.
   Os dois-pontos do relógio usam `brand` como detalhe de identidade; os

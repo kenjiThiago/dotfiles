@@ -48,7 +48,7 @@ Rectangle {
     readonly property color osdColor: island.osdIsVolume ? (SystemMonitor.isMuted ? Theme.error : Theme.blue) : Theme.yellow
 
     function showOsd(mode: string): void {
-        if (island.islandState === 2)
+        if (island.islandState === 2 || (mode === "volume" && island.islandState === 1 && volumeHover.hovered))
             return;
         island.activeMode = mode;
         resetTimer.restart();
@@ -532,22 +532,72 @@ Rectangle {
                         }
                     }
 
+                    MouseArea {
+                        id: statusMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: function (m) {
+                            m.accepted = true;
+                            island.requestState(2);
+                        }
+                    }
                     Row {
                         id: statusItems
                         anchors.centerIn: parent
                         spacing: 12
 
                         Row {
+                            id: volumeStatus
+                            readonly property bool available: SystemMonitor.sink !== null && SystemMonitor.sink.audio !== null
                             spacing: 6
                             anchors.verticalCenter: parent.verticalCenter
-                            Text {
-                                text: SystemMonitor.isMuted ? "󰝟" : "󰕾"
-                                color: Theme.subtle
-                                font.family: "Hack Nerd Font"
-                                font.pixelSize: 16
+
+                            HoverHandler {
+                                id: volumeHover
+                            }
+                            WheelHandler {
+                                enabled: volumeStatus.available
+                                onWheel: function (e) {
+                                    if (e.angleDelta.y === 0)
+                                        return;
+                                    e.accepted = true;
+                                    SystemMonitor.setVolume(SystemMonitor.volumePct + (e.angleDelta.y > 0 ? 5 : -5));
+                                }
+                            }
+                            Rectangle {
+                                width: 24
+                                height: 28
+                                radius: 6
+                                color: volumeIconMouse.pressed ? Theme.overlay : (volumeIconMouse.containsMouse ? Theme.surface : "transparent")
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: SystemMonitor.isMuted ? "󰝟" : "󰕾"
+                                    color: !volumeStatus.available ? Theme.muted : (SystemMonitor.isMuted ? Theme.error : (volumeIconMouse.containsMouse ? Theme.accent : Theme.subtle))
+                                    font.family: "Hack Nerd Font"
+                                    font.pixelSize: 16
+                                }
+                                MouseArea {
+                                    id: volumeIconMouse
+                                    anchors.fill: parent
+                                    enabled: volumeStatus.available
+                                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: function (m) {
+                                        m.accepted = true;
+                                        if (m.button === Qt.RightButton) {
+                                            SystemMonitor.openWiremix();
+                                            island.requestState(0);
+                                        } else {
+                                            SystemMonitor.toggleMute();
+                                        }
+                                    }
+                                }
                             }
                             Text {
-                                text: SystemMonitor.volumePct + "%"
+                                text: volumeStatus.available ? SystemMonitor.volumePct + "%" : "—"
                                 color: Theme.text
                                 font.family: "Hack Nerd Font"
                                 font.pixelSize: 12
@@ -575,16 +625,6 @@ Rectangle {
                                 font.weight: Font.Bold
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-                        }
-                    }
-                    MouseArea {
-                        id: statusMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: function (m) {
-                            m.accepted = true;
-                            island.requestState(2);
                         }
                     }
                 }
