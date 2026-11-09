@@ -31,28 +31,26 @@ if not pcall(vim.cmd.colorscheme, theme.colorscheme) then
     pcall(vim.cmd.colorscheme, "habamax")
 end
 
-vim.g.netrw_sizestyle = "H"
-vim.g.netrw_browse_split = 0
--- Sem isto o netrw vira o buffer alternado e o <M-i> volta para ele.
-vim.g.netrw_altfile = 1
+if #vim.api.nvim_get_runtime_file("lua/nvim/dir.lua", false) > 0 then
+    require("NeoVim.custom.dir")
+else
+    vim.g.netrw_sizestyle = "H"
+    vim.g.netrw_browse_split = 0
+    -- Sem isto o netrw vira o buffer alternado e o <M-i> volta para ele.
+    vim.g.netrw_altfile = 1
 
-vim.keymap.set("n", "<leader>pv", vim.cmd.Ex, { desc = "Abrir o diretório do arquivo" })
-vim.keymap.set("n", "<leader>pr", vim.cmd.Rex, { desc = "Voltar do netrw" })
+    vim.keymap.set("n", "<leader>pv", vim.cmd.Ex, { desc = "Abrir o diretório do arquivo" })
+    vim.keymap.set("n", "<leader>pr", vim.cmd.Rex, { desc = "Voltar do netrw" })
 
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "netrw",
-    callback = function()
-        vim.opt_local.cursorline = true
-        vim.opt_local.cursorlineopt = "line"
-    end,
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "netrw",
-    callback = function()
-        vim.opt_local.statuscolumn = ""
-    end,
-})
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = "netrw",
+        callback = function()
+            vim.opt_local.cursorline = true
+            vim.opt_local.cursorlineopt = "line"
+            vim.opt_local.statuscolumn = ""
+        end,
+    })
+end
 
 vim.keymap.set("n", "<leader>ps", function()
     vim.ui.input({ prompt = "Grep > " }, function(padrao)

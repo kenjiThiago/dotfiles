@@ -6,6 +6,7 @@ require("NeoVim.custom.restart")
 require("NeoVim.custom.funcao")
 require("NeoVim.custom.align")
 require("NeoVim.custom.search")
+require("NeoVim.custom.find")
 require("NeoVim.custom.transpose")
 
 -- Módulo privado e instável (já foi `vim._extui`): sem o pcall, um erro aqui
@@ -64,6 +65,7 @@ if require("NeoVim.profile").minimal then
     return
 end
 
+vim.g.loaded_nvim_dir_plugin = 1
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 

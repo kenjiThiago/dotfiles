@@ -255,3 +255,20 @@ vim.api.nvim_create_autocmd("CmdwinEnter", {
             .. vim.fn.getcmdwintype()
     end,
 })
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+    group = vim.api.nvim_create_augroup("AutoMkdir", { clear = true }),
+    callback = function(args)
+        if vim.bo[args.buf].buftype ~= "" or args.match:match("^%a[%w+.-]*://") then
+            return
+        end
+
+        local dir = vim.fn.fnamemodify(args.match, ":p:h")
+        if
+            vim.fn.isdirectory(dir) == 0
+            and vim.fn.confirm("Diretório inexistente: " .. dir .. "\nCriar?", "&Sim\n&Não", 1) == 1
+        then
+            vim.fn.mkdir(dir, "p")
+        end
+    end,
+})

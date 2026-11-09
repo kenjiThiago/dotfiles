@@ -172,8 +172,9 @@ O que muda de fato em cada perfil:
 **No neovim** o `lua/NeoVim/profile.lua` decide entre o modo completo e o
 mínimo. No mínimo o `init.lua` sai cedo, sem tocar em `vim.pack`, e quem assume
 é o `lua/NeoVim/server/`. Lá está o que no completo vem de plugin — LSP nativo
-de pyright e ruff, netrw no lugar do oil, o wildmenu da cmdline e os keymaps de
-marca, que fazem as vezes do harpoon. O núcleo (`set.lua`, `remap.lua`,
+de pyright e ruff, o navegador de diretórios nativo (ou netrw nas versões sem
+`nvim.dir`), o wildmenu da cmdline e os keymaps de marca, que fazem as vezes
+do harpoon. O núcleo (`set.lua`, `remap.lua`,
 `autocmd.lua`, `custom/statusline.lua`, `custom/align.lua`) é o mesmo arquivo
 nos dois, e o `nvim.undotree` também vale para os dois.
 
@@ -205,7 +206,25 @@ do Arch, então o `server/` testa antes de usar o que é recente. O piso é o
 **0.11**, de onde saem o `vim.lsp.config` e o `winborder`; abaixo disso a
 config sobe sem LSP. O autocompletar da cmdline (`wildtrigger()`, `pumborder`)
 e o `nvim.undotree` são do **0.12** e ficam de fora sozinhos quando não
-existem.
+existem. O navegador `nvim.dir` é detectado pelo módulo disponível no runtime;
+no desktop, o Oil continua responsável pelos diretórios.
+
+No navegador nativo do servidor, `<leader>pv` e `-` abrem o diretório pai,
+e `<leader>pr` retorna ao último diretório visitado;
+`<C-b>` abre a entrada em split horizontal e `<C-s>` recarrega. `<leader>i`
+alterna permissões, tamanho e data; links mostram o destino e executáveis
+recebem destaque. Downloads e Imagens usam os arquivos mais recentes primeiro,
+pela data de criação quando disponível ou pela modificação.
+
+Os atalhos `_`, `gh` e `gd` levam à raiz do projeto, Home e Downloads. `+` cria
+pastas, `R` renomeia, `M` move e `d` apaga com confirmação. Renomear ou mover
+recusa destinos existentes. `gi` abre as imagens na ordem da listagem se o
+imv estiver instalado.
+
+Nos dois modos, `<leader>pw` preenche `:edit` com o diretório do buffer atual,
+inclusive dentro do Oil, do navegador nativo e do netrw. No servidor,
+`<leader>fe` mantém o mesmo atalho usado na configuração anterior. Ao salvar
+um arquivo em uma pasta inexistente, o Neovim pergunta se deve criá-la.
 
 **Nos shells e no tmux** não há chave de perfil: cada ferramenta extra vem
 atrás de um teste. O `.bashrc` e o `.zshrc` usam o starship se ele existir e
@@ -607,9 +626,11 @@ for um `#rrggbb`.
   na mesma sessão, fora das janelas scratch, e seleciona seu painel. Se não
   houver Neovim, cria uma janela nova. O número da linha é opcional; caminhos
   com espaços, acentos e caracteres especiais são preservados.
-- **Navegação no Neovim**: `<leader>pv` abre o Oil e `<leader>pf` abre o picker
-  de arquivos do Telescope no modo completo. As integrações com Yazi foram
-  removidas; suas configurações antigas permanecem disponíveis no repositório.
+- **Navegação no Neovim**: no modo completo, `<leader>pv` abre o Oil e
+  `<leader>pf` abre o picker de arquivos do Telescope. No mínimo, os mesmos
+  atalhos usam o navegador nativo (ou netrw) e o `:Find`, respectivamente.
+  As integrações com Yazi foram removidas; suas configurações antigas
+  permanecem disponíveis no repositório.
 - **Formatação Lua**: o Conform usa StyLua, declarado em `packages.txt`.
   `<leader>f` formata manualmente e `:FormatToggle` alterna a formatação ao salvar.
 - **btop**: ele reescreve o `btop.conf` ao sair quando você muda alguma opção,
