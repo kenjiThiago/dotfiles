@@ -568,6 +568,17 @@ for um `#rrggbb`.
   funcionando. Captura de tela, uso do microfone ou câmera, alerta de
   temperatura e bateria baixa mantêm a island visível e o espaço reservado
   enquanto o estado durar. O Quickshell inicia com a island visível.
+- **Quickshell — gravação**: `Super+Shift+B` suspende as aparições automáticas
+  da island, inclusive os indicadores de captura, microfone, câmera e alertas,
+  os OSDs de volume e brilho e os popups de notificações. Também libera os
+  40 px do topo; ative antes de começar a gravação para evitar mover as janelas
+  durante o vídeo. O monitoramento continua e as notificações ficam no
+  histórico, respeitando o limite e o descarte habitual das transitórias.
+  Os popups já abertos saem da tela e não reaparecem ao desativar o modo.
+  `Super+D` e `Super+Shift+E` ainda abrem a island manualmente; ao fechar,
+  ela volta a ficar oculta. Repetir `Super+Shift+B` restaura a preferência
+  anterior de visibilidade; `Super+B` sai do modo e mostra a island.
+  O modo de gravação inicia desativado e não altera o “não perturbe”.
 - **quickshell e o systray**: os ícones da barra são glifos de Nerd Font e
   trocam de cor na recarga, como o resto. Os do systray e os das notificações
   não: são imagens resolvidas pelo tema de ícones do Qt, que o Qt fixa uma vez,

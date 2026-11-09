@@ -49,6 +49,7 @@ hl.bind(mainMod .. "+ SHIFT + A",
 hl.bind(mainMod .. "+ SHIFT + E", hl.dsp.exec_cmd("qs ipc call bar expand"))
 hl.bind(mainMod .. "+ D", hl.dsp.exec_cmd("qs ipc call bar center"))
 hl.bind(mainMod .. "+ B", hl.dsp.exec_cmd("qs ipc call bar toggle"))
+hl.bind(mainMod .. "+ SHIFT + B", hl.dsp.exec_cmd("qs ipc call bar recording"))
 hl.bind(mainMod .. "+ SHIFT + D", hl.dsp.exec_cmd("qs ipc call notifications toggle"))
 hl.bind(mainMod .. "+ PERIOD", hl.dsp.exec_cmd("uwsm app -- rofimoji --action copy"))
 hl.bind(mainMod .. "+ SHIFT + P", hl.dsp.exec_cmd("uwsm app -- rofi-rbw"))

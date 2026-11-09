@@ -19,6 +19,13 @@ Item {
     property int unreadCount: 0
 
     property bool dnd: false
+    property bool popupsSuppressed: false
+
+    onPopupsSuppressedChanged: {
+        if (root.popupsSuppressed)
+            while (popupQueue.count > 0)
+                root.expirePopup(popupQueue.get(0).notification);
+    }
 
     IpcHandler {
         target: "notifications"
@@ -222,7 +229,7 @@ Item {
                 return;
 
             // Sem popup não há o que expirar, e ela ficaria presa no histórico.
-            if (root.dnd && n.transient)
+            if ((root.dnd || root.popupsSuppressed) && n.transient)
                 return;
 
             // Sem isto a notificação é destruída assim que o sinal retorna.
@@ -233,7 +240,7 @@ Item {
             root.unreadCount = root.unreadIds.size;
 
             // O replaces_id pode reaproveitar o objeto, o que renderia dois cards.
-            if (!root.dnd) {
+            if (!root.dnd && !root.popupsSuppressed) {
                 if (root.popupIndex(n) < 0)
                     popupQueue.append({
                         notification: n

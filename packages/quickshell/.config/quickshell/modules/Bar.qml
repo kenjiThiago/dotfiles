@@ -10,8 +10,15 @@ Scope {
 
     property int islandState: 0
     property bool hidden: false
+    property bool recordingHidden: false
     property bool calendarExpanded: false
     property bool grabAlive: true
+
+    Binding {
+        target: Notifications
+        property: "popupsSuppressed"
+        value: root.recordingHidden
+    }
 
     // Derrubar o grab para o menu receber foco devolve o foco ao toplevel de
     // baixo e tira o ponteiro do menu, e os dois fechariam a ilha.
@@ -89,7 +96,14 @@ Scope {
         function toggle(): void {
             root.closeIsland();
             root.expectingMenu = false;
-            root.hidden = !root.hidden;
+            root.hidden = root.recordingHidden ? false : !root.hidden;
+            root.recordingHidden = false;
+        }
+
+        function recording(): void {
+            root.closeIsland();
+            root.expectingMenu = false;
+            root.recordingHidden = !root.recordingHidden;
         }
     }
 
@@ -124,7 +138,7 @@ Scope {
                 color: "transparent"
                 implicitHeight: 40
                 exclusiveZone: 40
-                visible: !root.hidden || island.needsAttention
+                visible: !root.recordingHidden && (!root.hidden || island.needsAttention)
             }
 
             // Escudo em U: cobre todos os lados exceto a ilha.
@@ -293,7 +307,8 @@ Scope {
                     id: island
                     islandState: root.islandState
                     hostWindow: islandWindow
-                    visible: !root.hidden || root.islandState > 0 || osdActive || needsAttention
+                    osdEnabled: !root.recordingHidden
+                    visible: root.islandState > 0 || (!root.recordingHidden && (!root.hidden || osdActive || needsAttention))
 
                     onRequestState: function (newState) {
                         root.islandState = newState;
@@ -390,7 +405,7 @@ Scope {
         color: "transparent"
         exclusionMode: ExclusionMode.Ignore
 
-        visible: Notifications.popupCount > 0
+        visible: !root.recordingHidden && Notifications.popupCount > 0
 
         implicitWidth: 400
 

@@ -10,6 +10,14 @@ Rectangle {
 
     property int islandState: 0
     property var hostWindow: null
+    property bool osdEnabled: true
+
+    onOsdEnabledChanged: {
+        if (!island.osdEnabled) {
+            island.activeMode = "clock";
+            resetTimer.stop();
+        }
+    }
 
     signal requestState(int newState)
     signal calendarRequested
@@ -50,7 +58,7 @@ Rectangle {
     readonly property color osdColor: island.osdIsVolume ? (SystemMonitor.isMuted ? Theme.error : Theme.blue) : Theme.yellow
 
     function showOsd(mode: string): void {
-        if (island.islandState === 2 || (mode === "volume" && island.islandState === 1 && volumeHover.hovered))
+        if (!island.osdEnabled || island.islandState === 2 || (mode === "volume" && island.islandState === 1 && volumeHover.hovered))
             return;
         island.activeMode = mode;
         resetTimer.restart();
