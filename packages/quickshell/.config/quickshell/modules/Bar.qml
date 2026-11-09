@@ -343,6 +343,7 @@ Scope {
 
                 CalendarWidget {
                     id: calWidget
+                    opened: root.calendarExpanded
                     anchors.horizontalCenter: parent.horizontalCenter
                     opacity: root.calendarExpanded ? 1 : 0
                     visible: opacity > 0

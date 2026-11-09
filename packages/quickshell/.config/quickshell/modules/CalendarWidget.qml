@@ -13,6 +13,15 @@ Rectangle {
     border.color: Theme.highlightMed
     border.width: 1
 
+    property bool opened: false
+    property string view: "days"
+    property int firstYear: 0
+
+    onOpenedChanged: {
+        if (opened)
+            goToToday();
+    }
+
     readonly property var today: Time.now
     property int currentMonth: today.getMonth()
     property int currentYear: today.getFullYear()
@@ -48,21 +57,30 @@ Rectangle {
         return days;
     }
 
-    function prevMonth() {
-        if (currentMonth === 0) {
-            currentMonth = 11;
-            currentYear--;
+    function goToToday() {
+        currentMonth = today.getMonth();
+        currentYear = today.getFullYear();
+        view = "days";
+    }
+
+    function navigate(direction) {
+        if (view === "years") {
+            firstYear += direction * 12;
+        } else if (view === "months") {
+            currentYear += direction;
         } else {
-            currentMonth--;
+            const month = currentMonth + direction;
+            currentYear += Math.floor(month / 12);
+            currentMonth = (month + 12) % 12;
         }
     }
 
-    function nextMonth() {
-        if (currentMonth === 11) {
-            currentMonth = 0;
-            currentYear++;
-        } else {
-            currentMonth++;
+    function showOverview() {
+        if (view === "days") {
+            view = "months";
+        } else if (view === "months") {
+            firstYear = Math.floor(currentYear / 12) * 12;
+            view = "years";
         }
     }
 
@@ -96,17 +114,33 @@ Rectangle {
                     cursorShape: Qt.PointingHandCursor
                     hoverEnabled: true
 
-                    onClicked: calRoot.prevMonth()
+                    onClicked: calRoot.navigate(-1)
                 }
             }
-            Text {
+            Rectangle {
                 Layout.fillWidth: true
-                color: Theme.text
-                font.family: "Hack Nerd Font"
-                font.pixelSize: 13
-                font.weight: Font.Bold
-                horizontalAlignment: Text.AlignHCenter
-                text: calRoot.monthNames[calRoot.currentMonth] + " " + calRoot.currentYear
+                implicitHeight: 32
+                radius: 8
+                color: titleMouse.pressed ? Theme.overlay : (titleMouse.containsMouse ? Theme.surface : "transparent")
+
+                Text {
+                    anchors.centerIn: parent
+                    color: titleMouse.containsMouse ? Theme.accent : Theme.text
+                    font.family: "Hack Nerd Font"
+                    font.pixelSize: 13
+                    font.weight: Font.Bold
+                    text: calRoot.view === "days" ? calRoot.monthNames[calRoot.currentMonth] + " " + calRoot.currentYear : calRoot.view === "months" ? calRoot.currentYear : calRoot.firstYear + " – " + (calRoot.firstYear + 11)
+                }
+                MouseArea {
+                    id: titleMouse
+
+                    anchors.fill: parent
+                    enabled: calRoot.view !== "years"
+                    cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
+
+                    onClicked: calRoot.showOverview()
+                }
             }
             Rectangle {
                 color: nextMouse.pressed ? Theme.overlay : (nextMouse.containsMouse ? Theme.surface : "transparent")
@@ -128,7 +162,7 @@ Rectangle {
                     cursorShape: Qt.PointingHandCursor
                     hoverEnabled: true
 
-                    onClicked: calRoot.nextMonth()
+                    onClicked: calRoot.navigate(1)
                 }
             }
         }
@@ -136,53 +170,114 @@ Rectangle {
             spacing: 8
             width: parent.width
 
-            Row {
-                spacing: 0
+            Item {
                 width: parent.width
+                height: daysContent.implicitHeight
 
-                Repeater {
-                    model: calRoot.dayNames
+                Column {
+                    id: daysContent
+                    width: parent.width
+                    spacing: 8
+                    visible: calRoot.view === "days"
 
-                    delegate: Text {
-                        required property string modelData
+                    Row {
+                        spacing: 0
+                        width: parent.width
 
-                        color: Theme.subtle
-                        font.family: "Hack Nerd Font"
-                        font.pixelSize: 12
-                        font.weight: Font.Bold
-                        horizontalAlignment: Text.AlignHCenter
-                        text: modelData
-                        width: parent.width / 7
+                        Repeater {
+                            model: calRoot.dayNames
+
+                            delegate: Text {
+                                required property string modelData
+
+                                color: Theme.subtle
+                                font.family: "Hack Nerd Font"
+                                font.pixelSize: 12
+                                font.weight: Font.Bold
+                                horizontalAlignment: Text.AlignHCenter
+                                text: modelData
+                                width: parent.width / 7
+                            }
+                        }
+                    }
+                    Grid {
+                        columnSpacing: 0
+                        columns: 7
+                        rowSpacing: 4
+                        width: parent.width
+
+                        Repeater {
+                            model: calRoot.gridDays
+
+                            delegate: Rectangle {
+                                id: dayCell
+
+                                readonly property bool isToday: modelData.isCurrentMonth && modelData.day === calRoot.today.getDate() && calRoot.currentMonth === calRoot.today.getMonth() && calRoot.currentYear === calRoot.today.getFullYear()
+                                required property var modelData
+
+                                color: dayCell.isToday ? Theme.accent : "transparent"
+                                height: 30
+                                radius: 8
+                                width: parent.width / 7
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    color: dayCell.isToday ? Theme.base : (dayCell.modelData.isCurrentMonth ? Theme.text : Theme.muted)
+                                    font.family: "Hack Nerd Font"
+                                    font.pixelSize: 13
+                                    font.weight: dayCell.isToday ? Font.Bold : Font.Normal
+                                    text: dayCell.modelData.day
+                                }
+                            }
+                        }
                     }
                 }
-            }
-            Grid {
-                columnSpacing: 0
-                columns: 7
-                rowSpacing: 4
-                width: parent.width
+                Grid {
+                    anchors.fill: parent
+                    columns: 3
+                    columnSpacing: 6
+                    rowSpacing: 6
+                    visible: calRoot.view !== "days"
 
-                Repeater {
-                    model: calRoot.gridDays
+                    Repeater {
+                        model: 12
 
-                    delegate: Rectangle {
-                        id: dayCell
+                        delegate: Rectangle {
+                            id: choiceCell
+                            required property int index
+                            readonly property int year: calRoot.firstYear + index
+                            readonly property bool selected: calRoot.view === "months" ? index === calRoot.currentMonth : year === calRoot.currentYear
 
-                        readonly property bool isToday: modelData.isCurrentMonth && modelData.day === calRoot.today.getDate() && calRoot.currentMonth === calRoot.today.getMonth() && calRoot.currentYear === calRoot.today.getFullYear()
-                        required property var modelData
+                            width: (parent.width - 12) / 3
+                            height: (parent.height - 18) / 4
+                            radius: 8
+                            color: choiceMouse.pressed ? Theme.overlay : (choiceMouse.containsMouse ? Theme.surface : "transparent")
+                            border.width: selected ? 1 : 0
+                            border.color: Theme.accent
 
-                        color: dayCell.isToday ? Theme.accent : "transparent"
-                        height: 30
-                        radius: 8
-                        width: parent.width / 7
+                            Text {
+                                anchors.centerIn: parent
+                                color: choiceCell.selected || choiceMouse.containsMouse ? Theme.accent : Theme.text
+                                font.family: "Hack Nerd Font"
+                                font.pixelSize: 12
+                                text: calRoot.view === "months" ? calRoot.monthNames[choiceCell.index].slice(0, 3) : choiceCell.year
+                            }
+                            MouseArea {
+                                id: choiceMouse
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                hoverEnabled: true
 
-                        Text {
-                            anchors.centerIn: parent
-                            color: dayCell.isToday ? Theme.base : (dayCell.modelData.isCurrentMonth ? Theme.text : Theme.muted)
-                            font.family: "Hack Nerd Font"
-                            font.pixelSize: 13
-                            font.weight: dayCell.isToday ? Font.Bold : Font.Normal
-                            text: dayCell.modelData.day
+                                onClicked: {
+                                    if (calRoot.view === "years") {
+                                        calRoot.currentYear = choiceCell.year;
+                                        calRoot.view = "months";
+                                    } else {
+                                        calRoot.currentMonth = choiceCell.index;
+                                        calRoot.view = "days";
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -216,10 +311,7 @@ Rectangle {
                         cursorShape: Qt.PointingHandCursor
                         hoverEnabled: true
 
-                        onClicked: {
-                            calRoot.currentMonth = calRoot.today.getMonth();
-                            calRoot.currentYear = calRoot.today.getFullYear();
-                        }
+                        onClicked: calRoot.goToToday()
                     }
                 }
             }
