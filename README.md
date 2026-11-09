@@ -88,6 +88,16 @@ dots link --profile server    # linka a lista de outro perfil
 dots link --dry               # simula
 ```
 
+`dots status` distingue links ausentes, destinos incorretos e links quebrados.
+Também procura links antigos que apontem para o repositório, mesmo quando o
+arquivo de origem já foi removido. A busca inclui os links diretamente em `~`
+e os diretórios usados pelos pacotes, como `~/.config/nvim` e `~/plugins/luar`,
+sem seguir symlinks de diretórios nem percorrer toda a home. Diretórios antigos
+que já não correspondem a nenhum pacote podem ficar fora dessa busca.
+O status só informa; use `dots link <pacote>` para arquivos novos e
+`dots relink <pacote>` depois de renomear ou remover arquivos. Destinos que
+sejam arquivos reais ou apontem para outro lugar precisam ser revisados antes.
+
 `--except` aceita lista separada por vírgula (`--except nvim,waybar`) e pode ser
 repetido. Vale para `link`, `unlink` e `relink`, e não combina com uma lista de
 pacotes — ou você diz quais quer, ou quais não quer. Os nomes são conferidos
