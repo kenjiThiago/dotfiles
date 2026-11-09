@@ -18,6 +18,7 @@ if [[ -n $alvo ]]; then
     arquivo_lua=$(printf '%s' "$arquivo" | od -An -v -tu1 |
         awk '{ for (i = 1; i <= NF; i++) printf "\\%03d", $i }')
     comando=":lua vim.fn.histdel('cmd', -1); vim.cmd('edit ${linha:++$linha }' .. vim.fn.fnameescape(\"$arquivo_lua\"))"
+    comando+="; vim.api.nvim_echo({{''}}, false, {})"
     tmux send-keys -t "$alvo" 'C-\' 'C-n' Escape Escape
     tmux send-keys -l -t "$alvo" "$comando"
     tmux send-keys -t "$alvo" Enter
