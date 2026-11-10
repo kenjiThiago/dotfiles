@@ -22,7 +22,7 @@ local function destacar_permissoes(texto)
     local trechos = {}
     for i = 1, #texto do
         local c = texto:sub(i, i)
-        trechos[#trechos + 1] = { c, c == "-" and "LineNr" or "Comment" }
+        trechos[#trechos + 1] = { c, c == "-" and "LineNr" or "DirectoryDetails" }
     end
     return trechos
 end
@@ -71,7 +71,7 @@ local function decorar(buf, stats)
         if stat then
             if stat.type == "link" then
                 vim.api.nvim_buf_set_extmark(buf, ns, row - 1, 0, {
-                    virt_text = { { "-> " .. (vim.uv.fs_readlink(path) or "?"), "Comment" } },
+                    virt_text = { { "-> " .. (vim.uv.fs_readlink(path) or "?"), "DirectoryDetails" } },
                     virt_text_pos = "eol",
                 })
             elseif stat.type == "file" and bit.band(stat.mode, EXECUCAO) ~= 0 then
@@ -206,6 +206,7 @@ function _G.DirWinbar()
 end
 
 local function realces()
+    vim.api.nvim_set_hl(0, "DirectoryDetails", { link = "Comment", default = true })
     vim.api.nvim_set_hl(0, "DirWinbar", { link = "Normal", default = true })
     vim.api.nvim_set_hl(0, "DirWinbarPai", { link = "LineNr", default = true })
     vim.api.nvim_set_hl(0, "DirWinbarAtual", { link = "Directory", default = true })

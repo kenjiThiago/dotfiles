@@ -6,12 +6,14 @@ local palette = luar.colors
 local M = {}
 
 function M.setup(variant)
-    local name = variant or "eclipse"
+    local name = variant or "crepusculo"
     local type_color = luar.types[name]
     if not type_color then
         error("Variante do Luar inválida: " .. tostring(variant))
     end
     palette.type = type_color
+    local comment_color = name == "crepusculo" and luar.comment_rose or palette.comment
+    local constructor_color = (name == "eclipse" or name == "crepusculo") and luar.types.aurora or type_color
     vim.cmd("hi clear")
     if vim.fn.exists("syntax_on") then
         vim.cmd("syntax reset")
@@ -50,6 +52,7 @@ function M.setup(variant)
         LineNr = { fg = line_nr },
         SignColumn = { bg = palette.base },
         Directory = { fg = palette.func, bold = true },
+        DirectoryDetails = { fg = palette.comment },
         ErrorMsg = { fg = palette.error, bold = true },
         WarningMsg = { fg = palette.warning, bold = true },
         MoreMsg = { fg = palette.func, bold = true },
@@ -110,7 +113,7 @@ function M.setup(variant)
 
         TrailingWhitespace = { bg = palette.error },
 
-        Comment = styled(palette.comment, "comment"),
+        Comment = styled(comment_color, "comment"),
         -- Queda de meia sintaxe legada (gitcommitFile, diffOnly...) quando não há tree-sitter.
         Constant = { fg = palette.constant },
         String = { fg = palette.string },
@@ -137,7 +140,7 @@ function M.setup(variant)
         Typedef = { fg = palette.type },
         Special = { fg = palette.text },
         SpecialChar = { fg = palette.constant },
-        SpecialComment = styled(palette.comment, "comment"),
+        SpecialComment = styled(comment_color, "comment"),
         Delimiter = { fg = palette.text },
         Underlined = { underline = true },
         Error = { fg = palette.error, bold = true },
@@ -243,9 +246,9 @@ function M.setup(variant)
         ["@function.call"] = { fg = palette.func },
         ["@function.method"] = { link = "Function" },
         ["@function.method.call"] = { fg = palette.func },
-        ["@constructor"] = { fg = name == "eclipse" and luar.types.aurora or palette.type },
+        ["@constructor"] = { fg = constructor_color },
         ["@constructor.lua"] = { link = "@punctuation.bracket" },
-        ["@constructor.python"] = { link = "String" },
+        ["@constructor.python"] = { link = "Function" },
         ["@operator"] = { fg = palette.operator },
         ["@keyword"] = { link = "Keyword" },
         ["@keyword.operator"] = styled(palette.keyword, "keyword"),
@@ -352,6 +355,8 @@ function M.setup(variant)
         TelescopePreviewTitle = { fg = palette.subtle, bg = palette.base },
         TelescopePromptPrefix = { fg = palette.accent_alt, bold = true },
         TelescopePromptCounter = { fg = palette.comment },
+        TelescopeResultsComment = { fg = palette.comment },
+        TelescopeResultsSpecialComment = { fg = palette.comment },
         -- Sem fg: valeria para a linha inteira e apagaria o TelescopeMatching.
         TelescopeSelection = { bg = palette.overlay, bold = true },
         TelescopeSelectionCaret = { fg = palette.accent, bg = palette.overlay },
@@ -372,6 +377,10 @@ function M.setup(variant)
         MiniIconsGrey = { fg = palette.comment },
 
         OilLink = { fg = palette.constant },
+        OilEmpty = { link = "DirectoryDetails" },
+        OilHidden = { link = "DirectoryDetails" },
+        OilLinkTarget = { link = "DirectoryDetails" },
+        OilTrashSourcePath = { link = "DirectoryDetails" },
 
         Pmenu = { fg = palette.text, bg = palette.surface },
         PmenuSel = { fg = palette.accent, bg = palette.overlay, bold = true },

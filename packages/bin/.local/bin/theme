@@ -39,7 +39,7 @@ COLOR_KEYS=(
     bright_black bright_red bright_green bright_yellow
     bright_blue bright_magenta bright_cyan bright_white
     accent accent_alt success warning error info match brand brand_alt
-    syn_comment syn_string syn_escape syn_constant syn_keyword syn_operator
+    syn_comment syn_comment_rose syn_string syn_escape syn_constant syn_keyword syn_operator
     syn_type syn_type_lavanda syn_function syn_variable syn_parameter syn_tag syn_attribute
 )
 META_KEYS=(
@@ -110,6 +110,7 @@ load_theme() {
     done
 
     : "${syn_comment:=$muted}"
+    : "${syn_comment_rose:=$syn_comment}"
     : "${syn_string:=$warning}"
     : "${syn_escape:=$accent_alt}"
     : "${syn_constant:=$accent}"

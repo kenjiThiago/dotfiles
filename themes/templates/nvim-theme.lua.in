@@ -38,6 +38,7 @@ return {
     -- Papéis de sintaxe, consumidos pelo luar.
     syn = {
         comment   = "{{syn_comment}}",
+        comment_rose = "{{syn_comment_rose}}",
         string    = "{{syn_string}}",
         escape    = "{{syn_escape}}",
         constant  = "{{syn_constant}}",

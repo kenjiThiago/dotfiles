@@ -5,10 +5,12 @@ end
 -- vim.pack.add({ gh("stevearc/oil.nvim") })
 vim.pack.add({ { src = gh("kenjiThiago/oil.nvim"), version = "fix/recursive-fs-open-dir-limit" } })
 
+vim.api.nvim_set_hl(0, "DirectoryDetails", { default = true, link = "Comment" })
+
 local function destacar_permissoes(texto)
     local trechos = {}
     for i = 1, #texto do
-        local grupo = texto:sub(i, i) == "-" and "LineNr" or "Comment"
+        local grupo = texto:sub(i, i) == "-" and "LineNr" or "DirectoryDetails"
         table.insert(trechos, { grupo, i - 1, i })
     end
     return trechos

@@ -12,6 +12,7 @@ local fallback = {
     text = "#e0def4",
 
     comment = "#918da3",
+    comment_rose = "#ea9a97",
     type = "#3e8fb0",
     type_lavanda = "#9b93b6",
     string = "#ea9a97",
@@ -88,7 +89,12 @@ if loaded and syn.type_lavanda == nil then
     type_lavanda = M.colors.type
 end
 
-M.types = { aurora = M.colors.type, bruma = type_lavanda, eclipse = type_lavanda }
+M.types = { aurora = M.colors.type, bruma = type_lavanda, eclipse = type_lavanda, crepusculo = type_lavanda }
+
+M.comment_rose = pick(syn, "comment_rose")
+if loaded and syn.comment_rose == nil then
+    M.comment_rose = M.colors.comment
+end
 
 -- `syn_*_style` ("bold", "italic" ou "") vira a tabela do nvim_set_hl.
 function M.style(role)
