@@ -332,7 +332,7 @@ para tipos e construtores; `luar-bruma` usa `syn_type_lavanda` nos dois;
 `luar-eclipse` usa tipos lavanda e construtores pine. `luar-crepusculo` usa
 a mesma combinação da Eclipse, com comentários em `syn_comment_rose`.
 Strings, booleanos e interface são compartilhados; detalhes auxiliares
-continuam neutros mesmo na Crepúsculo. `luar` usa Crepúsculo por padrão.
+continuam neutros mesmo na Crepúsculo. `luar` usa Eclipse por padrão.
 Em Python, os construtores usam o mesmo dourado das funções nas quatro variantes.
 Nos temas que não definem `syn_type_lavanda`, todas usam a mesma cor de tipos.
 
