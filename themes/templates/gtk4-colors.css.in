@@ -65,7 +65,6 @@
 
     --success-bg-color: {{success}};
     --success-fg-color: {{base}};
-    --success-color: {{success}};
 
     --warning-bg-color: {{warning}};
     --warning-fg-color: {{base}};

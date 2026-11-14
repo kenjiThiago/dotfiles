@@ -6,5 +6,6 @@ export LIBVA_DRIVER_NAME="iHD"
 export __GLX_VENDOR_LIBRARY_NAME="nvidia"
 
 export GTK_IM_MODULE="simple"
+export QT_QPA_PLATFORMTHEME="qt6ct"
 
 export PATH="$HOME/.local/bin:$PATH"

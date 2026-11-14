@@ -58,20 +58,20 @@ button, button.titlebutton, headerbar button, .linked > button {
     text-shadow: none;
     box-shadow: none;
 }
+button.flat { background-color: transparent; }
 button:hover { background-color: {{highlight_med}}; }
 button:active, button:checked {
     background-color: {{accent}};
     color: {{base}};
     border-color: {{accent}};
 }
+button.suggested-action { background-color: {{accent}}; color: {{base}}; border-color: {{accent}}; }
+button.destructive-action { background-color: {{error}}; color: {{base}}; border-color: {{error}}; }
 button:disabled {
     background-color: {{surface}};
     color: {{muted}};
     border-color: {{highlight_low}};
 }
-button.flat, button.flat:backdrop { background-image: none; background-color: transparent; }
-button.suggested-action { background-color: {{accent}}; color: {{base}}; border-color: {{accent}}; }
-button.destructive-action { background-color: {{error}}; color: {{base}}; border-color: {{error}}; }
 
 entry, spinbutton, searchbar entry, textview, textview text,
 treeview.view, .view, iconview, list, listbox, flowbox, columnview, gridview {
