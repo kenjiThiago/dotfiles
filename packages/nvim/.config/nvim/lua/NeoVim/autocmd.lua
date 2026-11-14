@@ -211,7 +211,11 @@ vim.api.nvim_create_autocmd("CmdwinEnter", {
                 local padrao = vim.api.nvim_get_current_line()
                 local ok, achou = pcall(vim.api.nvim_win_call, win, function()
                     vim.fn.winrestview(view)
-                    return padrao ~= "" and vim.fn.search(padrao, tipo == "?" and "b" or "") > 0
+                    if padrao ~= "" and vim.fn.search(padrao, tipo == "?" and "b" or "") > 0 then
+                        vim.cmd("normal! zz")
+                        return true
+                    end
+                    return false
                 end)
                 if ok and achou then
                     vim.fn.setreg("/", padrao)
