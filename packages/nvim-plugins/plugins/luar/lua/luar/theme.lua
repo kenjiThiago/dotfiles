@@ -6,7 +6,7 @@ local palette = luar.colors
 local M = {}
 
 function M.setup(variant)
-    local name = variant or "eclipse"
+    local name = variant or "aurora"
     local type_color = luar.types[name]
     if not type_color then
         error("Variante do Luar inválida: " .. tostring(variant))
