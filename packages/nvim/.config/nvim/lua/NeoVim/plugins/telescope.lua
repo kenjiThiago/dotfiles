@@ -21,7 +21,9 @@ require("telescope").setup({
     pickers = {
         find_files = {
             theme = "dropdown",
-            find_command = { "rg", "--files", "--color", "never", "--glob", "!.git" },
+            find_command = function()
+                return { "rg", "--files", "--color", "never", "--glob", "!.git" }
+            end,
             path_display = { "filename_first" },
             hidden = true,
             follow = true,
