@@ -5,3 +5,6 @@
 tags
 .direnv/
 .ready-tmux
+.node-version
+.python-version
+.npm-version
