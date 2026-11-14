@@ -79,6 +79,7 @@ vim.api.nvim_create_autocmd("CmdlineChanged", {
                 atual.padrao = nil
                 vim.fn.winrestview(atual.origem)
                 atual.view = atual.origem
+                vim.cmd.redraw()
                 return
             end
             vim.api.nvim_win_call(atual.win, function()
