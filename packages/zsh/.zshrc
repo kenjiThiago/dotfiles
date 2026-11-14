@@ -4,6 +4,7 @@ if [[ -z $TMUX && $XDG_CURRENT_DESKTOP == Hyprland && ! -f ~/.zshrc.local ]] \
     exec tmux new-session -A -s main
 fi
 
+fpath=("${XDG_CONFIG_HOME:-$HOME/.config}/zsh/completions" $fpath)
 autoload -Uz compinit && compinit
 
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"

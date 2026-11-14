@@ -1,0 +1,34 @@
+#compdef dots
+
+local context state state_descr line
+typeset -A opt_args
+local -a commands
+commands=(
+    'list:Lista os pacotes disponíveis'
+    'status:Mostra o estado dos links'
+    'link:Cria os links dos pacotes'
+    'unlink:Remove os links dos pacotes'
+    'relink:Refaz os links dos pacotes'
+    'migrate:Remove links quebrados para o repositório'
+    'adopt:Importa configurações da home'
+)
+
+_arguments -C \
+    '(--dry --dry-run)'{--dry,--dry-run}'[Simula sem alterar arquivos]' \
+    '(-y --yes)'{-y,--yes}'[Não pede confirmação no migrate]' \
+    '*--except=[Exclui pacotes no link, unlink ou relink]:pacotes:_sequence _dotfiles packages' \
+    '--profile=[Escolhe o perfil no link, unlink ou relink]:perfil:{_dotfiles profiles}' \
+    '(-h --help)'{-h,--help}'[Mostra a ajuda]' \
+    '1:comando:->command' \
+    '*:pacote:->package'
+
+case $state in
+    command) _describe 'comando' commands ;;
+    package)
+        case $line[1] in
+            link|unlink|relink|adopt)
+                (( ${+opt_args[--except]} )) || _dotfiles packages
+                ;;
+        esac
+        ;;
+esac

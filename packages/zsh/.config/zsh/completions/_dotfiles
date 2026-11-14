@@ -1,0 +1,14 @@
+#autoload
+
+local kind=$1
+shift
+local root=${DOTFILES:-${${(%):-%x}:A:h:h:h:h:h:h}}
+local -a values
+
+case $kind in
+    packages) values=("$root"/packages/*(N/:t)) ;;
+    profiles) values=("$root"/profiles/*(N.:t)) ;;
+    themes)   values=("$root"/themes/*/theme.sh(N.:h:t)) ;;
+esac
+
+compadd "$@" -- "${values[@]}"

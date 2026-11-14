@@ -105,6 +105,12 @@ contra o `dots list`, então errar a grafia dá erro em vez de linkar tudo
 caladamente, e a comparação é de nome inteiro: excluir `nvim` não leva o
 `nvim-plugins` junto.
 
+No Zsh, `Tab` completa os subcomandos e opções de `dots` e `theme`, além das
+opções de `./install.sh`. Pacotes, perfis e temas são lidos do repositório;
+`--except` também completa listas separadas por vírgula. As funções ficam no
+pacote `zsh`, em `~/.config/zsh/completions`, carregadas antes do `compinit`.
+Depois de adicionar esses arquivos, rode `dots link zsh` e reabra o Zsh.
+
 O `install.sh` repassa a mesma flag, para pular configs já na instalação nova:
 
 ```sh

@@ -1,0 +1,29 @@
+#compdef theme
+
+local context state state_descr line
+typeset -A opt_args
+local -a commands
+commands=(
+    'pick:Abre o seletor de temas'
+    'list:Lista os temas disponíveis'
+    'current:Mostra o tema ativo'
+    'set:Aplica um tema'
+    'reload:Reaplica o tema atual'
+    'show:Mostra a paleta no terminal'
+)
+
+_arguments -C \
+    '(--dry --dry-run)'{--dry,--dry-run}'[Simula sem alterar arquivos]' \
+    '--no-reload[Gera os arquivos sem recarregar programas]' \
+    '(-h --help)'{-h,--help}'[Mostra a ajuda]' \
+    '1:comando:->command' \
+    '2:tema:->theme'
+
+case $state in
+    command) _describe 'comando' commands ;;
+    theme)
+        case $line[1] in
+            set|show) _dotfiles themes ;;
+        esac
+        ;;
+esac
