@@ -75,6 +75,7 @@ make
 go
 rustup
 uv
+micromamba
 jdk21-openjdk
 mono
 r

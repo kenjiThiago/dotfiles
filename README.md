@@ -260,6 +260,18 @@ plugins e o prompt. A primeira criação da sessão mantém a inicialização
 completa para preparar o ambiente. Se houver `~/.zshrc.local`, a entrada no
 tmux continua no fim, depois dos ajustes locais.
 
+No Zsh, entrar em um projeto ativa a `.venv` ou o ambiente existente do
+micromamba indicado por um arquivo `.mamba-env` com o nome do ambiente, por
+exemplo `vgiws`. A busca inclui os diretórios pais e usa a indicação mais
+próxima; na mesma pasta, `.mamba-env` tem prioridade. O marcador é apenas texto,
+não um script, e fica no ignore global do Git. O micromamba usa
+`MAMBA_ROOT_PREFIX`, com `~/micromamba` como padrão.
+
+Ao sair, o hook desativa somente o ambiente que ativou automaticamente.
+Ambientes já ativos manualmente são preservados. O Starship mostra o nome do
+ambiente ativo no prompt, tanto para `.venv` quanto para micromamba. Depois
+de alterar essa configuração, rode `theme reload` e reabra o Zsh.
+
 ## Temas
 
 ```sh

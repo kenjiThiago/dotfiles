@@ -8,3 +8,4 @@ tags
 .node-version
 .python-version
 .npm-version
+.mamba-env

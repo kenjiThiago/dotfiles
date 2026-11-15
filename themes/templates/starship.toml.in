@@ -5,7 +5,7 @@
 add_newline = true
 command_timeout = 200
 continuation_prompt = '[❯❯](success) '
-format = " $python$directory$git_branch$git_status$line_break $character"
+format = " $python$conda$directory$git_branch$git_status$line_break $character"
 
 palette = "{{theme}}"
 
@@ -41,6 +41,11 @@ symbol = ""
 detect_extensions = []
 detect_files = []
 detect_folders = []
+
+[conda]
+format = "[$environment]($style) "
+style = "italic muted"
+ignore_base = false
 
 [directory]
 use_logical_path = false

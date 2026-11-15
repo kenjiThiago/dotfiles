@@ -44,6 +44,8 @@ command -v fzf >/dev/null && source <(fzf --zsh)
 command -v zoxide >/dev/null && eval "$(zoxide init --cmd cd zsh)"
 
 if command -v starship >/dev/null; then
+    export VIRTUAL_ENV_DISABLE_PROMPT=1
+    export MAMBA_CHANGEPS1=false
     eval "$(starship init zsh)"
 
     RPROMPT=""  # sem right_format, o RPROMPT só forkava o starship a cada redraw
@@ -149,17 +151,81 @@ if command -v fnm >/dev/null; then
     eval "$(fnm completions --shell zsh)"
 fi
 
-auto_venv() {
-    local dir=$PWD
-    while [[ $dir != / && ! -d $dir/.venv ]]; do dir=${dir:h}; done
-
-    if [[ -f $dir/.venv/bin/activate ]]; then
-        [[ $VIRTUAL_ENV == $dir/.venv ]] && return
-        (( $+functions[deactivate] )) && deactivate
-        source $dir/.venv/bin/activate
-    elif (( $+functions[deactivate] )); then
-        deactivate
+if (( $+commands[micromamba] )); then
+    export MAMBA_EXE=$commands[micromamba]
+    export MAMBA_ROOT_PREFIX="${MAMBA_ROOT_PREFIX:-$HOME/micromamba}"
+    if __mamba_setup=$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX"); then
+        eval "$__mamba_setup"
+        # Reativar o mesmo ambiente manualmente também encerra o controle automático.
+        functions -c micromamba _dotfiles_micromamba
+        micromamba() {
+            _dotfiles_micromamba "$@" || return
+            if (( ${argv[(I)-h]} || ${argv[(I)--help]} )); then
+                return 0
+            fi
+            case $1 in
+                activate|reactivate|deactivate)
+                    unset _DOTFILES_AUTO_ENV _DOTFILES_AUTO_ENV_KIND _DOTFILES_AUTO_ENV_LEVEL
+                    ;;
+            esac
+        }
     fi
+    unset __mamba_setup
+fi
+
+auto_venv() {
+    local dir=$PWD kind target name current
+    while true; do
+        if [[ -r $dir/.mamba-env ]]; then
+            name=$(< "$dir/.mamba-env")
+            if [[ -z $name || $name == *[[:space:]/]* || $name == . || $name == .. ]]; then
+                print -u2 -- "Nome de ambiente inválido em $dir/.mamba-env"
+            else
+                kind=mamba
+                target=${MAMBA_ROOT_PREFIX:-$HOME/micromamba}/envs/$name
+                [[ $name == base ]] && target=${MAMBA_ROOT_PREFIX:-$HOME/micromamba}
+            fi
+            break
+        elif [[ -f $dir/.venv/bin/activate ]]; then
+            kind=venv
+            target=$dir/.venv
+            break
+        fi
+        [[ $dir == / ]] && break
+        dir=${dir:h}
+    done
+
+    if [[ -n $_DOTFILES_AUTO_ENV ]]; then
+        current=$VIRTUAL_ENV
+        if [[ $_DOTFILES_AUTO_ENV_KIND == mamba ]]; then
+            current=$CONDA_PREFIX
+            [[ -n $VIRTUAL_ENV || $CONDA_SHLVL != $_DOTFILES_AUTO_ENV_LEVEL ]] && current=
+        elif [[ -n $CONDA_PREFIX ]]; then
+            current=
+        fi
+        if [[ $current != $_DOTFILES_AUTO_ENV ]]; then
+            unset _DOTFILES_AUTO_ENV _DOTFILES_AUTO_ENV_KIND _DOTFILES_AUTO_ENV_LEVEL
+            return 0
+        fi
+        [[ $kind == $_DOTFILES_AUTO_ENV_KIND && $target == $_DOTFILES_AUTO_ENV ]] && return 0
+        if [[ $_DOTFILES_AUTO_ENV_KIND == mamba ]]; then
+            micromamba deactivate || return
+        else
+            deactivate || return
+        fi
+        unset _DOTFILES_AUTO_ENV _DOTFILES_AUTO_ENV_KIND _DOTFILES_AUTO_ENV_LEVEL
+    fi
+
+    [[ -z $target || -n $VIRTUAL_ENV || -n $CONDA_PREFIX ]] && return 0
+    if [[ $kind == mamba ]]; then
+        (( $+functions[micromamba] )) || return 0
+        micromamba activate "$target" || return
+    else
+        source "$target/bin/activate" || return
+    fi
+    _DOTFILES_AUTO_ENV=$target
+    _DOTFILES_AUTO_ENV_KIND=$kind
+    _DOTFILES_AUTO_ENV_LEVEL=$CONDA_SHLVL
 }
 
 autoload -Uz add-zsh-hook
