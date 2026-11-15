@@ -66,7 +66,13 @@ if require("NeoVim.profile").minimal then
     return
 end
 
-vim.g.loaded_nvim_dir_plugin = 1
+-- O navegador de ZIP usa os atalhos do dir.lua; só a abertura de pastas fica com o Oil.
+vim.api.nvim_create_autocmd("VimEnter", {
+    once = true,
+    callback = function()
+        pcall(vim.api.nvim_del_augroup_by_name, "nvim.dir")
+    end,
+})
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
