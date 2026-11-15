@@ -260,6 +260,12 @@ plugins e o prompt. A primeira criação da sessão mantém a inicialização
 completa para preparar o ambiente. Se houver `~/.zshrc.local`, a entrada no
 tmux continua no fim, depois dos ajustes locais.
 
+O Zsh mantém entradas únicas no `PATH` e garante os diretórios pessoais também
+dentro do tmux. Cada shell inicializa seu próprio ambiente do fnm, retirando
+do seu `PATH` as entradas do diretório de ambientes do fnm herdado. Isso cobre
+o caso em que o tmux recebe `PATH` e `FNM_MULTISHELL_PATH` de ambientes diferentes.
+Os diretórios permanecem disponíveis para os outros shells que os utilizam.
+
 O prompt do Starship é atualizado ao voltar o foco para o terminal ou painel
 do tmux. Isso reflete trocas de branch feitas no Lazygit ou em outra janela,
 preservando o comando que estiver sendo digitado. O tmux precisa manter

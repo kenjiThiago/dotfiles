@@ -161,13 +161,14 @@ fi
 # Sem o arquivo, o fzf recusa abrir.
 [[ -f ~/.config/fzf/colors ]] && export FZF_DEFAULT_OPTS_FILE="$HOME/.config/fzf/colors"
 
-if [[ -z $TMUX ]]; then
-    path+=("$HOME/go/bin")
-    path+=("$HOME/.local/bin")
-    path+=("$HOME/.local/share/nvim/mason/bin")
-fi
+typeset -U path PATH
+path+=("$HOME/go/bin" "$HOME/.local/bin" "$HOME/.local/share/nvim/mason/bin")
 
 if command -v fnm >/dev/null; then
+    if [[ -n $FNM_MULTISHELL_PATH ]]; then
+        # O tmux pode herdar PATH e FNM_MULTISHELL_PATH de ambientes diferentes.
+        path=("${(@)path:#${FNM_MULTISHELL_PATH:h}/*/bin}")
+    fi
     eval "$(fnm env --use-on-cd --version-file-strategy=recursive --shell zsh)"
     eval "$(fnm completions --shell zsh)"
 fi
