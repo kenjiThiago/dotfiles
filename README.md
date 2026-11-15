@@ -260,6 +260,11 @@ plugins e o prompt. A primeira criação da sessão mantém a inicialização
 completa para preparar o ambiente. Se houver `~/.zshrc.local`, a entrada no
 tmux continua no fim, depois dos ajustes locais.
 
+O prompt do Starship é atualizado ao voltar o foco para o terminal ou painel
+do tmux. Isso reflete trocas de branch feitas no Lazygit ou em outra janela,
+preservando o comando que estiver sendo digitado. O tmux precisa manter
+`focus-events on`, já habilitado na configuração.
+
 No Zsh, entrar em um projeto ativa a `.venv` ou o ambiente existente do
 micromamba indicado por um arquivo `.mamba-env` com o nome do ambiente, por
 exemplo `vgiws`. A busca inclui os diretórios pais e usa a indicação mais

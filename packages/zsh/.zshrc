@@ -80,6 +80,27 @@ if command -v starship >/dev/null; then
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd restore_starship_prompt
 
+    function enable_prompt_focus_tracking() {
+        printf '\e[?1004h'
+    }
+
+    function disable_prompt_focus_tracking() {
+        printf '\e[?1004l'
+    }
+
+    function refresh_starship_on_focus() {
+        restore_starship_prompt
+        zle reset-prompt
+    }
+
+    zle -N refresh_starship_on_focus
+    bindkey '\e[I' refresh_starship_on_focus
+    bindkey -s '\e[O' ''
+
+    # Os programas em primeiro plano controlam seus próprios eventos de foco.
+    add-zle-hook-widget zle-line-init enable_prompt_focus_tracking
+    add-zle-hook-widget zle-line-finish disable_prompt_focus_tracking
+
     TRAPINT() {
         zle && set_transient_prompt
         return $(( 128 + $1 ))
