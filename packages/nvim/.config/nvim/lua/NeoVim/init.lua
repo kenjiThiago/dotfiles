@@ -79,6 +79,7 @@ vim.g.loaded_netrwPlugin = 1
 require("NeoVim.custom.notas")
 
 require("NeoVim.plugins.colors")
+require("NeoVim.plugins.gitsigns")
 require("NeoVim.plugins.telescope")
 require("NeoVim.plugins.harpoon")
 require("NeoVim.plugins.conform")
