@@ -10,6 +10,35 @@ local function abrir_lista(loclist)
     vim.notify("Nenhum resultado válido na lista.", vim.log.levels.INFO)
 end
 
+vim.api.nvim_create_user_command("Fd", function(opts)
+    if vim.fn.executable("fd") ~= 1 then
+        vim.notify("O executável fd não está disponível.", vim.log.levels.ERROR)
+        return
+    end
+
+    local paths = vim.fn.systemlist("fd --absolute-path --color=never " .. opts.args)
+    if vim.v.shell_error ~= 0 then
+        vim.notify(table.concat(paths, "\n"), vim.log.levels.ERROR)
+        return
+    end
+
+    vim.fn.setqflist({}, " ", {
+        title = "fd " .. opts.args,
+        lines = paths,
+        efm = "%f",
+        quickfixtextfunc = function(info)
+            local items = vim.fn.getqflist({ id = info.id, items = 0 }).items
+            local filenames = {}
+            for i = info.start_idx, info.end_idx do
+                local path = vim.api.nvim_buf_get_name(items[i].bufnr)
+                filenames[#filenames + 1] = vim.fn.fnamemodify(path, ":~:.")
+            end
+            return filenames
+        end,
+    })
+    abrir_lista(false)
+end, { nargs = "+", desc = "Buscar arquivos com fd e abrir na quickfix" })
+
 local function fim_da_classe(args, start)
     local i = start + 1
     if args:sub(i, i) == "^" then
