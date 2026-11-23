@@ -46,12 +46,6 @@ end
 
 local disabled_languages = {
     "latex",
-    "csv",
-    "qmljs",
-    "html",
-    "javascript",
-    "typescript",
-    "tsx",
     "tmux",
     "devicetree",
 }
