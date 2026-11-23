@@ -139,6 +139,8 @@ Scope {
                 implicitHeight: 40
                 exclusiveZone: 40
                 visible: !root.recordingHidden && (!root.hidden || island.needsAttention)
+                // Ao reaparecer, a reserva pode ficar acima da island na pilha de janelas.
+                mask: Region {}
             }
 
             // Escudo em U: cobre todos os lados exceto a ilha.
